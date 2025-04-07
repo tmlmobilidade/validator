@@ -7,37 +7,34 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"main/src/models"
 	"os"
 	"strings"
 )
 
-// Gtfs represents a collection of parsed GTFS data files where the key is the filename (without .txt extension)
-// and the value is a slice of maps containing the CSV data with column headers as keys.
-type Gtfs map[string][]map[string]string
-
 // GTFS_FILES defines the set of valid GTFS filenames that will be processed.
 var GTFS_FILES = map[string]struct{}{
-	"agency.txt":   {},
-	"stops.txt":    {},
-	"routes.txt":   {},
-	"trips.txt":    {},
-	"stop_times.txt": {},
-	"calendar.txt": {},
-	"archives.txt": {},
-	"calendar_dates.txt": {},
-	"dates.txt": {},
+	"agency.txt":          {},
+	"stops.txt":           {},
+	"routes.txt":          {},
+	"trips.txt":           {},
+	"stop_times.txt":      {},
+	"calendar.txt":        {},
+	"archives.txt":        {},
+	"calendar_dates.txt":  {},
+	"dates.txt":           {},
 	"fare_attributes.txt": {},
-	"fare_rules.txt": {},
-	"feed_info.txt": {},
-	"municipalities.txt": {},
-	"periods.txt": {},
-	"shapes.txt": {},
+	"fare_rules.txt":      {},
+	"feed_info.txt":       {},
+	"municipalities.txt":  {},
+	"periods.txt":         {},
+	"shapes.txt":          {},
 }
 
 // ReadGTFSZip reads and parses a GTFS zip file at the specified path.
 // It returns a Gtfs map containing the parsed data from all valid GTFS files,
 // or an error if the file cannot be read or processed.
-func ReadGTFSZip(zipPath string) (Gtfs, error) {
+func ReadGTFSZip(zipPath string) (models.Gtfs, error) {
 	if _, err := os.Stat(zipPath); os.IsNotExist(err) {
 		return nil, fmt.Errorf("file %s does not exist", zipPath)
 	}
@@ -48,7 +45,7 @@ func ReadGTFSZip(zipPath string) (Gtfs, error) {
 	}
 	defer zipReader.Close()
 
-	gtfsData := make(Gtfs)
+	gtfsData := make(models.Gtfs)
 
 	for _, file := range zipReader.File {
 		fileName := file.Name

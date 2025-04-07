@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
-	"main/src/models"
+	"main/src/lib"
 	"main/src/services"
 )
 
@@ -18,10 +18,8 @@ func main() {
 		log.Fatalf("Error reading GTFS: %v", err)
 	}
 
-	for fileName, data := range gtfsData {
-		fmt.Printf("File: %s, Records: %d\n", fileName, len(data))
-
-		// Run Validations for current file
-		models.GTFS_FILE_RULES_MAP[fileName]()
+	// Run Validations for each file
+	for fileName := range gtfsData {
+		lib.GTFS_FILE_RULES_MAP[fileName](gtfsData)
 	}
 }

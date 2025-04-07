@@ -4,34 +4,8 @@ import (
 	"main/src/models"
 )
 
-func CreateAgencyFromMap(m map[string]string) (a models.Agency, errors []string) {
-	
-	errors = []string{}
-	item := models.Agency{}
-
-	//Convert Optional Values
-	var agencyEmail, agencyFareUrl, agencyLang, agencyPhone string
-
-	ParseStringToPrimitive(m["agency_email"], &agencyEmail, &errors)
-	ParseStringToPrimitive(m["agency_fare_url"], &agencyFareUrl, &errors)
-	ParseStringToPrimitive(m["agency_lang"], &agencyLang, &errors)
-	ParseStringToPrimitive(m["agency_phone"], &agencyPhone, &errors)
-
-	item.AgencyEmail = &agencyEmail
-	item.AgencyFareUrl = &agencyFareUrl
-	item.AgencyLang = &agencyLang
-	item.AgencyPhone = &agencyPhone
-	
-	//Convert Required Values
-	ParseStringToPrimitive(m["agency_timezone"], &item.AgencyTimezone, &errors)
-	ParseStringToPrimitive(m["agency_name"], &item.AgencyName, &errors)
-	ParseStringToPrimitive(m["agency_id"], &item.AgencyId, &errors)
-	ParseStringToPrimitive(m["agency_url"], &item.AgencyUrl, &errors)
-
-	return item, errors
-}
 func CreateStopFromMap(m map[string]string) (s models.Stop, errors []string) {
-	
+
 	errors = []string{}
 	item := models.Stop{}
 
