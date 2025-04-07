@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -107,6 +108,15 @@ func ParseStringToPrimitive[T any](str string, t *T, errors *[]string) {
 		*t = any(f).(T)
 		return
 	default:
-		*errors = append(*errors, fmt.Sprintf("unsupported type: %s", reflect.TypeOf(*t)))
+		//Panic with error
+		panic(fmt.Sprintf("variable \"%s\" is of type \"%s\" and cannot be parsed to primitive type", str, reflect.TypeOf(*t)))
 	}
+}
+
+func PrintMap(a any) {
+	b, err := json.MarshalIndent(a, "", "  ")
+	if err != nil {
+		fmt.Println("error:", err)
+	}
+	fmt.Printf("%s\n", string(b))
 }

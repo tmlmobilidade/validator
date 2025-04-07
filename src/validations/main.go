@@ -2,11 +2,60 @@ package validations
 
 import (
 	"fmt"
+	"main/src/lib"
 	"main/src/models"
+	"main/src/validations/agency"
+	"main/src/validations/stops"
 )
 
+var GTFS_FILE_RULES_MAP = map[string]func(gtfsData models.Gtfs){
+	"afetacao":             AfetacaoValidations,
+	"agency":               AgencyValidations,
+	"archives":             ArchivesValidations,
+	"areas":                AreasValidations,
+	"attributions":         AttributionsValidations,
+	"booking_rules":        BookingRulesValidations,
+	"calendar":             CalendarValidations,
+	"calendar_dates":       CalendarDatesValidations,
+	"fare_attributes":      FareAttributesValidations,
+	"fare_leg_join_rules":  FareLegJoinRulesValidations,
+	"fare_leg_rules":       FareLegRulesValidations,
+	"fare_media":           FareMediaValidations,
+	"fare_products":        FareProductsValidations,
+	"fare_rules":           FareRulesValidations,
+	"fare_transfer_rules":  FareTransferRulesValidations,
+	"feed_info":            FeedInfoValidations,
+	"frequencies":          FrequenciesValidations,
+	"levels":               LevelsValidations,
+	"location_group_stops": LocationGroupStopsValidations,
+	"location_groups":      LocationGroupsValidations,
+	"municipalities":       MunicipalitiesValidations,
+	"networks":             NetworksValidations,
+	"pathways":             PathwaysValidations,
+	"periods":              PeriodsValidations,
+	"rider_categories":     RiderCategoriesValidations,
+	"route_networks":       RouteNetworksValidations,
+	"routes":               RoutesValidations,
+	"shapes":               ShapesValidations,
+	"stop_areas":           StopAreasValidations,
+	"stop_times":           StopTimesValidations,
+	"stops":                StopsValidations,
+	"timeframes":           TimeFramesValidations,
+	"transfers":            TransfersValidations,
+	"translations":         TranslationsValidations,
+	"trips":                TripsValidations,
+}
+
 func AgencyValidations(gtfsData models.Gtfs) {
-	fmt.Println("Running Agency Validations...")
+	// Parse Agency
+	for _, a := range gtfsData["agency"] {
+		ag, errors := agency.ParseAgency(a)
+		if len(errors) > 0 {
+			fmt.Println("Errors:", errors)
+		} else {
+			lib.PrintMap(ag)
+		}
+	}
 }
 
 func AfetacaoValidations(gtfsData models.Gtfs) {
@@ -126,7 +175,15 @@ func StopTimesValidations(gtfsData models.Gtfs) {
 }
 
 func StopsValidations(gtfsData models.Gtfs) {
-	fmt.Println("Running Stops Validations...")
+	// Parse Agency
+	for _, a := range gtfsData["stops"] {
+		st, errors := stops.ParseStop(a)
+		if len(errors) > 0 {
+			fmt.Println("Errors:", errors)
+		} else {
+			lib.PrintMap(st)
+		}
+	}
 }
 
 func TimeFramesValidations(gtfsData models.Gtfs) {

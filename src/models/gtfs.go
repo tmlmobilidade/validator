@@ -18,20 +18,20 @@ type Agency struct {
 
 /* STOP */
 type Stop struct {
-	LevelId            *string  `json:"level_id"`
-	LocationType       *uint8   `json:"location_type"`
-	ParentStation      *string  `json:"parent_station"`
-	PlatformCode       *string  `json:"platform_code"`
-	StopCode           *string  `json:"stop_code"`
-	StopDesc           *string  `json:"stop_desc"`
+	LevelId            *string  `json:"level_id,omitempty"`
+	LocationType       *uint8   `json:"location_type,omitempty"`
+	ParentStation      *string  `json:"parent_station,omitempty"`
+	PlatformCode       *string  `json:"platform_code,omitempty"`
+	StopCode           *string  `json:"stop_code,omitempty"`
+	StopDesc           *string  `json:"stop_desc,omitempty"`
 	StopId             string   `json:"stop_id"`
-	StopLat            *float32 `json:"stop_lat"`
-	StopLon            *float32 `json:"stop_lon"`
-	StopName           *string  `json:"stop_name"`
-	StopTimezone       *string  `json:"stop_timezone"`
-	StopUrl            *string  `json:"stop_url"`
-	WheelchairBoarding *uint8   `json:"wheelchair_boarding"`
-	ZoneId             *string  `json:"zone_id"`
+	StopLat            *float32 `json:"stop_lat,omitempty"`
+	StopLon            *float32 `json:"stop_lon,omitempty"`
+	StopName           *string  `json:"stop_name,omitempty"`
+	StopTimezone       *string  `json:"stop_timezone,omitempty"`
+	StopUrl            *string  `json:"stop_url,omitempty"`
+	WheelchairBoarding *uint8   `json:"wheelchair_boarding,omitempty"`
+	ZoneId             *string  `json:"zone_id,omitempty"`
 }
 
 /* ROUTE */
