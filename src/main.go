@@ -34,5 +34,6 @@ func main() {
 	}
 
 	// Print Summary
-	services.AppMessageService.PrintSummary()
+	// services.AppMessageService.PrintSummary()
+	services.AppMessageService.PrintTable()
 }

@@ -3,6 +3,10 @@ package services
 import (
 	"fmt"
 	"main/src/types"
+	"os"
+	"strconv"
+
+	"github.com/olekukonko/tablewriter"
 )
 
 type MessageService struct {
@@ -38,6 +42,18 @@ func (ms *MessageService) GetSummary() types.Summary {
 		TotalInfos:    ms.infoCount,
 		TotalWarnings: ms.warningCount,
 	}
+}
+
+func (ms *MessageService) PrintTable() {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Validation ID", "Message", "Severity", "Field", "File Name", "Row"})
+	table.SetRowSeparator("-")
+	table.SetFooter([]string{"", "", "Errors: " + strconv.Itoa(ms.errorCount), "Infos: " + strconv.Itoa(ms.infoCount), "Warnings: " + strconv.Itoa(ms.warningCount), "Total: " + strconv.Itoa(ms.errorCount+ms.infoCount+ms.warningCount)})
+
+	for _, message := range ms.messages {
+		table.Append([]string{message.ValidationID, message.Message, string(message.Severity), message.Field, message.FileName, strconv.Itoa(message.Row)})
+	}
+	table.Render()
 }
 
 func (ms *MessageService) PrintSummary() {
