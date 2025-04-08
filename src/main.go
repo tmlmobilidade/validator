@@ -1,16 +1,17 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"main/src/lib"
 	"main/src/services"
 	"main/src/validations"
 )
 
 func main() {
 
-	// Clear terminal
-	fmt.Print("\033c")
+	// Clear the terminal
+	lib.AppLogger.Clear()
+	lib.AppLogger.Divider("GTFS Validator")
 
 	// Message Service
 	messageService := services.NewMessageService()
@@ -21,7 +22,7 @@ func main() {
 		log.Fatalf("Error reading GTFS: %v", err)
 	}
 
-	fmt.Println("\n\n ==== ---- ==== \n\n")
+	lib.AppLogger.Divider("Running Validations")
 
 	// Run Validations for each file
 	for fileName := range gtfsData {

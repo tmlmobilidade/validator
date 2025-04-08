@@ -8,32 +8,58 @@ import (
 	"github.com/fatih/color"
 )
 
-type RGB [3]int
+// Level defines the severity of the log message
+type Level int
 
-// Predefined log levels with associated colors
+const (
+	Debug Level = iota
+	Info
+	Error
+)
+
+var levelNames = []string{"DEBUG", "INFO", "ERROR"}
+
+// Predefined terminal colors
 var (
-	ColorDebug = RGB{255, 128, 0}   // Orange
-	ColorInfo  = RGB{100, 149, 237} // Cornflower Blue
-	ColorError = RGB{220, 20, 60}   // Crimson
+	colorDebug = color.New(color.FgYellow)
+	colorInfo  = color.New(color.FgCyan)
+	colorError = color.New(color.FgRed)
 )
 
 // Logger represents a customizable logger
 type Logger struct {
 	WithTimestamp bool
+	Level         Level
 }
 
 // NewLogger creates a new Logger instance
-func NewLogger(withTimestamp bool) *Logger {
-	return &Logger{WithTimestamp: withTimestamp}
+func NewLogger(withTimestamp bool, level ...Level) *Logger {
+	if len(level) == 0 {
+		level = []Level{Debug}
+	}
+
+	return &Logger{
+		WithTimestamp: withTimestamp,
+		Level:         level[0],
+	}
 }
 
-// log prints a message with the specified RGB color
-func (l *Logger) log(message string, clr RGB) {
+// log prints a message with the specified color and level
+func (l *Logger) log(c *color.Color, lvl Level, message string) {
+	if lvl < l.Level {
+		return // Don't print if message level is lower than current logger level
+	}
+
+	prefix := fmt.Sprintf("[%s]", levelNames[lvl])
+
 	if l.WithTimestamp {
 		timestamp := time.Now().Format("2006-01-02 15:04:05")
-		message = fmt.Sprintf("[%s] %s", timestamp, message)
+		message = fmt.Sprintf("[%s] %s %s", timestamp, prefix, message)
+	} else {
+		message = fmt.Sprintf("%s %s", prefix, message)
 	}
-	color.RGB(clr[0], clr[1], clr[2]).Println(message)
+
+	c.Println(message)
 }
 
 // Divider prints a nice divider, with optional centered text
@@ -52,25 +78,31 @@ func (l *Logger) Divider(message ...string) {
 		padding = 0
 	}
 
-	fmt.Printf("\n%s %s %s\n", strings.Repeat("-", padding), msg, strings.Repeat("-", padding))
+	fmt.Printf("\n%s %s %s\n\n", strings.Repeat("-", padding), msg, strings.Repeat("-", padding))
 }
 
 // Debug logs a debug-level message
 func (l *Logger) Debug(message string) {
-	l.log(message, ColorDebug)
+	l.log(colorDebug, Debug, message)
 }
 
 // Info logs an info-level message
 func (l *Logger) Info(message string) {
-	l.log(message, ColorInfo)
+	l.log(colorInfo, Info, message)
 }
 
 // Error logs an error-level message
 func (l *Logger) Error(message string) {
-	l.log(message, ColorError)
+	l.log(colorError, Error, message)
 }
 
-// Custom logs a message with a custom color
-func (l *Logger) Custom(message string, clr RGB) {
-	l.log(message, clr)
+// Custom logs a message with a custom terminal color
+func (l *Logger) Custom(message string, c *color.Color, lvl Level) {
+	l.log(c, lvl, message)
 }
+
+func (l *Logger) Clear() {
+	fmt.Print("\033c")
+}
+
+var AppLogger = NewLogger(true, Debug)
