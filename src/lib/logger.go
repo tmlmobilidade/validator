@@ -21,9 +21,10 @@ var levelNames = []string{"DEBUG", "INFO", "ERROR"}
 
 // Predefined terminal colors
 var (
-	colorDebug = color.New(color.FgYellow)
-	colorInfo  = color.New(color.FgCyan)
-	colorError = color.New(color.FgRed)
+	colorDebug  = color.New(color.FgYellow)
+	colorInfo   = color.New(color.FgCyan)
+	colorError  = color.New(color.FgRed)
+	colorAccent = color.New(color.FgHiGreen)
 )
 
 // Logger represents a customizable logger
@@ -82,18 +83,27 @@ func (l *Logger) Divider(message ...string) {
 }
 
 // Debug logs a debug-level message
-func (l *Logger) Debug(message string) {
-	l.log(colorDebug, Debug, message)
+func (l *Logger) Debug(message ...string) {
+	msg := strings.Join(message, " ")
+	l.log(colorDebug, Debug, msg)
 }
 
 // Info logs an info-level message
-func (l *Logger) Info(message string) {
-	l.log(colorInfo, Info, message)
+func (l *Logger) Info(message ...string) {
+
+	msg := strings.Join(message, " ")
+	l.log(colorInfo, Info, msg)
 }
 
 // Error logs an error-level message
-func (l *Logger) Error(message string) {
-	l.log(colorError, Error, message)
+func (l *Logger) Error(message ...string) {
+	msg := strings.Join(message, " ")
+	l.log(colorError, Error, msg)
+}
+
+func (l *Logger) Accent(message ...string) {
+	msg := strings.Join(message, " ")
+	l.log(colorAccent, Debug, msg)
 }
 
 // Custom logs a message with a custom terminal color
