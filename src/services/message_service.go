@@ -3,9 +3,9 @@ package services
 type Severity string
 
 const (
-	ErrorSeverity   Severity = "error"
-	InfoSeverity    Severity = "info"
-	WarningSeverity Severity = "warning"
+	SEVERITY_ERROR   Severity = "error"
+	SEVERITY_INFO    Severity = "info"
+	SEVERITY_WARNING Severity = "warning"
 )
 
 type Message struct {
@@ -34,11 +34,11 @@ func (ms *MessageService) AddMessage(message Message) {
 	ms.messages = append(ms.messages, message)
 
 	switch message.Severity {
-	case ErrorSeverity:
+	case SEVERITY_ERROR:
 		ms.errorCount++
-	case WarningSeverity:
+	case SEVERITY_WARNING:
 		ms.warningCount++
-	case InfoSeverity:
+	case SEVERITY_INFO:
 		ms.infoCount++
 	}
 }

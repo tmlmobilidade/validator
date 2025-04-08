@@ -12,6 +12,9 @@ func main() {
 	// Clear terminal
 	fmt.Print("\033c")
 
+	// Message Service
+	messageService := services.NewMessageService()
+
 	// gtfsData, err := services.ReadGTFSZip("data/BOM.zip")
 	gtfsData, err := services.ReadGTFSZip("data/CMET.zip")
 	if err != nil {
@@ -28,6 +31,6 @@ func main() {
 		}
 
 		fmt.Println("Running Validations for", fileName)
-		validations.GTFS_FILE_RULES_MAP[fileName](gtfsData)
+		validations.GTFS_FILE_RULES_MAP[fileName](gtfsData, *messageService)
 	}
 }
