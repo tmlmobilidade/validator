@@ -1,8 +1,9 @@
-package models
+package types
 
 /* * */
 
 type GTFSBool int
+
 const (
 	NOT_SPECIFIED GTFSBool = iota
 	YES
@@ -16,6 +17,7 @@ func (b GTFSBool) String() string {
 /* * */
 
 type Align int
+
 const (
 	AVAILABLE Align = iota
 	NOT_AVAILABLE
@@ -23,14 +25,15 @@ const (
 	MUST_CONTACT_DRIVER
 )
 
-
 type ExceptionType int
+
 const (
 	SERVICE_ADDED ExceptionType = iota + 1
 	SERVICE_REMOVED
 )
 
 type TransferType int
+
 const (
 	RECOMMENDED TransferType = iota
 	TIMED_TRANSFER
@@ -41,6 +44,7 @@ const (
 )
 
 type LocationType int
+
 const (
 	STOP LocationType = iota
 	STATION
@@ -52,6 +56,7 @@ const (
 /* * */
 
 type WheelchairBoardingType int
+
 const (
 	UNKNOWN_OR_INHERIT WheelchairBoardingType = iota
 	ACCESSIBLE
@@ -69,20 +74,23 @@ func (b WheelchairBoardingType) Value() int {
 /* * */
 
 type PickupDropoffType int
+
 const (
 	CONTINUOUS PickupDropoffType = iota
 	NON_CONTINUOUS
-	PICKUP_MUST_CONTACT_AGENCY 
+	PICKUP_MUST_CONTACT_AGENCY
 	PICKUP_MUST_CONTACT_DRIVER
 )
 
 type PaymentMethod int
+
 const (
 	PAID_ON_BOARD PaymentMethod = iota
 	PAID_BEFORE_BOARDING
 )
 
 type TransfersNumber int
+
 const (
 	NO_TRANSFERS_PERMITTED TransfersNumber = iota
 	RIDERS_MAY_TRANSFER_ONCE
@@ -91,6 +99,7 @@ const (
 )
 
 type PathwayMode int
+
 const (
 	WALKWAY PathwayMode = iota + 1
 	STAIRS
@@ -102,19 +111,21 @@ const (
 )
 
 type TranslationsTableName string
+
 const (
-	AGENCY TranslationsTableName = "agency"
+	AGENCY       TranslationsTableName = "agency"
 	ATTRIBUTIONS TranslationsTableName = "attributions"
-	FEED_INFO TranslationsTableName = "feed_info"
-	LEVELS TranslationsTableName = "levels"
-	PATHWAYS TranslationsTableName = "pathways"
-	ROUTES TranslationsTableName = "routes"
-	STOP_TIMES TranslationsTableName = "stop_times"
-	STOPS TranslationsTableName = "stops"
-	TRIPS TranslationsTableName = "trips"
+	FEED_INFO    TranslationsTableName = "feed_info"
+	LEVELS       TranslationsTableName = "levels"
+	PATHWAYS     TranslationsTableName = "pathways"
+	ROUTES       TranslationsTableName = "routes"
+	STOP_TIMES   TranslationsTableName = "stop_times"
+	STOPS        TranslationsTableName = "stops"
+	TRIPS        TranslationsTableName = "trips"
 )
 
 type FareMediaType int
+
 const (
 	NONE FareMediaType = iota
 	PHYSICAL_TICKET
@@ -124,6 +135,7 @@ const (
 )
 
 type BookingType int
+
 const (
 	REAL_TIME BookingType = iota
 	SAME_DAY
@@ -131,6 +143,7 @@ const (
 )
 
 type DurationLimit int
+
 const (
 	DEPARTURE_TO_ARRIVAL DurationLimit = iota
 	DEPARTURE_TO_DEPARTURE
@@ -139,6 +152,7 @@ const (
 )
 
 type FareTransferType int
+
 const (
 	LEG_TRANSFER FareTransferType = iota
 	LEG_TRANSFER_LEG

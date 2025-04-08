@@ -1,8 +1,8 @@
 package validations
 
 import (
-	"main/src/models"
 	"main/src/services"
+	"main/src/types"
 	"main/src/validations/afetacao"
 	"main/src/validations/agency"
 	"main/src/validations/archives"
@@ -40,7 +40,7 @@ import (
 	"main/src/validations/trips"
 )
 
-var GTFS_FILE_RULES_MAP = map[string]func(gtfsData models.Gtfs, messageService services.MessageService){
+var GTFS_FILE_RULES_MAP = map[string]func(gtfsData types.Gtfs, messageService services.MessageService){
 	"afetacao":             afetacao.RunValidations,
 	"agency":               agency.RunValidations,
 	"archives":             archives.RunValidations,
@@ -76,12 +76,4 @@ var GTFS_FILE_RULES_MAP = map[string]func(gtfsData models.Gtfs, messageService s
 	"transfers":            transfers.RunValidations,
 	"translations":         translations.RunValidations,
 	"trips":                trips.RunValidations,
-}
-
-type Validation struct {
-	ID          string
-	Description string
-	Severity    services.Severity
-
-	Validate func(gtfsData models.Gtfs) []services.Message
 }

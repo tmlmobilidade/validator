@@ -1,4 +1,4 @@
-package models
+package types
 
 // Gtfs represents a collection of parsed GTFS data files where the key is the filename (without .txt extension)
 // and the value is a slice of maps containing the CSV data with column headers as keys.
@@ -8,7 +8,7 @@ type Gtfs map[string][]map[string]string
 type Agency struct {
 	AgencyEmail    *string `json:"agency_email"`
 	AgencyFareUrl  *string `json:"agency_fare_url"`
-	AgencyId       string  `json:"agency_id"`
+	AgencyId       *string `json:"agency_id"`
 	AgencyLang     *string `json:"agency_lang"`
 	AgencyName     string  `json:"agency_name"`
 	AgencyPhone    *string `json:"agency_phone"`

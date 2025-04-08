@@ -1,22 +1,18 @@
 package agency
 
 import (
-	"main/src/models"
+	"fmt"
 	"main/src/services"
+	"main/src/types"
 )
 
-func RunValidations(gtfsData models.Gtfs, messageService services.MessageService) {
-	// Parse Agency
-	for idx, a := range gtfsData["agency"] {
-		_, errors := ParseAgency(a)
-		for _, error := range errors {
-			messageService.AddMessage(services.Message{
-				Field:    "agency",
-				FileName: "agency.txt",
-				Message:  error,
-				Row:      idx,
-				Severity: services.SEVERITY_ERROR,
-			})
-		}
+func RunValidations(gtfsData types.Gtfs, messageService services.MessageService) {
+	fmt.Println("Running Validations for agency.txt")
+
+	// Parsing Validation
+	parseAgencyValidation := NewParseAgencyValidation(nil)
+	messages := parseAgencyValidation.Validate(gtfsData)
+	for _, message := range messages {
+		messageService.AddMessage(message)
 	}
 }

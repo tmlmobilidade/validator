@@ -4,7 +4,7 @@
 // 	"encoding/json"
 // 	"fmt"
 // 	"main/src/lib"
-// 	"main/src/models"
+// 	"main/src/types"
 // )
 
 // type Agency struct {
@@ -30,7 +30,7 @@
 // // }
 
 // func CreateAgencyFromMap(m map[string]string) (a Agency, errors []string) {
-	
+
 // 	errors = []string{}
 // 	item := Agency{}
 
@@ -45,7 +45,7 @@
 // 	item.AgencyFareUrl = &agencyFareUrl
 // 	item.AgencyLang = &agencyLang
 // 	item.AgencyPhone = &agencyPhone
-	
+
 // 	//Convert Required Values
 // 	lib.ParseStringToPrimitive(m["agency_timezone"], &item.AgencyTimezone, &errors)
 // 	lib.ParseStringToPrimitive(m["agency_name"], &item.AgencyName, &errors)
@@ -59,7 +59,7 @@
 // 		"agency_id": item.AgencyId,
 // 		"agency_url": item.AgencyUrl,
 // 	}
-	
+
 // 	for key, value := range requiredValues {
 // 		if value == "" {
 // 			errors = append(errors, fmt.Sprintf("Required value \"%s\" is empty", key))
@@ -71,7 +71,7 @@
 
 // type Stop struct {
 // 	LevelId* string `json:"level_id,omitempty"`
-// 	LocationType* models.LocationType `json:"location_type,omitempty"`
+// 	LocationType* types.LocationType `json:"location_type,omitempty"`
 // 	ParentStation* string `json:"parent_station,omitempty"`
 // 	PlatformCode* string `json:"platform_code,omitempty"`
 // 	StopCode* string `json:"stop_code,omitempty"`
@@ -82,12 +82,12 @@
 // 	StopName* string `json:"stop_name,omitempty"`
 // 	StopTimezone* string `json:"stop_timezone,omitempty"`
 // 	StopUrl* string `json:"stop_url,omitempty"`
-// 	WheelchairBoarding* models.WheelchairBoardingType `json:"wheelchair_boarding,omitempty"`
+// 	WheelchairBoarding* types.WheelchairBoardingType `json:"wheelchair_boarding,omitempty"`
 // 	ZoneId* string `json:"zone_id,omitempty"`
 // }
 
 // func CreateStopFromMap(m map[string]string) (item Stop, errors []string) {
-	
+
 // 	errors = []string{}
 
 // 	//Convert Optional Values
@@ -102,15 +102,15 @@
 // 	lib.ParseStringToPrimitive(m["stop_timezone"], &stopTimezone, &errors)
 // 	lib.ParseStringToPrimitive(m["stop_url"], &stopUrl, &errors)
 // 	lib.ParseStringToPrimitive(m["zone_id"], &zoneId, &errors)
-	
+
 // 	//Convert Optional Enums
 // 	// lib.ParseStringToPrimitive(m["wheelchair_boarding"], &wheelchairBoarding, &errors)
 // 	// if wheelchairBoarding != "" {
-// 	// 	var wheelchairBoardingType models.WheelchairBoardingType
+// 	// 	var wheelchairBoardingType types.WheelchairBoardingType
 // 	// 	lib.ParseStringToPrimitive(wheelchairBoarding, &wheelchairBoardingType, &errors)
 // 	// 	item.WheelchairBoarding = &wheelchairBoardingType
 // 	// }
-	
+
 // 	item.LevelId = &levelId
 // 	item.ParentStation = &parentStation
 // 	item.PlatformCode = &platformCode
@@ -142,7 +142,7 @@
 
 // 	errors := []string{}
 
-// 	agency, err := CreateAgencyFromMap(agencyMap)	
+// 	agency, err := CreateAgencyFromMap(agencyMap)
 // 	errors = append(errors, err...)
 // 	printMap(agency)
 
@@ -150,9 +150,8 @@
 // 	// errors = append(errors, err...)
 // 	// printMap(stop)
 
-
 // 	fmt.Println("errors:", errors)
-	
+
 // }
 
 // func printMap(a any) {

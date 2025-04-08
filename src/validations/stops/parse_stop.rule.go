@@ -2,12 +2,51 @@ package stops
 
 import (
 	"main/src/lib"
-	"main/src/models"
+	"main/src/types"
 )
 
-func ParseStop(m map[string]string) (s models.Stop, errors []string) {
+type parseStopValidation struct {
+	*types.Validation
+}
+
+func NewParseStopValidation(severity *types.Severity) *parseStopValidation {
+
+	s := types.SEVERITY_ERROR
+	if severity != nil {
+		s = *severity
+	}
+
+	return &parseStopValidation{
+		Validation: &types.Validation{
+			ID:          "parse_stop",
+			Description: "Validate stop data",
+			Severity:    s,
+		},
+	}
+}
+
+func (v *parseStopValidation) Validate(gtfsData types.Gtfs) []types.Message {
+	var messages []types.Message
+
+	for i, stop := range gtfsData["stop"] {
+		_, errs := parseStop(stop)
+		for _, err := range errs {
+			messages = append(messages, types.Message{
+				Field:        "N/A",
+				FileName:     "stop.txt",
+				Message:      err,
+				Row:          i,
+				Severity:     v.Severity,
+				ValidationID: v.ID,
+			})
+		}
+	}
+	return messages
+}
+
+func parseStop(m map[string]string) (s types.Stop, errors []string) {
 	errors = []string{}
-	item := models.Stop{}
+	item := types.Stop{}
 
 	//Convert Optional Primitive Values
 	var levelId, parentStation, platformCode, stopCode, stopDesc, stopName, stopTimezone, stopUrl, wheelchairBoarding, zoneId string
@@ -44,7 +83,6 @@ func ParseStop(m map[string]string) (s models.Stop, errors []string) {
 
 	//Convert Required Values
 	lib.ParseStringToPrimitive(m["stop_id"], &item.StopId, &errors)
-	lib.ParseStringToPrimitive(m["stop_lat"], &item.StopLat, &errors) // Will panic if not float32
 
 	return item, errors
 }

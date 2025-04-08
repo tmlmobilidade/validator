@@ -2,10 +2,10 @@ package feed_info
 
 import (
 	"fmt"
-	"main/src/models"
 	"main/src/services"
+	"main/src/types"
 )
 
-func RunValidations(gtfsData models.Gtfs, messageService services.MessageService) {
+func RunValidations(gtfsData types.Gtfs, messageService services.MessageService) {
 	fmt.Println("Running FeedInfo Validations...")
 }

@@ -1,20 +1,15 @@
 package stops
 
 import (
-	"fmt"
-	"main/src/models"
 	"main/src/services"
+	"main/src/types"
 )
 
-func RunValidations(gtfsData models.Gtfs, messageService services.MessageService) {
-	fmt.Println("Running Stops Validations...")
-	// Parse Agency
-	for _, a := range gtfsData["stops"] {
-		st, errors := ParseStop(a)
-		if len(errors) > 0 {
-			fmt.Println("Errors:", errors)
-		} else {
-			fmt.Printf("Stop: %+v\n", st)
-		}
+func RunValidations(gtfsData types.Gtfs, messageService services.MessageService) {
+	// Parsing Validation
+	parseStopValidation := NewParseStopValidation(nil)
+	messages := parseStopValidation.Validate(gtfsData)
+	for _, message := range messages {
+		messageService.AddMessage(message)
 	}
 }

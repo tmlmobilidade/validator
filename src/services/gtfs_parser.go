@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"main/src/models"
+	"main/src/types"
 	"os"
 	"strings"
 )
@@ -34,7 +34,7 @@ var GTFS_FILES = map[string]struct{}{
 // ReadGTFSZip reads and parses a GTFS zip file at the specified path.
 // It returns a Gtfs map containing the parsed data from all valid GTFS files,
 // or an error if the file cannot be read or processed.
-func ReadGTFSZip(zipPath string) (models.Gtfs, error) {
+func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 	if _, err := os.Stat(zipPath); os.IsNotExist(err) {
 		return nil, fmt.Errorf("file %s does not exist", zipPath)
 	}
@@ -45,19 +45,23 @@ func ReadGTFSZip(zipPath string) (models.Gtfs, error) {
 	}
 	defer zipReader.Close()
 
-	gtfsData := make(models.Gtfs)
+	gtfsData := make(types.Gtfs)
+
+	// Print all files in the zip
+	for _, file := range zipReader.File {
+		fmt.Println(file.Name)
+	}
 
 	for _, file := range zipReader.File {
 		fileName := file.Name
 
-		if !strings.HasSuffix(fileName, ".txt") {
-			continue
-		}
+		// Validate against known GTFS file types
 		if _, valid := GTFS_FILES[fileName]; !valid {
-			fmt.Printf("File %s is not a valid GTFS file, skipping...\n", fileName)
+			fmt.Printf("Skipping invalid GTFS file: %s\n", fileName)
 			continue
 		}
 
+		// Open the file
 		f, err := file.Open()
 		if err != nil {
 			fmt.Printf("Error opening file %s: %v\n", fileName, err)
@@ -65,18 +69,21 @@ func ReadGTFSZip(zipPath string) (models.Gtfs, error) {
 		}
 		defer f.Close()
 
+		// Read the file
 		content, err := io.ReadAll(f)
 		if err != nil {
 			fmt.Printf("Error reading file %s: %v\n", fileName, err)
 			continue
 		}
 
+		// Parse the file
 		parsedData, err := parseCSV(content)
 		if err != nil {
 			fmt.Printf("Error parsing file %s: %v\n", fileName, err)
 			continue
 		}
 
+		// Add the parsed data to the gtfsData map
 		gtfsData[strings.TrimSuffix(fileName, ".txt")] = parsedData
 	}
 

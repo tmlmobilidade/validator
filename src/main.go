@@ -16,10 +16,12 @@ func main() {
 	messageService := services.NewMessageService()
 
 	// gtfsData, err := services.ReadGTFSZip("data/BOM.zip")
-	gtfsData, err := services.ReadGTFSZip("data/CMET.zip")
+	gtfsData, err := services.ReadGTFSZip("data/bad-format.zip")
 	if err != nil {
 		log.Fatalf("Error reading GTFS: %v", err)
 	}
+
+	fmt.Println("\n\n ==== ---- ==== \n\n")
 
 	// Run Validations for each file
 	for fileName := range gtfsData {
@@ -30,7 +32,9 @@ func main() {
 			continue
 		}
 
-		fmt.Println("Running Validations for", fileName)
 		validations.GTFS_FILE_RULES_MAP[fileName](gtfsData, *messageService)
 	}
+
+	// Print Summary
+	messageService.PrintSummary()
 }

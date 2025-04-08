@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Path to the source file containing the map
-GTFS_FILE="src/models/gtfs.go"
+GTFS_FILE="src/types/gtfs.go"
 RULES_DIR="src/rules"
 MAIN_GO="$RULES_DIR/main.go"
 

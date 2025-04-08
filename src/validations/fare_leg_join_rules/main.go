@@ -2,10 +2,10 @@ package fare_leg_join_rules
 
 import (
 	"fmt"
-	"main/src/models"
 	"main/src/services"
+	"main/src/types"
 )
 
-func RunValidations(gtfsData models.Gtfs, messageService services.MessageService) {
+func RunValidations(gtfsData types.Gtfs, messageService services.MessageService) {
 	fmt.Println("Running FareLegJoinRules Validations...")
 }

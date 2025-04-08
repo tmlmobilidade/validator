@@ -2,32 +2,109 @@ package agency
 
 import (
 	"main/src/lib"
-	"main/src/models"
+	"main/src/types"
 )
 
-func ParseAgency(m map[string]string) (a models.Agency, errors []string) {
+type parseAgencyValidation struct {
+	*types.Validation
+}
+
+func NewParseAgencyValidation(severity *types.Severity) *parseAgencyValidation {
+
+	s := types.SEVERITY_ERROR
+	if severity != nil {
+		s = *severity
+	}
+
+	return &parseAgencyValidation{
+		Validation: &types.Validation{
+			ID:          "parse_agency",
+			Description: "Validate agency data",
+			Severity:    s,
+		},
+	}
+}
+
+func (v *parseAgencyValidation) Validate(gtfsData types.Gtfs) []types.Message {
+	var messages []types.Message
+
+	for i, agency := range gtfsData["agency"] {
+		_, errs := parseAgency(agency, len(gtfsData["agency"]))
+		for _, err := range errs {
+			messages = append(messages, types.Message{
+				Field:        "N/A",
+				FileName:     "agency.txt",
+				Message:      err,
+				Row:          i,
+				Severity:     v.Severity,
+				ValidationID: v.ID,
+			})
+		}
+	}
+	return messages
+}
+
+func parseAgency(m map[string]string, totalAgencies int) (a types.Agency, errors []string) {
 
 	errors = []string{}
-	item := models.Agency{}
+	item := types.Agency{}
 
 	//Convert Optional Values
-	var agencyEmail, agencyFareUrl, agencyLang, agencyPhone string
+	var agencyEmail, agencyFareUrl, agencyLang, agencyPhone, agencyId string
 
 	lib.ParseStringToPrimitive(m["agency_email"], &agencyEmail, &errors)
 	lib.ParseStringToPrimitive(m["agency_fare_url"], &agencyFareUrl, &errors)
 	lib.ParseStringToPrimitive(m["agency_lang"], &agencyLang, &errors)
 	lib.ParseStringToPrimitive(m["agency_phone"], &agencyPhone, &errors)
+	lib.ParseStringToPrimitive(m["agency_id"], &agencyId, &errors)
 
 	item.AgencyEmail = &agencyEmail
 	item.AgencyFareUrl = &agencyFareUrl
 	item.AgencyLang = &agencyLang
 	item.AgencyPhone = &agencyPhone
+	item.AgencyId = &agencyId
 
 	//Convert Required Values
 	lib.ParseStringToPrimitive(m["agency_timezone"], &item.AgencyTimezone, &errors)
 	lib.ParseStringToPrimitive(m["agency_name"], &item.AgencyName, &errors)
-	lib.ParseStringToPrimitive(m["agency_id"], &item.AgencyId, &errors)
 	lib.ParseStringToPrimitive(m["agency_url"], &item.AgencyUrl, &errors)
+
+	// Validate Values
+	if item.AgencyTimezone == "" {
+		errors = append(errors, "Agency timezone is required.")
+	} else {
+		errors = append(errors, lib.ValidateTimezone(item.AgencyTimezone)...)
+	}
+
+	if item.AgencyUrl == "" {
+		errors = append(errors, "Agency URL is required.")
+	} else {
+		errors = append(errors, lib.ValidateUrl(item.AgencyUrl)...)
+	}
+
+	if item.AgencyName == "" {
+		errors = append(errors, "Agency name is required.")
+	}
+
+	if item.AgencyId == nil && totalAgencies > 1 {
+		errors = append(errors, "Agency ID is required when the dataset contains data for multiple transit agencies.")
+	}
+
+	if item.AgencyPhone != nil && *item.AgencyPhone == "" {
+		errors = append(errors, lib.ValidatePhone(*item.AgencyPhone)...)
+	}
+
+	if item.AgencyEmail != nil && *item.AgencyEmail == "" {
+		errors = append(errors, lib.ValidateEmail(*item.AgencyEmail)...)
+	}
+
+	if item.AgencyFareUrl != nil && *item.AgencyFareUrl == "" {
+		errors = append(errors, lib.ValidateUrl(*item.AgencyFareUrl)...)
+	}
+
+	if item.AgencyLang != nil && *item.AgencyLang == "" {
+		errors = append(errors, lib.ValidateLanguage(*item.AgencyLang)...)
+	}
 
 	return item, errors
 }
