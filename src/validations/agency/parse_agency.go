@@ -3,21 +3,20 @@ package agency
 import (
 	"main/src/lib"
 	"main/src/types"
-	"strconv"
 )
 
-type parseAgencyValidation struct {
+type ParseAgencyValidation struct {
 	*types.Validation
 }
 
-func NewParseAgencyValidation(severity *types.Severity) *parseAgencyValidation {
+func NewParseAgencyValidation(severity *types.Severity) *ParseAgencyValidation {
 
 	s := types.SEVERITY_ERROR
 	if severity != nil {
 		s = *severity
 	}
 
-	return &parseAgencyValidation{
+	return &ParseAgencyValidation{
 		Validation: &types.Validation{
 			ID:          "parse_agency",
 			Description: "Validate agency data",
@@ -26,11 +25,10 @@ func NewParseAgencyValidation(severity *types.Severity) *parseAgencyValidation {
 	}
 }
 
-func (v *parseAgencyValidation) Validate(gtfsData types.Gtfs) []types.Message {
+func (v *ParseAgencyValidation) Validate(gtfsData types.Gtfs) []types.Message {
 	var messages []types.Message
 
 	for i, agency := range gtfsData["agency"] {
-		lib.AppLogger.Info("[ParseAgencyValidation] Validating agency.txt", "row", strconv.Itoa(i))
 		_, errs := parseAgency(agency, len(gtfsData["agency"]))
 		for _, err := range errs {
 			messages = append(messages, types.Message{
@@ -71,9 +69,6 @@ func parseAgency(m map[string]string, totalAgencies int) (a types.Agency, errors
 	lib.ParseStringToPrimitive(m["agency_name"], &item.AgencyName, &errors)
 	lib.ParseStringToPrimitive(m["agency_url"], &item.AgencyUrl, &errors)
 
-	lib.AppLogger.Debug("[ParseAgencyValidation] Agency", "item: ")
-	lib.PrintMap(item)
-
 	// Validate Values
 	if item.AgencyTimezone == "" {
 		errors = append(errors, "Agency timezone is required.")
@@ -81,32 +76,39 @@ func parseAgency(m map[string]string, totalAgencies int) (a types.Agency, errors
 		errors = append(errors, lib.ValidateTimezone(item.AgencyTimezone)...)
 	}
 
+	// Validate Agency URL
 	if item.AgencyUrl == "" {
 		errors = append(errors, "Agency URL is required.")
 	} else {
 		errors = append(errors, lib.ValidateUrl(item.AgencyUrl)...)
 	}
 
+	// Validate Agency Name
 	if item.AgencyName == "" {
 		errors = append(errors, "Agency name is required.")
 	}
 
-	if item.AgencyId == nil && totalAgencies > 1 {
+	// Validate Agency ID
+	if totalAgencies > 1 && *item.AgencyId == "" {
 		errors = append(errors, "Agency ID is required when the dataset contains data for multiple transit agencies.")
 	}
 
+	// Validate Agency Phone
 	if item.AgencyPhone != nil && *item.AgencyPhone != "" {
 		errors = append(errors, lib.ValidatePhone(*item.AgencyPhone)...)
 	}
 
+	// Validate Agency Email
 	if item.AgencyEmail != nil && *item.AgencyEmail != "" {
 		errors = append(errors, lib.ValidateEmail(*item.AgencyEmail)...)
 	}
 
+	// Validate Agency Fare URL
 	if item.AgencyFareUrl != nil && *item.AgencyFareUrl != "" {
 		errors = append(errors, lib.ValidateUrl(*item.AgencyFareUrl)...)
 	}
 
+	// Validate Agency Language
 	if item.AgencyLang != nil && *item.AgencyLang != "" {
 		errors = append(errors, lib.ValidateLanguage(*item.AgencyLang)...)
 	}

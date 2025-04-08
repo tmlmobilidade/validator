@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"regexp"
 	"slices"
+	"strings"
 	"time"
 )
 
@@ -34,10 +35,30 @@ func ValidateEmail(e string) []string {
 }
 
 func ValidatePhone(p string) []string {
-	re := regexp.MustCompile(`^(?:\+[1-9])?[0-9]{1,14}$`)
-	if !re.MatchString(p) {
+	input := strings.TrimSpace(p)
+	if input == "" {
 		return []string{fmt.Sprintf("Invalid phone number, expected format: [+1]234567890 (optional country code), got: %s", p)}
 	}
+
+	// This regex allows:
+	// - Digits
+	// - Letters (for dialable text like "RIDE")
+	// - Punctuation: ()-+ and spaces
+	// - But no other characters like @, #, $, descriptive text
+	var validPhonePattern = regexp.MustCompile(`^[0-9A-Za-z\s\-\+$begin:math:text$$end:math:text$]+$`)
+
+	// Check if input matches allowed characters
+	if !validPhonePattern.MatchString(input) {
+		return []string{fmt.Sprintf("Invalid phone number, expected format: [+1]234567890 (optional country code), got: %s", p)}
+	}
+
+	// (Optional) You could also add rules to ensure at least some digits exist
+	digits := regexp.MustCompile(`[0-9]`)
+	digitMatches := digits.FindAllString(input, -1)
+	if len(digitMatches) < 7 {
+		return []string{fmt.Sprintf("Invalid phone number, must contain at least 7 digits, got: %s", p)}
+	}
+
 	return nil
 }
 
