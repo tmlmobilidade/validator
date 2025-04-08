@@ -51,3 +51,6 @@ go.work.sum
 
 # env file
 .env
+
+# data files
+data/**
