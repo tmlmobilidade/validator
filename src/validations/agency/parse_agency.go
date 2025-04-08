@@ -27,9 +27,19 @@ func NewParseAgencyValidation(severity *types.Severity) *ParseAgencyValidation {
 
 func (v *ParseAgencyValidation) Validate(gtfsData types.Gtfs) []types.Message {
 	var messages []types.Message
+	agencyIds := make(map[string]bool)
 
 	for i, agency := range gtfsData["agency"] {
 		_, errs := parseAgency(agency, len(gtfsData["agency"]))
+
+		// Check for duplicate agency IDs
+		if agencyId, exists := agency["agency_id"]; exists && agencyId != "" {
+			if agencyIds[agencyId] {
+				errs = append(errs, "Duplicate agency_id found. Agency IDs must be unique.")
+			}
+			agencyIds[agencyId] = true
+		}
+
 		for _, err := range errs {
 			messages = append(messages, types.Message{
 				Field:        "N/A",

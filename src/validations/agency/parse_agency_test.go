@@ -5,8 +5,6 @@ import (
 	"testing"
 )
 
-// --- ParseAgencyValidation Tests ---
-
 func TestParseAgencyValidation_SingleValidAgency(t *testing.T) {
 	gtfsData := types.Gtfs{
 		"agency": []map[string]string{
@@ -132,7 +130,34 @@ func TestParseAgencyValidation_MultipleAgenciesWithoutID(t *testing.T) {
 	}
 }
 
-// --- parseAgency Tests ---
+func TestParseAgencyValidation_MultipleAgenciesWithSameID(t *testing.T) {
+	gtfsData := types.Gtfs{
+		"agency": []map[string]string{
+			{
+				"agency_id":       "agency1",
+				"agency_name":     "Test Agency 1",
+				"agency_url":      "http://www.testagency1.com",
+				"agency_timezone": "America/New_York",
+			},
+			{
+				"agency_id":       "agency1",
+				"agency_name":     "Test Agency 2",
+				"agency_url":      "http://www.testagency2.com",
+				"agency_timezone": "America/Los_Angeles",
+			},
+		},
+	}
+
+	validator := NewParseAgencyValidation(nil)
+	messages := validator.Validate(gtfsData)
+
+	if len(messages) != 1 {
+		t.Errorf("Expected 1 error, got %d", len(messages))
+		for _, msg := range messages {
+			t.Logf("Error message: %s", msg.Message)
+		}
+	}
+}
 
 func TestParseAgency_ValidAgencyAllFields(t *testing.T) {
 	input := map[string]string{
