@@ -43,15 +43,27 @@ const (
 	RE_BOARD_TRANSFER
 )
 
-type LocationType int
+type LocationType uint8
 
 const (
-	STOP LocationType = iota
-	STATION
-	ENTRANCE_EXIT
-	GENERIC_NODE
-	BOARDING_AREA
+	LOCATION_TYPE_STOP LocationType = iota
+	LOCATION_TYPE_STATION
+	LOCATION_TYPE_ENTRANCE_EXIT
+	LOCATION_TYPE_GENERIC_NODE
+	LOCATION_TYPE_BOARDING_AREA
 )
+
+func LocationTypeCount() int {
+	return len([]string{"STOP", "STATION", "ENTRANCE_EXIT", "GENERIC_NODE", "BOARDING_AREA"})
+}
+
+func (l LocationType) String() string {
+	return []string{"STOP", "STATION", "ENTRANCE_EXIT", "GENERIC_NODE", "BOARDING_AREA"}[l]
+}
+
+func (l LocationType) Value() uint8 {
+	return uint8(l)
+}
 
 /* * */
 
