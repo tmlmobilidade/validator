@@ -171,11 +171,11 @@ func TestParseAgency_ValidAgencyAllFields(t *testing.T) {
 		"agency_email":    "contact@testagency.com",
 	}
 
-	_, errors := parseAgency(input, 1)
-	if len(errors) != 0 {
-		t.Errorf("Expected 0 errors, got %d", len(errors))
-		for _, err := range errors {
-			t.Logf("Error: %s", err)
+	messages := parseAgency(input, 1)
+	if len(messages) != 0 {
+		t.Errorf("Expected 0 errors, got %d", len(messages))
+		for _, msg := range messages {
+			t.Logf("Message: %s (Field: %s)", msg.Message, msg.Field)
 		}
 	}
 }
@@ -187,11 +187,11 @@ func TestParseAgency_ValidAgencyMinimumFields(t *testing.T) {
 		"agency_timezone": "America/New_York",
 	}
 
-	_, errors := parseAgency(input, 1)
-	if len(errors) != 0 {
-		t.Errorf("Expected 0 errors, got %d", len(errors))
-		for _, err := range errors {
-			t.Logf("Error: %s", err)
+	messages := parseAgency(input, 1)
+	if len(messages) != 0 {
+		t.Errorf("Expected 0 errors, got %d", len(messages))
+		for _, msg := range messages {
+			t.Logf("Message: %s (Field: %s)", msg.Message, msg.Field)
 		}
 	}
 }
@@ -203,11 +203,15 @@ func TestParseAgency_InvalidTimezone(t *testing.T) {
 		"agency_timezone": "Invalid/Timezone",
 	}
 
-	_, errors := parseAgency(input, 1)
-	if len(errors) != 1 {
-		t.Errorf("Expected 1 error, got %d", len(errors))
-		for _, err := range errors {
-			t.Logf("Error: %s", err)
+	messages := parseAgency(input, 1)
+	if len(messages) != 1 {
+		t.Errorf("Expected 1 error, got %d", len(messages))
+	}
+
+	if len(messages) > 0 {
+		msg := messages[0]
+		if msg.Field != "agency_timezone" {
+			t.Errorf("Expected error for field 'agency_timezone', got %s", msg.Field)
 		}
 	}
 }
