@@ -7,7 +7,7 @@ import (
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	lib.AppLogger.Debug("Running Validations for stop.txt")
+	lib.AppLogger.Debug("Running Validations for stops.txt")
 
 	// Parsing Validation
 	parseStopValidation := NewParseStopValidation(nil)
