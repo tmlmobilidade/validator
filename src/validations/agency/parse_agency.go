@@ -62,15 +62,16 @@ func (v *ParseAgencyValidation) Validate(gtfsData types.Gtfs) []types.Message {
 func parseAgency(m map[string]string, totalAgencies int) []types.Message {
 	var messages []types.Message
 	item := types.Agency{}
+	var parsingErrors []string
 
 	//Convert Optional Values
 	var agencyEmail, agencyFareUrl, agencyLang, agencyPhone, agencyId string
 
-	lib.ParseStringToPrimitive(m["agency_email"], &agencyEmail, nil)
-	lib.ParseStringToPrimitive(m["agency_fare_url"], &agencyFareUrl, nil)
-	lib.ParseStringToPrimitive(m["agency_lang"], &agencyLang, nil)
-	lib.ParseStringToPrimitive(m["agency_phone"], &agencyPhone, nil)
-	lib.ParseStringToPrimitive(m["agency_id"], &agencyId, nil)
+	lib.ParseStringToPrimitive(m["agency_email"], &agencyEmail, &parsingErrors)
+	lib.ParseStringToPrimitive(m["agency_fare_url"], &agencyFareUrl, &parsingErrors)
+	lib.ParseStringToPrimitive(m["agency_lang"], &agencyLang, &parsingErrors)
+	lib.ParseStringToPrimitive(m["agency_phone"], &agencyPhone, &parsingErrors)
+	lib.ParseStringToPrimitive(m["agency_id"], &agencyId, &parsingErrors)
 
 	item.AgencyEmail = &agencyEmail
 	item.AgencyFareUrl = &agencyFareUrl
@@ -79,23 +80,29 @@ func parseAgency(m map[string]string, totalAgencies int) []types.Message {
 	item.AgencyId = &agencyId
 
 	//Convert Required Values
-	lib.ParseStringToPrimitive(m["agency_timezone"], &item.AgencyTimezone, nil)
-	lib.ParseStringToPrimitive(m["agency_name"], &item.AgencyName, nil)
-	lib.ParseStringToPrimitive(m["agency_url"], &item.AgencyUrl, nil)
+	lib.ParseStringToPrimitive(m["agency_timezone"], &item.AgencyTimezone, &parsingErrors)
+	lib.ParseStringToPrimitive(m["agency_name"], &item.AgencyName, &parsingErrors)
+	lib.ParseStringToPrimitive(m["agency_url"], &item.AgencyUrl, &parsingErrors)
 
+	if len(parsingErrors) > 0 {
+		for _, err := range parsingErrors {
+			messages = append(messages, types.Message{
+				Field:   "N/A", //TODO: Add field name
+				Message: err,
+			})
+		}
+	}
 	// Validate Values
 	if item.AgencyTimezone == "" {
 		messages = append(messages, types.Message{
 			Field:   "agency_timezone",
 			Message: "Agency timezone is required.",
 		})
-	} else if tzErrors := lib.ValidateTimezone(item.AgencyTimezone); len(tzErrors) > 0 {
-		for _, err := range tzErrors {
-			messages = append(messages, types.Message{
-				Field:   "agency_timezone",
-				Message: err,
-			})
-		}
+	} else if tzErrors := lib.ValidateTimezone(item.AgencyTimezone); tzErrors != "" {
+		messages = append(messages, types.Message{
+			Field:   "agency_timezone",
+			Message: tzErrors,
+		})
 	}
 
 	// Validate Agency URL
@@ -104,13 +111,11 @@ func parseAgency(m map[string]string, totalAgencies int) []types.Message {
 			Field:   "agency_url",
 			Message: "Agency URL is required.",
 		})
-	} else if urlErrors := lib.ValidateUrl(item.AgencyUrl); len(urlErrors) > 0 {
-		for _, err := range urlErrors {
-			messages = append(messages, types.Message{
-				Field:   "agency_url",
-				Message: err,
-			})
-		}
+	} else if urlErrors := lib.ValidateUrl(item.AgencyUrl); urlErrors != "" {
+		messages = append(messages, types.Message{
+			Field:   "agency_url",
+			Message: urlErrors,
+		})
 	}
 
 	// Validate Agency Name
@@ -131,49 +136,41 @@ func parseAgency(m map[string]string, totalAgencies int) []types.Message {
 
 	// Validate Agency Phone
 	if item.AgencyPhone != nil && *item.AgencyPhone != "" {
-		if phoneErrors := lib.ValidatePhone(*item.AgencyPhone); len(phoneErrors) > 0 {
-			for _, err := range phoneErrors {
-				messages = append(messages, types.Message{
-					Field:   "agency_phone",
-					Message: err,
-				})
-			}
+		if phoneErrors := lib.ValidatePhone(*item.AgencyPhone); phoneErrors != "" {
+			messages = append(messages, types.Message{
+				Field:   "agency_phone",
+				Message: phoneErrors,
+			})
 		}
 	}
 
 	// Validate Agency Email
 	if item.AgencyEmail != nil && *item.AgencyEmail != "" {
-		if emailErrors := lib.ValidateEmail(*item.AgencyEmail); len(emailErrors) > 0 {
-			for _, err := range emailErrors {
-				messages = append(messages, types.Message{
-					Field:   "agency_email",
-					Message: err,
-				})
-			}
+		if emailErrors := lib.ValidateEmail(*item.AgencyEmail); emailErrors != "" {
+			messages = append(messages, types.Message{
+				Field:   "agency_email",
+				Message: emailErrors,
+			})
 		}
 	}
 
 	// Validate Agency Fare URL
 	if item.AgencyFareUrl != nil && *item.AgencyFareUrl != "" {
-		if urlErrors := lib.ValidateUrl(*item.AgencyFareUrl); len(urlErrors) > 0 {
-			for _, err := range urlErrors {
-				messages = append(messages, types.Message{
-					Field:   "agency_fare_url",
-					Message: err,
-				})
-			}
+		if urlErrors := lib.ValidateUrl(*item.AgencyFareUrl); urlErrors != "" {
+			messages = append(messages, types.Message{
+				Field:   "agency_fare_url",
+				Message: urlErrors,
+			})
 		}
 	}
 
 	// Validate Agency Language
 	if item.AgencyLang != nil && *item.AgencyLang != "" {
-		if langErrors := lib.ValidateLanguage(*item.AgencyLang); len(langErrors) > 0 {
-			for _, err := range langErrors {
-				messages = append(messages, types.Message{
-					Field:   "agency_lang",
-					Message: err,
-				})
-			}
+		if langErrors := lib.ValidateLanguage(*item.AgencyLang); langErrors != "" {
+			messages = append(messages, types.Message{
+				Field:   "agency_lang",
+				Message: langErrors,
+			})
 		}
 	}
 
