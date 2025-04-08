@@ -33,3 +33,21 @@ coverage
 
 # OS
 .DS_Store
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+*.test
+
+*.out
+
+# Go workspace file
+go.work
+go.work.sum
+
+# env file
+.env
