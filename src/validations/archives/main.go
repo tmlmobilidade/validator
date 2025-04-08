@@ -1,10 +1,10 @@
 package archives
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running Archives Validations...")
+	lib.AppLogger.Debug("Running Archives Validations...")
 }

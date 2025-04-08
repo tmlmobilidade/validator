@@ -1,6 +1,7 @@
 package stops
 
 import (
+	"main/src/services"
 	"main/src/types"
 )
 
@@ -9,6 +10,6 @@ func RunValidations(gtfsData types.Gtfs) {
 	parseStopValidation := NewParseStopValidation(nil)
 	messages := parseStopValidation.Validate(gtfsData)
 	for _, message := range messages {
-		messageService.AddMessage(message)
+		services.AppMessageService.AddMessage(message)
 	}
 }

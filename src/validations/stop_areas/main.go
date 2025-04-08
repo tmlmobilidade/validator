@@ -1,10 +1,10 @@
 package stop_areas
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running StopAreas Validations...")
+	lib.AppLogger.Debug("Running StopAreas Validations...")
 }

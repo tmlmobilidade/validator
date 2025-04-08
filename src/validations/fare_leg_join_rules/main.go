@@ -1,10 +1,10 @@
 package fare_leg_join_rules
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running FareLegJoinRules Validations...")
+	lib.AppLogger.Debug("Running FareLegJoinRules Validations...")
 }

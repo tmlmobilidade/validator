@@ -1,10 +1,10 @@
 package fare_attributes
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running FareAttributes Validations...")
+	lib.AppLogger.Debug("Running FareAttributes Validations...")
 }

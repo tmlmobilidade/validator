@@ -1,10 +1,10 @@
 package periods
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running Periods Validations...")
+	lib.AppLogger.Debug("Running Periods Validations...")
 }

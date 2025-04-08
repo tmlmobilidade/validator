@@ -1,10 +1,10 @@
 package location_groups
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running LocationGroups Validations...")
+	lib.AppLogger.Debug("Running LocationGroups Validations...")
 }

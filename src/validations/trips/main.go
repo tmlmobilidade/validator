@@ -1,10 +1,10 @@
 package trips
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running Trips Validations...")
+	lib.AppLogger.Debug("Running Trips Validations...")
 }

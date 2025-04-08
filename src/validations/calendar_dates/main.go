@@ -1,10 +1,10 @@
 package calendar_dates
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running CalendarDates Validations...")
+	lib.AppLogger.Debug("Running CalendarDates Validations...")
 }

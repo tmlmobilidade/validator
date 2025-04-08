@@ -1,10 +1,10 @@
 package booking_rules
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running Booking Rules Validations...")
+	lib.AppLogger.Debug("Running Booking Rules Validations...")
 }

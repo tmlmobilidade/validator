@@ -1,10 +1,10 @@
 package attributions
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running Attributions Validations...")
+	lib.AppLogger.Debug("Running Attributions Validations...")
 }

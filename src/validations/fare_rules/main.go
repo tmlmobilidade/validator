@@ -1,10 +1,10 @@
 package fare_rules
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running FareRules Validations...")
+	lib.AppLogger.Debug("Running FareRules Validations...")
 }

@@ -1,10 +1,10 @@
 package transfers
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running Transfers Validations...")
+	lib.AppLogger.Debug("Running Transfers Validations...")
 }

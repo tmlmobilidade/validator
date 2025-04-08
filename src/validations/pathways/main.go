@@ -1,10 +1,10 @@
 package pathways
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running Pathways Validations...")
+	lib.AppLogger.Debug("Running Pathways Validations...")
 }

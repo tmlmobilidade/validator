@@ -1,10 +1,10 @@
 package frequencies
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running Frequencies Validations...")
+	lib.AppLogger.Debug("Running Frequencies Validations...")
 }

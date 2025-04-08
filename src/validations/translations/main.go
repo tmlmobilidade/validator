@@ -1,10 +1,10 @@
 package translations
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running Translations Validations...")
+	lib.AppLogger.Debug("Running Translations Validations...")
 }

@@ -1,10 +1,10 @@
 package timeframes
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running TimeFrames Validations...")
+	lib.AppLogger.Debug("Running TimeFrames Validations...")
 }

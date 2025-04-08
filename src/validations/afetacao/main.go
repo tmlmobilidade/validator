@@ -1,10 +1,10 @@
 package afetacao
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running Afetacao Validations...")
+	lib.AppLogger.Debug("Running Afetacao Validations...")
 }

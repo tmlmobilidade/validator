@@ -1,10 +1,10 @@
 package municipalities
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running Municipalities Validations...")
+	lib.AppLogger.Debug("Running Municipalities Validations...")
 }

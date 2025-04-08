@@ -1,10 +1,10 @@
 package rider_categories
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running RiderCategories Validations...")
+	lib.AppLogger.Debug("Running RiderCategories Validations...")
 }

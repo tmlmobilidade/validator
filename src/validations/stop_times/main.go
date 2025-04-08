@@ -1,10 +1,10 @@
 package stop_times
 
 import (
-	"fmt"
+	"main/src/lib"
 	"main/src/types"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
-	fmt.Println("Running StopTimes Validations...")
+	lib.AppLogger.Debug("Running StopTimes Validations...")
 }
