@@ -50,3 +50,5 @@ func (ms *MessageService) PrintSummary() {
 	fmt.Printf("Total Warnings: %d\n", summary.TotalWarnings)
 	fmt.Println("================================================")
 }
+
+var AppMessageService = NewMessageService()

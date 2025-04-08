@@ -1,7 +1,6 @@
 package validations
 
 import (
-	"main/src/services"
 	"main/src/types"
 	"main/src/validations/afetacao"
 	"main/src/validations/agency"
@@ -40,7 +39,7 @@ import (
 	"main/src/validations/trips"
 )
 
-var GTFS_FILE_RULES_MAP = map[string]func(gtfsData types.Gtfs, messageService services.MessageService){
+var GTFS_FILE_RULES_MAP = map[string]func(gtfsData types.Gtfs){
 	"afetacao":             afetacao.RunValidations,
 	"agency":               agency.RunValidations,
 	"archives":             archives.RunValidations,

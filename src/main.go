@@ -13,9 +13,6 @@ func main() {
 	lib.AppLogger.Clear()
 	lib.AppLogger.Divider("GTFS Validator")
 
-	// Message Service
-	messageService := services.NewMessageService()
-
 	// gtfsData, err := services.ReadGTFSZip("data/BOM.zip")
 	gtfsData, err := services.ReadGTFSZip("data/bad-format.zip")
 	if err != nil {
@@ -33,9 +30,9 @@ func main() {
 			continue
 		}
 
-		validations.GTFS_FILE_RULES_MAP[fileName](gtfsData, *messageService)
+		validations.GTFS_FILE_RULES_MAP[fileName](gtfsData)
 	}
 
 	// Print Summary
-	messageService.PrintSummary()
+	services.AppMessageService.PrintSummary()
 }
