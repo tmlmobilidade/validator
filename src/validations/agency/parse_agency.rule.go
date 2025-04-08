@@ -3,6 +3,7 @@ package agency
 import (
 	"main/src/lib"
 	"main/src/types"
+	"strconv"
 )
 
 type parseAgencyValidation struct {
@@ -29,13 +30,14 @@ func (v *parseAgencyValidation) Validate(gtfsData types.Gtfs) []types.Message {
 	var messages []types.Message
 
 	for i, agency := range gtfsData["agency"] {
+		lib.AppLogger.Info("[ParseAgencyValidation] Validating agency.txt", "row", strconv.Itoa(i))
 		_, errs := parseAgency(agency, len(gtfsData["agency"]))
 		for _, err := range errs {
 			messages = append(messages, types.Message{
 				Field:        "N/A",
 				FileName:     "agency.txt",
 				Message:      err,
-				Row:          i,
+				Row:          i + 1,
 				Severity:     v.Severity,
 				ValidationID: v.ID,
 			})
@@ -69,6 +71,9 @@ func parseAgency(m map[string]string, totalAgencies int) (a types.Agency, errors
 	lib.ParseStringToPrimitive(m["agency_name"], &item.AgencyName, &errors)
 	lib.ParseStringToPrimitive(m["agency_url"], &item.AgencyUrl, &errors)
 
+	lib.AppLogger.Debug("[ParseAgencyValidation] Agency", "item: ")
+	lib.PrintMap(item)
+
 	// Validate Values
 	if item.AgencyTimezone == "" {
 		errors = append(errors, "Agency timezone is required.")
@@ -90,19 +95,19 @@ func parseAgency(m map[string]string, totalAgencies int) (a types.Agency, errors
 		errors = append(errors, "Agency ID is required when the dataset contains data for multiple transit agencies.")
 	}
 
-	if item.AgencyPhone != nil && *item.AgencyPhone == "" {
+	if item.AgencyPhone != nil && *item.AgencyPhone != "" {
 		errors = append(errors, lib.ValidatePhone(*item.AgencyPhone)...)
 	}
 
-	if item.AgencyEmail != nil && *item.AgencyEmail == "" {
+	if item.AgencyEmail != nil && *item.AgencyEmail != "" {
 		errors = append(errors, lib.ValidateEmail(*item.AgencyEmail)...)
 	}
 
-	if item.AgencyFareUrl != nil && *item.AgencyFareUrl == "" {
+	if item.AgencyFareUrl != nil && *item.AgencyFareUrl != "" {
 		errors = append(errors, lib.ValidateUrl(*item.AgencyFareUrl)...)
 	}
 
-	if item.AgencyLang != nil && *item.AgencyLang == "" {
+	if item.AgencyLang != nil && *item.AgencyLang != "" {
 		errors = append(errors, lib.ValidateLanguage(*item.AgencyLang)...)
 	}
 

@@ -14,5 +14,6 @@ func RunValidations(gtfsData types.Gtfs) {
 	messages := parseAgencyValidation.Validate(gtfsData)
 	for _, message := range messages {
 		services.AppMessageService.AddMessage(message)
+		lib.AppLogger.Error(message.Message)
 	}
 }
