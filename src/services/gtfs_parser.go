@@ -50,6 +50,7 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 
 	gtfsFiles := make(types.GtfsFiles)
 	gtfsFieldCount := make(types.GtfsFieldCount)
+	gtfsIdsMap := make(types.GtfsIdMap)
 
 	type result struct {
 		fileNameWithoutExt string
@@ -90,7 +91,7 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 					continue
 				}
 
-				parsedData, err := parseCSV(content, fileNameWithoutExt, &gtfsFieldCount)
+				parsedData, err := parseCSV(content, fileNameWithoutExt, &gtfsFieldCount, &gtfsIdsMap)
 				if err != nil {
 					lib.AppLogger.Error("Error parsing file: " + fileName + " " + err.Error())
 					continue
@@ -128,13 +129,14 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 	return types.Gtfs{
 		Files:        gtfsFiles,
 		FieldCounter: gtfsFieldCount,
+		IdMap:        gtfsIdsMap,
 	}, nil
 }
 
 // parseCSV parses CSV content into a slice of maps where each map represents a row
 // with column headers as keys and cell values as values.
 // Returns an error if the CSV is empty or cannot be parsed.
-func parseCSV(content []byte, fileNameWithoutExt string, fieldCount *types.GtfsFieldCount) ([]map[string]string, error) {
+func parseCSV(content []byte, fileNameWithoutExt string, fieldCount *types.GtfsFieldCount, idsMap *types.GtfsIdMap) ([]map[string]string, error) {
 	reader := csv.NewReader(bytes.NewReader(content))
 	reader.TrimLeadingSpace = true
 
@@ -151,7 +153,18 @@ func parseCSV(content []byte, fileNameWithoutExt string, fieldCount *types.GtfsF
 
 	localCounts := make(map[string]int)
 
-	for _, row := range records[1:] {
+	primaryKey, ok := types.GTFS_PRIMARY_KEYS[fileNameWithoutExt]
+
+	if !ok {
+		panic("primary key not found for file: " + fileNameWithoutExt)
+	}
+
+	// Initialize the inner map for this file if it doesn't exist
+	if (*idsMap)[fileNameWithoutExt] == nil {
+		(*idsMap)[fileNameWithoutExt] = make(map[string]int)
+	}
+
+	for rowIndex, row := range records[1:] {
 		entry := make(map[string]string, len(headers))
 		for i, value := range row {
 			if i >= len(headers) {
@@ -161,6 +174,10 @@ func parseCSV(content []byte, fileNameWithoutExt string, fieldCount *types.GtfsF
 			entry[header] = value
 			if value != "" {
 				localCounts[header]++
+			}
+
+			if primaryKey != nil && primaryKey == header && value != "" {
+				(*idsMap)[fileNameWithoutExt][value] = rowIndex
 			}
 		}
 		result = append(result, entry)
@@ -173,6 +190,8 @@ func parseCSV(content []byte, fileNameWithoutExt string, fieldCount *types.GtfsF
 	for header, count := range localCounts {
 		(*fieldCount)[fileNameWithoutExt][header] += count
 	}
+
+	// Update idsMap
 
 	return result, nil
 }

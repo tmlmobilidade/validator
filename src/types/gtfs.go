@@ -1,13 +1,55 @@
 package types
 
-// Gtfs represents a collection of parsed GTFS data files where the key is the filename (without .txt extension)
+// Gtfs represents a collection of parsed GTFS data files where the key is the filename (without  extension)
 // and the value is a slice of maps containing the CSV data with column headers as keys.
 type GtfsFiles map[string][]map[string]string
 type GtfsFieldCount map[string]map[string]int
+type GtfsIdMap map[string]map[string]int // key is the filename, value is a map of ids and their row number
 
 type Gtfs struct {
 	Files        GtfsFiles
 	FieldCounter GtfsFieldCount
+	IdMap        GtfsIdMap
+}
+
+/* PRIMARY KEYS */
+var GTFS_PRIMARY_KEYS = map[string]interface{}{
+	"afetacao":             nil,
+	"agency":               "agency_id",
+	"archives":             "archive_id",
+	"areas":                "area_id",
+	"attributions":         "attribution_id",
+	"booking_rules":        "booking_rule_id",
+	"calendar_dates":       []string{"service_id", "date"},
+	"calendar":             "service_id",
+	"dates":                nil,
+	"fare_attributes":      "fare_id",
+	"fare_leg_join_rules":  []string{"from_network_id", "to_network_id", "from_stop_id", "to_stop_id"},
+	"fare_leg_rules":       []string{"network_id", "from_area_id", "to_area_id", "from_timeframe_group_id", "to_timeframe_group_id", "fare_product_id"},
+	"fare_media":           "fare_media_id",
+	"fare_products":        "fare_product_id",
+	"fare_rules":           nil,
+	"fare_transfer_rules":  []string{"from_leg_group_id", "to_leg_group_id", "fare_product_id", "transfer_count", "duration_limit"},
+	"feed_info":            nil,
+	"frequencies":          []string{"trip_id", "start_time"},
+	"levels":               "level_id",
+	"location_group_stops": []string{"location_group_id", "stop_id"},
+	"location_groups":      "location_group_id",
+	"municipalities":       "municipality_id",
+	"networks":             "network_id",
+	"pathways":             "pathway_id",
+	"periods":              "period_id",
+	"rider_categories":     "rider_category_id",
+	"route_networks":       "route_id",
+	"routes":               "route_id",
+	"shapes":               []string{"shape_id", "shape_pt_sequence"},
+	"stop_areas":           []string{"area_id", "stop_id"},
+	"stop_times":           []string{"trip_id", "stop_sequence"},
+	"stops":                "stop_id",
+	"timeframes":           nil,
+	"transfers":            []string{"from_stop_id", "to_stop_id", "from_trip_id", "to_trip_id", "from_route_id", "to_route_id"},
+	"translations":         []string{"table_name", "field_name", "language", "record_id", "record_sub_id", "field_value"},
+	"trips":                "trip_id",
 }
 
 /* AGENCY */
