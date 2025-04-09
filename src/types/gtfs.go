@@ -13,7 +13,7 @@ type Gtfs struct {
 }
 
 /* PRIMARY KEYS */
-var GTFS_PRIMARY_KEYS = map[string]interface{}{
+var GTFS_PRIMARY_KEYS = map[string]any{
 	"afetacao":             nil,
 	"agency":               "agency_id",
 	"archives":             "archive_id",
