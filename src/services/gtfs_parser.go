@@ -10,7 +10,9 @@ import (
 	"main/src/lib"
 	"main/src/types"
 	"os"
+	"runtime"
 	"strings"
+	"sync"
 )
 
 // GTFS_FILES defines the set of valid GTFS filenames that will be processed.
@@ -36,93 +38,140 @@ var GTFS_FILES = map[string]struct{}{
 // It returns a Gtfs map containing the parsed data from all valid GTFS files,
 // or an error if the file cannot be read or processed.
 func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
-
 	if _, err := os.Stat(zipPath); os.IsNotExist(err) {
-		return nil, fmt.Errorf("file %s does not exist", zipPath)
+		return types.Gtfs{}, fmt.Errorf("file %s does not exist", zipPath)
 	}
 
 	zipReader, err := zip.OpenReader(zipPath)
 	if err != nil {
-		return nil, err
+		return types.Gtfs{}, err
 	}
 	defer zipReader.Close()
 
-	gtfsData := make(types.Gtfs)
+	gtfsData := make(types.GtfsFiles)
+	gtfsFieldCount := make(types.GtfsFieldCount)
 
-	// Print all files in the zip
-	for _, file := range zipReader.File {
-		lib.AppLogger.Debug("Found file: " + file.Name)
+	type result struct {
+		fileNameWithoutExt string
+		data               []map[string]string
+		err                error
 	}
 
-	for _, file := range zipReader.File {
-		fileName := file.Name
+	// Channels
+	jobs := make(chan *zip.File, len(zipReader.File))
+	results := make(chan result, len(zipReader.File))
 
-		// Validate against known GTFS file types
-		if _, valid := GTFS_FILES[fileName]; !valid {
-			lib.AppLogger.Debug("Skipping invalid GTFS file: " + fileName)
-			continue
-		}
+	// Worker pool
+	numWorkers := runtime.NumCPU()
+	var wg sync.WaitGroup
+	for range numWorkers {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for file := range jobs {
+				fileName := file.Name
+				fileNameWithoutExt := strings.TrimSuffix(fileName, ".txt")
 
-		// Open the file
-		f, err := file.Open()
-		if err != nil {
-			lib.AppLogger.Error("Error opening file: " + fileName + " " + err.Error())
-			continue
-		}
-		defer f.Close()
+				// Validate
+				if _, valid := GTFS_FILES[fileName]; !valid {
+					lib.AppLogger.Debug("Skipping invalid GTFS file: " + fileName)
+					continue
+				}
 
-		// Read the file
-		content, err := io.ReadAll(f)
-		if err != nil {
-			lib.AppLogger.Error("Error reading file: " + fileName + " " + err.Error())
-			continue
-		}
+				f, err := file.Open()
+				if err != nil {
+					lib.AppLogger.Error("Error opening file: " + fileName + " " + err.Error())
+					continue
+				}
+				content, err := io.ReadAll(f)
+				f.Close() // Close immediately after reading
+				if err != nil {
+					lib.AppLogger.Error("Error reading file: " + fileName + " " + err.Error())
+					continue
+				}
 
-		// Parse the file
-		parsedData, err := parseCSV(content)
-		if err != nil {
-			lib.AppLogger.Error("Error parsing file: " + fileName + " " + err.Error())
-			continue
-		}
+				parsedData, err := parseCSV(content, fileNameWithoutExt, &gtfsFieldCount)
+				if err != nil {
+					lib.AppLogger.Error("Error parsing file: " + fileName + " " + err.Error())
+					continue
+				}
 
-		// Add the parsed data to the gtfsData map
-		gtfsData[strings.TrimSuffix(fileName, ".txt")] = parsedData
+				results <- result{fileNameWithoutExt, parsedData, nil}
+			}
+		}()
 	}
 
-	return gtfsData, nil
+	// Feed jobs
+	go func() {
+		for _, file := range zipReader.File {
+			lib.AppLogger.Debug("Found file: " + file.Name)
+			jobs <- file
+		}
+		close(jobs)
+	}()
+
+	// Close results after workers are done
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+
+	// Collect results
+	for res := range results {
+		if res.err != nil {
+			lib.AppLogger.Error("Error processing file: " + res.fileNameWithoutExt + " " + res.err.Error())
+			continue
+		}
+		gtfsData[res.fileNameWithoutExt] = res.data
+	}
+
+	return types.Gtfs{
+		Files:        gtfsData,
+		FieldCounter: gtfsFieldCount,
+	}, nil
 }
 
 // parseCSV parses CSV content into a slice of maps where each map represents a row
 // with column headers as keys and cell values as values.
 // Returns an error if the CSV is empty or cannot be parsed.
-func parseCSV(content []byte) ([]map[string]string, error) {
+func parseCSV(content []byte, fileNameWithoutExt string, fieldCount *types.GtfsFieldCount) ([]map[string]string, error) {
 	reader := csv.NewReader(bytes.NewReader(content))
 	reader.TrimLeadingSpace = true
 
-	// Read all records from the CSV
 	records, err := reader.ReadAll()
 	if err != nil {
 		return nil, err
 	}
-
-	// Check if the CSV is empty
 	if len(records) < 1 {
 		return nil, errors.New("CSV file is empty")
 	}
 
-	// Extract headers from the first row
 	headers := records[0]
+	result := make([]map[string]string, 0, len(records)-1)
 
-	// Initialize the result slice
-	var result []map[string]string
+	localCounts := make(map[string]int)
 
-	// Process each row (skipping the header row)
 	for _, row := range records[1:] {
-		entry := make(map[string]string)
+		entry := make(map[string]string, len(headers))
 		for i, value := range row {
-			entry[headers[i]] = value
+			if i >= len(headers) {
+				continue
+			}
+			header := headers[i]
+			entry[header] = value
+			if value != "" {
+				localCounts[header]++
+			}
 		}
 		result = append(result, entry)
+	}
+
+	// Now update fieldCount once
+	if (*fieldCount)[fileNameWithoutExt] == nil {
+		(*fieldCount)[fileNameWithoutExt] = make(map[string]int)
+	}
+	for header, count := range localCounts {
+		(*fieldCount)[fileNameWithoutExt][header] += count
 	}
 
 	return result, nil
