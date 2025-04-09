@@ -15,7 +15,7 @@ func RunValidations(gtfs types.Gtfs) {
 	routes, messages := parseRouteValidation.Validate(gtfs)
 	for _, message := range messages {
 		services.AppMessageService.AddMessage(message)
-		lib.AppLogger.Error(message.Message)
+		lib.AppLogger.Error("[" + message.FileName + "] " + message.Message)
 	}
 
 	// Print routes
