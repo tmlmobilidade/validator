@@ -28,7 +28,7 @@ func NewParseStopValidation(severity *types.Severity) *parseStopValidation {
 func (v *parseStopValidation) Validate(gtfsData types.Gtfs) (stops []types.Stop, messages []types.Message) {
 	stopIds := make(map[string]bool)
 
-	for i, stop := range gtfsData["stop"] {
+	for i, stop := range gtfsData["stops"] {
 		stop, stopMessages := parseStop(stop)
 		stops = append(stops, stop)
 

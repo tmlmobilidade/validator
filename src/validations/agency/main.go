@@ -4,6 +4,7 @@ import (
 	"main/src/lib"
 	"main/src/services"
 	"main/src/types"
+	"strconv"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
@@ -18,5 +19,5 @@ func RunValidations(gtfsData types.Gtfs) {
 	}
 
 	// Print agencies
-	lib.PrintMap(agencies)
+	lib.AppLogger.Info("Total agencies: parsed " + strconv.Itoa(len(agencies)) + " agencies")
 }

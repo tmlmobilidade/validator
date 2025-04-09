@@ -4,6 +4,7 @@ import (
 	"main/src/lib"
 	"main/src/services"
 	"main/src/types"
+	"strconv"
 )
 
 func RunValidations(gtfsData types.Gtfs) {
@@ -18,5 +19,5 @@ func RunValidations(gtfsData types.Gtfs) {
 	}
 
 	// Print stops
-	lib.PrintMap(stops)
+	lib.AppLogger.Info("Total stops: parsed " + strconv.Itoa(len(stops)) + " stops")
 }
