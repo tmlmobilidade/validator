@@ -47,8 +47,10 @@ func (v *parseTripValidation) Validate(gtfs types.Gtfs) (trips []types.Trip, mes
 		}
 	}
 
+	combinedCalendarIds := lib.MergeMaps(gtfs.IdMap["calendar"], gtfs.IdMap["calendar_dates"])
+
 	for i, trip := range gtfs.Files["trips"] {
-		trip, tripMessages := parseTrip(trip, gtfs.IdMap["routes"], gtfs.IdMap["calendar"], gtfs.IdMap["shapes"], hasContinuousPickupDropoff, hasStopTimesContinuousPickupDropoff)
+		trip, tripMessages := parseTrip(trip, gtfs.IdMap["routes"], combinedCalendarIds, gtfs.IdMap["shapes"], hasContinuousPickupDropoff, hasStopTimesContinuousPickupDropoff)
 		trips = append(trips, trip)
 
 		// Check for duplicate trip IDs
@@ -153,7 +155,7 @@ func parseTrip(m map[string]string, routeIds map[string]int, serviceIds map[stri
 		if !ok {
 			messages = append(messages, types.Message{
 				Field:   "service_id",
-				Message: "Service ID must reference a valid service_id from calendar.txt or calendar_dates.txt.",
+				Message: "Service ID " + trip.ServiceId + " must reference a valid service_id from calendar.txt or calendar_dates.txt.",
 			})
 		}
 	}
