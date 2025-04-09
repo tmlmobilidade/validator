@@ -2,7 +2,13 @@ package types
 
 // Gtfs represents a collection of parsed GTFS data files where the key is the filename (without .txt extension)
 // and the value is a slice of maps containing the CSV data with column headers as keys.
-type Gtfs map[string][]map[string]string
+type GtfsFiles map[string][]map[string]string
+type GtfsFieldCount map[string]map[string]int
+
+type Gtfs struct {
+	Files        GtfsFiles
+	FieldCounter GtfsFieldCount
+}
 
 /* AGENCY */
 type Agency struct {

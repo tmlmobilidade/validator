@@ -6,18 +6,20 @@ import (
 )
 
 func TestParseAgencyValidation_SingleValidAgency(t *testing.T) {
-	gtfsData := types.Gtfs{
-		"agency": []map[string]string{
-			{
-				"agency_name":     "Test Agency",
-				"agency_url":      "http://www.testagency.com",
-				"agency_timezone": "America/New_York",
+	gtfs := types.Gtfs{
+		Files: map[string][]map[string]string{
+			"agency": {
+				{
+					"agency_name":     "Test Agency",
+					"agency_url":      "http://www.testagency.com",
+					"agency_timezone": "America/New_York",
+				},
 			},
 		},
 	}
 
 	validator := NewParseAgencyValidation(nil)
-	_, messages := validator.Validate(gtfsData)
+	_, messages := validator.Validate(gtfs)
 
 	if len(messages) != 0 {
 		t.Errorf("Expected 0 errors, got %d", len(messages))
@@ -28,26 +30,28 @@ func TestParseAgencyValidation_SingleValidAgency(t *testing.T) {
 }
 
 func TestParseAgencyValidation_MultipleValidAgenciesWithIDs(t *testing.T) {
-	gtfsData := types.Gtfs{
-		"agency": []map[string]string{
-			{
-				"agency_id":       "agency1",
-				"agency_name":     "Test Agency 1",
-				"agency_url":      "http://www.testagency1.com",
-				"agency_timezone": "America/New_York",
-			},
-			{
-				"agency_id":       "agency2",
-				"agency_name":     "Test Agency 2",
-				"agency_url":      "http://www.testagency2.com",
-				"agency_timezone": "America/Los_Angeles",
-				"agency_phone":    "+351210410400",
+	gtfs := types.Gtfs{
+		Files: map[string][]map[string]string{
+			"agency": {
+				{
+					"agency_id":       "agency1",
+					"agency_name":     "Test Agency 1",
+					"agency_url":      "http://www.testagency1.com",
+					"agency_timezone": "America/New_York",
+				},
+				{
+					"agency_id":       "agency2",
+					"agency_name":     "Test Agency 2",
+					"agency_url":      "http://www.testagency2.com",
+					"agency_timezone": "America/Los_Angeles",
+					"agency_phone":    "+351210410400",
+				},
 			},
 		},
 	}
 
 	validator := NewParseAgencyValidation(nil)
-	_, messages := validator.Validate(gtfsData)
+	_, messages := validator.Validate(gtfs)
 
 	if len(messages) != 0 {
 		t.Errorf("Expected 0 errors, got %d", len(messages))
@@ -58,16 +62,18 @@ func TestParseAgencyValidation_MultipleValidAgenciesWithIDs(t *testing.T) {
 }
 
 func TestParseAgencyValidation_MissingRequiredFields(t *testing.T) {
-	gtfsData := types.Gtfs{
-		"agency": []map[string]string{
-			{
-				"agency_id": "agency1",
+	gtfs := types.Gtfs{
+		Files: map[string][]map[string]string{
+			"agency": {
+				{
+					"agency_id": "agency1",
+				},
 			},
 		},
 	}
 
 	validator := NewParseAgencyValidation(nil)
-	_, messages := validator.Validate(gtfsData)
+	_, messages := validator.Validate(gtfs)
 
 	if len(messages) != 3 {
 		t.Errorf("Expected 3 errors, got %d", len(messages))
@@ -78,22 +84,24 @@ func TestParseAgencyValidation_MissingRequiredFields(t *testing.T) {
 }
 
 func TestParseAgencyValidation_InvalidOptionalFields(t *testing.T) {
-	gtfsData := types.Gtfs{
-		"agency": []map[string]string{
-			{
-				"agency_name":     "Test Agency",
-				"agency_url":      "http://www.testagency.com",
-				"agency_timezone": "America/New_York",
-				"agency_email":    "invalid-email",
-				"agency_phone":    "123",
-				"agency_lang":     "invalid-lang",
-				"agency_fare_url": "invalid-url",
+	gtfs := types.Gtfs{
+		Files: map[string][]map[string]string{
+			"agency": {
+				{
+					"agency_name":     "Test Agency",
+					"agency_url":      "http://www.testagency.com",
+					"agency_timezone": "America/New_York",
+					"agency_email":    "invalid-email",
+					"agency_phone":    "123",
+					"agency_lang":     "invalid-lang",
+					"agency_fare_url": "invalid-url",
+				},
 			},
 		},
 	}
 
 	validator := NewParseAgencyValidation(nil)
-	_, messages := validator.Validate(gtfsData)
+	_, messages := validator.Validate(gtfs)
 
 	if len(messages) != 4 {
 		t.Errorf("Expected 4 errors, got %d", len(messages))
@@ -104,23 +112,25 @@ func TestParseAgencyValidation_InvalidOptionalFields(t *testing.T) {
 }
 
 func TestParseAgencyValidation_MultipleAgenciesWithoutID(t *testing.T) {
-	gtfsData := types.Gtfs{
-		"agency": []map[string]string{
-			{
-				"agency_name":     "Test Agency 1",
-				"agency_url":      "http://www.testagency1.com",
-				"agency_timezone": "America/New_York",
-			},
-			{
-				"agency_name":     "Test Agency 2",
-				"agency_url":      "http://www.testagency2.com",
-				"agency_timezone": "America/Los_Angeles",
+	gtfs := types.Gtfs{
+		Files: map[string][]map[string]string{
+			"agency": {
+				{
+					"agency_name":     "Test Agency 1",
+					"agency_url":      "http://www.testagency1.com",
+					"agency_timezone": "America/New_York",
+				},
+				{
+					"agency_name":     "Test Agency 2",
+					"agency_url":      "http://www.testagency2.com",
+					"agency_timezone": "America/Los_Angeles",
+				},
 			},
 		},
 	}
 
 	validator := NewParseAgencyValidation(nil)
-	_, messages := validator.Validate(gtfsData)
+	_, messages := validator.Validate(gtfs)
 
 	if len(messages) != 2 {
 		t.Errorf("Expected 2 errors, got %d", len(messages))
@@ -131,25 +141,27 @@ func TestParseAgencyValidation_MultipleAgenciesWithoutID(t *testing.T) {
 }
 
 func TestParseAgencyValidation_MultipleAgenciesWithSameID(t *testing.T) {
-	gtfsData := types.Gtfs{
-		"agency": []map[string]string{
-			{
-				"agency_id":       "agency1",
-				"agency_name":     "Test Agency 1",
-				"agency_url":      "http://www.testagency1.com",
-				"agency_timezone": "America/New_York",
-			},
-			{
-				"agency_id":       "agency1",
-				"agency_name":     "Test Agency 2",
-				"agency_url":      "http://www.testagency2.com",
-				"agency_timezone": "America/Los_Angeles",
+	gtfs := types.Gtfs{
+		Files: map[string][]map[string]string{
+			"agency": {
+				{
+					"agency_id":       "agency1",
+					"agency_name":     "Test Agency 1",
+					"agency_url":      "http://www.testagency1.com",
+					"agency_timezone": "America/New_York",
+				},
+				{
+					"agency_id":       "agency1",
+					"agency_name":     "Test Agency 2",
+					"agency_url":      "http://www.testagency2.com",
+					"agency_timezone": "America/Los_Angeles",
+				},
 			},
 		},
 	}
 
 	validator := NewParseAgencyValidation(nil)
-	_, messages := validator.Validate(gtfsData)
+	_, messages := validator.Validate(gtfs)
 
 	if len(messages) != 1 {
 		t.Errorf("Expected 1 error, got %d", len(messages))

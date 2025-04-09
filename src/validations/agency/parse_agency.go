@@ -25,11 +25,11 @@ func NewParseAgencyValidation(severity *types.Severity) *ParseAgencyValidation {
 	}
 }
 
-func (v *ParseAgencyValidation) Validate(gtfsData types.Gtfs) (agencies []types.Agency, messages []types.Message) {
+func (v *ParseAgencyValidation) Validate(gtfs types.Gtfs) (agencies []types.Agency, messages []types.Message) {
 	agencyIds := make(map[string]bool)
 
-	for i, agency := range gtfsData["agency"] {
-		agency, agencyMessages := parseAgency(agency, len(gtfsData["agency"]))
+	for i, agency := range gtfs.Files["agency"] {
+		agency, agencyMessages := parseAgency(agency, len(gtfs.Files["agency"]))
 		agencies = append(agencies, agency)
 
 		// Check for duplicate agency IDs

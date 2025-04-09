@@ -7,12 +7,14 @@ import (
 
 func TestParseStopValidation_SingleValidStop(t *testing.T) {
 	gtfsData := types.Gtfs{
-		"stop": []map[string]string{
-			{
-				"stop_id":   "stop1",
-				"stop_name": "Test Stop",
-				"stop_lat":  "40.7128",
-				"stop_lon":  "-74.0060",
+		Files: map[string][]map[string]string{
+			"stops": {
+				{
+					"stop_id":   "stop1",
+					"stop_name": "Test Stop",
+					"stop_lat":  "40.7128",
+					"stop_lon":  "-74.0060",
+				},
 			},
 		},
 	}
@@ -30,18 +32,20 @@ func TestParseStopValidation_SingleValidStop(t *testing.T) {
 
 func TestParseStopValidation_DuplicateStopID(t *testing.T) {
 	gtfsData := types.Gtfs{
-		"stop": []map[string]string{
-			{
-				"stop_id":   "stop1",
-				"stop_name": "Test Stop 1",
-				"stop_lat":  "40.7128",
-				"stop_lon":  "-74.0060",
-			},
-			{
-				"stop_id":   "stop1",
-				"stop_name": "Test Stop 2",
-				"stop_lat":  "40.7129",
-				"stop_lon":  "-74.0061",
+		Files: map[string][]map[string]string{
+			"stops": {
+				{
+					"stop_id":   "stop1",
+					"stop_name": "Test Stop 1",
+					"stop_lat":  "40.7128",
+					"stop_lon":  "-74.0060",
+				},
+				{
+					"stop_id":   "stop1",
+					"stop_name": "Test Stop 2",
+					"stop_lat":  "40.7129",
+					"stop_lon":  "-74.0061",
+				},
 			},
 		},
 	}
