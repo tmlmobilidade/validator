@@ -73,11 +73,11 @@ func parseAgency(m map[string]string, totalAgencies int) []types.Message {
 	lib.ParseStringToPrimitive(m["agency_phone"], &agencyPhone, &parsingErrors)
 	lib.ParseStringToPrimitive(m["agency_id"], &agencyId, &parsingErrors)
 
-	item.AgencyEmail = &agencyEmail
-	item.AgencyFareUrl = &agencyFareUrl
-	item.AgencyLang = &agencyLang
-	item.AgencyPhone = &agencyPhone
-	item.AgencyId = &agencyId
+	item.AgencyEmail = lib.IfThenElse(agencyEmail != "", &agencyEmail, nil)
+	item.AgencyFareUrl = lib.IfThenElse(agencyFareUrl != "", &agencyFareUrl, nil)
+	item.AgencyLang = lib.IfThenElse(agencyLang != "", &agencyLang, nil)
+	item.AgencyPhone = lib.IfThenElse(agencyPhone != "", &agencyPhone, nil)
+	item.AgencyId = lib.IfThenElse(agencyId != "", &agencyId, nil)
 
 	//Convert Required Values
 	lib.ParseStringToPrimitive(m["agency_timezone"], &item.AgencyTimezone, &parsingErrors)
@@ -127,7 +127,7 @@ func parseAgency(m map[string]string, totalAgencies int) []types.Message {
 	}
 
 	// Validate Agency ID
-	if totalAgencies > 1 && *item.AgencyId == "" {
+	if totalAgencies > 1 && item.AgencyId == nil {
 		messages = append(messages, types.Message{
 			Field:   "agency_id",
 			Message: "Agency ID is required when the dataset contains data for multiple transit agencies.",
