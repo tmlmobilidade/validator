@@ -116,3 +116,25 @@ func (l *Logger) Clear() {
 }
 
 var AppLogger = NewLogger(true, Debug)
+
+// PerformanceTracker represents a timer for tracking operation performance
+type PerformanceTracker struct {
+	start     time.Time
+	operation string
+	logger    *Logger
+}
+
+// StartPerformanceTracker creates a new performance tracker
+func (l *Logger) StartPerformanceTracker(operation string) *PerformanceTracker {
+	return &PerformanceTracker{
+		start:     time.Now(),
+		operation: operation,
+		logger:    l,
+	}
+}
+
+// End stops the performance tracker and logs the duration
+func (pt *PerformanceTracker) End() {
+	duration := time.Since(pt.start)
+	pt.logger.Info(fmt.Sprintf("Operation '%s' completed in %v", pt.operation, duration))
+}
