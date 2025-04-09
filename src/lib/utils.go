@@ -7,6 +7,22 @@ import (
 	"strconv"
 )
 
+// ParseStringToPrimitive converts a string to a primitive type and stores it in the provided pointer.
+// If the string is empty, the function returns without modifying the target value.
+// If parsing fails, an error message is appended to the provided errors slice.
+//
+// The function supports the following primitive types:
+//   - string
+//   - int8, int16, int32, int64, int
+//   - uint8, uint16, uint32, uint64, uint
+//   - float32, float64
+//   - bool
+//
+// If an unsupported type is provided, the function will panic with an error message.
+//
+//	@param str string - The string to parse
+//	@param t *T - Pointer to the target variable where the parsed value will be stored
+//	@param errors *[]string - Slice to store any parsing error messages
 func ParseStringToPrimitive[T any](str string, t *T, errors *[]string) {
 	if str == "" {
 		return
@@ -113,10 +129,28 @@ func ParseStringToPrimitive[T any](str string, t *T, errors *[]string) {
 	}
 }
 
+// PrintMap takes any value and prints it as indented JSON to stdout.
+// If there is an error marshaling the value to JSON, it prints the error.
+//
+//	@param a any - The value to print as JSON
 func PrintMap(a any) {
 	b, err := json.MarshalIndent(a, "", "  ")
 	if err != nil {
 		fmt.Println("error:", err)
 	}
 	fmt.Printf("%s\n", string(b))
+}
+
+// Returns a if condition is true, otherwise returns b
+// Substitute for the ternary operator
+//
+//	@param condition bool - The condition to check
+//	@param a T - The value to return if the condition is true
+//	@param b T - The value to return if the condition is false
+//	@return T - The value to return
+func IfThenElse[T any](condition bool, a, b T) T {
+	if condition {
+		return a
+	}
+	return b
 }
