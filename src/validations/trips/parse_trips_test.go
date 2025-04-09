@@ -176,7 +176,7 @@ func TestParseTrip_InvalidServiceId(t *testing.T) {
 	// Check for validation message for invalid service_id
 	found := false
 	for _, msg := range messages {
-		if msg.Field == "service_id" && msg.Message == "Service ID must reference a valid service_id from calendar.txt or calendar_dates.txt." {
+		if msg.Field == "service_id" && msg.Message == "Service ID "+input["service_id"]+" must reference a valid service_id from calendar.txt or calendar_dates.txt." {
 			found = true
 			break
 		}
@@ -516,7 +516,7 @@ func TestParseTripValidation_ValidateInvalidServiceId(t *testing.T) {
 	// Check for validation message for invalid service_id
 	found := false
 	for _, msg := range messages {
-		if msg.Field == "service_id" && msg.Message == "Service ID must reference a valid service_id from calendar.txt or calendar_dates.txt." {
+		if msg.Field == "service_id" && msg.Message == "Service ID "+gtfs.Files["trips"][0]["service_id"]+" must reference a valid service_id from calendar.txt or calendar_dates.txt." {
 			found = true
 			break
 		}
