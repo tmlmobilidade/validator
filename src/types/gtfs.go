@@ -44,7 +44,7 @@ type Route struct {
 	RouteId           string  `json:"route_id"`
 	RouteLongName     *string `json:"route_long_name"`
 	RouteShortName    *string `json:"route_short_name"`
-	RouteSortOrder    *uint32 `json:"route_sort_order"`
+	RouteSortOrder    *int    `json:"route_sort_order"`
 	RouteTextColor    *string `json:"route_text_color"`
 	RouteType         int     `json:"route_type"`
 	RouteUrl          *string `json:"route_url"`
@@ -144,7 +144,7 @@ type StopTime struct {
 	StopHeadsign                  *string  `json:"stop_headsign"`
 	StopId                        string   `json:"stop_id"`
 	StopNameNew                   *string  `json:"stop_name_new"`
-	StopSequence                  uint32   `json:"stop_sequence"`
+	StopSequence                  int      `json:"stop_sequence"`
 	StopShortName                 *string  `json:"stop_short_name"`
 	Subway                        *string  `json:"subway"`
 	Timepoint                     *bool    `json:"timepoint"`
