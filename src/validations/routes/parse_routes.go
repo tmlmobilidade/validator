@@ -28,21 +28,16 @@ func NewParseRouteValidation(severity *types.Severity) *parseRouteValidation {
 func (v *parseRouteValidation) Validate(gtfs types.Gtfs) (routes []types.Route, messages []types.Message) {
 	routeIds := make(map[string]bool)
 
-	// Check if multiple agencies exist
-	multipleAgencies := false
-	if agencies, ok := gtfs.Files["agency"]; ok && len(agencies) > 1 {
-		multipleAgencies = true
-	}
+	// Check if multiple agencies exist by checking length of agencies file
+	multipleAgencies := len(gtfs.Files["agency"]) > 1
 
-	// Check if any stop_times have start_pickup_drop_off_window or end_pickup_drop_off_window
+	// Check if any stop_times have pickup/dropoff window fields with non-zero counts
 	hasPickupDropoffWindows := false
-	if stopTimes, ok := gtfs.Files["stop_times"]; ok {
-		for _, stopTime := range stopTimes {
-			if stopTime["start_pickup_drop_off_window"] != "" || stopTime["end_pickup_drop_off_window"] != "" {
-				hasPickupDropoffWindows = true
-				break
-			}
-		}
+	stopTimesFields := gtfs.FieldCounter["stop_times"]
+	if stopTimesFields != nil {
+		startWindowCount := stopTimesFields["start_pickup_drop_off_window"]
+		endWindowCount := stopTimesFields["end_pickup_drop_off_window"]
+		hasPickupDropoffWindows = startWindowCount > 0 || endWindowCount > 0
 	}
 
 	for i, route := range gtfs.Files["routes"] {
