@@ -2,10 +2,11 @@ package trips
 
 import (
 	"main/src/lib"
+	"main/src/services"
 	"main/src/types"
 )
 
-func RunValidations(gtfs types.Gtfs) (messages []types.Message) {
+func RunValidations(gtfs types.Gtfs) {
 	lib.AppLogger.Debug("Running Trips Validations...")
 
 	// Create validation with default severity
@@ -13,7 +14,8 @@ func RunValidations(gtfs types.Gtfs) (messages []types.Message) {
 
 	// Run validation
 	_, validationMessages := validation.Validate(gtfs)
-	messages = append(messages, validationMessages...)
-
-	return messages
+	for _, message := range validationMessages {
+		services.AppMessageService.AddMessage(message)
+		lib.AppLogger.Error(message.Message)
+	}
 }
