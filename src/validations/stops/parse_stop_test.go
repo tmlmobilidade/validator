@@ -18,7 +18,7 @@ func TestParseStopValidation_SingleValidStop(t *testing.T) {
 	}
 
 	validator := NewParseStopValidation(nil)
-	messages := validator.Validate(gtfsData)
+	_, messages := validator.Validate(gtfsData)
 
 	if len(messages) != 0 {
 		t.Errorf("Expected 0 errors, got %d", len(messages))
@@ -47,7 +47,7 @@ func TestParseStopValidation_DuplicateStopID(t *testing.T) {
 	}
 
 	validator := NewParseStopValidation(nil)
-	messages := validator.Validate(gtfsData)
+	_, messages := validator.Validate(gtfsData)
 
 	if len(messages) != 1 {
 		t.Errorf("Expected 1 error for duplicate stop_id, got %d", len(messages))
@@ -76,7 +76,7 @@ func TestParseStop_CompleteValidStop(t *testing.T) {
 		"platform_code":       "A",
 	}
 
-	messages := parseStop(input)
+	_, messages := parseStop(input)
 	if len(messages) != 0 {
 		t.Errorf("Expected 0 errors, got %d", len(messages))
 		for _, msg := range messages {
@@ -90,7 +90,7 @@ func TestParseStop_MinimalValidStop(t *testing.T) {
 		"stop_id": "stop1",
 	}
 
-	messages := parseStop(input)
+	_, messages := parseStop(input)
 	if len(messages) != 0 {
 		t.Errorf("Expected 0 errors for minimal valid stop, got %d", len(messages))
 		for _, msg := range messages {
@@ -106,7 +106,7 @@ func TestParseStop_InvalidCoordinates(t *testing.T) {
 		"stop_lon": "invalid",
 	}
 
-	messages := parseStop(input)
+	_, messages := parseStop(input)
 	if len(messages) != 2 {
 		t.Errorf("Expected 2 errors for invalid coordinates, got %d", len(messages))
 	}
@@ -119,7 +119,7 @@ func TestParseStop_InvalidEnumValues(t *testing.T) {
 		"wheelchair_boarding": "3", // Invalid wheelchair boarding (valid: 0-2)
 	}
 
-	messages := parseStop(input)
+	_, messages := parseStop(input)
 	if len(messages) != 2 {
 		t.Errorf("Expected 2 errors for invalid enum values, got %d", len(messages))
 	}
@@ -131,7 +131,7 @@ func TestParseStop_InvalidURL(t *testing.T) {
 		"stop_url": "not-a-url",
 	}
 
-	messages := parseStop(input)
+	_, messages := parseStop(input)
 	if len(messages) != 1 {
 		t.Errorf("Expected 1 error for invalid URL, got %d", len(messages))
 	}

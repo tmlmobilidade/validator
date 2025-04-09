@@ -11,9 +11,12 @@ func RunValidations(gtfsData types.Gtfs) {
 
 	// Parsing Validation
 	parseStopValidation := NewParseStopValidation(nil)
-	messages := parseStopValidation.Validate(gtfsData)
+	stops, messages := parseStopValidation.Validate(gtfsData)
 	for _, message := range messages {
 		services.AppMessageService.AddMessage(message)
 		lib.AppLogger.Error(message.Message)
 	}
+
+	// Print stops
+	lib.PrintMap(stops)
 }

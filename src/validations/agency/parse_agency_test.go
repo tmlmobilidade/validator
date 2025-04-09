@@ -17,7 +17,7 @@ func TestParseAgencyValidation_SingleValidAgency(t *testing.T) {
 	}
 
 	validator := NewParseAgencyValidation(nil)
-	messages := validator.Validate(gtfsData)
+	_, messages := validator.Validate(gtfsData)
 
 	if len(messages) != 0 {
 		t.Errorf("Expected 0 errors, got %d", len(messages))
@@ -47,7 +47,7 @@ func TestParseAgencyValidation_MultipleValidAgenciesWithIDs(t *testing.T) {
 	}
 
 	validator := NewParseAgencyValidation(nil)
-	messages := validator.Validate(gtfsData)
+	_, messages := validator.Validate(gtfsData)
 
 	if len(messages) != 0 {
 		t.Errorf("Expected 0 errors, got %d", len(messages))
@@ -67,7 +67,7 @@ func TestParseAgencyValidation_MissingRequiredFields(t *testing.T) {
 	}
 
 	validator := NewParseAgencyValidation(nil)
-	messages := validator.Validate(gtfsData)
+	_, messages := validator.Validate(gtfsData)
 
 	if len(messages) != 3 {
 		t.Errorf("Expected 3 errors, got %d", len(messages))
@@ -93,7 +93,7 @@ func TestParseAgencyValidation_InvalidOptionalFields(t *testing.T) {
 	}
 
 	validator := NewParseAgencyValidation(nil)
-	messages := validator.Validate(gtfsData)
+	_, messages := validator.Validate(gtfsData)
 
 	if len(messages) != 4 {
 		t.Errorf("Expected 4 errors, got %d", len(messages))
@@ -120,7 +120,7 @@ func TestParseAgencyValidation_MultipleAgenciesWithoutID(t *testing.T) {
 	}
 
 	validator := NewParseAgencyValidation(nil)
-	messages := validator.Validate(gtfsData)
+	_, messages := validator.Validate(gtfsData)
 
 	if len(messages) != 2 {
 		t.Errorf("Expected 2 errors, got %d", len(messages))
@@ -149,7 +149,7 @@ func TestParseAgencyValidation_MultipleAgenciesWithSameID(t *testing.T) {
 	}
 
 	validator := NewParseAgencyValidation(nil)
-	messages := validator.Validate(gtfsData)
+	_, messages := validator.Validate(gtfsData)
 
 	if len(messages) != 1 {
 		t.Errorf("Expected 1 error, got %d", len(messages))
@@ -171,7 +171,7 @@ func TestParseAgency_ValidAgencyAllFields(t *testing.T) {
 		"agency_email":    "contact@testagency.com",
 	}
 
-	messages := parseAgency(input, 1)
+	_, messages := parseAgency(input, 1)
 	if len(messages) != 0 {
 		t.Errorf("Expected 0 errors, got %d", len(messages))
 		for _, msg := range messages {
@@ -187,7 +187,7 @@ func TestParseAgency_ValidAgencyMinimumFields(t *testing.T) {
 		"agency_timezone": "America/New_York",
 	}
 
-	messages := parseAgency(input, 1)
+	_, messages := parseAgency(input, 1)
 	if len(messages) != 0 {
 		t.Errorf("Expected 0 errors, got %d", len(messages))
 		for _, msg := range messages {
@@ -203,7 +203,7 @@ func TestParseAgency_InvalidTimezone(t *testing.T) {
 		"agency_timezone": "Invalid/Timezone",
 	}
 
-	messages := parseAgency(input, 1)
+	_, messages := parseAgency(input, 1)
 	if len(messages) != 1 {
 		t.Errorf("Expected 1 error, got %d", len(messages))
 	}

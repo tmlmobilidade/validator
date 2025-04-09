@@ -19,7 +19,7 @@ type Agency struct {
 /* STOP */
 type Stop struct {
 	LevelId            *string  `json:"level_id,omitempty"`
-	LocationType       *uint8   `json:"location_type,omitempty"`
+	LocationType       *int     `json:"location_type,omitempty"`
 	ParentStation      *string  `json:"parent_station,omitempty"`
 	PlatformCode       *string  `json:"platform_code,omitempty"`
 	StopCode           *string  `json:"stop_code,omitempty"`
@@ -30,7 +30,7 @@ type Stop struct {
 	StopName           *string  `json:"stop_name,omitempty"`
 	StopTimezone       *string  `json:"stop_timezone,omitempty"`
 	StopUrl            *string  `json:"stop_url,omitempty"`
-	WheelchairBoarding *uint8   `json:"wheelchair_boarding,omitempty"`
+	WheelchairBoarding *int     `json:"wheelchair_boarding,omitempty"`
 	ZoneId             *string  `json:"zone_id,omitempty"`
 }
 
@@ -46,14 +46,14 @@ type Route struct {
 	RouteShortName    *string `json:"route_short_name"`
 	RouteSortOrder    *uint32 `json:"route_sort_order"`
 	RouteTextColor    *string `json:"route_text_color"`
-	RouteType         uint8   `json:"route_type"`
+	RouteType         int     `json:"route_type"`
 	RouteUrl          *string `json:"route_url"`
 }
 
 /* TRIP */
 
 type Trip struct {
-	BikesAllowed         *uint8  `json:"bikes_allowed"`
+	BikesAllowed         *int    `json:"bikes_allowed"`
 	BlockId              *string `json:"block_id"`
 	CalendarDesc         string  `json:"calendar_desc"`
 	DirectionId          *bool   `json:"direction_id"`
@@ -76,13 +76,13 @@ type StopTime struct {
 	BikeSharing                   *string  `json:"bike_sharing"`
 	Boat                          *string  `json:"boat"`
 	CarParking                    *string  `json:"car_parking"`
-	ContinuousDropOff             *uint8   `json:"continuous_drop_off"`
-	ContinuousPickup              *uint8   `json:"continuous_pickup"`
+	ContinuousDropOff             *int     `json:"continuous_drop_off"`
+	ContinuousPickup              *int     `json:"continuous_pickup"`
 	DepartureTime                 *string  `json:"departure_time"`
 	DistrictId                    *string  `json:"district_id"`
 	DistrictName                  *string  `json:"district_name"`
 	DockingBayType                *string  `json:"docking_bay_type"`
-	DropOffType                   *uint8   `json:"drop_off_type"`
+	DropOffType                   *int     `json:"drop_off_type"`
 	FlagMaintainer                *string  `json:"flag_maintainer"`
 	HasAbusiveParking             *string  `json:"has_abusive_parking"`
 	HasBench                      *string  `json:"has_bench"`
@@ -132,7 +132,7 @@ type StopTime struct {
 	OperationalStatus             *string  `json:"operational_status"`
 	ParishId                      *string  `json:"parish_id"`
 	ParishName                    *string  `json:"parish_name"`
-	PickupType                    *uint8   `json:"pickup_type"`
+	PickupType                    *int     `json:"pickup_type"`
 	PipAudioCode                  *string  `json:"pip_audio_code"`
 	PipRealtimeCode               *string  `json:"pip_realtime_code"`
 	RegionId                      *string  `json:"region_id"`
@@ -179,10 +179,10 @@ type FareAttributes struct {
 	AgencyId         *string  `json:"agency_id"`
 	CurrencyType     string   `json:"currency_type"`
 	FareId           string   `json:"fare_id"`
-	PaymentMethod    uint8    `json:"payment_method"`
+	PaymentMethod    int      `json:"payment_method"`
 	Price            float32  `json:"price"`
 	TransferDuration *float32 `json:"transfer_duration"`
-	Transfers        uint8    `json:"transfers"`
+	Transfers        int      `json:"transfers"`
 }
 
 /* FARE RULES */
@@ -206,7 +206,7 @@ type Shapes struct {
 /* FREQUENCIES */
 type Frequencies struct {
 	EndTime     string  `json:"end_time"`
-	ExactTimes  *uint8  `json:"exact_times"`
+	ExactTimes  *int    `json:"exact_times"`
 	HeadwaySecs float32 `json:"headway_secs"`
 	StartTime   string  `json:"start_time"`
 	TripId      string  `json:"trip_id"`
@@ -221,7 +221,7 @@ type Transfers struct {
 	ToRouteId       *string `json:"to_route_id"`
 	ToStopId        string  `json:"to_stop_id"`
 	ToTripId        *string `json:"to_trip_id"`
-	TransferType    uint8   `json:"transfer_type"`
+	TransferType    int     `json:"transfer_type"`
 }
 
 /* PATHWAYS */
@@ -232,7 +232,7 @@ type Pathways struct {
 	MaxSlope             *string  `json:"max_slope"`
 	MinWidth             *string  `json:"min_width"`
 	PathwayId            string   `json:"pathway_id"`
-	PathwayMode          uint8    `json:"pathway_mode"`
+	PathwayMode          int      `json:"pathway_mode"`
 	ReversedSignpostedAs *string  `json:"reversed_signposted_as"`
 	SignpostedAs         *string  `json:"signposted_as"`
 	StairCount           *uint16  `json:"stair_count"`
@@ -342,9 +342,9 @@ type FareLegJoinRule struct {
 /* FARETRANSFERRULE */
 type FareTransferRule struct {
 	DurationLimit     *float32 `json:"duration_limit"`
-	DurationLimitType *uint8   `json:"duration_limit_type"`
+	DurationLimitType *int     `json:"duration_limit_type"`
 	FareProductId     *string  `json:"fare_product_id"`
-	FareTransferType  *uint8   `json:"fare_transfer_type"`
+	FareTransferType  *int     `json:"fare_transfer_type"`
 	FromLegGroupId    *string  `json:"from_leg_group_id"`
 	ToLegGroupId      *string  `json:"to_leg_group_id"`
 	TransferCount     *float32 `json:"transfer_count"`
@@ -389,7 +389,7 @@ type LocationGroupStop struct {
 /* BOOKINGRULE */
 type BookingRule struct {
 	BookingRuleId          string   `json:"booking_rule_id"`
-	BookingType            uint8    `json:"booking_type"`
+	BookingType            int      `json:"booking_type"`
 	BookingUrl             *string  `json:"booking_url"`
 	DropOffMessage         *string  `json:"drop_off_message"`
 	InfoUrl                *string  `json:"info_url"`

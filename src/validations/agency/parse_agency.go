@@ -25,16 +25,16 @@ func NewParseAgencyValidation(severity *types.Severity) *ParseAgencyValidation {
 	}
 }
 
-func (v *ParseAgencyValidation) Validate(gtfsData types.Gtfs) []types.Message {
-	var messages []types.Message
+func (v *ParseAgencyValidation) Validate(gtfsData types.Gtfs) (agencies []types.Agency, messages []types.Message) {
 	agencyIds := make(map[string]bool)
 
 	for i, agency := range gtfsData["agency"] {
-		agencyMessages := parseAgency(agency, len(gtfsData["agency"]))
+		agency, agencyMessages := parseAgency(agency, len(gtfsData["agency"]))
+		agencies = append(agencies, agency)
 
 		// Check for duplicate agency IDs
-		if agencyId, exists := agency["agency_id"]; exists && agencyId != "" {
-			if agencyIds[agencyId] {
+		if agency.AgencyId != nil && *agency.AgencyId != "" {
+			if agencyIds[*agency.AgencyId] {
 				messages = append(messages, types.Message{
 					Field:        "agency_id",
 					FileName:     "agency.txt",
@@ -44,7 +44,7 @@ func (v *ParseAgencyValidation) Validate(gtfsData types.Gtfs) []types.Message {
 					ValidationID: v.ID,
 				})
 			}
-			agencyIds[agencyId] = true
+			agencyIds[*agency.AgencyId] = true
 		}
 
 		// Update row number and other fields for each message
@@ -56,12 +56,10 @@ func (v *ParseAgencyValidation) Validate(gtfsData types.Gtfs) []types.Message {
 			messages = append(messages, msg)
 		}
 	}
-	return messages
+	return agencies, messages
 }
 
-func parseAgency(m map[string]string, totalAgencies int) []types.Message {
-	var messages []types.Message
-	item := types.Agency{}
+func parseAgency(m map[string]string, totalAgencies int) (agency types.Agency, messages []types.Message) {
 	var parsingErrors []string
 
 	//Convert Optional Values
@@ -73,16 +71,16 @@ func parseAgency(m map[string]string, totalAgencies int) []types.Message {
 	lib.ParseStringToPrimitive(m["agency_phone"], &agencyPhone, &parsingErrors)
 	lib.ParseStringToPrimitive(m["agency_id"], &agencyId, &parsingErrors)
 
-	item.AgencyEmail = lib.IfThenElse(agencyEmail != "", &agencyEmail, nil)
-	item.AgencyFareUrl = lib.IfThenElse(agencyFareUrl != "", &agencyFareUrl, nil)
-	item.AgencyLang = lib.IfThenElse(agencyLang != "", &agencyLang, nil)
-	item.AgencyPhone = lib.IfThenElse(agencyPhone != "", &agencyPhone, nil)
-	item.AgencyId = lib.IfThenElse(agencyId != "", &agencyId, nil)
+	agency.AgencyEmail = lib.IfThenElse(agencyEmail != "", &agencyEmail, nil)
+	agency.AgencyFareUrl = lib.IfThenElse(agencyFareUrl != "", &agencyFareUrl, nil)
+	agency.AgencyLang = lib.IfThenElse(agencyLang != "", &agencyLang, nil)
+	agency.AgencyPhone = lib.IfThenElse(agencyPhone != "", &agencyPhone, nil)
+	agency.AgencyId = lib.IfThenElse(agencyId != "", &agencyId, nil)
 
 	//Convert Required Values
-	lib.ParseStringToPrimitive(m["agency_timezone"], &item.AgencyTimezone, &parsingErrors)
-	lib.ParseStringToPrimitive(m["agency_name"], &item.AgencyName, &parsingErrors)
-	lib.ParseStringToPrimitive(m["agency_url"], &item.AgencyUrl, &parsingErrors)
+	lib.ParseStringToPrimitive(m["agency_timezone"], &agency.AgencyTimezone, &parsingErrors)
+	lib.ParseStringToPrimitive(m["agency_name"], &agency.AgencyName, &parsingErrors)
+	lib.ParseStringToPrimitive(m["agency_url"], &agency.AgencyUrl, &parsingErrors)
 
 	if len(parsingErrors) > 0 {
 		for _, err := range parsingErrors {
@@ -93,12 +91,12 @@ func parseAgency(m map[string]string, totalAgencies int) []types.Message {
 		}
 	}
 	// Validate Values
-	if item.AgencyTimezone == "" {
+	if agency.AgencyTimezone == "" {
 		messages = append(messages, types.Message{
 			Field:   "agency_timezone",
 			Message: "Agency timezone is required.",
 		})
-	} else if tzErrors := lib.ValidateTimezone(item.AgencyTimezone); tzErrors != "" {
+	} else if tzErrors := lib.ValidateTimezone(agency.AgencyTimezone); tzErrors != "" {
 		messages = append(messages, types.Message{
 			Field:   "agency_timezone",
 			Message: tzErrors,
@@ -106,12 +104,12 @@ func parseAgency(m map[string]string, totalAgencies int) []types.Message {
 	}
 
 	// Validate Agency URL
-	if item.AgencyUrl == "" {
+	if agency.AgencyUrl == "" {
 		messages = append(messages, types.Message{
 			Field:   "agency_url",
 			Message: "Agency URL is required.",
 		})
-	} else if urlErrors := lib.ValidateUrl(item.AgencyUrl); urlErrors != "" {
+	} else if urlErrors := lib.ValidateUrl(agency.AgencyUrl); urlErrors != "" {
 		messages = append(messages, types.Message{
 			Field:   "agency_url",
 			Message: urlErrors,
@@ -119,7 +117,7 @@ func parseAgency(m map[string]string, totalAgencies int) []types.Message {
 	}
 
 	// Validate Agency Name
-	if item.AgencyName == "" {
+	if agency.AgencyName == "" {
 		messages = append(messages, types.Message{
 			Field:   "agency_name",
 			Message: "Agency name is required.",
@@ -127,7 +125,7 @@ func parseAgency(m map[string]string, totalAgencies int) []types.Message {
 	}
 
 	// Validate Agency ID
-	if totalAgencies > 1 && item.AgencyId == nil {
+	if totalAgencies > 1 && agency.AgencyId == nil {
 		messages = append(messages, types.Message{
 			Field:   "agency_id",
 			Message: "Agency ID is required when the dataset contains data for multiple transit agencies.",
@@ -135,8 +133,8 @@ func parseAgency(m map[string]string, totalAgencies int) []types.Message {
 	}
 
 	// Validate Agency Phone
-	if item.AgencyPhone != nil && *item.AgencyPhone != "" {
-		if phoneErrors := lib.ValidatePhone(*item.AgencyPhone); phoneErrors != "" {
+	if agency.AgencyPhone != nil && *agency.AgencyPhone != "" {
+		if phoneErrors := lib.ValidatePhone(*agency.AgencyPhone); phoneErrors != "" {
 			messages = append(messages, types.Message{
 				Field:   "agency_phone",
 				Message: phoneErrors,
@@ -145,8 +143,8 @@ func parseAgency(m map[string]string, totalAgencies int) []types.Message {
 	}
 
 	// Validate Agency Email
-	if item.AgencyEmail != nil && *item.AgencyEmail != "" {
-		if emailErrors := lib.ValidateEmail(*item.AgencyEmail); emailErrors != "" {
+	if agency.AgencyEmail != nil && *agency.AgencyEmail != "" {
+		if emailErrors := lib.ValidateEmail(*agency.AgencyEmail); emailErrors != "" {
 			messages = append(messages, types.Message{
 				Field:   "agency_email",
 				Message: emailErrors,
@@ -155,8 +153,8 @@ func parseAgency(m map[string]string, totalAgencies int) []types.Message {
 	}
 
 	// Validate Agency Fare URL
-	if item.AgencyFareUrl != nil && *item.AgencyFareUrl != "" {
-		if urlErrors := lib.ValidateUrl(*item.AgencyFareUrl); urlErrors != "" {
+	if agency.AgencyFareUrl != nil && *agency.AgencyFareUrl != "" {
+		if urlErrors := lib.ValidateUrl(*agency.AgencyFareUrl); urlErrors != "" {
 			messages = append(messages, types.Message{
 				Field:   "agency_fare_url",
 				Message: urlErrors,
@@ -165,8 +163,8 @@ func parseAgency(m map[string]string, totalAgencies int) []types.Message {
 	}
 
 	// Validate Agency Language
-	if item.AgencyLang != nil && *item.AgencyLang != "" {
-		if langErrors := lib.ValidateLanguage(*item.AgencyLang); langErrors != "" {
+	if agency.AgencyLang != nil && *agency.AgencyLang != "" {
+		if langErrors := lib.ValidateLanguage(*agency.AgencyLang); langErrors != "" {
 			messages = append(messages, types.Message{
 				Field:   "agency_lang",
 				Message: langErrors,
@@ -174,5 +172,5 @@ func parseAgency(m map[string]string, totalAgencies int) []types.Message {
 		}
 	}
 
-	return messages
+	return agency, messages
 }
