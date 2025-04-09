@@ -126,6 +126,7 @@ type PerformanceTracker struct {
 
 // StartPerformanceTracker creates a new performance tracker
 func (l *Logger) StartPerformanceTracker(operation string) *PerformanceTracker {
+	AppLogger.Info(fmt.Sprintf("Starting operation '%s'", operation))
 	return &PerformanceTracker{
 		start:     time.Now(),
 		operation: operation,
