@@ -3,6 +3,7 @@ package lib
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"reflect"
 	"strconv"
 )
@@ -153,4 +154,17 @@ func IfThenElse[T any](condition bool, a, b T) T {
 		return a
 	}
 	return b
+}
+
+// MergeMaps merges two maps into a single map
+//
+//	@param a map[string]string - The first map
+//	@param b map[string]string - The second map
+//	@return map[string]string - The merged map
+func MergeMaps[T any](a, b map[string]T) map[string]T {
+	result := make(map[string]T)
+	maps.Copy(result, a)
+	maps.Copy(result, b)
+
+	return result
 }
