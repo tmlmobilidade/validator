@@ -26,30 +26,6 @@ func NewParseTripValidation(severity *types.Severity) *parseTripValidation {
 
 func (v *parseTripValidation) Validate(gtfs types.Gtfs) (trips []types.Trip, messages []types.Message) {
 	tripIds := make(map[string]bool)
-	routeIds := make(map[string]bool)
-	serviceIds := make(map[string]bool)
-	shapeIds := make(map[string]bool)
-
-	// Collect all route IDs for validation
-	for _, route := range gtfs.Files["routes"] {
-		if routeId, ok := route["route_id"]; ok && routeId != "" {
-			routeIds[routeId] = true
-		}
-	}
-
-	// Collect all service IDs for validation
-	for _, calendar := range gtfs.Files["calendar"] {
-		if serviceId, ok := calendar["service_id"]; ok && serviceId != "" {
-			serviceIds[serviceId] = true
-		}
-	}
-
-	// Collect all shape IDs for validation
-	for _, shape := range gtfs.Files["shapes"] {
-		if shapeId, ok := shape["shape_id"]; ok && shapeId != "" {
-			shapeIds[shapeId] = true
-		}
-	}
 
 	// Check if any routes have continuous pickup/dropoff behavior
 	hasContinuousPickupDropoff := false
@@ -72,7 +48,7 @@ func (v *parseTripValidation) Validate(gtfs types.Gtfs) (trips []types.Trip, mes
 	}
 
 	for i, trip := range gtfs.Files["trips"] {
-		trip, tripMessages := parseTrip(trip, routeIds, serviceIds, shapeIds, hasContinuousPickupDropoff, hasStopTimesContinuousPickupDropoff)
+		trip, tripMessages := parseTrip(trip, gtfs.IdMap["routes"], gtfs.IdMap["calendar"], gtfs.IdMap["shapes"], hasContinuousPickupDropoff, hasStopTimesContinuousPickupDropoff)
 		trips = append(trips, trip)
 
 		// Check for duplicate trip IDs
@@ -102,7 +78,7 @@ func (v *parseTripValidation) Validate(gtfs types.Gtfs) (trips []types.Trip, mes
 	return trips, messages
 }
 
-func parseTrip(m map[string]string, routeIds map[string]bool, serviceIds map[string]bool, shapeIds map[string]bool, hasContinuousPickupDropoff bool, hasStopTimesContinuousPickupDropoff bool) (trip types.Trip, messages []types.Message) {
+func parseTrip(m map[string]string, routeIds map[string]int, serviceIds map[string]int, shapeIds map[string]int, hasContinuousPickupDropoff bool, hasStopTimesContinuousPickupDropoff bool) (trip types.Trip, messages []types.Message) {
 	var parsingErrors []string
 
 	// Convert Optional Primitive Values
@@ -156,11 +132,14 @@ func parseTrip(m map[string]string, routeIds map[string]bool, serviceIds map[str
 			Field:   "route_id",
 			Message: "Route ID is required.",
 		})
-	} else if !routeIds[trip.RouteId] {
-		messages = append(messages, types.Message{
-			Field:   "route_id",
-			Message: "Route ID must reference a valid route_id from routes.txt.",
-		})
+	} else {
+		_, ok := routeIds[trip.RouteId]
+		if !ok {
+			messages = append(messages, types.Message{
+				Field:   "route_id",
+				Message: "Route ID must reference a valid route_id from routes.txt.",
+			})
+		}
 	}
 
 	// Validate Required service_id
@@ -169,19 +148,25 @@ func parseTrip(m map[string]string, routeIds map[string]bool, serviceIds map[str
 			Field:   "service_id",
 			Message: "Service ID is required.",
 		})
-	} else if !serviceIds[trip.ServiceId] {
-		messages = append(messages, types.Message{
-			Field:   "service_id",
-			Message: "Service ID must reference a valid service_id from calendar.txt or calendar_dates.txt.",
-		})
+	} else {
+		_, ok := serviceIds[trip.ServiceId]
+		if !ok {
+			messages = append(messages, types.Message{
+				Field:   "service_id",
+				Message: "Service ID must reference a valid service_id from calendar.txt or calendar_dates.txt.",
+			})
+		}
 	}
 
 	// Validate shape_id if provided
-	if trip.ShapeId != nil && *trip.ShapeId != "" && !shapeIds[*trip.ShapeId] {
-		messages = append(messages, types.Message{
-			Field:   "shape_id",
-			Message: "Shape ID must reference a valid shape_id from shapes.txt.",
-		})
+	if trip.ShapeId != nil && *trip.ShapeId != "" {
+		_, ok := shapeIds[*trip.ShapeId]
+		if !ok {
+			messages = append(messages, types.Message{
+				Field:   "shape_id",
+				Message: "Shape ID must reference a valid shape_id from shapes.txt.",
+			})
+		}
 	}
 
 	// Validate shape_id is required if continuous pickup/dropoff behavior is defined

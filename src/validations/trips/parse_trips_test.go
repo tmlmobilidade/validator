@@ -20,9 +20,9 @@ func TestParseTrip_ValidTrip(t *testing.T) {
 		"bikes_allowed":         "1",
 	}
 
-	routeIds := map[string]bool{"route1": true}
-	serviceIds := map[string]bool{"service1": true}
-	shapeIds := map[string]bool{"shape1": true}
+	routeIds := map[string]int{"route1": 1}
+	serviceIds := map[string]int{"service1": 1}
+	shapeIds := map[string]int{"shape1": 1}
 
 	trip, messages := parseTrip(input, routeIds, serviceIds, shapeIds, false, false)
 
@@ -75,9 +75,9 @@ func TestParseTrip_MinimalValidTrip(t *testing.T) {
 		"service_id": "service1",
 	}
 
-	routeIds := map[string]bool{"route1": true}
-	serviceIds := map[string]bool{"service1": true}
-	shapeIds := map[string]bool{}
+	routeIds := map[string]int{"route1": 1}
+	serviceIds := map[string]int{"service1": 1}
+	shapeIds := map[string]int{"shape1": 1}
 
 	trip, messages := parseTrip(input, routeIds, serviceIds, shapeIds, false, false)
 
@@ -107,9 +107,9 @@ func TestParseTrip_MissingRequiredFields(t *testing.T) {
 		"trip_headsign": "Downtown",
 	}
 
-	routeIds := map[string]bool{}
-	serviceIds := map[string]bool{}
-	shapeIds := map[string]bool{}
+	routeIds := map[string]int{}
+	serviceIds := map[string]int{}
+	shapeIds := map[string]int{}
 
 	_, messages := parseTrip(input, routeIds, serviceIds, shapeIds, false, false)
 
@@ -139,9 +139,9 @@ func TestParseTrip_InvalidRouteId(t *testing.T) {
 		"service_id": "service1",
 	}
 
-	routeIds := map[string]bool{"route1": true}
-	serviceIds := map[string]bool{"service1": true}
-	shapeIds := map[string]bool{}
+	routeIds := map[string]int{"route1": 1}
+	serviceIds := map[string]int{"service1": 1}
+	shapeIds := map[string]int{}
 
 	_, messages := parseTrip(input, routeIds, serviceIds, shapeIds, false, false)
 
@@ -167,9 +167,9 @@ func TestParseTrip_InvalidServiceId(t *testing.T) {
 		"service_id": "invalid_service",
 	}
 
-	routeIds := map[string]bool{"route1": true}
-	serviceIds := map[string]bool{"service1": true}
-	shapeIds := map[string]bool{}
+	routeIds := map[string]int{"route1": 1}
+	serviceIds := map[string]int{"service1": 1}
+	shapeIds := map[string]int{}
 
 	_, messages := parseTrip(input, routeIds, serviceIds, shapeIds, false, false)
 
@@ -196,9 +196,9 @@ func TestParseTrip_InvalidShapeId(t *testing.T) {
 		"shape_id":   "invalid_shape",
 	}
 
-	routeIds := map[string]bool{"route1": true}
-	serviceIds := map[string]bool{"service1": true}
-	shapeIds := map[string]bool{"shape1": true}
+	routeIds := map[string]int{"route1": 1}
+	serviceIds := map[string]int{"service1": 1}
+	shapeIds := map[string]int{"shape1": 1}
 
 	_, messages := parseTrip(input, routeIds, serviceIds, shapeIds, false, false)
 
@@ -224,9 +224,9 @@ func TestParseTrip_MissingShapeIdWithContinuousPickupDropoff(t *testing.T) {
 		"service_id": "service1",
 	}
 
-	routeIds := map[string]bool{"route1": true}
-	serviceIds := map[string]bool{"service1": true}
-	shapeIds := map[string]bool{}
+	routeIds := map[string]int{"route1": 1}
+	serviceIds := map[string]int{"service1": 1}
+	shapeIds := map[string]int{}
 
 	_, messages := parseTrip(input, routeIds, serviceIds, shapeIds, true, false)
 
@@ -252,9 +252,9 @@ func TestParseTrip_MissingShapeIdWithStopTimesContinuousPickupDropoff(t *testing
 		"service_id": "service1",
 	}
 
-	routeIds := map[string]bool{"route1": true}
-	serviceIds := map[string]bool{"service1": true}
-	shapeIds := map[string]bool{}
+	routeIds := map[string]int{"route1": 1}
+	serviceIds := map[string]int{"service1": 1}
+	shapeIds := map[string]int{}
 
 	_, messages := parseTrip(input, routeIds, serviceIds, shapeIds, false, true)
 
@@ -281,9 +281,9 @@ func TestParseTrip_InvalidBikesAllowed(t *testing.T) {
 		"bikes_allowed": "5", // Invalid value
 	}
 
-	routeIds := map[string]bool{"route1": true}
-	serviceIds := map[string]bool{"service1": true}
-	shapeIds := map[string]bool{}
+	routeIds := map[string]int{"route1": 1}
+	serviceIds := map[string]int{"service1": 1}
+	shapeIds := map[string]int{}
 
 	_, messages := parseTrip(input, routeIds, serviceIds, shapeIds, false, false)
 
@@ -310,9 +310,9 @@ func TestParseTrip_InvalidWheelchairAccessible(t *testing.T) {
 		"wheelchair_accessible": "5", // Invalid value
 	}
 
-	routeIds := map[string]bool{"route1": true}
-	serviceIds := map[string]bool{"service1": true}
-	shapeIds := map[string]bool{}
+	routeIds := map[string]int{"route1": 1}
+	serviceIds := map[string]int{"service1": 1}
+	shapeIds := map[string]int{}
 
 	_, messages := parseTrip(input, routeIds, serviceIds, shapeIds, false, false)
 
@@ -350,6 +350,17 @@ func TestParseTripValidation_Validate(t *testing.T) {
 				{
 					"service_id": "service1",
 				},
+			},
+		},
+		IdMap: map[string]map[string]int{
+			"trips": {
+				"trip1": 1,
+			},
+			"routes": {
+				"route1": 1,
+			},
+			"calendar": {
+				"service1": 1,
 			},
 		},
 	}
