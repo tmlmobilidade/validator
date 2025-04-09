@@ -66,9 +66,10 @@ func parseStop(m map[string]string) []types.Message {
 
 	//Convert Optional Primitive Values
 	var levelId, parentStation, platformCode, stopCode, stopDesc, stopName, stopTimezone, stopUrl, wheelchairBoarding, zoneId string
-	var locationType, wheelchairBoardingType uint8
+	var wheelchairBoardingType, locationType uint8
 	var stopLat, stopLon float32
 
+	lib.ParseStringToPrimitive(m["location_type"], &locationType, &parsingErrors)
 	lib.ParseStringToPrimitive(m["level_id"], &levelId, &parsingErrors)
 	lib.ParseStringToPrimitive(m["parent_station"], &parentStation, &parsingErrors)
 	lib.ParseStringToPrimitive(m["platform_code"], &platformCode, &parsingErrors)
@@ -79,23 +80,23 @@ func parseStop(m map[string]string) []types.Message {
 	lib.ParseStringToPrimitive(m["stop_url"], &stopUrl, &parsingErrors)
 	lib.ParseStringToPrimitive(m["wheelchair_boarding"], &wheelchairBoarding, &parsingErrors)
 	lib.ParseStringToPrimitive(m["zone_id"], &zoneId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["location_type"], &locationType, &parsingErrors)
 	lib.ParseStringToPrimitive(m["wheelchair_boarding"], &wheelchairBoardingType, &parsingErrors)
 	lib.ParseStringToPrimitive(m["stop_lat"], &stopLat, &parsingErrors)
 	lib.ParseStringToPrimitive(m["stop_lon"], &stopLon, &parsingErrors)
 
-	item.LevelId = &levelId
-	item.ParentStation = &parentStation
-	item.PlatformCode = &platformCode
-	item.StopCode = &stopCode
-	item.StopDesc = &stopDesc
-	item.StopName = &stopName
-	item.StopTimezone = &stopTimezone
-	item.StopUrl = &stopUrl
-	item.ZoneId = &zoneId
-	item.LocationType = &locationType
-	item.WheelchairBoarding = &wheelchairBoardingType
-	item.StopLat = &stopLat
+	item.LevelId = lib.IfThenElse(m["level_id"] != "", &levelId, nil)
+	item.ParentStation = lib.IfThenElse(m["parent_station"] != "", &parentStation, nil)
+	item.PlatformCode = lib.IfThenElse(m["platform_code"] != "", &platformCode, nil)
+	item.StopCode = lib.IfThenElse(m["stop_code"] != "", &stopCode, nil)
+	item.StopDesc = lib.IfThenElse(m["stop_desc"] != "", &stopDesc, nil)
+	item.StopName = lib.IfThenElse(m["stop_name"] != "", &stopName, nil)
+	item.StopTimezone = lib.IfThenElse(m["stop_timezone"] != "", &stopTimezone, nil)
+	item.StopUrl = lib.IfThenElse(m["stop_url"] != "", &stopUrl, nil)
+	item.ZoneId = lib.IfThenElse(m["zone_id"] != "", &zoneId, nil)
+	item.StopLat = lib.IfThenElse(m["stop_lat"] != "", &stopLat, nil)
+	item.StopLon = lib.IfThenElse(m["stop_lon"] != "", &stopLon, nil)
+	item.WheelchairBoarding = lib.IfThenElse(m["wheelchair_boarding"] != "", &wheelchairBoardingType, nil)
+	item.LocationType = lib.IfThenElse(m["location_type"] != "", &locationType, nil)
 
 	//Convert Required Values
 	lib.ParseStringToPrimitive(m["stop_id"], &item.StopId, &parsingErrors)
@@ -120,7 +121,7 @@ func parseStop(m map[string]string) []types.Message {
 	}
 
 	// Validate stop_name based on location_type
-	if *item.LocationType == 0 || *item.LocationType == 1 || *item.LocationType == 2 {
+	if item.LocationType != nil && (*item.LocationType == 0 || *item.LocationType == 1 || *item.LocationType == 2) {
 		if *item.StopName == "" {
 			messages = append(messages, types.Message{
 				Field:   "stop_name",
@@ -130,7 +131,7 @@ func parseStop(m map[string]string) []types.Message {
 	}
 
 	// Validate stop_lat and stop_lon based on location_type
-	if *item.LocationType == 0 || *item.LocationType == 1 || *item.LocationType == 2 {
+	if item.LocationType != nil && (*item.LocationType == 0 || *item.LocationType == 1 || *item.LocationType == 2) {
 		if item.StopLat == nil || *item.StopLat == 0 {
 			messages = append(messages, types.Message{
 				Field:   "stop_lat",
@@ -146,14 +147,14 @@ func parseStop(m map[string]string) []types.Message {
 	}
 
 	// Validate parent_station based on location_type
-	if *item.LocationType == 2 || *item.LocationType == 3 || *item.LocationType == 4 {
+	if item.LocationType != nil && (*item.LocationType == 2 || *item.LocationType == 3 || *item.LocationType == 4) {
 		if item.ParentStation == nil || *item.ParentStation == "" {
 			messages = append(messages, types.Message{
 				Field:   "parent_station",
 				Message: "Parent station is required for entrances (location_type=2), generic nodes (location_type=3), and boarding areas (location_type=4).",
 			})
 		}
-	} else if *item.LocationType == 1 && item.ParentStation != nil && *item.ParentStation != "" {
+	} else if item.LocationType != nil && *item.LocationType == 1 && item.ParentStation != nil && *item.ParentStation != "" {
 		messages = append(messages, types.Message{
 			Field:   "parent_station",
 			Message: "Parent station must be empty for stations (location_type=1).",
