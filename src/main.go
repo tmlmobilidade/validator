@@ -5,6 +5,7 @@ import (
 	"main/src/lib"
 	"main/src/services"
 	"main/src/validations"
+	"sync"
 )
 
 func main() {
@@ -23,17 +24,27 @@ func main() {
 	tracker.End()
 	tracker = lib.AppLogger.StartPerformanceTracker("Running Validations")
 
-	// Run Validations for each file
-	for fileName := range gtfs.Files {
+	// Create a wait group to wait for all validations to complete
+	var wg sync.WaitGroup
 
+	// Run Validations for each file concurrently
+	for fileName := range gtfs.Files {
 		// If fileName is not in the GTFS_FILE_RULES_MAP, skip
 		if _, ok := validations.GTFS_FILE_RULES_MAP[fileName]; !ok {
 			// TODO: Add to warning messages
 			continue
 		}
 
-		validations.GTFS_FILE_RULES_MAP[fileName](gtfs)
+		wg.Add(1)
+		go func(name string) {
+			defer wg.Done()
+			validations.GTFS_FILE_RULES_MAP[name](gtfs)
+		}(fileName)
 	}
+
+	// Wait for all validations to complete
+	wg.Wait()
+	tracker.End()
 
 	// Print Summary
 	// services.AppMessageService.PrintSummary()
