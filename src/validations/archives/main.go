@@ -5,6 +5,6 @@ import (
 	"main/src/types"
 )
 
-func RunValidations(gtfsData types.Gtfs) {
+func RunValidations(gtfs types.Gtfs) {
 	lib.AppLogger.Debug("Running Archives Validations...")
 }

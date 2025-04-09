@@ -6,7 +6,7 @@ import (
 )
 
 func TestParseStopValidation_SingleValidStop(t *testing.T) {
-	gtfsData := types.Gtfs{
+	gtfs := types.Gtfs{
 		Files: map[string][]map[string]string{
 			"stops": {
 				{
@@ -20,7 +20,7 @@ func TestParseStopValidation_SingleValidStop(t *testing.T) {
 	}
 
 	validator := NewParseStopValidation(nil)
-	_, messages := validator.Validate(gtfsData)
+	_, messages := validator.Validate(gtfs)
 
 	if len(messages) != 0 {
 		t.Errorf("Expected 0 errors, got %d", len(messages))
@@ -31,7 +31,7 @@ func TestParseStopValidation_SingleValidStop(t *testing.T) {
 }
 
 func TestParseStopValidation_DuplicateStopID(t *testing.T) {
-	gtfsData := types.Gtfs{
+	gtfs := types.Gtfs{
 		Files: map[string][]map[string]string{
 			"stops": {
 				{
@@ -51,7 +51,7 @@ func TestParseStopValidation_DuplicateStopID(t *testing.T) {
 	}
 
 	validator := NewParseStopValidation(nil)
-	_, messages := validator.Validate(gtfsData)
+	_, messages := validator.Validate(gtfs)
 
 	if len(messages) != 1 {
 		t.Errorf("Expected 1 error for duplicate stop_id, got %d", len(messages))

@@ -12,17 +12,19 @@ func main() {
 	// Clear the terminal
 	lib.AppLogger.Clear()
 	lib.AppLogger.Divider("GTFS Validator")
+	tracker := lib.AppLogger.StartPerformanceTracker("Reading GTFS")
 
-	// gtfsData, err := services.ReadGTFSZip("data/BOM.zip")
-	gtfsData, err := services.ReadGTFSZip("data/bad-format.zip")
+	// gtfs, err := services.ReadGTFSZip("data/BOM.zip")
+	gtfs, err := services.ReadGTFSZip("data/bad-format.zip")
 	if err != nil {
 		log.Fatalf("Error reading GTFS: %v", err)
 	}
 
-	lib.AppLogger.Divider("Running Validations")
+	tracker.End()
+	tracker = lib.AppLogger.StartPerformanceTracker("Running Validations")
 
 	// Run Validations for each file
-	for fileName := range gtfsData {
+	for fileName := range gtfs.Files {
 
 		// If fileName is not in the GTFS_FILE_RULES_MAP, skip
 		if _, ok := validations.GTFS_FILE_RULES_MAP[fileName]; !ok {
@@ -30,7 +32,7 @@ func main() {
 			continue
 		}
 
-		validations.GTFS_FILE_RULES_MAP[fileName](gtfsData)
+		validations.GTFS_FILE_RULES_MAP[fileName](gtfs)
 	}
 
 	// Print Summary

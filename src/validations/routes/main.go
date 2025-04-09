@@ -7,12 +7,12 @@ import (
 	"strconv"
 )
 
-func RunValidations(gtfsData types.Gtfs) {
+func RunValidations(gtfs types.Gtfs) {
 	lib.AppLogger.Debug("Running Routes Validations...")
 
 	// Parsing Validation
 	parseRouteValidation := NewParseRouteValidation(nil)
-	routes, messages := parseRouteValidation.Validate(gtfsData)
+	routes, messages := parseRouteValidation.Validate(gtfs)
 	for _, message := range messages {
 		services.AppMessageService.AddMessage(message)
 		lib.AppLogger.Error(message.Message)

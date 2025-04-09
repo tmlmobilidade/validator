@@ -5,5 +5,5 @@ type Validation struct {
 	Description string
 	Severity    Severity
 
-	Validate func(gtfsData Gtfs) []Message
+	Validate func(gtfs Gtfs) []Message
 }

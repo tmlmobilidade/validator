@@ -48,7 +48,7 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 	}
 	defer zipReader.Close()
 
-	gtfsData := make(types.GtfsFiles)
+	gtfsFiles := make(types.GtfsFiles)
 	gtfsFieldCount := make(types.GtfsFieldCount)
 
 	type result struct {
@@ -122,11 +122,11 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 			lib.AppLogger.Error("Error processing file: " + res.fileNameWithoutExt + " " + res.err.Error())
 			continue
 		}
-		gtfsData[res.fileNameWithoutExt] = res.data
+		gtfsFiles[res.fileNameWithoutExt] = res.data
 	}
 
 	return types.Gtfs{
-		Files:        gtfsData,
+		Files:        gtfsFiles,
 		FieldCounter: gtfsFieldCount,
 	}, nil
 }
