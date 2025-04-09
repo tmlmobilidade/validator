@@ -52,6 +52,11 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 	gtfsFieldCount := make(types.GtfsFieldCount)
 	gtfsIdsMap := make(types.GtfsIdMap)
 
+	// Add mutexes to protect concurrent access to shared maps
+	// What is a mutex? https://stackoverflow.com/questions/34524/what-is-a-mutex
+	var fieldCountMutex sync.Mutex
+	var idsMapMutex sync.Mutex
+
 	type result struct {
 		fileNameWithoutExt string
 		data               []map[string]string
@@ -91,7 +96,7 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 					continue
 				}
 
-				parsedData, err := parseCSV(content, fileNameWithoutExt, &gtfsFieldCount, &gtfsIdsMap)
+				parsedData, err := parseCSV(content, fileNameWithoutExt, &gtfsFieldCount, &gtfsIdsMap, &fieldCountMutex, &idsMapMutex)
 				if err != nil {
 					lib.AppLogger.Error("Error parsing file: " + fileName + " " + err.Error())
 					continue
@@ -133,10 +138,41 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 	}, nil
 }
 
+// handlePrimaryKeyMapping processes the primary key mapping for a given file, header, and value.
+// It handles both single and composite primary keys, updating the idsMap accordingly.
+func handlePrimaryKeyMapping(primaryKey any, header string, value string, fileNameWithoutExt string, rowIndex int, idsMap *types.GtfsIdMap, idsMapMutex *sync.Mutex) {
+	if primaryKey == nil {
+		return
+	}
+
+	switch pk := primaryKey.(type) {
+	case string:
+		// Single primary key case
+		if pk == header && value != "" {
+			idsMapMutex.Lock()
+			(*idsMap)[fileNameWithoutExt][value] = rowIndex
+			idsMapMutex.Unlock()
+		}
+	case []string:
+		// Composite primary key case
+		for _, key := range pk {
+			if key == header && value != "" {
+				idsMapMutex.Lock()
+				if _, exists := (*idsMap)[fileNameWithoutExt]; !exists {
+					(*idsMap)[fileNameWithoutExt] = make(map[string]int)
+				}
+				// Store each component separately with a prefix to avoid collisions
+				(*idsMap)[fileNameWithoutExt][value] = rowIndex
+				idsMapMutex.Unlock()
+			}
+		}
+	}
+}
+
 // parseCSV parses CSV content into a slice of maps where each map represents a row
 // with column headers as keys and cell values as values.
 // Returns an error if the CSV is empty or cannot be parsed.
-func parseCSV(content []byte, fileNameWithoutExt string, fieldCount *types.GtfsFieldCount, idsMap *types.GtfsIdMap) ([]map[string]string, error) {
+func parseCSV(content []byte, fileNameWithoutExt string, fieldCount *types.GtfsFieldCount, idsMap *types.GtfsIdMap, fieldCountMutex *sync.Mutex, idsMapMutex *sync.Mutex) ([]map[string]string, error) {
 	reader := csv.NewReader(bytes.NewReader(content))
 	reader.TrimLeadingSpace = true
 
@@ -160,9 +196,11 @@ func parseCSV(content []byte, fileNameWithoutExt string, fieldCount *types.GtfsF
 	}
 
 	// Initialize the inner map for this file if it doesn't exist
+	idsMapMutex.Lock()
 	if (*idsMap)[fileNameWithoutExt] == nil {
 		(*idsMap)[fileNameWithoutExt] = make(map[string]int)
 	}
+	idsMapMutex.Unlock()
 
 	for rowIndex, row := range records[1:] {
 		entry := make(map[string]string, len(headers))
@@ -176,22 +214,20 @@ func parseCSV(content []byte, fileNameWithoutExt string, fieldCount *types.GtfsF
 				localCounts[header]++
 			}
 
-			if primaryKey != nil && primaryKey == header && value != "" {
-				(*idsMap)[fileNameWithoutExt][value] = rowIndex
-			}
+			handlePrimaryKeyMapping(primaryKey, header, value, fileNameWithoutExt, rowIndex, idsMap, idsMapMutex)
 		}
 		result = append(result, entry)
 	}
 
 	// Now update fieldCount once
+	fieldCountMutex.Lock()
 	if (*fieldCount)[fileNameWithoutExt] == nil {
 		(*fieldCount)[fileNameWithoutExt] = make(map[string]int)
 	}
 	for header, count := range localCounts {
 		(*fieldCount)[fileNameWithoutExt][header] += count
 	}
-
-	// Update idsMap
+	fieldCountMutex.Unlock()
 
 	return result, nil
 }
