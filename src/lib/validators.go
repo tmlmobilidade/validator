@@ -83,3 +83,8 @@ func ValidateLanguage(lang string) string {
 	}
 	return ""
 }
+
+func IsValidServiceDate(date string) bool {
+	_, err := time.Parse("20060102", date)
+	return err == nil
+}
