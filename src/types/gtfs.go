@@ -131,6 +131,8 @@ type StopTime struct {
 	DistrictName                  *string  `json:"district_name"`
 	DockingBayType                *string  `json:"docking_bay_type"`
 	DropOffType                   *int     `json:"drop_off_type"`
+	DropOffBookingRuleId          *string  `json:"drop_off_booking_rule_id"`
+	EndPickupDropOffWindow        *string  `json:"end_pickup_drop_off_window"`
 	FlagMaintainer                *string  `json:"flag_maintainer"`
 	HasAbusiveParking             *string  `json:"has_abusive_parking"`
 	HasBench                      *string  `json:"has_bench"`
@@ -165,6 +167,8 @@ type StopTime struct {
 	LastSchedulesMaintenance      *string  `json:"last_schedules_maintenance"`
 	LightRail                     *string  `json:"light_rail"`
 	Locality                      *string  `json:"locality"`
+	LocationGroupId               *string  `json:"location_group_id"`
+	LocationId                    *string  `json:"location_id"`
 	MunicipalityId                *string  `json:"municipality_id"`
 	MunicipalityName              *string  `json:"municipality_name"`
 	NearBeach                     *string  `json:"near_beach"`
@@ -181,6 +185,7 @@ type StopTime struct {
 	ParishId                      *string  `json:"parish_id"`
 	ParishName                    *string  `json:"parish_name"`
 	PickupType                    *int     `json:"pickup_type"`
+	PickupBookingRuleId           *string  `json:"pickup_booking_rule_id"`
 	PipAudioCode                  *string  `json:"pip_audio_code"`
 	PipRealtimeCode               *string  `json:"pip_realtime_code"`
 	RegionId                      *string  `json:"region_id"`
@@ -189,6 +194,7 @@ type StopTime struct {
 	ShelterCode                   *string  `json:"shelter_code"`
 	ShelterMaintainer             *string  `json:"shelter_maintainer"`
 	SidewalkType                  *string  `json:"sidewalk_type"`
+	StartPickupDropOffWindow      *string  `json:"start_pickup_drop_off_window"`
 	StopHeadsign                  *string  `json:"stop_headsign"`
 	StopId                        string   `json:"stop_id"`
 	StopNameNew                   *string  `json:"stop_name_new"`
