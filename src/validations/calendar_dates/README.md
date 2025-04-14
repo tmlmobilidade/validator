@@ -10,16 +10,18 @@ Exceptions for the services defined in the `calendar.txt` file.
 
 ---
 
+The `calendar_dates.txt` table explicitly activates or disables service by date. It may be used in two ways.
+
+**Recommended**: Use `calendar_dates.txt` in conjunction with `calendar.txt` to define exceptions to the default service patterns defined in `calendar.txt`. If service is generally regular, with a few changes on explicit dates (for instance, to accommodate special event services, or a school schedule), this is a good approach. In this case `calendar_dates.service_id` is a foreign ID referencing `calendar.service_id`.
+
+**Alternate**: Omit `calendar.txt`, and specify each date of service in `calendar_dates.txt`. This allows for considerable service variation and accommodates service without normal weekly schedules. In this case `service_id` is an ID.
+
+---
+
 ### Field Definitions
 |Field Name|Type|Presence|Description|
 |--- |--- |--- |--- |
-|`service_id`|Unique ID|Required|Identifies a set of dates when service is available for one or more routes.|
-|`monday`|Enum|Required|Indicates whether the service operates on all Mondays in the date range specified by the start_date and end_date fields. Note that exceptions for particular dates may be listed in calendar_dates.txt.<br><br>**Valid options are**:<ul><li>`1` - Service is available for all Mondays in the date range.</li><li>`0` - Service is not available for Mondays in the date range.</li></ul>|
-|`tuesday`|Enum|Required|Functions in the same way as monday except applies to Tuesdays|
-|`wednesday`|Enum|Required|Functions in the same way as monday except applies to Wednesdays|
-|`thursday`|Enum|Required|Functions in the same way as monday except applies to Thursdays|
-|`friday`|Enum|Required|Functions in the same way as monday except applies to Fridays|
-|`saturday`|Enum|Required|Functions in the same way as monday except applies to Saturdays.|
-|`sunday`|Enum|Required|Functions in the same way as monday except applies to Sundays.|
-|`start_date`|Date|Required|Start service day for the service interval.|
-|`end_date`|Date|Required|End service day for the service interval. This service day is included in the interval.|
+|`service_id`|Foreign ID referencing calendar.service_id or ID|Required|Identifies a set of dates when a service exception occurs for one or more routes. Each (`service_id`, `date`) pair may only appear once in `calendar_dates.txt` if using `calendar.txt` and calendar_dates.txt in conjunction. If a `service_id` value appears in both `calendar.txt` and `calendar_dates.txt`, the information in `calendar_dates.txt` modifies the service information specified in `calendar.txt`.|
+|`date`|Date|Required|Date when service exception occurs.|
+|`exception_type`|Enum|Required|Indicates whether service is available on the date specified in the date field.<br>**Valid options are**:<ul><li>`1` - Service has been added for the specified date.</li><li>`2` - Service has been removed for the specified date.</li></ul>**Example**: Suppose a route has one set of trips available on holidays and another set of trips available on all other days. One `service_id` could correspond to the regular service schedule and another `service_id` could correspond to the holiday schedule. For a particular holiday, the `calendar_dates.txt` file could be used to add the holiday to the holiday `service_id` and to remove the holiday from the regular `service_id` schedule.|
+
