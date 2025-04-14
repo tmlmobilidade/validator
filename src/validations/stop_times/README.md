@@ -27,3 +27,8 @@
 |timepoint|Enum|Optional|Indicates if arrival and departure times for a stop are strictly adhered to by the vehicle or if they are instead approximate and/or interpolated times. This field allows a GTFS producer to provide interpolated stop-times, while indicating that the times are approximate.<br>**Valid options are**:<ul><li>`0` - Times are considered approximate.</li><li>`1` - Times are considered exact.</li></ul> All records of `stop_times.txt` with defined arrival or departure times should have timepoint values populated. If no timepoint values are provided, all times are considered exact.|
 |`pickup_booking_rule_id`|Foreign ID referencing booking_rules.booking_rule_id|Optional|Identifies the boarding booking rule at this stop time.<br><br>Recommended when `pickup_type=2.`|
 |`drop_off_booking_rule_id`|Foreign ID referencing booking_rules.booking_rule_id|Optional|Identifies the alighting booking rule at this stop time.<br><br>Recommended when `drop_off_type=2.`|
+
+### On-demand Service Routing Behavior
+
+- When providing routing or travel time between the origin and destination, data consumers should ignore intermediate stop_times.txt records with the same trip_id that have start_pickup_drop_off_window and end_pickup_drop_off_window defined. For examples that demonstrate what should be ignored, see the data example page.
+- Simultaneous overlap of locations.geojson id geometry, start/end_pickup_drop_off_window time, and pickup_type or drop_off_type between two or more stop_times.txt records with the same trip_id is forbidden. For examples that demonstrate what is forbidden, see the data example page.
