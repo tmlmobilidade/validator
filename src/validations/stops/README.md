@@ -1,7 +1,9 @@
 
 # stops.txt
 
-**File**: Conditionally Required
+Stops where vehicles pick up or drop off riders. Also defines stations and station entrances.
+
+**Presence**: <u>Conditionally Required</u>
 - <u style='color:#ffcc00'>Optional</u>: if demand-responsive zones are defined in locations.geojson.
 - <u style='color:#ff3333'>Required</u>: otherwise.
 

@@ -1,6 +1,8 @@
 # routes.txt
 
-**File**: Required
+Transit routes. A route is a group of trips that are displayed to riders as a single service.
+
+**Presence**: <u>Required</u>
 **Primary key**: `route_id`
 
 ---

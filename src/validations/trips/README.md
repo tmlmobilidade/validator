@@ -1,6 +1,8 @@
 # trips.txt
 
-**File**: Required<br>
+Trips for each route. A trip is a sequence of two or more stops that occur during a specific time period.
+
+**Presence**: Required<br>
 **Primary key**: `trip_id`
 
 ---

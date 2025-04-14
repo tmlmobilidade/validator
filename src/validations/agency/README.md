@@ -1,7 +1,9 @@
 
 # agency.txt
 
-**File**: Required<br>
+Transit agencies with service represented in this dataset.
+
+**Presence**: Required<br>
 **Primary key**: agency_id
 
 ---

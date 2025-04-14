@@ -1,6 +1,8 @@
 # `stop_times.txt`
 
-**File**: Required<br>
+Times that a vehicle arrives at and departs from stops for each trip.
+
+**Presence**: Required<br>
 **Primary key**: `trip_id`, `stop_sequence`
 
 ---

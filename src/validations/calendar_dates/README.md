@@ -1,9 +1,9 @@
-# calendar.txt
+# calendar_dates.txt
 
-Service dates specified using a weekly schedule with start and end dates.
+Exceptions for the services defined in the `calendar.txt` file.
 
 **Presence**: <u>Conditionally Required</u>
-- <u style='color:#ff3333'>Required</u>: unless all dates of service are defined in `calendar_dates.txt`.
+- <u style='color:#ff3333'>Required</u>: if `calendar.txt` is omitted. In which case calendar_dates.txt must contain all dates of service.
 - <u style='color:#ffcc00'>Optional</u>: otherwise.
 
 **Primary key**: `service_id`
