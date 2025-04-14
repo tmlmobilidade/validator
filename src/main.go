@@ -15,7 +15,7 @@ func main() {
 	lib.AppLogger.Divider("GTFS Validator")
 	tracker := lib.AppLogger.StartPerformanceTracker("Reading GTFS")
 
-	// gtfs, err := services.ReadGTFSZip("data/BOM.zip")
+	// gtfs, err := services.ReadGTFSZip("data/CMET.zip")
 	gtfs, err := services.ReadGTFSZip("data/bad-format.zip")
 	if err != nil {
 		log.Fatalf("Error reading GTFS: %v", err)
