@@ -1,6 +1,7 @@
 package file_validation
 
 import (
+	"fmt"
 	"main/src/types"
 )
 
@@ -38,7 +39,7 @@ func (v *FileValidation) Validate(gtfs types.Gtfs) (messages []types.Message) {
 			messages = append(messages, types.Message{
 				Field:        "N/A",
 				FileName:     file,
-				Message:      "Required file is missing",
+				Message:      fmt.Sprintf("Required file \"%s\" is missing", file),
 				ValidationID: v.ID,
 				Severity:     v.Severity,
 			})
