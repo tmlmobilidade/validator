@@ -110,7 +110,6 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 	// Feed jobs
 	go func() {
 		for _, file := range zipReader.File {
-			lib.AppLogger.Debug("Found file: " + file.Name)
 			jobs <- file
 		}
 		close(jobs)
