@@ -254,9 +254,9 @@ type FareRule struct {
 /* SHAPES */
 type Shape struct {
 	ShapeId           string   `json:"shape_id"`
-	ShapePtLat        float64  `json:"shape_pt_lat"`
-	ShapePtLon        float64  `json:"shape_pt_lon"`
-	ShapePtSequence   int      `json:"shape_pt_sequence"`
+	ShapePtLat        *float32 `json:"shape_pt_lat"`
+	ShapePtLon        *float32 `json:"shape_pt_lon"`
+	ShapePtSequence   *int     `json:"shape_pt_sequence"`
 	ShapeDistTraveled *float64 `json:"shape_dist_traveled"`
 }
 
