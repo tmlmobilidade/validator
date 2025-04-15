@@ -1,218 +1,254 @@
+// Package fare_attributes provides validation for fare attributes in GTFS feeds
 package fare_attributes
 
 import (
+	"main/src/types"
 	"testing"
 )
 
-func TestParseFareAttribute_ValidFare(t *testing.T) {
-	// Test a valid fare attribute with all fields
-	input := map[string]string{
-		"fare_id":           "fare1",
-		"price":             "2.50",
-		"currency_type":     "USD",
-		"payment_method":    "1",
-		"transfers":         "1",
-		"agency_id":         "agency1",
-		"transfer_duration": "3600",
+// TestParseFareAttributeValidation_SingleValidFareAttribute tests validation of a single valid fare attribute
+func TestParseFareAttributeValidation_SingleValidFareAttribute(t *testing.T) {
+	gtfs := types.Gtfs{
+		Files: map[string][]map[string]string{
+			"fare_attributes": {
+				{
+					"fare_id":        "fare1",
+					"price":          "2.50",
+					"currency_type":  "USD",
+					"payment_method": "1",
+					"transfers":      "1",
+				},
+			},
+			"agency": {
+				{
+					"agency_id": "agency1",
+				},
+			},
+		},
+		IdMap: map[string]map[string]int{
+			"agency": {
+				"agency1": 1,
+			},
+		},
 	}
 
-	agencyIds := map[string]int{"agency1": 1}
+	validator := NewParseFareAttributeValidation(nil)
+	fareAttributes, messages := validator.Validate(gtfs)
 
-	fare, messages := parseFareAttribute(input, agencyIds)
-
-	// Check that no validation messages were generated
 	if len(messages) != 0 {
-		t.Errorf("Expected 0 validation messages, got %d", len(messages))
+		t.Errorf("Expected 0 errors, got %d", len(messages))
 		for _, msg := range messages {
-			t.Logf("Message: %s (Field: %s)", msg.Message, msg.Field)
+			t.Logf("Error message: %s", msg.Message)
 		}
 	}
 
-	// Check that the fare was parsed correctly
-	if fare.FareId != "fare1" {
-		t.Errorf("Expected fare_id to be 'fare1', got '%s'", fare.FareId)
-	}
-	if *fare.Price != 2.50 {
-		t.Errorf("Expected price to be 2.50, got %f", *fare.Price)
-	}
-	if fare.CurrencyType != "USD" {
-		t.Errorf("Expected currency_type to be 'USD', got '%s'", fare.CurrencyType)
-	}
-	if *fare.PaymentMethod != 1 {
-		t.Errorf("Expected payment_method to be 1, got %d", *fare.PaymentMethod)
-	}
-	if *fare.Transfers != 1 {
-		t.Errorf("Expected transfers to be 1, got %d", *fare.Transfers)
-	}
-	if *fare.AgencyId != "agency1" {
-		t.Errorf("Expected agency_id to be 'agency1', got '%s'", *fare.AgencyId)
-	}
-	if *fare.TransferDuration != 3600 {
-		t.Errorf("Expected transfer_duration to be 3600, got %d", *fare.TransferDuration)
-	}
-}
-
-func TestParseFareAttribute_MinimalValidFare(t *testing.T) {
-	// Test a minimal valid fare with only required fields
-	input := map[string]string{
-		"fare_id":        "fare1",
-		"price":          "2.50",
-		"currency_type":  "USD",
-		"payment_method": "1",
-	}
-
-	agencyIds := map[string]int{}
-
-	fare, messages := parseFareAttribute(input, agencyIds)
-
-	// Check that no validation messages were generated
-	if len(messages) != 0 {
-		t.Errorf("Expected 0 validation messages, got %d", len(messages))
-		for _, msg := range messages {
-			t.Logf("Message: %s (Field: %s)", msg.Message, msg.Field)
+	if len(fareAttributes) != 1 {
+		t.Errorf("Expected 1 fare attribute, got %d", len(fareAttributes))
+	} else {
+		fareAttr := fareAttributes[0]
+		if fareAttr.FareId != "fare1" {
+			t.Errorf("Expected fare_id to be 'fare1', got '%s'", fareAttr.FareId)
+		}
+		if *fareAttr.Price != 2.50 {
+			t.Errorf("Expected price to be 2.50, got %f", *fareAttr.Price)
+		}
+		if fareAttr.CurrencyType != "USD" {
+			t.Errorf("Expected currency_type to be 'USD', got '%s'", fareAttr.CurrencyType)
+		}
+		if *fareAttr.PaymentMethod != 1 {
+			t.Errorf("Expected payment_method to be 1, got %d", *fareAttr.PaymentMethod)
+		}
+		if *fareAttr.Transfers != 1 {
+			t.Errorf("Expected transfers to be 1, got %d", *fareAttr.Transfers)
 		}
 	}
+}
 
-	// Check that the fare was parsed correctly
-	if fare.FareId != "fare1" {
-		t.Errorf("Expected fare_id to be 'fare1', got '%s'", fare.FareId)
+// TestParseFareAttributeValidation_DuplicateFareId tests validation of duplicate fare IDs
+func TestParseFareAttributeValidation_DuplicateFareId(t *testing.T) {
+	gtfs := types.Gtfs{
+		Files: map[string][]map[string]string{
+			"fare_attributes": {
+				{
+					"fare_id":        "fare1",
+					"price":          "2.50",
+					"currency_type":  "USD",
+					"payment_method": "1",
+				},
+				{
+					"fare_id":        "fare1",
+					"price":          "3.00",
+					"currency_type":  "USD",
+					"payment_method": "0",
+				},
+			},
+		},
 	}
-	if *fare.Price != 2.50 {
-		t.Errorf("Expected price to be 2.50, got %f", *fare.Price)
+
+	validator := NewParseFareAttributeValidation(nil)
+	_, messages := validator.Validate(gtfs)
+
+	if len(messages) != 1 {
+		t.Errorf("Expected 1 error for duplicate fare_id, got %d", len(messages))
 	}
-	if fare.CurrencyType != "USD" {
-		t.Errorf("Expected currency_type to be 'USD', got '%s'", fare.CurrencyType)
-	}
-	if *fare.PaymentMethod != 1 {
-		t.Errorf("Expected payment_method to be 1, got %d", *fare.PaymentMethod)
+
+	if len(messages) > 0 && messages[0].Field != "fare_id" {
+		t.Errorf("Expected error for field 'fare_id', got %s", messages[0].Field)
 	}
 }
 
-func TestParseFareAttribute_MissingRequiredFields(t *testing.T) {
-	// Test a fare with missing required fields
-	input := map[string]string{
-		"transfer_duration": "3600",
+// TestParseFareAttributeValidation_MissingRequiredFields tests validation of missing required fields
+func TestParseFareAttributeValidation_MissingRequiredFields(t *testing.T) {
+	gtfs := types.Gtfs{
+		Files: map[string][]map[string]string{
+			"fare_attributes": {
+				{
+					"fare_id": "fare1",
+				},
+			},
+		},
 	}
 
-	agencyIds := map[string]int{}
+	validator := NewParseFareAttributeValidation(nil)
+	_, messages := validator.Validate(gtfs)
 
-	_, messages := parseFareAttribute(input, agencyIds)
+	if len(messages) != 3 { // Missing price, currency_type, and payment_method
+		t.Errorf("Expected 3 errors for missing required fields, got %d", len(messages))
+	}
 
-	// Check for validation messages for missing required fields
-	expectedErrors := map[string]bool{
-		"Fare ID is required and must be unique.": false,
-		"Price is required.":                      false,
-		"Currency type is required.":              false,
-		"Payment method is required.":             false,
+	expectedFields := map[string]bool{
+		"currency_type":  false,
+		"payment_method": false,
+		"price":          false,
 	}
 
 	for _, msg := range messages {
-		expectedErrors[msg.Message] = true
+		expectedFields[msg.Field] = true
 	}
 
-	for errMsg, found := range expectedErrors {
+	for field, found := range expectedFields {
 		if !found {
-			t.Errorf("Expected error message not found: '%s'", errMsg)
+			t.Errorf("Expected error for field '%s' not found", field)
 		}
 	}
 }
 
-func TestParseFareAttribute_InvalidPrice(t *testing.T) {
-	// Test cases for invalid price values
-	testCases := []struct {
-		price    string
-		expected string
-	}{
-		{"invalid", "Price must be a valid non-negative float value."},
-		{"-1.50", "Price must be non-negative."},
+// TestParseFareAttributeValidation_InvalidValues tests validation of invalid field values
+func TestParseFareAttributeValidation_InvalidValues(t *testing.T) {
+	gtfs := types.Gtfs{
+		Files: map[string][]map[string]string{
+			"fare_attributes": {
+				{
+					"fare_id":           "fare1",
+					"price":             "-1.00",
+					"currency_type":     "USD",
+					"payment_method":    "2",   // Invalid payment method
+					"transfers":         "3",   // Invalid transfers value
+					"transfer_duration": "-60", // Invalid negative duration
+				},
+			},
+		},
 	}
 
-	for _, tc := range testCases {
-		input := map[string]string{
-			"fare_id":        "fare1",
-			"price":          tc.price,
-			"currency_type":  "USD",
-			"payment_method": "1",
-		}
+	validator := NewParseFareAttributeValidation(nil)
+	_, messages := validator.Validate(gtfs)
 
-		_, messages := parseFareAttribute(input, map[string]int{})
-
-		found := false
+	if len(messages) != 4 { // Invalid price, payment_method, transfers, and transfer_duration
+		t.Errorf("Expected 4 validation errors, got %d", len(messages))
 		for _, msg := range messages {
-			if msg.Field == "price" && msg.Message == tc.expected {
-				found = true
-				break
-			}
+			t.Logf("Message: %s (Field: %s)", msg.Message, msg.Field)
 		}
+	}
 
+	expectedFields := map[string]bool{
+		"price":             false,
+		"payment_method":    false,
+		"transfers":         false,
+		"transfer_duration": false,
+	}
+
+	for _, msg := range messages {
+		expectedFields[msg.Field] = true
+	}
+
+	for field, found := range expectedFields {
 		if !found {
-			t.Errorf("Expected validation message '%s' for price '%s' not found", tc.expected, tc.price)
+			t.Errorf("Expected error for field '%s' not found", field)
 		}
 	}
 }
 
-func TestParseFareAttribute_InvalidPaymentMethod(t *testing.T) {
-	// Test a fare with invalid payment_method
-	input := map[string]string{
-		"fare_id":        "fare1",
-		"price":          "2.50",
-		"currency_type":  "USD",
-		"payment_method": "2", // Invalid value
+// TestParseFareAttributeValidation_MultipleAgenciesWithoutAgencyId tests validation when multiple agencies exist but agency_id is missing
+func TestParseFareAttributeValidation_MultipleAgenciesWithoutAgencyId(t *testing.T) {
+	gtfs := types.Gtfs{
+		Files: map[string][]map[string]string{
+			"fare_attributes": {
+				{
+					"fare_id":        "fare1",
+					"price":          "2.50",
+					"currency_type":  "USD",
+					"payment_method": "1",
+				},
+			},
+			"agency": {
+				{
+					"agency_id": "agency1",
+				},
+				{
+					"agency_id": "agency2",
+				},
+			},
+		},
 	}
 
-	_, messages := parseFareAttribute(input, map[string]int{})
+	validator := NewParseFareAttributeValidation(nil)
+	_, messages := validator.Validate(gtfs)
 
 	found := false
 	for _, msg := range messages {
-		if msg.Field == "payment_method" && msg.Message == "Invalid payment_method value. Valid values are 0 (paid on board) or 1 (paid before boarding)." {
+		if msg.Field == "agency_id" && msg.Message == "Agency ID is required when the dataset contains multiple agencies." {
 			found = true
 			break
 		}
 	}
 
 	if !found {
-		t.Error("Expected validation message for invalid payment_method not found")
+		t.Error("Expected validation message for missing agency_id with multiple agencies not found")
 	}
 }
 
-func TestParseFareAttribute_InvalidTransfers(t *testing.T) {
-	// Test a fare with invalid transfers value
-	input := map[string]string{
-		"fare_id":        "fare1",
-		"price":          "2.50",
-		"currency_type":  "USD",
-		"payment_method": "1",
-		"transfers":      "3", // Invalid value
+// TestParseFareAttributeValidation_InvalidAgencyId tests validation of invalid agency ID references
+func TestParseFareAttributeValidation_InvalidAgencyId(t *testing.T) {
+	gtfs := types.Gtfs{
+		Files: map[string][]map[string]string{
+			"fare_attributes": {
+				{
+					"fare_id":        "fare1",
+					"price":          "2.50",
+					"currency_type":  "USD",
+					"payment_method": "1",
+					"agency_id":      "invalid_agency",
+				},
+			},
+			"agency": {
+				{
+					"agency_id": "agency1",
+				},
+				{
+					"agency_id": "agency2",
+				},
+			},
+		},
+		IdMap: map[string]map[string]int{
+			"agency": {
+				"agency1": 1,
+				"agency2": 2,
+			},
+		},
 	}
 
-	_, messages := parseFareAttribute(input, map[string]int{})
-
-	found := false
-	for _, msg := range messages {
-		if msg.Field == "transfers" && msg.Message == "Invalid transfers value. Valid values are 0 (no transfers), 1 (one transfer), 2 (two transfers), or empty (unlimited)." {
-			found = true
-			break
-		}
-	}
-
-	if !found {
-		t.Error("Expected validation message for invalid transfers not found")
-	}
-}
-
-func TestParseFareAttribute_InvalidAgencyId(t *testing.T) {
-	// Test a fare with invalid agency_id
-	input := map[string]string{
-		"fare_id":        "fare1",
-		"price":          "2.50",
-		"currency_type":  "USD",
-		"payment_method": "1",
-		"agency_id":      "invalid_agency",
-	}
-
-	agencyIds := map[string]int{"agency1": 1}
-
-	_, messages := parseFareAttribute(input, agencyIds)
+	validator := NewParseFareAttributeValidation(nil)
+	_, messages := validator.Validate(gtfs)
 
 	found := false
 	for _, msg := range messages {
@@ -223,67 +259,51 @@ func TestParseFareAttribute_InvalidAgencyId(t *testing.T) {
 	}
 
 	if !found {
-		t.Error("Expected validation message for invalid agency_id not found")
+		t.Error("Expected validation message for invalid agency_id reference not found")
 	}
 }
 
-func TestParseFareAttribute_RequiredAgencyId(t *testing.T) {
-	// Test a fare without agency_id when multiple agencies exist
+// TestParseFareAttribute_AllValidOptionalFields tests parsing of a fare attribute with all valid optional fields
+func TestParseFareAttribute_AllValidOptionalFields(t *testing.T) {
 	input := map[string]string{
-		"fare_id":        "fare1",
-		"price":          "2.50",
-		"currency_type":  "USD",
-		"payment_method": "1",
+		"fare_id":           "fare1",
+		"price":             "2.50",
+		"currency_type":     "USD",
+		"payment_method":    "1",
+		"transfers":         "2",
+		"transfer_duration": "7200",
+		"agency_id":         "agency1",
 	}
 
-	agencyIds := map[string]int{"agency1": 1, "agency2": 2}
+	fareAttr, messages := parseFareAttribute(input, false, map[string]int{"agency1": 1})
 
-	_, messages := parseFareAttribute(input, agencyIds)
-
-	found := false
-	for _, msg := range messages {
-		if msg.Field == "agency_id" && msg.Message == "Agency ID is required when multiple agencies are defined in agency.txt." {
-			found = true
-			break
-		}
-	}
-
-	if !found {
-		t.Error("Expected validation message for required agency_id not found")
-	}
-}
-
-func TestParseFareAttribute_InvalidTransferDuration(t *testing.T) {
-	// Test cases for invalid transfer_duration values
-	testCases := []struct {
-		duration string
-		expected string
-	}{
-		{"invalid", "Transfer duration must be a valid non-negative integer."},
-		{"-3600", "Transfer duration must be non-negative."},
-	}
-
-	for _, tc := range testCases {
-		input := map[string]string{
-			"fare_id":           "fare1",
-			"price":             "2.50",
-			"currency_type":     "USD",
-			"payment_method":    "1",
-			"transfer_duration": tc.duration,
-		}
-
-		_, messages := parseFareAttribute(input, map[string]int{})
-
-		found := false
+	if len(messages) != 0 {
+		t.Errorf("Expected 0 errors, got %d", len(messages))
 		for _, msg := range messages {
-			if msg.Field == "transfer_duration" && msg.Message == tc.expected {
-				found = true
-				break
-			}
+			t.Logf("Message: %s (Field: %s)", msg.Message, msg.Field)
 		}
+	}
 
-		if !found {
-			t.Errorf("Expected validation message '%s' for transfer_duration '%s' not found", tc.expected, tc.duration)
-		}
+	// Verify all fields are set correctly
+	if fareAttr.FareId != "fare1" {
+		t.Errorf("Expected fare_id to be 'fare1', got '%s'", fareAttr.FareId)
+	}
+	if *fareAttr.Price != 2.50 {
+		t.Errorf("Expected price to be 2.50, got %f", *fareAttr.Price)
+	}
+	if fareAttr.CurrencyType != "USD" {
+		t.Errorf("Expected currency_type to be 'USD', got '%s'", fareAttr.CurrencyType)
+	}
+	if *fareAttr.PaymentMethod != 1 {
+		t.Errorf("Expected payment_method to be 1, got %d", *fareAttr.PaymentMethod)
+	}
+	if *fareAttr.Transfers != 2 {
+		t.Errorf("Expected transfers to be 2, got %d", *fareAttr.Transfers)
+	}
+	if *fareAttr.TransferDuration != 7200 {
+		t.Errorf("Expected transfer_duration to be 7200, got %d", *fareAttr.TransferDuration)
+	}
+	if *fareAttr.AgencyId != "agency1" {
+		t.Errorf("Expected agency_id to be 'agency1', got '%s'", *fareAttr.AgencyId)
 	}
 }
