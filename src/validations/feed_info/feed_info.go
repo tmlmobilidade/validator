@@ -65,12 +65,21 @@ func parseFeedInfo(m map[string]string) (info types.FeedInfo, messages []types.M
 	lib.ParseStringToPrimitive(m["feed_lang"], &info.FeedLang, &parsingErrors)
 
 	// Parse optional fields
-	lib.ParseStringToPrimitive(m["default_lang"], &info.DefaultLang, &parsingErrors)
-	lib.ParseStringToPrimitive(m["feed_start_date"], &info.FeedStartDate, &parsingErrors)
-	lib.ParseStringToPrimitive(m["feed_end_date"], &info.FeedEndDate, &parsingErrors)
-	lib.ParseStringToPrimitive(m["feed_version"], &info.FeedVersion, &parsingErrors)
-	lib.ParseStringToPrimitive(m["feed_contact_email"], &info.FeedContactEmail, &parsingErrors)
-	lib.ParseStringToPrimitive(m["feed_contact_url"], &info.FeedContactUrl, &parsingErrors)
+	var defaultLang, feedStartDate, feedEndDate, feedVersion, feedContactEmail, feedContactUrl string
+
+	lib.ParseStringToPrimitive(m["default_lang"], &defaultLang, &parsingErrors)
+	lib.ParseStringToPrimitive(m["feed_start_date"], &feedStartDate, &parsingErrors)
+	lib.ParseStringToPrimitive(m["feed_end_date"], &feedEndDate, &parsingErrors)
+	lib.ParseStringToPrimitive(m["feed_version"], &feedVersion, &parsingErrors)
+	lib.ParseStringToPrimitive(m["feed_contact_email"], &feedContactEmail, &parsingErrors)
+	lib.ParseStringToPrimitive(m["feed_contact_url"], &feedContactUrl, &parsingErrors)
+
+	info.DefaultLang = lib.IfThenElse(defaultLang != "", &defaultLang, nil)
+	info.FeedStartDate = lib.IfThenElse(feedStartDate != "", &feedStartDate, nil)
+	info.FeedEndDate = lib.IfThenElse(feedEndDate != "", &feedEndDate, nil)
+	info.FeedVersion = lib.IfThenElse(feedVersion != "", &feedVersion, nil)
+	info.FeedContactEmail = lib.IfThenElse(feedContactEmail != "", &feedContactEmail, nil)
+	info.FeedContactUrl = lib.IfThenElse(feedContactUrl != "", &feedContactUrl, nil)
 
 	if len(parsingErrors) > 0 {
 		for _, err := range parsingErrors {
@@ -116,8 +125,8 @@ func parseFeedInfo(m map[string]string) (info types.FeedInfo, messages []types.M
 	}
 
 	// Validate optional fields
-	if info.DefaultLang != "" {
-		if err := lib.ValidateLanguage(info.DefaultLang); err != "" {
+	if info.DefaultLang != nil {
+		if err := lib.ValidateLanguage(*info.DefaultLang); err != "" {
 			messages = append(messages, types.Message{
 				Field:   "default_lang",
 				Message: err,
@@ -125,29 +134,27 @@ func parseFeedInfo(m map[string]string) (info types.FeedInfo, messages []types.M
 		}
 	}
 
-	if info.FeedStartDate != "" && !lib.IsValidServiceDate(info.FeedStartDate) {
+	if info.FeedStartDate != nil && !lib.IsValidServiceDate(*info.FeedStartDate) {
 		messages = append(messages, types.Message{
 			Field:   "feed_start_date",
 			Message: "feed_start_date must be in YYYYMMDD format",
 		})
 	}
 
-	if info.FeedEndDate != "" {
-		if !lib.IsValidServiceDate(info.FeedEndDate) {
-			messages = append(messages, types.Message{
-				Field:   "feed_end_date",
-				Message: "feed_end_date must be in YYYYMMDD format",
-			})
-		} else if info.FeedStartDate != "" && info.FeedEndDate < info.FeedStartDate {
-			messages = append(messages, types.Message{
-				Field:   "feed_end_date",
-				Message: "feed_end_date cannot be earlier than feed_start_date",
-			})
-		}
+	if info.FeedEndDate != nil && !lib.IsValidServiceDate(*info.FeedEndDate) {
+		messages = append(messages, types.Message{
+			Field:   "feed_end_date",
+			Message: "feed_end_date must be in YYYYMMDD format",
+		})
+	} else if info.FeedStartDate != nil && info.FeedEndDate != nil && *info.FeedEndDate < *info.FeedStartDate {
+		messages = append(messages, types.Message{
+			Field:   "feed_end_date",
+			Message: "feed_end_date cannot be earlier than feed_start_date",
+		})
 	}
 
-	if info.FeedContactEmail != "" {
-		if err := lib.ValidateEmail(info.FeedContactEmail); err != "" {
+	if info.FeedContactEmail != nil {
+		if err := lib.ValidateEmail(*info.FeedContactEmail); err != "" {
 			messages = append(messages, types.Message{
 				Field:   "feed_contact_email",
 				Message: err,
@@ -155,8 +162,8 @@ func parseFeedInfo(m map[string]string) (info types.FeedInfo, messages []types.M
 		}
 	}
 
-	if info.FeedContactUrl != "" {
-		if err := lib.ValidateUrl(info.FeedContactUrl); err != "" {
+	if info.FeedContactUrl != nil {
+		if err := lib.ValidateUrl(*info.FeedContactUrl); err != "" {
 			messages = append(messages, types.Message{
 				Field:   "feed_contact_url",
 				Message: err,
@@ -165,10 +172,11 @@ func parseFeedInfo(m map[string]string) (info types.FeedInfo, messages []types.M
 	}
 
 	// Validate that at least one contact method is provided
-	if info.FeedContactEmail == "" && info.FeedContactUrl == "" {
+	if info.FeedContactEmail == nil && info.FeedContactUrl == nil {
 		messages = append(messages, types.Message{
-			Field:   "",
-			Message: "At least one of feed_contact_email or feed_contact_url should be provided",
+			Field:    "",
+			Message:  "It's recommended to provide at least one of feed_contact_email or feed_contact_url",
+			Severity: types.SEVERITY_WARNING,
 		})
 	}
 

@@ -35,11 +35,11 @@ func TestParseFeedInfo_ValidFeedInfo(t *testing.T) {
 	if info.FeedLang != "en" {
 		t.Errorf("Expected feed_lang to be 'en', got '%s'", info.FeedLang)
 	}
-	if info.FeedContactEmail != "contact@example.com" {
-		t.Errorf("Expected feed_contact_email to be 'contact@example.com', got '%s'", info.FeedContactEmail)
+	if *info.FeedContactEmail != "contact@example.com" {
+		t.Errorf("Expected feed_contact_email to be 'contact@example.com', got '%s'", *info.FeedContactEmail)
 	}
-	if info.FeedVersion != "1.0" {
-		t.Errorf("Expected feed_version to be '1.0', got '%s'", info.FeedVersion)
+	if *info.FeedVersion != "1.0" {
+		t.Errorf("Expected feed_version to be '1.0', got '%s'", *info.FeedVersion)
 	}
 }
 
@@ -67,8 +67,8 @@ func TestParseFeedInfo_ValidFeedInfoWithMultiLanguage(t *testing.T) {
 	if info.FeedLang != "mul" {
 		t.Errorf("Expected feed_lang to be 'mul', got '%s'", info.FeedLang)
 	}
-	if info.DefaultLang != "en" {
-		t.Errorf("Expected default_lang to be 'en', got '%s'", info.DefaultLang)
+	if *info.DefaultLang != "en" {
+		t.Errorf("Expected default_lang to be 'en', got '%s'", *info.DefaultLang)
 	}
 }
 
@@ -239,7 +239,7 @@ func TestParseFeedInfo_NoContactInfo(t *testing.T) {
 	// Check for validation message about missing contact information
 	found := false
 	for _, msg := range messages {
-		if msg.Message == "At least one of feed_contact_email or feed_contact_url should be provided" {
+		if msg.Message == "It's recommended to provide at least one of feed_contact_email or feed_contact_url" {
 			found = true
 			break
 		}

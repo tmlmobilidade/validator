@@ -306,15 +306,18 @@ type Levels struct {
 
 /* FEED INFO */
 type FeedInfo struct {
-	DefaultLang       string `json:"default_lang"`
-	FeedContactEmail  string `json:"feed_contact_email"`
-	FeedContactUrl    string `json:"feed_contact_url"`
-	FeedEndDate       string `json:"feed_end_date"`
+	// Required fields
 	FeedLang          string `json:"feed_lang"`
 	FeedPublisherName string `json:"feed_publisher_name"`
 	FeedPublisherUrl  string `json:"feed_publisher_url"`
-	FeedStartDate     string `json:"feed_start_date"`
-	FeedVersion       string `json:"feed_version"`
+
+	// Optional fields
+	DefaultLang      *string `json:"default_lang"`
+	FeedContactEmail *string `json:"feed_contact_email"`
+	FeedContactUrl   *string `json:"feed_contact_url"`
+	FeedEndDate      *string `json:"feed_end_date"`
+	FeedStartDate    *string `json:"feed_start_date"`
+	FeedVersion      *string `json:"feed_version"`
 }
 
 /* TRANSLATIONS */
