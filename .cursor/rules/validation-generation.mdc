@@ -21,6 +21,8 @@ This rule helps us create validations for General Transit Feed Specification fil
 - Types:
     - Optional values should be pointers
     - Required values should not be pointers
+    - Enum values should be pointers
+    - Enums are optional when specified in the "Presence" column in the README.md or when empty is an option as described in the "Description" column
 
 ## Resource Files
 - Types: [gtfs.go](mdc:src/types/gtfs.go)
@@ -29,23 +31,28 @@ This rule helps us create validations for General Transit Feed Specification fil
 
 ## Example
 
+**IMPORTANT: YOU SHOULD FOLLOW THIS EXAMPLE WHEN APPLYING THIS RULE**
+
 - Markdown Example: [README.md](mdc:src/validations/stops/README.md) 
 - Validation Rule: [parse_trips.go](mdc:src/validations/trips/parse_trips.go)  
 - Unit Test: [parse_trips_test.go](mdc:src/validations/trips/parse_trips_test.go)   
   
 
-### How to convert optional values:
+### How to convert values:
 
 ```go
 // Convert Optional Primitive Values
 var bikesAllowed int
 lib.ParseStringToPrimitive(m["bikes_allowed"], &bikesAllowed, &parsingErrors)
 trip.BikesAllowed = lib.IfThenElse(m["bikes_allowed"] != "", &bikesAllowed, nil)
-```
 
-### How to convert required values:
-```go
+// Convert Required Values
 lib.ParseStringToPrimitive(m["trip_id"], &trip.TripId, &parsingErrors)
+
+// Convert Required Enum Values
+var paymentMethod int
+lib.ParseStringToPrimitive(m["payment_method"], &paymentMethod, &parsingErrors)
+trip.BikesAllowed = lib.IfThenElse(m["payment_method"] != "", &paymentMethod, nil)
 ```
 
 ### Error Handling
