@@ -243,12 +243,15 @@ type FareAttribute struct {
 }
 
 /* FARE RULES */
-type FareRules struct {
-	ContainsId    *string `json:"contains_id"`
-	DestinationId *string `json:"destination_id"`
-	FareId        string  `json:"fare_id"`
-	OriginId      *string `json:"origin_id"`
-	RouteId       *string `json:"route_id"`
+type FareRule struct {
+	// Required fields
+	FareId string `json:"fare_id"` // Identifies a fare class
+
+	// Optional fields
+	RouteId       *string `json:"route_id"`       // Identifies a route associated with the fare class
+	OriginId      *string `json:"origin_id"`      // Identifies an origin zone
+	DestinationId *string `json:"destination_id"` // Identifies a destination zone
+	ContainsId    *string `json:"contains_id"`    // Identifies zones that a rider will enter while using a given fare class
 }
 
 /* SHAPES */
