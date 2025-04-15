@@ -230,16 +230,13 @@ type CalendarDates struct {
 
 /* FARE ATTRIBUTES */
 type FareAttribute struct {
-	// Required fields
-	FareId        string   `json:"fare_id"`        // Identifies a fare class
-	Price         *float64 `json:"price"`          // Fare price, in the unit specified by currency_type
-	CurrencyType  string   `json:"currency_type"`  // Currency used to pay the fare
-	PaymentMethod *int     `json:"payment_method"` // When the fare must be paid (0: on board, 1: before boarding)
-
-	// Optional fields
-	Transfers        *int    `json:"transfers"`         // Number of transfers permitted (0: none, 1: once, 2: twice, empty: unlimited)
-	AgencyId         *string `json:"agency_id"`         // Agency associated with the fare (required if multiple agencies)
-	TransferDuration *int    `json:"transfer_duration"` // Length of time in seconds before a transfer expires
+	FareId           string   `json:"fare_id"`           // Identifies a fare class
+	Price            *float64 `json:"price"`             // Fare price, in the unit specified by currency_type
+	CurrencyType     string   `json:"currency_type"`     // Currency used to pay the fare
+	PaymentMethod    *int     `json:"payment_method"`    // When the fare must be paid (0: on board, 1: before boarding)
+	Transfers        *int     `json:"transfers"`         // Number of transfers permitted (0: none, 1: once, 2: twice, empty: unlimited)
+	AgencyId         *string  `json:"agency_id"`         // Agency associated with the fare (required if multiple agencies)
+	TransferDuration *int     `json:"transfer_duration"` // Length of time in seconds before a transfer expires
 }
 
 /* FARE RULES */
@@ -255,12 +252,12 @@ type FareRule struct {
 }
 
 /* SHAPES */
-type Shapes struct {
-	ShapeDistTraveled *float32 `json:"shape_dist_traveled"`
+type Shape struct {
 	ShapeId           string   `json:"shape_id"`
-	ShapePtLat        float32  `json:"shape_pt_lat"`
-	ShapePtLon        float32  `json:"shape_pt_lon"`
-	ShapePtSequence   float32  `json:"shape_pt_sequence"`
+	ShapePtLat        float64  `json:"shape_pt_lat"`
+	ShapePtLon        float64  `json:"shape_pt_lon"`
+	ShapePtSequence   int      `json:"shape_pt_sequence"`
+	ShapeDistTraveled *float64 `json:"shape_dist_traveled"`
 }
 
 /* FREQUENCIES */
