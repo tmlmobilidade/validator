@@ -38,7 +38,7 @@ func (v *parseFareAttributeValidation) Validate(gtfs types.Gtfs) (fareAttributes
 		if fareAttr.FareId != "" {
 			if fareIds[fareAttr.FareId] {
 				messages = append(messages, types.Message{
-					Field:        "fare_attributes.txt/fare_id",
+					Field:        "fare_id",
 					FileName:     "fare_attributes.txt",
 					Message:      "Duplicate fare_id found. Fare IDs must be unique.",
 					Row:          i + 1,
@@ -79,8 +79,11 @@ func parseFareAttribute(m map[string]string, multipleAgencies bool, agencyIdMap 
 	// Convert Required Values
 
 	lib.ParseStringToPrimitive(m["fare_id"], &fareAttribute.FareId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["price"], &fareAttribute.Price, &parsingErrors)
 	lib.ParseStringToPrimitive(m["currency_type"], &fareAttribute.CurrencyType, &parsingErrors)
+
+	var price float64
+	lib.ParseStringToPrimitive(m["price"], &price, &parsingErrors)
+	fareAttribute.Price = lib.IfThenElse(m["price"] != "", &price, nil)
 
 	// Convert Required Enums
 	var paymentMethod int
@@ -102,44 +105,58 @@ func parseFareAttribute(m map[string]string, multipleAgencies bool, agencyIdMap 
 	// Validate required fields
 	if fareAttribute.FareId == "" {
 		messages = append(messages, types.Message{
-			Field:   "fare_attributes.txt/fare_id",
+			Field:   "fare_id",
 			Message: "Fare ID is required.",
 		})
 	}
 
-	if fareAttribute.Price < 0 {
+	if fareAttribute.Price == nil {
 		messages = append(messages, types.Message{
-			Field:   "fare_attributes.txt/price",
+			Field:   "price",
+			Message: "Price field is required.",
+		})
+	} else if *fareAttribute.Price < 0 {
+		messages = append(messages, types.Message{
+			Field:   "price",
 			Message: "Price must be a non-negative float.",
 		})
 	}
 
 	if fareAttribute.CurrencyType == "" {
 		messages = append(messages, types.Message{
-			Field:   "fare_attributes.txt/currency_type",
+			Field:   "currency_type",
 			Message: "Currency type is required.",
 		})
 	}
 
-	if validPaymentMethod := map[int]bool{0: true, 1: true}; !validPaymentMethod[*fareAttribute.PaymentMethod] {
+	if fareAttribute.PaymentMethod != nil {
+		if validPaymentMethod := map[int]bool{0: true, 1: true}; !validPaymentMethod[*fareAttribute.PaymentMethod] {
+			messages = append(messages, types.Message{
+				Field:   "payment_method",
+				Message: "Payment method must be 0 or 1.",
+			})
+		}
+	} else {
 		messages = append(messages, types.Message{
-			Field:   "fare_attributes.txt/payment_method",
-			Message: "Payment method must be 0 or 1.",
+			Field:   "payment_method",
+			Message: "Payment method is required.",
 		})
 	}
 
 	// Validate transfers field
-	if validTransfers := map[int]bool{0: true, 1: true, 2: true}; !validTransfers[*fareAttribute.Transfers] && fareAttribute.Transfers != nil {
-		messages = append(messages, types.Message{
-			Field:   "fare_attributes.txt/transfers",
-			Message: "Transfers must be 0, 1, 2, or empty (for unlimited transfers).",
-		})
+	if fareAttribute.Transfers != nil {
+		if validTransfers := map[int]bool{0: true, 1: true, 2: true}; !validTransfers[*fareAttribute.Transfers] && fareAttribute.Transfers != nil {
+			messages = append(messages, types.Message{
+				Field:   "transfers",
+				Message: "Transfers must be 0, 1, 2, or empty (for unlimited transfers).",
+			})
+		}
 	}
 
 	// Validate transfer_duration
 	if fareAttribute.TransferDuration != nil && *fareAttribute.TransferDuration < 0 {
 		messages = append(messages, types.Message{
-			Field:   "fare_attributes.txt/transfer_duration",
+			Field:   "transfer_duration",
 			Message: "Transfer duration must be a non-negative integer.",
 		})
 	}
@@ -148,12 +165,12 @@ func parseFareAttribute(m map[string]string, multipleAgencies bool, agencyIdMap 
 	if multipleAgencies {
 		if fareAttribute.AgencyId == nil || *fareAttribute.AgencyId == "" {
 			messages = append(messages, types.Message{
-				Field:   "fare_attributes.txt/agency_id",
+				Field:   "agency_id",
 				Message: "Agency ID is required when the dataset contains multiple agencies.",
 			})
 		} else if _, exists := agencyIdMap[*fareAttribute.AgencyId]; !exists {
 			messages = append(messages, types.Message{
-				Field:   "fare_attributes.txt/agency_id",
+				Field:   "agency_id",
 				Message: "Agency ID must reference a valid agency_id from agency.txt.",
 			})
 		}
