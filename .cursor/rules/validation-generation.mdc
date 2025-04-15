@@ -16,7 +16,7 @@ This rule helps us create validations for General Transit Feed Specification fil
 - You will write clean and performant code.
 - Speed is a top priority
 - Provide comments explaining what each section does.
-- Do not create any new type files. If you need modify [gtfs.go](mdc:src/types/gtfs.go).
+- Do not create any new type files. If you need modify [gtfs.go](mdc:validator/types/gtfs.go).
 
 - Types:
     - Optional values should be pointers
@@ -25,17 +25,17 @@ This rule helps us create validations for General Transit Feed Specification fil
     - Enums are optional when specified in the "Presence" column in the README.md or when empty is an option as described in the "Description" column
 
 ## Resource Files
-- Types: [gtfs.go](mdc:src/types/gtfs.go)
-- Utils: [utils.go](mdc:src/lib/utils.go)
-- Validator Functions:[validators.go](mdc:src/lib/validators.go)
+- Types: [gtfs.go](mdc:validator/types/gtfs.go)
+- Utils: [utils.go](mdc:validator/lib/utils.go)
+- Validator Functions:[validators.go](mdc:validator/lib/validators.go)
 
 ## Example
 
 **IMPORTANT: YOU SHOULD FOLLOW THIS EXAMPLE WHEN APPLYING THIS RULE**
 
-- Markdown Example: [README.md](mdc:src/validations/stops/README.md) 
-- Validation Rule: [parse_trips.go](mdc:src/validations/trips/parse_trips.go)  
-- Unit Test: [parse_trips_test.go](mdc:src/validations/trips/parse_trips_test.go)   
+- Markdown Example: [README.md](mdc:validator/validations/stops/README.md) 
+- Validation Rule: [parse_trips.go](mdc:validator/validations/trips/parse_trips.go)  
+- Unit Test: [parse_trips_test.go](mdc:validator/validations/trips/parse_trips_test.go)   
   
 
 ### How to convert values:
