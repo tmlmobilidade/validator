@@ -229,14 +229,17 @@ type CalendarDates struct {
 }
 
 /* FARE ATTRIBUTES */
-type FareAttributes struct {
-	AgencyId         *string  `json:"agency_id"`
-	CurrencyType     string   `json:"currency_type"`
-	FareId           string   `json:"fare_id"`
-	PaymentMethod    int      `json:"payment_method"`
-	Price            float32  `json:"price"`
-	TransferDuration *float32 `json:"transfer_duration"`
-	Transfers        int      `json:"transfers"`
+type FareAttribute struct {
+	// Required fields
+	FareId        string   `json:"fare_id"`        // Identifies a fare class
+	Price         *float64 `json:"price"`          // Fare price, in the unit specified by currency_type
+	CurrencyType  string   `json:"currency_type"`  // Currency used to pay the fare
+	PaymentMethod *int     `json:"payment_method"` // When the fare must be paid (0: on board, 1: before boarding)
+
+	// Optional fields
+	Transfers        *int    `json:"transfers"`         // Number of transfers permitted (0: none, 1: once, 2: twice, empty: unlimited)
+	AgencyId         *string `json:"agency_id"`         // Agency associated with the fare (required if multiple agencies)
+	TransferDuration *int    `json:"transfer_duration"` // Length of time in seconds before a transfer expires
 }
 
 /* FARE RULES */
