@@ -16,7 +16,7 @@ export type GTFSValidatorSummary = {
     total_warnings: number
 }
 
-async function GTFSValidator(input: string) {
+export async function GTFSValidator(input: string) {
   try {
     const result = await runGoBinary<GTFSValidatorSummary>("./bin/validator", [
       "-input",
@@ -28,10 +28,3 @@ async function GTFSValidator(input: string) {
     throw err;
   }
 }
-
-async function main() {
-  const result = await GTFSValidator("../data/Bom.zip");
-  console.log("✅ Done", result);
-}
-
-main();
