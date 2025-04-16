@@ -39,7 +39,7 @@ export async function runGoBinary<T = unknown>(
   
       proc.on("error", (err: Error) => {
         clearTimeout(timer);
-        reject(new Error(`Failed to start binary: ${err.message}`));
+        throw new Error(`Failed to start binary: ${err.message}`);
       });
   
       proc.on("close", (code: number) => {
@@ -50,9 +50,7 @@ export async function runGoBinary<T = unknown>(
         const stderr = Buffer.concat(stderrChunks).toString("utf-8").trim();
   
         if (code !== 0) {
-          return reject(
-            new Error(`Binary exited with code ${code}: ${stderr || stdout}`)
-          );
+          throw new Error(`Binary exited with code ${code}: ${stderr || stdout}`);
         }
   
         try {
