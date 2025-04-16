@@ -12,8 +12,19 @@
 		"cmet",
 		"carrismetropolitana"
 	],
+	"publishConfig": {
+		"access": "public",
+		"directory": "dist"
+	},
 	"type": "module",
-	"main": "index.js",
+	"files": [
+		"dist"
+	],
+	"main": "dist/index.js",
+	"exports": {
+		"types": "./dist/index.d.ts",
+		"default": "./dist/index.js"
+	},
 	"scripts": {
 		"build": "tsc",
 		"lint": "eslint . && tsc --noEmit",

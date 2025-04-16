@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  build-validator:
     name: Build Validator Binaries
     runs-on: ubuntu-latest
     steps:
