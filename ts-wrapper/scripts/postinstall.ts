@@ -97,12 +97,13 @@ async function main() {
 	else {
 		console.info(`Local file not found: ${binaryDistributionFilePath}`);
 		console.info(`Downloading file from remote server...`);
-		// Download the remote binaries
-		await downloadRemoteBinaries();
-	}
 
-	// CHMOD the file executable
-	// chmodSync(join(LOCAL_BIN_PATH, binaryDistributionFile), 0o755);
+		// Download the remote binaries
+		downloadRemoteBinaries().then(() => {
+			// CHMOD the file executable
+			chmodSync(join(LOCAL_BIN_PATH, binaryDistributionFile), 0o755);
+		});
+	}
 }
 
 main();
