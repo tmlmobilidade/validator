@@ -1,4 +1,4 @@
-name: 'connectors | Publish to npm'
+name: 'Publish GTFS Validator to npm'
 
 on:
   workflow_dispatch:
