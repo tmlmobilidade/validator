@@ -60,7 +60,7 @@ func (v *parseTripValidation) Validate(gtfs types.Gtfs) (trips []types.Trip, mes
 					Field:        "trip_id",
 					FileName:     "trips.txt",
 					Message:      "Duplicate trip_id found. Trip IDs must be unique.",
-					Row:          i + 1,
+					Rows:         []int{i + 1},
 					Severity:     v.Severity,
 					ValidationID: v.ID,
 				})
@@ -70,7 +70,7 @@ func (v *parseTripValidation) Validate(gtfs types.Gtfs) (trips []types.Trip, mes
 
 		// Update row number and other fields for each message
 		for _, msg := range tripMessages {
-			msg.Row = i + 1
+			msg.Rows = []int{i + 1}
 			msg.FileName = "trips.txt"
 			msg.Severity = v.Severity
 			msg.ValidationID = v.ID

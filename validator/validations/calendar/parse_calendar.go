@@ -39,7 +39,7 @@ func (v *parseCalendarValidation) Validate(gtfs types.Gtfs) (calendars []types.C
 					Field:        "service_id",
 					FileName:     "calendar.txt",
 					Message:      "Duplicate service_id found. Service IDs must be unique.",
-					Row:          i + 1,
+					Rows:         []int{i + 1},
 					Severity:     v.Severity,
 					ValidationID: v.ID,
 				})
@@ -49,7 +49,7 @@ func (v *parseCalendarValidation) Validate(gtfs types.Gtfs) (calendars []types.C
 
 		// Update row number and other fields for each message
 		for _, msg := range calendarMessages {
-			msg.Row = i + 1
+			msg.Rows = []int{i + 1}
 			msg.FileName = "calendar.txt"
 			msg.Severity = v.Severity
 			msg.ValidationID = v.ID

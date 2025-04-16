@@ -39,7 +39,7 @@ func (v *parseStopValidation) Validate(gtfs types.Gtfs) (stops []types.Stop, mes
 					Field:        "stop_id",
 					FileName:     "stop.txt",
 					Message:      "Duplicate stop_id found. Stop IDs must be unique.",
-					Row:          i + 1,
+					Rows:         []int{i + 1},
 					Severity:     v.Severity,
 					ValidationID: v.ID,
 				})
@@ -49,7 +49,7 @@ func (v *parseStopValidation) Validate(gtfs types.Gtfs) (stops []types.Stop, mes
 
 		// Update row number and other fields for each message
 		for _, msg := range stopMessages {
-			msg.Row = i + 1
+			msg.Rows = []int{i + 1}
 			msg.FileName = "stop.txt"
 			msg.Severity = v.Severity
 			msg.ValidationID = v.ID

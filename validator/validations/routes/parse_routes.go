@@ -51,7 +51,7 @@ func (v *parseRouteValidation) Validate(gtfs types.Gtfs) (routes []types.Route, 
 					Field:        "route_id",
 					FileName:     "routes.txt",
 					Message:      "Duplicate route_id found. Route IDs must be unique.",
-					Row:          i + 1,
+					Rows:         []int{i + 1},
 					Severity:     v.Severity,
 					ValidationID: v.ID,
 				})
@@ -61,7 +61,7 @@ func (v *parseRouteValidation) Validate(gtfs types.Gtfs) (routes []types.Route, 
 
 		// Update row number and other fields for each message
 		for _, msg := range routeMessages {
-			msg.Row = i + 1
+			msg.Rows = []int{i + 1}
 			msg.FileName = "routes.txt"
 			msg.Severity = v.Severity
 			msg.ValidationID = v.ID

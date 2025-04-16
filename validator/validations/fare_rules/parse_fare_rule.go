@@ -43,7 +43,7 @@ func (v *parseFareRuleValidation) Validate(gtfs types.Gtfs) (fareRules []types.F
 
 		// Update row number and other fields for each message
 		for _, msg := range fareRuleMessages {
-			msg.Row = i + 1
+			msg.Rows = []int{i + 1}
 			msg.FileName = "fare_rules.txt"
 			msg.Severity = v.Severity
 			msg.ValidationID = v.ID

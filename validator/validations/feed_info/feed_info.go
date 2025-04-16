@@ -45,7 +45,7 @@ func (v *parseFeedInfoValidation) Validate(gtfs types.Gtfs) (feedInfos []types.F
 
 		// Update row number and other fields for each message
 		for _, msg := range infoMessages {
-			msg.Row = i + 1
+			msg.Rows = []int{i + 1}
 			msg.FileName = "feed_info.txt"
 			msg.Severity = v.Severity
 			msg.ValidationID = v.ID

@@ -41,7 +41,7 @@ func (v *parseFareAttributeValidation) Validate(gtfs types.Gtfs) (fareAttributes
 					Field:        "fare_id",
 					FileName:     "fare_attributes.txt",
 					Message:      "Duplicate fare_id found. Fare IDs must be unique.",
-					Row:          i + 1,
+					Rows:         []int{i + 1},
 					Severity:     v.Severity,
 					ValidationID: v.ID,
 				})
@@ -51,7 +51,7 @@ func (v *parseFareAttributeValidation) Validate(gtfs types.Gtfs) (fareAttributes
 
 		// Update row number and other fields for each message
 		for _, msg := range fareAttrMessages {
-			msg.Row = i + 1
+			msg.Rows = []int{i + 1}
 			msg.FileName = "fare_attributes.txt"
 			msg.Severity = v.Severity
 			msg.ValidationID = v.ID

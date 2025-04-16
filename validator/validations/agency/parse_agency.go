@@ -39,7 +39,7 @@ func (v *ParseAgencyValidation) Validate(gtfs types.Gtfs) (agencies []types.Agen
 					Field:        "agency_id",
 					FileName:     "agency.txt",
 					Message:      "Duplicate agency_id found. Agency IDs must be unique.",
-					Row:          i + 1,
+					Rows:         []int{i + 1},
 					Severity:     v.Severity,
 					ValidationID: v.ID,
 				})
@@ -49,7 +49,7 @@ func (v *ParseAgencyValidation) Validate(gtfs types.Gtfs) (agencies []types.Agen
 
 		// Update row number and other fields for each message
 		for _, msg := range agencyMessages {
-			msg.Row = i + 1
+			msg.Rows = []int{i + 1}
 			msg.FileName = "agency.txt"
 			msg.Severity = v.Severity
 			msg.ValidationID = v.ID

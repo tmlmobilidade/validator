@@ -43,7 +43,7 @@ func (v *parseCalendarDatesValidation) Validate(gtfs types.Gtfs) (calendarDates 
 					Field:        "service_id,date",
 					FileName:     "calendar_dates.txt",
 					Message:      "Duplicate (service_id, date) pair found. Each pair may only appear once in calendar_dates.txt.",
-					Row:          i + 1,
+					Rows:         []int{i + 1},
 					Severity:     v.Severity,
 					ValidationID: v.ID,
 				})
@@ -53,7 +53,7 @@ func (v *parseCalendarDatesValidation) Validate(gtfs types.Gtfs) (calendarDates 
 
 		// Update row number and other fields for each message
 		for _, msg := range calendarDateMessages {
-			msg.Row = i + 1
+			msg.Rows = []int{i + 1}
 			msg.FileName = "calendar_dates.txt"
 			msg.Severity = v.Severity
 			msg.ValidationID = v.ID
@@ -67,7 +67,7 @@ func (v *parseCalendarDatesValidation) Validate(gtfs types.Gtfs) (calendarDates 
 			Field:        "",
 			FileName:     "calendar_dates.txt",
 			Message:      "calendar_dates.txt must contain at least one entry when calendar.txt is omitted",
-			Row:          0,
+			Rows:         []int{},
 			Severity:     v.Severity,
 			ValidationID: v.ID,
 		})

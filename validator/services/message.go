@@ -24,6 +24,13 @@ func NewMessageService() *MessageService {
 }
 
 func (ms *MessageService) AddMessage(message types.Message) {
+	for i, m := range ms.messages {
+		if m.ValidationID == message.ValidationID && m.Field == message.Field && m.FileName == message.FileName {
+			ms.messages[i].Rows = append(m.Rows, message.Rows...)
+			return
+		}
+	}
+	
 	ms.messages = append(ms.messages, message)
 
 	switch message.Severity {
@@ -52,7 +59,7 @@ func (ms *MessageService) PrintTable() {
 	table.SetFooter([]string{"", "", "Errors: " + strconv.Itoa(ms.errorCount), "Infos: " + strconv.Itoa(ms.infoCount), "Warnings: " + strconv.Itoa(ms.warningCount), "Total: " + strconv.Itoa(ms.errorCount+ms.infoCount+ms.warningCount)})
 
 	for _, message := range ms.messages {
-		table.Append([]string{message.ValidationID, message.Message, string(message.Severity), message.Field, message.FileName, strconv.Itoa(message.Row)})
+		table.Append([]string{message.ValidationID, message.Message, string(message.Severity), message.Field, message.FileName, strconv.Itoa(message.Rows[0])})
 	}
 	table.Render()
 }

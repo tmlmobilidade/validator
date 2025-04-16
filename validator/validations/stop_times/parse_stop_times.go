@@ -56,7 +56,7 @@ func (v *parseStopTimeValidation) Validate(gtfs types.Gtfs) (stopTimes []types.S
 					Field:        "stop_sequence",
 					FileName:     "stop_times.txt",
 					Message:      "Duplicate stop_sequence found for trip_id. Each stop_sequence must be unique within a trip.",
-					Row:          i + 1,
+					Rows:         []int{i + 1},
 					Severity:     v.Severity,
 					ValidationID: v.ID,
 				})
@@ -66,7 +66,7 @@ func (v *parseStopTimeValidation) Validate(gtfs types.Gtfs) (stopTimes []types.S
 
 		// Update row number and other fields for each message
 		for _, msg := range stopTimeMessages {
-			msg.Row = i + 1
+			msg.Rows = []int{i + 1}
 			msg.FileName = "stop_times.txt"
 			msg.Severity = v.Severity
 			msg.ValidationID = v.ID

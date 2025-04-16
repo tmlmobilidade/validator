@@ -38,7 +38,7 @@ func (v *parseShapeValidation) Validate(gtfs types.Gtfs) (shapes []types.Shape, 
 					Field:        "shape_id",
 					FileName:     "shapes.txt",
 					Message:      "Duplicate shape_id found. Shape IDs must be unique.",
-					Row:          i + 1,
+					Rows:         []int{i + 1},
 					Severity:     v.Severity,
 					ValidationID: v.ID,
 				})
@@ -48,7 +48,7 @@ func (v *parseShapeValidation) Validate(gtfs types.Gtfs) (shapes []types.Shape, 
 
 		// Update row number and other fields for each message
 		for _, msg := range shapeMessages {
-			msg.Row = i + 1
+			msg.Rows = []int{i + 1}
 			msg.FileName = "shapes.txt"
 			msg.Severity = v.Severity
 			msg.ValidationID = v.ID
