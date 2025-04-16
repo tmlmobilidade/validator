@@ -25,6 +25,7 @@ jobs:
       - uses: tmlmobilidade/core/.github/actions/setup-node@production
         with:
           node-version: 20
+          working-directory: ts-wrapper
 
       - name: Build package
         working-directory: ts-wrapper
