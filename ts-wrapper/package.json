@@ -3,7 +3,6 @@
 	"version": "1.0.0",
 	"author": "Jusi Monteiro & João Vasconcelos",
 	"license": "ISC",
-	"type": "module",
 	"keywords": [
 		"gtfs",
 		"validator",
@@ -13,13 +12,14 @@
 		"cmet",
 		"carrismetropolitana"
 	],
+	"type": "module",
 	"main": "index.js",
 	"scripts": {
 		"build": "tsc",
-		"dev": "tsx src/index.ts",
-		"lint": "fix:eslint --fix .",
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"postinstall": "tsx ./scripts/postinstall.ts"
+		"lint": "eslint . && tsc --noEmit",
+		"lint:fix": "eslint --fix .",
+		"postinstall": "tsx ./scripts/postinstall.ts",
+		"test": "tsx src/test.ts"
 	},
 	"description": "A GTFS Validator",
 	"devDependencies": {

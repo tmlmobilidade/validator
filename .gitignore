@@ -52,3 +52,7 @@ go.work.sum
 
 # data files
 data/**
+
+# ts-wrapper
+ts-wrapper/bin
+ts-wrapper/node_modules

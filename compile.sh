@@ -22,6 +22,12 @@ GOOS=darwin GOARCH=arm64 go build -o ../bin/validator-darwin-arm64 ./main.go
 # Compile the validator for windows x86_64
 GOOS=windows GOARCH=amd64 go build -o ../bin/validator.exe ./main.go
 
+# Allow all users to execute the validator
+chmod +x ../bin/validator-linux-amd64
+chmod +x ../bin/validator-linux-arm64
+chmod +x ../bin/validator-darwin-amd64
+chmod +x ../bin/validator-darwin-arm64
+chmod +x ../bin/validator.exe
 
 # Check if the compilation was successful
 if [ $? -ne 0 ]; then
