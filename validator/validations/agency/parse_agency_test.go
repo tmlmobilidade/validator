@@ -1,7 +1,7 @@
 package agency
 
 import (
-	"main/validator/types"
+	"main/types"
 	"testing"
 )
 

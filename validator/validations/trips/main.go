@@ -1,9 +1,9 @@
 package trips
 
 import (
-	"main/validator/lib"
-	"main/validator/services"
-	"main/validator/types"
+	"main/lib"
+	"main/services"
+	"main/types"
 )
 
 func RunValidations(gtfs types.Gtfs) {

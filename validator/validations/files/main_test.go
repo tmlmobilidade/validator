@@ -2,7 +2,7 @@ package file_validation
 
 import (
 	"fmt"
-	"main/validator/types"
+	"main/types"
 	"testing"
 )
 

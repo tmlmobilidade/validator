@@ -1,7 +1,7 @@
 package stop_times
 
 import (
-	"main/validator/types"
+	"main/types"
 	"testing"
 )
 

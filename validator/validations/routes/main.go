@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"main/validator/lib"
-	"main/validator/services"
-	"main/validator/types"
+	"main/lib"
+	"main/services"
+	"main/types"
 	"strconv"
 )
 

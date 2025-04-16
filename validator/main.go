@@ -2,11 +2,11 @@ package main
 
 import (
 	"log"
-	"main/validator/lib"
-	"main/validator/services"
-	"main/validator/types"
-	"main/validator/validations"
-	file_validation "main/validator/validations/files"
+	"main/lib"
+	"main/services"
+	"main/types"
+	"main/validations"
+	file_validation "main/validations/files"
 	"sync"
 )
 

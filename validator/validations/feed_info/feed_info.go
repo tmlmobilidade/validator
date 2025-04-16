@@ -1,8 +1,8 @@
 package feed_info
 
 import (
-	"main/validator/lib"
-	"main/validator/types"
+	"main/lib"
+	"main/types"
 )
 
 type parseFeedInfoValidation struct {

@@ -1,8 +1,8 @@
 package stop_times
 
 import (
-	"main/validator/lib"
-	"main/validator/types"
+	"main/lib"
+	"main/types"
 	"strconv"
 )
 

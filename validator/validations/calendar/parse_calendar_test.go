@@ -1,7 +1,7 @@
 package calendar
 
 import (
-	"main/validator/types"
+	"main/types"
 	"testing"
 )
 

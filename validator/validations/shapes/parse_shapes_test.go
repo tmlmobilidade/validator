@@ -2,7 +2,7 @@ package shapes
 
 import (
 	"fmt"
-	"main/validator/types"
+	"main/types"
 	"strconv"
 	"testing"
 )

@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"main/validator/types"
+	"main/types"
 	"testing"
 )
 

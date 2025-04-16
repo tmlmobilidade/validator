@@ -1,7 +1,7 @@
 package calendar_dates
 
 import (
-	"main/validator/types"
+	"main/types"
 	"testing"
 )
 

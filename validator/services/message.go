@@ -2,8 +2,8 @@ package services
 
 import (
 	"fmt"
-	"main/validator/lib"
-	"main/validator/types"
+	"main/lib"
+	"main/types"
 	"os"
 	"strconv"
 

@@ -1,7 +1,7 @@
 package trips
 
 import (
-	"main/validator/types"
+	"main/types"
 	"testing"
 )
 

@@ -1,8 +1,8 @@
 package trips
 
 import (
-	"main/validator/lib"
-	"main/validator/types"
+	"main/lib"
+	"main/types"
 )
 
 type parseTripValidation struct {

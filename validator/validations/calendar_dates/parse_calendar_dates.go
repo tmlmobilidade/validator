@@ -1,8 +1,8 @@
 package calendar_dates
 
 import (
-	"main/validator/lib"
-	"main/validator/types"
+	"main/lib"
+	"main/types"
 )
 
 type parseCalendarDatesValidation struct {

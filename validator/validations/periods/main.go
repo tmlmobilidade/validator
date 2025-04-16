@@ -1,8 +1,8 @@
 package periods
 
 import (
-	"main/validator/lib"
-	"main/validator/types"
+	"main/lib"
+	"main/types"
 )
 
 func RunValidations(gtfs types.Gtfs) {

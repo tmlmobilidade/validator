@@ -1,8 +1,8 @@
 package fare_attributes
 
 import (
-	"main/validator/lib"
-	"main/validator/types"
+	"main/lib"
+	"main/types"
 )
 
 type parseFareAttributeValidation struct {

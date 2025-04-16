@@ -1,7 +1,7 @@
 package feed_info
 
 import (
-	"main/validator/types"
+	"main/types"
 	"testing"
 )
 

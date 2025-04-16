@@ -2,7 +2,7 @@
 package fare_attributes
 
 import (
-	"main/validator/types"
+	"main/types"
 	"testing"
 )
 

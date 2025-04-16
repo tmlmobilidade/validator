@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"main/validator/types"
+	"main/types"
 	"testing"
 )
 
