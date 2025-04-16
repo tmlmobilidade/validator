@@ -1,4 +1,4 @@
-import { copyFileSync, createWriteStream, existsSync, mkdirSync } from 'fs';
+import { chmodSync, copyFileSync, createWriteStream, existsSync, mkdirSync } from 'fs';
 import path, { dirname, join } from 'path';
 import { Readable } from 'stream';
 import { finished } from 'stream/promises';
@@ -100,8 +100,9 @@ function main() {
 		// Download the remote binaries
 		downloadRemoteBinaries();
 	}
+
+	// CHMOD the file executable
+	chmodSync(join(LOCAL_BIN_PATH, binaryDistributionFile), 0o755);
 }
 
-console.log('\n\n----- RUNNING POSTINSTALL SCRIPT -----\n\n');
 main();
-console.log('\n\n----- END POSTINSTALL SCRIPT -----\n\n');
