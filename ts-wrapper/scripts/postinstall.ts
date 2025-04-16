@@ -102,7 +102,7 @@ async function main() {
 	}
 
 	// CHMOD the file executable
-	chmodSync(join(LOCAL_BIN_PATH, binaryDistributionFile), 0o755);
+	// chmodSync(join(LOCAL_BIN_PATH, binaryDistributionFile), 0o755);
 }
 
 main();
