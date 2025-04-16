@@ -1,3 +1,6 @@
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
 import { runGoBinary } from './src/utils.js';
 
 export interface GTFSValidatorMessage {
@@ -24,6 +27,9 @@ const BINARY_DISTRIBUTIONS_FILES = {
 	'windows-x64': 'validator.exe',
 };
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 function getCurrentPlatform() {
 	const platform = process.platform;
 	const arch = process.arch;
@@ -32,7 +38,7 @@ function getCurrentPlatform() {
 
 export async function GTFSValidator(input: string) {
 	try {
-		const result = await runGoBinary<GTFSValidatorSummary>(`./bin/${BINARY_DISTRIBUTIONS_FILES[getCurrentPlatform()]}`, [
+		const result = await runGoBinary<GTFSValidatorSummary>(`${__dirname}/bin/${BINARY_DISTRIBUTIONS_FILES[getCurrentPlatform()]}`, [
 			'-input',
 			input,
 		]);
