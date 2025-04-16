@@ -1,0 +1,26 @@
+name: Build Validator Binaries & Upload to Releases
+description: Build the validator binaries for multiple platforms
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Validator Binaries
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Binaries
+        shell: bash
+        run: sh compile.sh
+
+      - name: Commit Binaries to Releases
+        uses: EndBug/add-and-commit@v9
