@@ -19,7 +19,7 @@ type Message struct {
 
 type Summary struct {
 	Messages      []Message `json:"messages"`
-	TotalErrors   int       `json:"totalErrors"`
-	TotalInfos    int       `json:"totalInfos"`
-	TotalWarnings int       `json:"totalWarnings"`
+	TotalErrors   int       `json:"total_errors"`
+	TotalInfos    int       `json:"total_infos"`
+	TotalWarnings int       `json:"total_warnings"`
 }
