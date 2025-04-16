@@ -134,12 +134,27 @@ func ParseStringToPrimitive[T any](str string, t *T, errors *[]string) {
 // If there is an error marshaling the value to JSON, it prints the error.
 //
 //	@param a any - The value to print as JSON
-func PrintMap(a any) {
-	b, err := json.MarshalIndent(a, "", "  ")
-	if err != nil {
-		fmt.Println("error:", err)
+//	@param minify ...bool - Optional parameter to minify the output
+func PrintMap(a any, minify ...bool) {
+	shouldMinify := false
+
+	if len(minify) > 0 {
+		shouldMinify = minify[0]
 	}
-	fmt.Printf("%s\n", string(b))
+	
+	if shouldMinify {
+		b, err := json.Marshal(a)
+		if err != nil {
+			fmt.Println("error:", err)
+		}
+		fmt.Printf("%s\n", string(b))
+	} else {
+		b, err := json.MarshalIndent(a, "", "  ")
+		if err != nil {
+			fmt.Println("error:", err)
+		}
+		fmt.Printf("%s\n", string(b))
+	}
 }
 
 // Returns a if condition is true, otherwise returns b
