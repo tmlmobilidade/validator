@@ -1,4 +1,4 @@
-import { runGoBinary } from './utils.js';
+import { runGoBinary } from './src/utils.js';
 
 export interface GTFSValidatorMessage {
 	field: string

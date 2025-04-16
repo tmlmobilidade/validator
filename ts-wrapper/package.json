@@ -26,11 +26,11 @@
 		"default": "./dist/index.js"
 	},
 	"scripts": {
-		"build": "tsc",
+		"build": "rm -rf dist && tsc",
 		"lint": "eslint . && tsc --noEmit",
 		"lint:fix": "eslint --fix .",
-		"postinstall": "tsx ./scripts/postinstall.ts",
-		"test": "tsx src/test.ts"
+		"postinstall": "if [ ! -d dist ]; then tsx ./scripts/postinstall.ts; else node ./dist/scripts/postinstall.js; fi",
+		"test": "tsx ./src/test.ts"
 	},
 	"description": "A GTFS Validator",
 	"devDependencies": {

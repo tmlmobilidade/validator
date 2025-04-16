@@ -1,12 +1,13 @@
 {
-	"extends": "@tmlmobilidade/tsconfig/nodejs.json",
+	"extends": "@tmlmobilidade/tsconfig/lib.json",
 	"compilerOptions": {
-		"outDir": "./dist",
+		"declarationMap": true,
+		"outDir": "dist",
 		"paths": {
 			"@/*": ["./src/*"]
 		},
-		"rootDir": "."
+		"rootDir": ".",
+		"types": ["node"]
 	},
-	"include": ["src/**/*.ts", "scripts/**/*.ts"],
 	"exclude": ["node_modules", "dist"]
 }
