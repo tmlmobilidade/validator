@@ -56,7 +56,8 @@ func main() {
 			services.AppMessageService.AddMessage(err)
 		}
 
-		
+		// Print JSON
+		services.AppMessageService.PrintJSON()
 		return
 	}
 
