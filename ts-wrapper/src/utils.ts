@@ -56,13 +56,13 @@ export async function runGoBinary<T = unknown>(
         }
   
         try {
-          const json = JSON.parse(stdout) as T;
+          // Find the last line that looks like JSON
+          const lastLine = stdout.split('\n').filter(line => line.trim()).pop() || '';
+          const json = JSON.parse(lastLine) as T;
           resolve(json);
         } catch (e: any) {
-          reject(
-            new Error(
-              `Failed to parse JSON output: ${e.message} - Output: ${stdout}`
-            )
+          throw new Error(
+            `Failed to parse JSON output: ${e.message} - Output: ${stdout}`
           );
         }
       });

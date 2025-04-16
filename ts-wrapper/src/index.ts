@@ -1,22 +1,37 @@
 import { runGoBinary } from "./utils.js";
 
-interface GoOutput {
-  message: string;
-  success: boolean;
+export type GTFSValidatorMessage = {
+    row: number
+    field: string
+    fileName: string
+    message: string
+    validation_id: string
+    severity: "error" | "info" | "warning"
+}
+
+export type GTFSValidatorSummary = {
+    messages: GTFSValidatorMessage[]
+    total_errors: number
+    total_infos: number
+    total_warnings: number
+}
+
+async function GTFSValidator(input: string) {
+  try {
+    const result = await runGoBinary<GTFSValidatorSummary>("./bin/validator", [
+      "-input",
+      input
+    ]);
+    return result;
+  } catch (err) {
+    console.error("❌ Error:", (err as Error).message);
+    throw err;
+  }
 }
 
 async function main() {
-  try {
-    const result = await runGoBinary<GoOutput>("./bin/validator", [
-      "-input",
-      "../data/Bom.zip",
-      "-output",
-      "./results/output.json",
-    ]);
-    console.log("✅ Output from Go:", result);
-  } catch (err) {
-    console.error("❌ Error:", (err as Error).message);
-  }
+  const result = await GTFSValidator("../data/Bom.zip");
+  console.log("✅ Done", result);
 }
 
 main();
