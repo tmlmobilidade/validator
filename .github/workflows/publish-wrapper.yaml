@@ -7,7 +7,7 @@ on:
       - production
     paths:
       - 'ts-wrapper/**/*'
-      - '.github/workflows/publish-wrapper.yml'
+      - '.github/workflows/publish-wrapper.yaml'
 
 jobs:
 
