@@ -74,7 +74,7 @@ async function downloadRemoteBinaries() {
 	return await finished(Readable.from(buffer).pipe(fileStream));
 }
 
-function main() {
+async function main() {
 	const platform = getCurrentPlatform();
 	const binaryDistributionFile = BINARY_DISTRIBUTIONS_FILES[platform];
 
@@ -98,7 +98,7 @@ function main() {
 		console.info(`Local file not found: ${binaryDistributionFilePath}`);
 		console.info(`Downloading file from remote server...`);
 		// Download the remote binaries
-		downloadRemoteBinaries();
+		await downloadRemoteBinaries();
 	}
 
 	// CHMOD the file executable
