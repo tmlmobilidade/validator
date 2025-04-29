@@ -1,23 +1,8 @@
+import { GTFSValidatorSummary } from '@tmlmobilidade/types';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 import { runGoBinary } from './src/utils.js';
-
-export interface GTFSValidatorMessage {
-	field: string
-	fileName: string
-	message: string
-	row: number
-	severity: 'error' | 'info' | 'warning'
-	validation_id: string
-}
-
-export interface GTFSValidatorSummary {
-	messages: GTFSValidatorMessage[]
-	total_errors: number
-	total_infos: number
-	total_warnings: number
-}
 
 const BINARY_DISTRIBUTIONS_FILES = {
 	'darwin-arm64': 'validator-darwin-arm64',
