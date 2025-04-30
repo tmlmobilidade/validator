@@ -43,26 +43,31 @@ export async function runGoBinary<T = unknown>(
 		});
 
 		proc.on('close', (code: number) => {
-			clearTimeout(timer);
-			if (timedOut) return;
-
-			const stdout = Buffer.concat(stdoutChunks).toString('utf-8').trim();
-			const stderr = Buffer.concat(stderrChunks).toString('utf-8').trim();
-
-			if (code !== 0) {
-				throw new Error(`Binary exited with code ${code}: ${stderr || stdout}`);
-			}
-
 			try {
+				clearTimeout(timer);
+				if (timedOut) return;
+
+				const stdout = Buffer.concat(stdoutChunks).toString('utf-8').trim();
+				const stderr = Buffer.concat(stderrChunks).toString('utf-8').trim();
+
+				if (code !== 0) {
+					throw new Error(`Binary exited with code ${code}: ${stderr || stdout}`);
+				}
+
+				try {
 				// Find the last line that looks like JSON
-				const lastLine = stdout.split('\n').filter(line => line.trim()).pop() || '';
-				const json = JSON.parse(lastLine) as T;
-				resolve(json);
+					const lastLine = stdout.split('\n').filter(line => line.trim()).pop() || '';
+					const json = JSON.parse(lastLine) as T;
+					resolve(json);
+				}
+				catch (e: unknown) {
+					throw new Error(
+						`Failed to parse JSON output: ${e instanceof Error ? e.message : String(e)} - Output: ${stdout}`,
+					);
+				}
 			}
 			catch (e: unknown) {
-				throw new Error(
-					`Failed to parse JSON output: ${e instanceof Error ? e.message : String(e)} - Output: ${stdout}`,
-				);
+				throw new Error(e instanceof Error ? e.message : String(e));
 			}
 		});
 	});
