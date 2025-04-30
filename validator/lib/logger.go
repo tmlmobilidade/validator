@@ -12,12 +12,22 @@ import (
 type Level int
 
 const (
-	Debug Level = iota
-	Info
+	Info Level = iota
 	Error
+	Debug 
 )
 
-var levelNames = []string{"DEBUG", "INFO", "ERROR"}
+var levelNames = []string{"info", "error", "debug"}
+
+func ParseLevel(level string) Level {
+	for i, name := range levelNames {
+		if name == level {
+			return Level(i)
+		}
+	}
+
+	return Debug
+}
 
 // Predefined terminal colors
 var (
@@ -43,6 +53,10 @@ func NewLogger(withTimestamp bool, level ...Level) *Logger {
 		WithTimestamp: withTimestamp,
 		Level:         level[0],
 	}
+}
+
+func (l *Logger) SetLevel(level string) {
+	l.Level = ParseLevel(level)
 }
 
 // log prints a message with the specified color and level
@@ -84,12 +98,19 @@ func (l *Logger) Divider(message ...string) {
 
 // Debug logs a debug-level message
 func (l *Logger) Debug(message ...string) {
+	if l.Level < Debug {
+		return
+	}
+
 	msg := strings.Join(message, " ")
 	l.log(colorDebug, Debug, msg)
 }
 
 // Info logs an info-level message
 func (l *Logger) Info(message ...string) {
+	if l.Level < Info {
+		return
+	}
 
 	msg := strings.Join(message, " ")
 	l.log(colorInfo, Info, msg)
@@ -97,6 +118,10 @@ func (l *Logger) Info(message ...string) {
 
 // Error logs an error-level message
 func (l *Logger) Error(message ...string) {
+	if l.Level < Error {
+		return
+	}
+
 	msg := strings.Join(message, " ")
 	l.log(colorError, Error, msg)
 }
@@ -113,6 +138,10 @@ func (l *Logger) Custom(message string, c *color.Color, lvl Level) {
 
 func (l *Logger) Clear() {
 	fmt.Print("\033c")
+}
+
+func (l *Logger) SetLogLevel(level Level) {
+	l.Level = level
 }
 
 var AppLogger = NewLogger(true, Debug)

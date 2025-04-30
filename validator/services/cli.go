@@ -21,6 +21,7 @@ func NewCLI(title string) *CLI {
 		title: title,
 		Options: CliOptions{
 			OutputPath: "",
+			LogLevel:   "info",
 		},
 	}
 }
