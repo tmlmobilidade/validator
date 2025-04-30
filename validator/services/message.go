@@ -26,7 +26,14 @@ func NewMessageService() *MessageService {
 func (ms *MessageService) AddMessage(message types.Message) {
 	for i, m := range ms.messages {
 		if m.ValidationID == message.ValidationID && m.Field == message.Field && m.FileName == message.FileName {
-			ms.messages[i].Rows = append(m.Rows, message.Rows...)
+			// Only keep up to 100 rows, keeping the latest row
+			newRows := append(m.Rows, message.Rows...)
+			if len(newRows) > 100 {
+				// Keep first 99 rows and the latest row
+				lastRow := newRows[len(newRows)-1]
+				newRows = append(newRows[:99], lastRow)
+			}
+			ms.messages[i].Rows = newRows
 			return
 		}
 	}
