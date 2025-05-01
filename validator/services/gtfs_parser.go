@@ -213,7 +213,7 @@ func parseCSV(content []byte, fileNameWithoutExt string, fieldCount *types.GtfsF
 				localCounts[header]++
 			}
 
-			handlePrimaryKeyMapping(primaryKey, header, value, fileNameWithoutExt, rowIndex, idsMap, idsMapMutex)
+			handlePrimaryKeyMapping(primaryKey, header, value, fileNameWithoutExt, rowIndex - 1, idsMap, idsMapMutex)
 		}
 		result = append(result, entry)
 	}
