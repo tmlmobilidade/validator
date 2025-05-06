@@ -112,7 +112,7 @@ type Trip struct {
 	TripHeadsign         *string `json:"trip_headsign"`
 	TripId               string  `json:"trip_id"`
 	TripShortName        *string `json:"trip_short_name"`
-	WheelchairAccessible *string `json:"wheelchair_accessible"`
+	WheelchairAccessible *int `json:"wheelchair_accessible"`
 }
 
 /* STOP TIME */
