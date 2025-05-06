@@ -6,12 +6,13 @@ const (
 	SEVERITY_ERROR   Severity = "error"
 	SEVERITY_INFO    Severity = "info"
 	SEVERITY_WARNING Severity = "warning"
+	SEVERITY_IGNORE  Severity = "ignore"
 )
 
 type Message struct {
 	Rows         []int      `json:"rows"`
 	Field        string     `json:"field"`
-	FileName     string     `json:"fileName"`
+	FileName     string     `json:"file_name"`
 	Message      string     `json:"message"`
 	ValidationID string     `json:"validation_id"`
 	Severity     Severity   `json:"severity"`
