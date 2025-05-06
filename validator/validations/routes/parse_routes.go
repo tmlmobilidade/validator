@@ -78,17 +78,17 @@ func parseRoute(m map[string]string, multipleAgencies bool, hasPickupDropoffWind
 	var agencyId, routeColor, routeDesc, routeLongName, routeShortName, routeTextColor, routeUrl, continuousPickup, continuousDropOff string
 	var routeType, routeSortOrder int
 
-	lib.ParseStringToPrimitive(m["agency_id"], &agencyId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["route_color"], &routeColor, &parsingErrors)
-	lib.ParseStringToPrimitive(m["route_desc"], &routeDesc, &parsingErrors)
-	lib.ParseStringToPrimitive(m["route_long_name"], &routeLongName, &parsingErrors)
-	lib.ParseStringToPrimitive(m["route_short_name"], &routeShortName, &parsingErrors)
-	lib.ParseStringToPrimitive(m["route_text_color"], &routeTextColor, &parsingErrors)
-	lib.ParseStringToPrimitive(m["route_url"], &routeUrl, &parsingErrors)
-	lib.ParseStringToPrimitive(m["continuous_pickup"], &continuousPickup, &parsingErrors)
-	lib.ParseStringToPrimitive(m["continuous_drop_off"], &continuousDropOff, &parsingErrors)
-	lib.ParseStringToPrimitive(m["route_type"], &routeType, &parsingErrors)
-	lib.ParseStringToPrimitive(m["route_sort_order"], &routeSortOrder, &parsingErrors)
+	lib.ParseStringToPrimitive(m["agency_id"], &agencyId)
+	lib.ParseStringToPrimitive(m["route_color"], &routeColor)
+	lib.ParseStringToPrimitive(m["route_desc"], &routeDesc)
+	lib.ParseStringToPrimitive(m["route_long_name"], &routeLongName)
+	lib.ParseStringToPrimitive(m["route_short_name"], &routeShortName)
+	lib.ParseStringToPrimitive(m["route_text_color"], &routeTextColor)
+	lib.ParseStringToPrimitive(m["route_url"], &routeUrl)
+	lib.ParseStringToPrimitive(m["continuous_pickup"], &continuousPickup)
+	lib.ParseStringToPrimitive(m["continuous_drop_off"], &continuousDropOff)
+	lib.ParseStringToPrimitive(m["route_type"], &routeType)
+	lib.ParseStringToPrimitive(m["route_sort_order"], &routeSortOrder)
 
 	route.AgencyId = lib.IfThenElse(m["agency_id"] != "", &agencyId, nil)
 	route.RouteColor = lib.IfThenElse(m["route_color"] != "", &routeColor, nil)
@@ -102,8 +102,8 @@ func parseRoute(m map[string]string, multipleAgencies bool, hasPickupDropoffWind
 	route.RouteSortOrder = lib.IfThenElse(m["route_sort_order"] != "", &routeSortOrder, nil)
 
 	// Convert Required Values
-	lib.ParseStringToPrimitive(m["route_id"], &route.RouteId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["route_type"], &route.RouteType, &parsingErrors)
+	lib.ParseStringToPrimitive(m["route_id"], &route.RouteId)
+	lib.ParseStringToPrimitive(m["route_type"], &route.RouteType)
 
 	if len(parsingErrors) > 0 {
 		for _, err := range parsingErrors {

@@ -58,14 +58,14 @@ func parseFareRule(m map[string]string, fareAttributeIds map[string]int, routeId
 	var parsingErrors []string
 
 	// Parse required field
-	lib.ParseStringToPrimitive(m["fare_id"], &fareRule.FareId, &parsingErrors)
+	lib.ParseStringToPrimitive(m["fare_id"], &fareRule.FareId)
 
 	// Parse optional fields
 	var routeId, originId, destinationId, containsId string
-	lib.ParseStringToPrimitive(m["route_id"], &routeId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["origin_id"], &originId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["destination_id"], &destinationId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["contains_id"], &containsId, &parsingErrors)
+	lib.ParseStringToPrimitive(m["route_id"], &routeId)
+	lib.ParseStringToPrimitive(m["origin_id"], &originId)
+	lib.ParseStringToPrimitive(m["destination_id"], &destinationId)
+	lib.ParseStringToPrimitive(m["contains_id"], &containsId)
 
 	fareRule.RouteId = lib.IfThenElse(m["route_id"] != "", &routeId, nil)
 	fareRule.OriginId = lib.IfThenElse(m["origin_id"] != "", &originId, nil)

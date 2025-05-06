@@ -89,13 +89,13 @@ func parseTrip(m map[string]string, routeIds map[string]int, serviceIds map[stri
 	var wheelchairAccessible string
 	var blockId, shapeId, tripHeadsign, tripShortName string
 
-	lib.ParseStringToPrimitive(m["bikes_allowed"], &bikesAllowed, &parsingErrors)
-	lib.ParseStringToPrimitive(m["direction_id"], &directionId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["wheelchair_accessible"], &wheelchairAccessible, &parsingErrors)
-	lib.ParseStringToPrimitive(m["block_id"], &blockId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["shape_id"], &shapeId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["trip_headsign"], &tripHeadsign, &parsingErrors)
-	lib.ParseStringToPrimitive(m["trip_short_name"], &tripShortName, &parsingErrors)
+	lib.ParseStringToPrimitive(m["bikes_allowed"], &bikesAllowed)
+	lib.ParseStringToPrimitive(m["direction_id"], &directionId)
+	lib.ParseStringToPrimitive(m["wheelchair_accessible"], &wheelchairAccessible)
+	lib.ParseStringToPrimitive(m["block_id"], &blockId)
+	lib.ParseStringToPrimitive(m["shape_id"], &shapeId)
+	lib.ParseStringToPrimitive(m["trip_headsign"], &tripHeadsign)
+	lib.ParseStringToPrimitive(m["trip_short_name"], &tripShortName)
 
 	trip.BikesAllowed = lib.IfThenElse(m["bikes_allowed"] != "", &bikesAllowed, nil)
 	trip.DirectionId = lib.IfThenElse(m["direction_id"] != "", &directionId, nil)
@@ -106,9 +106,9 @@ func parseTrip(m map[string]string, routeIds map[string]int, serviceIds map[stri
 	trip.TripShortName = lib.IfThenElse(m["trip_short_name"] != "", &tripShortName, nil)
 
 	// Convert Required Values
-	lib.ParseStringToPrimitive(m["trip_id"], &trip.TripId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["route_id"], &trip.RouteId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["service_id"], &trip.ServiceId, &parsingErrors)
+	lib.ParseStringToPrimitive(m["trip_id"], &trip.TripId)
+	lib.ParseStringToPrimitive(m["route_id"], &trip.RouteId)
+	lib.ParseStringToPrimitive(m["service_id"], &trip.ServiceId)
 
 	if len(parsingErrors) > 0 {
 		for _, err := range parsingErrors {

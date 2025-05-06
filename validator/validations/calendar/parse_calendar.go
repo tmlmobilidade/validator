@@ -63,17 +63,17 @@ func parseCalendar(m map[string]string) (calendar types.Calendar, messages []typ
 	var parsingErrors []string
 
 	// Convert Required Values
-	lib.ParseStringToPrimitive(m["service_id"], &calendar.ServiceId, &parsingErrors)
+	lib.ParseStringToPrimitive(m["service_id"], &calendar.ServiceId)
 
 	// Parse day fields as integers
 	var monday, tuesday, wednesday, thursday, friday, saturday, sunday int
-	lib.ParseStringToPrimitive(m["monday"], &monday, &parsingErrors)
-	lib.ParseStringToPrimitive(m["tuesday"], &tuesday, &parsingErrors)
-	lib.ParseStringToPrimitive(m["wednesday"], &wednesday, &parsingErrors)
-	lib.ParseStringToPrimitive(m["thursday"], &thursday, &parsingErrors)
-	lib.ParseStringToPrimitive(m["friday"], &friday, &parsingErrors)
-	lib.ParseStringToPrimitive(m["saturday"], &saturday, &parsingErrors)
-	lib.ParseStringToPrimitive(m["sunday"], &sunday, &parsingErrors)
+	lib.ParseStringToPrimitive(m["monday"], &monday)
+	lib.ParseStringToPrimitive(m["tuesday"], &tuesday)
+	lib.ParseStringToPrimitive(m["wednesday"], &wednesday)
+	lib.ParseStringToPrimitive(m["thursday"], &thursday)
+	lib.ParseStringToPrimitive(m["friday"], &friday)
+	lib.ParseStringToPrimitive(m["saturday"], &saturday)
+	lib.ParseStringToPrimitive(m["sunday"], &sunday)
 
 	calendar.Monday = monday == 1
 	calendar.Tuesday = tuesday == 1
@@ -83,8 +83,8 @@ func parseCalendar(m map[string]string) (calendar types.Calendar, messages []typ
 	calendar.Saturday = saturday == 1
 	calendar.Sunday = sunday == 1
 
-	lib.ParseStringToPrimitive(m["start_date"], &calendar.StartDate, &parsingErrors)
-	lib.ParseStringToPrimitive(m["end_date"], &calendar.EndDate, &parsingErrors)
+	lib.ParseStringToPrimitive(m["start_date"], &calendar.StartDate)
+	lib.ParseStringToPrimitive(m["end_date"], &calendar.EndDate)
 
 	if len(parsingErrors) > 0 {
 		for _, err := range parsingErrors {

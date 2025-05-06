@@ -93,23 +93,23 @@ func parseStopTime(m map[string]string, tripIds map[string]int, stopIds map[stri
 	var stopId, locationGroupId, locationId, stopHeadsign, startPickupDropOffWindow, endPickupDropOffWindow, pickupBookingRuleId, dropOffBookingRuleId, arrivalTime, departureTime string
 
 	// Batch parse operations to reduce function call overhead
-	lib.ParseStringToPrimitive(m["stop_sequence"], &stopSequence, &parsingErrors)
-	lib.ParseStringToPrimitive(m["pickup_type"], &pickupType, &parsingErrors)
-	lib.ParseStringToPrimitive(m["drop_off_type"], &dropOffType, &parsingErrors)
-	lib.ParseStringToPrimitive(m["continuous_pickup"], &continuousPickup, &parsingErrors)
-	lib.ParseStringToPrimitive(m["continuous_drop_off"], &continuousDropOff, &parsingErrors)
-	lib.ParseStringToPrimitive(m["timepoint"], &timepoint, &parsingErrors)
-	lib.ParseStringToPrimitive(m["shape_dist_traveled"], &shapeDistTraveled, &parsingErrors)
-	lib.ParseStringToPrimitive(m["stop_id"], &stopId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["location_group_id"], &locationGroupId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["location_id"], &locationId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["stop_headsign"], &stopHeadsign, &parsingErrors)
-	lib.ParseStringToPrimitive(m["start_pickup_drop_off_window"], &startPickupDropOffWindow, &parsingErrors)
-	lib.ParseStringToPrimitive(m["end_pickup_drop_off_window"], &endPickupDropOffWindow, &parsingErrors)
-	lib.ParseStringToPrimitive(m["pickup_booking_rule_id"], &pickupBookingRuleId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["drop_off_booking_rule_id"], &dropOffBookingRuleId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["arrival_time"], &arrivalTime, &parsingErrors)
-	lib.ParseStringToPrimitive(m["departure_time"], &departureTime, &parsingErrors)
+	lib.ParseStringToPrimitive(m["stop_sequence"], &stopSequence)
+	lib.ParseStringToPrimitive(m["pickup_type"], &pickupType)
+	lib.ParseStringToPrimitive(m["drop_off_type"], &dropOffType)
+	lib.ParseStringToPrimitive(m["continuous_pickup"], &continuousPickup)
+	lib.ParseStringToPrimitive(m["continuous_drop_off"], &continuousDropOff)
+	lib.ParseStringToPrimitive(m["timepoint"], &timepoint)
+	lib.ParseStringToPrimitive(m["shape_dist_traveled"], &shapeDistTraveled)
+	lib.ParseStringToPrimitive(m["stop_id"], &stopId)
+	lib.ParseStringToPrimitive(m["location_group_id"], &locationGroupId)
+	lib.ParseStringToPrimitive(m["location_id"], &locationId)
+	lib.ParseStringToPrimitive(m["stop_headsign"], &stopHeadsign)
+	lib.ParseStringToPrimitive(m["start_pickup_drop_off_window"], &startPickupDropOffWindow)
+	lib.ParseStringToPrimitive(m["end_pickup_drop_off_window"], &endPickupDropOffWindow)
+	lib.ParseStringToPrimitive(m["pickup_booking_rule_id"], &pickupBookingRuleId)
+	lib.ParseStringToPrimitive(m["drop_off_booking_rule_id"], &dropOffBookingRuleId)
+	lib.ParseStringToPrimitive(m["arrival_time"], &arrivalTime)
+	lib.ParseStringToPrimitive(m["departure_time"], &departureTime)
 
 	// Assign values to stopTime struct
 	stopTime.StopSequence = stopSequence
@@ -131,7 +131,7 @@ func parseStopTime(m map[string]string, tripIds map[string]int, stopIds map[stri
 	stopTime.DepartureTime = lib.IfThenElse(m["departure_time"] != "", &departureTime, nil)
 
 	// Convert Required Values
-	lib.ParseStringToPrimitive(m["trip_id"], &stopTime.TripId, &parsingErrors)
+	lib.ParseStringToPrimitive(m["trip_id"], &stopTime.TripId)
 
 	if len(parsingErrors) > 0 {
 		for _, err := range parsingErrors {

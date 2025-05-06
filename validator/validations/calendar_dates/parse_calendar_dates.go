@@ -80,9 +80,9 @@ func parseCalendarDate(m map[string]string, hasCalendar bool) (calendarDate type
 	var parsingErrors []string
 
 	// Parse Required Values
-	lib.ParseStringToPrimitive(m["service_id"], &calendarDate.ServiceId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["date"], &calendarDate.Date, &parsingErrors)
-	lib.ParseStringToPrimitive(m["exception_type"], &calendarDate.ExceptionType, &parsingErrors)
+	lib.ParseStringToPrimitive(m["service_id"], &calendarDate.ServiceId)
+	lib.ParseStringToPrimitive(m["date"], &calendarDate.Date)
+	lib.ParseStringToPrimitive(m["exception_type"], &calendarDate.ExceptionType)
 
 	if len(parsingErrors) > 0 {
 		for _, err := range parsingErrors {

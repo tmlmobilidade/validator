@@ -60,19 +60,19 @@ func parseFeedInfo(m map[string]string) (info types.FeedInfo, messages []types.M
 	var parsingErrors []string
 
 	// Parse required fields
-	lib.ParseStringToPrimitive(m["feed_publisher_name"], &info.FeedPublisherName, &parsingErrors)
-	lib.ParseStringToPrimitive(m["feed_publisher_url"], &info.FeedPublisherUrl, &parsingErrors)
-	lib.ParseStringToPrimitive(m["feed_lang"], &info.FeedLang, &parsingErrors)
+	lib.ParseStringToPrimitive(m["feed_publisher_name"], &info.FeedPublisherName)
+	lib.ParseStringToPrimitive(m["feed_publisher_url"], &info.FeedPublisherUrl)
+	lib.ParseStringToPrimitive(m["feed_lang"], &info.FeedLang)
 
 	// Parse optional fields
 	var defaultLang, feedStartDate, feedEndDate, feedVersion, feedContactEmail, feedContactUrl string
 
-	lib.ParseStringToPrimitive(m["default_lang"], &defaultLang, &parsingErrors)
-	lib.ParseStringToPrimitive(m["feed_start_date"], &feedStartDate, &parsingErrors)
-	lib.ParseStringToPrimitive(m["feed_end_date"], &feedEndDate, &parsingErrors)
-	lib.ParseStringToPrimitive(m["feed_version"], &feedVersion, &parsingErrors)
-	lib.ParseStringToPrimitive(m["feed_contact_email"], &feedContactEmail, &parsingErrors)
-	lib.ParseStringToPrimitive(m["feed_contact_url"], &feedContactUrl, &parsingErrors)
+	lib.ParseStringToPrimitive(m["default_lang"], &defaultLang)
+	lib.ParseStringToPrimitive(m["feed_start_date"], &feedStartDate)
+	lib.ParseStringToPrimitive(m["feed_end_date"], &feedEndDate)
+	lib.ParseStringToPrimitive(m["feed_version"], &feedVersion)
+	lib.ParseStringToPrimitive(m["feed_contact_email"], &feedContactEmail)
+	lib.ParseStringToPrimitive(m["feed_contact_url"], &feedContactUrl)
 
 	info.DefaultLang = lib.IfThenElse(defaultLang != "", &defaultLang, nil)
 	info.FeedStartDate = lib.IfThenElse(feedStartDate != "", &feedStartDate, nil)

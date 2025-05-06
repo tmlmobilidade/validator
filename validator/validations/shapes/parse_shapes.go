@@ -65,17 +65,17 @@ func parseShape(m map[string]string) (types.Shape, []types.Message) {
 	var parsingErrors []string
 
 	// Parse required fields
-	lib.ParseStringToPrimitive(m["shape_id"], &shape.ShapeId, &parsingErrors)
+	lib.ParseStringToPrimitive(m["shape_id"], &shape.ShapeId)
 
 	// Convert Optional Primitive Values
 	var shapePtLat, shapePtLon float32
 	var shapePtSequence int
 	var shapeDistTraveled float64
 
-	lib.ParseStringToPrimitive(m["shape_pt_lat"], &shapePtLat, &parsingErrors)
-	lib.ParseStringToPrimitive(m["shape_pt_lon"], &shapePtLon, &parsingErrors)
-	lib.ParseStringToPrimitive(m["shape_pt_sequence"], &shapePtSequence, &parsingErrors)
-	lib.ParseStringToPrimitive(m["shape_dist_traveled"], &shapeDistTraveled, &parsingErrors)
+	lib.ParseStringToPrimitive(m["shape_pt_lat"], &shapePtLat)
+	lib.ParseStringToPrimitive(m["shape_pt_lon"], &shapePtLon)
+	lib.ParseStringToPrimitive(m["shape_pt_sequence"], &shapePtSequence)
+	lib.ParseStringToPrimitive(m["shape_dist_traveled"], &shapeDistTraveled)
 
 	shape.ShapePtLat = lib.IfThenElse(m["shape_pt_lat"] != "", &shapePtLat, nil)
 	shape.ShapePtLon = lib.IfThenElse(m["shape_pt_lon"] != "", &shapePtLon, nil)

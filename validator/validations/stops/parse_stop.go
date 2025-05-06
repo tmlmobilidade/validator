@@ -67,20 +67,20 @@ func parseStop(m map[string]string) (stop types.Stop, messages []types.Message) 
 	var wheelchairBoardingType, locationType int
 	var stopLat, stopLon float32
 
-	lib.ParseStringToPrimitive(m["location_type"], &locationType, &parsingErrors)
-	lib.ParseStringToPrimitive(m["level_id"], &levelId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["parent_station"], &parentStation, &parsingErrors)
-	lib.ParseStringToPrimitive(m["platform_code"], &platformCode, &parsingErrors)
-	lib.ParseStringToPrimitive(m["stop_code"], &stopCode, &parsingErrors)
-	lib.ParseStringToPrimitive(m["stop_desc"], &stopDesc, &parsingErrors)
-	lib.ParseStringToPrimitive(m["stop_name"], &stopName, &parsingErrors)
-	lib.ParseStringToPrimitive(m["stop_timezone"], &stopTimezone, &parsingErrors)
-	lib.ParseStringToPrimitive(m["stop_url"], &stopUrl, &parsingErrors)
-	lib.ParseStringToPrimitive(m["wheelchair_boarding"], &wheelchairBoarding, &parsingErrors)
-	lib.ParseStringToPrimitive(m["zone_id"], &zoneId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["wheelchair_boarding"], &wheelchairBoardingType, &parsingErrors)
-	lib.ParseStringToPrimitive(m["stop_lat"], &stopLat, &parsingErrors)
-	lib.ParseStringToPrimitive(m["stop_lon"], &stopLon, &parsingErrors)
+	lib.ParseStringToPrimitive(m["location_type"], &locationType)
+	lib.ParseStringToPrimitive(m["level_id"], &levelId)
+	lib.ParseStringToPrimitive(m["parent_station"], &parentStation)
+	lib.ParseStringToPrimitive(m["platform_code"], &platformCode)
+	lib.ParseStringToPrimitive(m["stop_code"], &stopCode)
+	lib.ParseStringToPrimitive(m["stop_desc"], &stopDesc)
+	lib.ParseStringToPrimitive(m["stop_name"], &stopName)
+	lib.ParseStringToPrimitive(m["stop_timezone"], &stopTimezone)
+	lib.ParseStringToPrimitive(m["stop_url"], &stopUrl)
+	lib.ParseStringToPrimitive(m["wheelchair_boarding"], &wheelchairBoarding)
+	lib.ParseStringToPrimitive(m["zone_id"], &zoneId)
+	lib.ParseStringToPrimitive(m["wheelchair_boarding"], &wheelchairBoardingType)
+	lib.ParseStringToPrimitive(m["stop_lat"], &stopLat)
+	lib.ParseStringToPrimitive(m["stop_lon"], &stopLon)
 
 	stop.LevelId = lib.IfThenElse(m["level_id"] != "", &levelId, nil)
 	stop.ParentStation = lib.IfThenElse(m["parent_station"] != "", &parentStation, nil)
@@ -97,7 +97,7 @@ func parseStop(m map[string]string) (stop types.Stop, messages []types.Message) 
 	stop.LocationType = lib.IfThenElse(m["location_type"] != "", &locationType, nil)
 
 	//Convert Required Values
-	lib.ParseStringToPrimitive(m["stop_id"], &stop.StopId, &parsingErrors)
+	lib.ParseStringToPrimitive(m["stop_id"], &stop.StopId)
 
 	if len(parsingErrors) > 0 {
 		for _, err := range parsingErrors {

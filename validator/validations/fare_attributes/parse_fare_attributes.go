@@ -69,25 +69,25 @@ func parseFareAttribute(m map[string]string, multipleAgencies bool, agencyIdMap 
 	var transferDuration int
 	var transfers int
 
-	lib.ParseStringToPrimitive(m["transfers"], &transfers, &parsingErrors)
-	lib.ParseStringToPrimitive(m["agency_id"], &agencyId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["transfer_duration"], &transferDuration, &parsingErrors)
+	lib.ParseStringToPrimitive(m["transfers"], &transfers)
+	lib.ParseStringToPrimitive(m["agency_id"], &agencyId)
+	lib.ParseStringToPrimitive(m["transfer_duration"], &transferDuration)
 
 	fareAttribute.AgencyId = lib.IfThenElse(m["agency_id"] != "", &agencyId, nil)
 	fareAttribute.TransferDuration = lib.IfThenElse(m["transfer_duration"] != "", &transferDuration, nil)
 
 	// Convert Required Values
 
-	lib.ParseStringToPrimitive(m["fare_id"], &fareAttribute.FareId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["currency_type"], &fareAttribute.CurrencyType, &parsingErrors)
+	lib.ParseStringToPrimitive(m["fare_id"], &fareAttribute.FareId)
+	lib.ParseStringToPrimitive(m["currency_type"], &fareAttribute.CurrencyType)
 
 	var price float64
-	lib.ParseStringToPrimitive(m["price"], &price, &parsingErrors)
+	lib.ParseStringToPrimitive(m["price"], &price)
 	fareAttribute.Price = lib.IfThenElse(m["price"] != "", &price, nil)
 
 	// Convert Required Enums
 	var paymentMethod int
-	lib.ParseStringToPrimitive(m["payment_method"], &paymentMethod, &parsingErrors)
+	lib.ParseStringToPrimitive(m["payment_method"], &paymentMethod)
 
 	fareAttribute.PaymentMethod = lib.IfThenElse(m["payment_method"] != "", &paymentMethod, nil)
 	fareAttribute.Transfers = lib.IfThenElse(m["transfers"] != "", &transfers, nil)
