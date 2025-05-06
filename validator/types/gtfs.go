@@ -104,7 +104,7 @@ type Trip struct {
 	BikesAllowed         *int    `json:"bikes_allowed"`
 	BlockId              *string `json:"block_id"`
 	CalendarDesc         string  `json:"calendar_desc"`
-	DirectionId          *bool   `json:"direction_id"`
+	DirectionId          *int   `json:"direction_id"`
 	PatternId            *string `json:"pattern_id"`
 	RouteId              string  `json:"route_id"`
 	ServiceId            string  `json:"service_id"`
