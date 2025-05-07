@@ -26,28 +26,28 @@ func AgencyFareUrlValidation(severity *types.Severity, agency *types.Agency, row
 		s = *severity
 	}
 
-	// Check if agency_phone is required
-	if agency.AgencyPhone == nil && s != types.SEVERITY_IGNORE {
+	// Check if agency_fare_url is required
+	if agency.AgencyFareUrl == nil && s != types.SEVERITY_IGNORE {
 		services.AppMessageService.AddMessage(types.Message{
-			Field: "agency_phone",
+			Field: "agency_fare_url",
 			FileName: "agency.txt",
-			Message: lib.IfThenElse(s == types.SEVERITY_ERROR, "Agency phone is required", "Agency phone is recommended"),
+			Message: lib.IfThenElse(s == types.SEVERITY_ERROR, "Agency fare URL is required", "Agency fare URL is recommended"),
 			Rows: []int{row},
 			Severity: s,
-			ValidationID: "agency_phone_validation",
+			ValidationID: "agency_fare_url_validation",
 		})
 	}
 
-	// Check if agency_phone is valid
-	if agency.AgencyPhone != nil {
-		if phoneErrors := lib.ValidatePhone(*agency.AgencyPhone); phoneErrors != "" {
+	// Check if agency_fare_url is valid
+	if agency.AgencyFareUrl != nil {
+		if urlErrors := lib.ValidateUrl(*agency.AgencyFareUrl); urlErrors != "" {
 			services.AppMessageService.AddMessage(types.Message{
-				Field: "agency_phone",
+				Field: "agency_fare_url",
 				FileName: "agency.txt",
-				Message: phoneErrors,
+				Message: urlErrors,
 				Rows: []int{row},
 				Severity: types.SEVERITY_ERROR,
-				ValidationID: "agency_phone_validation",
+				ValidationID: "agency_fare_url_validation",
 			})
 		}
 	}
