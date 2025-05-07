@@ -21,7 +21,7 @@ func TestAgencyLangValidation_Required(t *testing.T) {
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
-		t.Error("", assert)
+		t.Error(assert)
 	}
 	services.AppMessageService.Clear()
 }
@@ -39,7 +39,7 @@ func TestAgencyLangValidation_Recommended(t *testing.T) {
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
-		t.Error("", assert)
+		t.Error(assert)
 	}
 	services.AppMessageService.Clear()
 }

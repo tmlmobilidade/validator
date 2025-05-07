@@ -20,7 +20,7 @@ func TestAgencyTimezoneValidation_Required(t *testing.T) {
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
-		t.Error("", assert)
+		t.Error(assert)
 	}
 	services.AppMessageService.Clear()
 }
@@ -35,7 +35,7 @@ func TestAgencyTimezoneValidation_ValidTimezone(t *testing.T) {
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
-		t.Error("", assert)
+		t.Error(assert)
 	}
 	services.AppMessageService.Clear()
 }
@@ -52,7 +52,7 @@ func TestAgencyTimezoneValidation_InvalidTimezone(t *testing.T) {
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
-		t.Error("", assert)
+		t.Error(assert)
 	}
 	services.AppMessageService.Clear()
 } 

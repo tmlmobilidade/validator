@@ -21,7 +21,7 @@ func TestAgencyPhoneValidation_Required(t *testing.T) {
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
-		t.Error("", assert)
+		t.Error(assert)
 	}
 	
 	services.AppMessageService.Clear()
@@ -40,7 +40,7 @@ func TestAgencyPhoneValidation_Recommended(t *testing.T) {
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
-		t.Error("", assert)
+		t.Error(assert)
 	}
 	services.AppMessageService.Clear()
 }
@@ -59,7 +59,7 @@ func TestAgencyPhoneValidation_ValidPhone(t *testing.T) {
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
-		t.Error("", assert)
+		t.Error(assert)
 	}
 	services.AppMessageService.Clear()
 }
@@ -78,7 +78,7 @@ func TestAgencyPhoneValidation_InvalidPhone(t *testing.T) {
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
-		t.Error("", assert)
+		t.Error(assert)
 	}
 	services.AppMessageService.Clear()
 } 

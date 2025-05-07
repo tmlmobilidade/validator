@@ -20,7 +20,7 @@ func TestAgencyUrlValidation_Required(t *testing.T) {
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
-		t.Error("", assert)
+		t.Error(assert)
 	}
 
 	services.AppMessageService.Clear()
@@ -38,7 +38,7 @@ func TestAgencyUrlValidation_ValidUrl(t *testing.T) {
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
-		t.Error("", assert)
+		t.Error(assert)
 	}
 	services.AppMessageService.Clear()
 }
@@ -55,7 +55,7 @@ func TestAgencyUrlValidation_InvalidUrl(t *testing.T) {
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
-		t.Error("", assert)
+		t.Error(assert)
 	}
 	
 	services.AppMessageService.Clear()
