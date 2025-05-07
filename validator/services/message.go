@@ -91,4 +91,11 @@ func (ms *MessageService) PrintJSON() {
 	lib.PrintMap(ms.GetSummary(), true)
 }
 
+func (ms *MessageService) Clear() {
+	ms.messages = []types.Message{}
+	ms.errorCount = 0
+	ms.infoCount = 0
+	ms.warningCount = 0
+}
+
 var AppMessageService = NewMessageService()
