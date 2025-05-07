@@ -14,6 +14,9 @@ func RunValidations(gtfs types.Gtfs) {
 		// Validate trip_id
 		TripIdValidation(&trip, i, &gtfs)
 
+		// Validate shape_id
+		ShapeIdValidation(nil, &trip, i, &gtfs)
+
 		// Validate route_id
 		RouteIdValidation(&trip, i, &gtfs)
 
