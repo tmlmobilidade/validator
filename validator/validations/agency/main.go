@@ -4,6 +4,7 @@ import (
 	"main/lib"
 	"main/services"
 	"main/types"
+	validations "main/validations/agency/validations"
 )
 
 func RunValidations(gtfs types.Gtfs) {
@@ -11,28 +12,28 @@ func RunValidations(gtfs types.Gtfs) {
 
 	for i, rawAgency := range gtfs.Files["agency"] {
 		// Parse Agency Validation
-		agency := ParseAgencyValidation(rawAgency, i, &gtfs)
+		agency := validations.ParseAgencyValidation(rawAgency, i, &gtfs)
 
 		// Duplicate Agencies Validation
-		AgencyIdValidation(nil, &agency, i, &gtfs)
+		validations.AgencyIdValidation(nil, &agency, i, &gtfs)
 
 		// Validate Agency URL
-		AgencyUrlValidation(&agency, i, &gtfs)
+		validations.AgencyUrlValidation(&agency, i, &gtfs)
 
 		// Validate Agency Timezone
-		AgencyTimezoneValidation(&agency, i, &gtfs)
+		validations.AgencyTimezoneValidation(&agency, i, &gtfs)
 
 		// Validate Agency Lang
-		AgencyLangValidation(nil, &agency, i, &gtfs)
+		validations.AgencyLangValidation(nil, &agency, i, &gtfs)
 
 		// Validate Agency Phone
-		AgencyPhoneValidation(nil, &agency, i, &gtfs)
+		validations.AgencyPhoneValidation(nil, &agency, i, &gtfs)
 
 		// Validate Agency Fare URL
-		AgencyFareUrlValidation(nil, &agency, i, &gtfs)
+		validations.AgencyFareUrlValidation(nil, &agency, i, &gtfs)
 
 		// Validate Agency Email
-		AgencyEmailValidation(nil, &agency, i, &gtfs)
+		validations.AgencyEmailValidation(nil, &agency, i, &gtfs)
 		
 	}
 
