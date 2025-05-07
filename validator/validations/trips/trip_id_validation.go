@@ -38,7 +38,7 @@ func TripIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 
 	if trip.TripId != "" {
 		// Check if trip_id is Unique ID
-		if _, ok := gtfs.IdMap["trips"][trip.TripId]; ok && row != gtfs.IdMap["trips"][trip.TripId] {
+		if _, ok := gtfs.IdMap["trips"][trip.TripId]; ok && len(gtfs.IdMap["trips"][trip.TripId]) > 1 {
 			services.AppMessageService.AddMessage(types.Message{
 				Field: "trip_id",
 				FileName: "trips.txt",

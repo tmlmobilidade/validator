@@ -50,7 +50,7 @@ func AgencyIdValidation(severity *types.Severity, agency *types.Agency, row int,
 
 	if agency.AgencyId != nil {
 		// Check if agency_id is Unique ID
-		if _, ok := gtfs.IdMap["agency"][*agency.AgencyId]; ok && row != gtfs.IdMap["agency"][*agency.AgencyId] {
+		if _, ok := gtfs.IdMap["agency"][*agency.AgencyId]; ok && len(gtfs.IdMap["agency"][*agency.AgencyId]) > 1 {
 			services.AppMessageService.AddMessage(types.Message{
 				Field: "agency_id",
 				FileName: "agency.txt",

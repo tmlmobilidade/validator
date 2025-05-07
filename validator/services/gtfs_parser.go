@@ -149,7 +149,7 @@ func handlePrimaryKeyMapping(primaryKey any, header string, value string, fileNa
 		// Single primary key case
 		if pk == header && value != "" {
 			idsMapMutex.Lock()
-			(*idsMap)[fileNameWithoutExt][value] = rowIndex
+			(*idsMap)[fileNameWithoutExt][value] = append((*idsMap)[fileNameWithoutExt][value], rowIndex)
 			idsMapMutex.Unlock()
 		}
 	case []string:
@@ -158,10 +158,10 @@ func handlePrimaryKeyMapping(primaryKey any, header string, value string, fileNa
 			if key == header && value != "" {
 				idsMapMutex.Lock()
 				if _, exists := (*idsMap)[fileNameWithoutExt]; !exists {
-					(*idsMap)[fileNameWithoutExt] = make(map[string]int)
+					(*idsMap)[fileNameWithoutExt] = make(map[string][]int)
 				}
 				// Store each component separately with a prefix to avoid collisions
-				(*idsMap)[fileNameWithoutExt][value] = rowIndex
+				(*idsMap)[fileNameWithoutExt][value] = append((*idsMap)[fileNameWithoutExt][value], rowIndex)
 				idsMapMutex.Unlock()
 			}
 		}
@@ -197,7 +197,7 @@ func parseCSV(content []byte, fileNameWithoutExt string, fieldCount *types.GtfsF
 	// Initialize the inner map for this file if it doesn't exist
 	idsMapMutex.Lock()
 	if (*idsMap)[fileNameWithoutExt] == nil {
-		(*idsMap)[fileNameWithoutExt] = make(map[string]int)
+		(*idsMap)[fileNameWithoutExt] = make(map[string][]int)
 	}
 	idsMapMutex.Unlock()
 
@@ -213,7 +213,7 @@ func parseCSV(content []byte, fileNameWithoutExt string, fieldCount *types.GtfsF
 				localCounts[header]++
 			}
 
-			handlePrimaryKeyMapping(primaryKey, header, value, fileNameWithoutExt, rowIndex - 1, idsMap, idsMapMutex)
+			handlePrimaryKeyMapping(primaryKey, header, value, fileNameWithoutExt, rowIndex + 1, idsMap, idsMapMutex)
 		}
 		result = append(result, entry)
 	}

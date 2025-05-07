@@ -11,32 +11,31 @@ func RunValidations(gtfs types.Gtfs) {
 	for i, rawTrips := range gtfs.Files["trips"] {
 		trip := ParseTrips(rawTrips, i, &gtfs)
 
-		// Validate Trip ID
+		// Validate trip_id
 		TripIdValidation(&trip, i, &gtfs)
 
-		// Validate Route Id
+		// Validate route_id
 		RouteIdValidation(&trip, i, &gtfs)
 
-		// Validate Service ID
+		// Validate service_id
 		ServiceIdValidation(&trip, i, &gtfs)
 
-		// Trip Headsign Validation
+		// Validate trip_headsign
 		TripHeadsignValidation(nil, &trip, i, &gtfs)
 
-		// Trip Short Name Validation
+		// Validate trip_short_name
 		TripShortNameValidation(nil, &trip, i, &gtfs)
-
-		// Bikes Allowed Validation
-		BikesAllowedValidation(nil, &trip, i, &gtfs)
-
-		// Wheelchair Accessible Validation
-		WheelchairAccessibleValidation(nil, &trip, i, &gtfs)
-
-		// Direction ID Validation
+		
+		// Validate direction_id
 		DirectionIdValidation(nil, &trip, i, &gtfs)
-
-		// Block ID Validation
+		
+		// Validate block_id
 		BlockIdValidation(nil, &trip, i, &gtfs)
 		
+		// Validate wheelchair_accessible
+		WheelchairAccessibleValidation(nil, &trip, i, &gtfs)
+
+		// Validate bikes_allowed
+		BikesAllowedValidation(nil, &trip, i, &gtfs)
 	}
 }

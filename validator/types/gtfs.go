@@ -4,7 +4,7 @@ package types
 // and the value is a slice of maps containing the CSV data with column headers as keys.
 type GtfsFiles map[string][]map[string]string
 type GtfsFieldCount map[string]map[string]int
-type GtfsIdMap map[string]map[string]int // key is the filename, value is a map of ids and their row number
+type GtfsIdMap map[string]map[string][]int // key is the filename, value is a map of ids and their row number
 
 type Gtfs struct {
 	Files        GtfsFiles
