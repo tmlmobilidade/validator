@@ -42,16 +42,16 @@ func AgencyPhoneValidation(severity *types.Severity, agency *types.Agency, row i
 	}
 
 	// Check if agency_phone is valid
-	if agency.AgencyPhone != nil {
-		if phoneErrors := lib.ValidatePhone(*agency.AgencyPhone); phoneErrors != "" {
-			services.AppMessageService.AddMessage(types.Message{
-				Field: "agency_phone",
-				FileName: "agency.txt",
-				Message: phoneErrors,
-				Rows: []int{row},
-				Severity: types.SEVERITY_ERROR,
-				ValidationID: "agency_phone_validation",
-			})
-		}
-	}
+	// if agency.AgencyPhone != nil {
+	// 	if phoneErrors := lib.ValidatePhone(*agency.AgencyPhone); phoneErrors != "" {
+	// 		services.AppMessageService.AddMessage(types.Message{
+	// 			Field: "agency_phone",
+	// 			FileName: "agency.txt",
+	// 			Message: phoneErrors,
+	// 			Rows: []int{row},
+	// 			Severity: types.SEVERITY_ERROR,
+	// 			ValidationID: "agency_phone_validation",
+	// 		})
+	// 	}
+	// }
 }
