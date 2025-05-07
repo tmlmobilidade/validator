@@ -40,7 +40,7 @@ func AgencyEmailValidation(severity *types.Severity, agency *types.Agency, row i
 	}
 
 	// Check if agency_phone is valid
-	if agency.AgencyPhone != nil {
+	if agency.AgencyEmail != nil {
 		if emailErrors := lib.ValidateEmail(*agency.AgencyEmail); emailErrors != "" {
 			services.AppMessageService.AddMessage(types.Message{
 				Field: "agency_email",
