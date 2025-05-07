@@ -26,8 +26,10 @@ func TestTripIdValidation_Required(t *testing.T) {
 }
 
 func TestTripIdValidation_Unique(t *testing.T) {
+	
 	trip := &types.Trip{TripId: "unique"}
 	gtfs := &types.Gtfs{IdMap: map[string]map[string][]int{"trips": {"unique": {1}}}}
+
 	validations.TripIdValidation(trip, 2, gtfs)
 
 	assertion := lib.AssertionMessage{

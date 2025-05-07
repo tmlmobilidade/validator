@@ -24,31 +24,22 @@ func TripIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 	message := types.Message{
 		Field: "trip_id",
 		FileName: "trips.txt",
-		Message: "Trip ID is required",
+		Message: "trip_id is required",
 		Rows: []int{row},
 		Severity: types.SEVERITY_ERROR,
 		ValidationID: "trip_id_validation",
 	}
 
-	//  Check if trip_id is required
-	if trip.TripId == "" && len(gtfs.Files["trips"]) > 1 {
-		message.Message = "Trip ID is required when there is more than one trip"
-		message.Severity = types.SEVERITY_ERROR
-	}
-
 	if trip.TripId != "" {
 		// Check if trip_id is Unique ID
-		if _, ok := gtfs.IdMap["trips"][trip.TripId]; ok && len(gtfs.IdMap["trips"][trip.TripId]) > 1 {
-			services.AppMessageService.AddMessage(types.Message{
-				Field: "trip_id",
-				FileName: "trips.txt",
-				ValidationID: "duplicate_trips_validation",
-				Message: "Duplicate trip_id found. Trip IDs must be unique.",
-				Rows: []int{row},
-				Severity: types.SEVERITY_ERROR,
-			})
+		if gtfs.IdMap["trips"] != nil && len(gtfs.IdMap["trips"][trip.TripId]) > 1 {
+			message.Message = "Duplicate trip_id found. Trip IDs must be unique."
+			message.Severity = types.SEVERITY_ERROR
+			services.AppMessageService.AddMessage(message)
 		}
+		
+		return;
 	}
-
+	
 	services.AppMessageService.AddMessage(message)
 }
