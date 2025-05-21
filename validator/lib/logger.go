@@ -55,14 +55,10 @@ func NewLogger(withTimestamp bool, level ...Level) *Logger {
 	}
 }
 
-func (l *Logger) SetLevel(level string) {
-	l.Level = ParseLevel(level)
-}
-
 // log prints a message with the specified color and level
 func (l *Logger) log(c *color.Color, lvl Level, message string) {
-	if lvl < l.Level {
-		return // Don't print if message level is lower than current logger level
+	if lvl > l.Level {
+		return
 	}
 
 	prefix := fmt.Sprintf("[%s]", levelNames[lvl])
@@ -140,8 +136,8 @@ func (l *Logger) Clear() {
 	fmt.Print("\033c")
 }
 
-func (l *Logger) SetLogLevel(level Level) {
-	l.Level = level
+func (l *Logger) SetLogLevel(level string) {
+	l.Level = ParseLevel(level)
 }
 
 var AppLogger = NewLogger(true, Debug)
@@ -155,7 +151,7 @@ type PerformanceTracker struct {
 
 // StartPerformanceTracker creates a new performance tracker
 func (l *Logger) StartPerformanceTracker(operation string) *PerformanceTracker {
-	AppLogger.Info(fmt.Sprintf("Starting operation '%s'", operation))
+	l.Info(fmt.Sprintf("[%s] Starting operation", operation))
 	return &PerformanceTracker{
 		start:     time.Now(),
 		operation: operation,
@@ -166,5 +162,11 @@ func (l *Logger) StartPerformanceTracker(operation string) *PerformanceTracker {
 // End stops the performance tracker and logs the duration
 func (pt *PerformanceTracker) End() {
 	duration := time.Since(pt.start)
-	pt.logger.Info(fmt.Sprintf("Operation '%s' completed in %v", pt.operation, duration))
+	pt.logger.Info(fmt.Sprintf("[%s] Operation completed in %v", pt.operation, duration))
+}
+
+// ProgressBar prints a progress bar
+func (l *Logger) ProgressBar(progress int, total int) {
+	bar := fmt.Sprintf("[%d/%d]", progress, total)
+	l.log(colorAccent, Debug, bar)
 }
