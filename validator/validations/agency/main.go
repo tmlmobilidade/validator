@@ -2,7 +2,6 @@ package agency
 
 import (
 	"main/lib"
-	"main/services"
 	"main/types"
 	validations "main/validations/agency/validations"
 )
@@ -13,6 +12,10 @@ func RunValidations(gtfs types.Gtfs) {
 	for i, rawAgency := range gtfs.Files["agency"] {
 		// Parse Agency Validation
 		agency := validations.ParseAgencyValidation(rawAgency, i, &gtfs)
+
+		if agency == (types.Agency{}) {
+			continue
+		}
 
 		// Duplicate Agencies Validation
 		validations.AgencyIdValidation(nil, &agency, i, &gtfs)
@@ -36,6 +39,4 @@ func RunValidations(gtfs types.Gtfs) {
 		validations.AgencyEmailValidation(nil, &agency, i, &gtfs)
 		
 	}
-
-	lib.PrintMap(services.AppMessageService.GetSummary())
 }

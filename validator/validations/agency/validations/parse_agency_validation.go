@@ -38,6 +38,7 @@ func ParseAgencyValidation(rawAgency map[string]string, row int, gtfs *types.Gtf
 			message.Message = msg
 			message.Field = field
 			services.AppMessageService.AddMessage(message)
+			return types.Agency{}
 		}
 	}
 
