@@ -506,3 +506,17 @@ type Period struct {
 	PeriodId   string `json:"period_id"`
 	PeriodName string `json:"period_name"`
 }
+
+
+/* WEEKDAY */
+type Weekday string
+
+const (
+	WeekdayMonday    Weekday = "monday"
+	WeekdayTuesday   Weekday = "tuesday"
+	WeekdayWednesday Weekday = "wednesday"
+	WeekdayThursday  Weekday = "thursday"
+	WeekdayFriday    Weekday = "friday"
+	WeekdaySaturday  Weekday = "saturday"
+	WeekdaySunday    Weekday = "sunday"
+)
