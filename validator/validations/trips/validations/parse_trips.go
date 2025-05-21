@@ -7,7 +7,7 @@ import (
 )
 
 // Parses a trip row from the trips.txt file to a Trip struct
-func ParseTrips(rawTrips map[string]string, row int, gtfs *types.Gtfs) (trips types.Trip) {
+func ParseTrips(rawTrips map[string]string, row int, gtfs *types.Gtfs) (trip types.Trip) {
 	message := types.Message{
 		Field:   "",
 		FileName: "trips.txt",
@@ -40,21 +40,22 @@ func ParseTrips(rawTrips map[string]string, row int, gtfs *types.Gtfs) (trips ty
 			message.Message = msg
 			message.Field = field
 			services.AppMessageService.AddMessage(message)
+			return types.Trip{}
 		}
 	}
 
-	trips.TripId = tripId
-	trips.RouteId = routeId
-	trips.ServiceId = serviceId
+	trip.TripId = tripId
+	trip.RouteId = routeId
+	trip.ServiceId = serviceId
 
-	trips.TripHeadsign = lib.IfThenElse(tripHeadsign != "", &tripHeadsign, nil)
-	trips.TripShortName = lib.IfThenElse(tripShortName != "", &tripShortName, nil)
-	trips.BlockId = lib.IfThenElse(blockId != "", &blockId, nil)
-	trips.ShapeId = lib.IfThenElse(shapeId != "", &shapeId, nil)
-	trips.BikesAllowed = lib.IfThenElse(bikesAllowed != "", &bikesAllowedInt, nil)
-	trips.WheelchairAccessible = lib.IfThenElse(wheelchairAccessible != "", &wheelchairAccessibleInt, nil)
-	trips.DirectionId = lib.IfThenElse(directionId != "", &directionIdInt, nil)
+	trip.TripHeadsign = lib.IfThenElse(tripHeadsign != "", &tripHeadsign, nil)
+	trip.TripShortName = lib.IfThenElse(tripShortName != "", &tripShortName, nil)
+	trip.BlockId = lib.IfThenElse(blockId != "", &blockId, nil)
+	trip.ShapeId = lib.IfThenElse(shapeId != "", &shapeId, nil)
+	trip.BikesAllowed = lib.IfThenElse(bikesAllowed != "", &bikesAllowedInt, nil)
+	trip.WheelchairAccessible = lib.IfThenElse(wheelchairAccessible != "", &wheelchairAccessibleInt, nil)
+	trip.DirectionId = lib.IfThenElse(directionId != "", &directionIdInt, nil)
 	
-	return trips
+	return trip
 }
 
