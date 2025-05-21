@@ -36,7 +36,7 @@ func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker) {
 
 func main() {
 	services.AppCLI.Run()
-	lib.AppLogger.SetLevel(services.AppCLI.Options.LogLevel)
+	lib.AppLogger.SetLogLevel(services.AppCLI.Options.LogLevel)
 
 	// Clear the terminal
 	lib.AppLogger.Clear()
