@@ -28,7 +28,7 @@ func FareIdValidation(fareAttribute *types.FareAttribute, row int, gtfs *types.G
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "fare_attributes_parse",
+			ValidationID: "fare_id_validation",
 		})
 	}
 	
