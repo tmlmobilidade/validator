@@ -11,7 +11,7 @@ func RunValidations(gtfs types.Gtfs) {
 
 	for i, rawAgency := range gtfs.Files["agency"] {
 		// Parse Agency Validation
-		agency := validations.ParseAgencyValidation(rawAgency, i, &gtfs)
+		agency := validations.ParseAgency(rawAgency, i, &gtfs)
 
 		if agency == (types.Agency{}) {
 			continue
