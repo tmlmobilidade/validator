@@ -57,6 +57,4 @@ func WeekdayValidation(calendar *types.Calendar, row int, weekday types.Weekday)
 	if !valid {
 		services.AppMessageService.AddMessage(message)
 	}
-	
-	services.AppMessageService.AddMessage(message)
 }
