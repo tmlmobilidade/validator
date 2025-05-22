@@ -24,6 +24,17 @@ func RunValidations(gtfs types.Gtfs) {
 
 		// Validate currency_type
 		validations.CurrencyTypeValidation(&fareAttribute, i)
-		
+
+		// Validate payment_method
+		validations.PaymentMethodValidation(&fareAttribute, i)
+
+		// Validate transfers
+		validations.TransfersValidation(&fareAttribute, i, &gtfs)
+
+		// Validate agency_id
+		validations.AgencyIdValidation(nil, &fareAttribute, i, &gtfs)
+
+		// Validate transfer_duration
+		validations.TransferDurationValidation(nil, &fareAttribute, i, &gtfs)
 	}
 }
