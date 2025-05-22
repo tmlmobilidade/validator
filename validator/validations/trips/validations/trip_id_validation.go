@@ -21,25 +21,24 @@ Identifies a trip.
 */
 func TripIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 
-	message := types.Message{
-		Field: "trip_id",
-		FileName: "trips.txt",
-		Message: "trip_id is required",
-		Rows: []int{row},
-		Severity: types.SEVERITY_ERROR,
-		ValidationID: "trip_id_validation",
-	}
-
-	if trip.TripId != "" {
-		// Check if trip_id is Unique ID
-		if gtfs.IdMap["trips"] != nil && len(gtfs.IdMap["trips"][trip.TripId]) > 1 {
-			message.Message = "Duplicate trip_id found. Trip IDs must be unique."
-			message.Severity = types.SEVERITY_ERROR
-			services.AppMessageService.AddMessage(message)
-		}
-		
-		return;
+	addMessage := func(msg string) {
+		services.AppMessageService.AddMessage(types.Message{
+			Field:        "trip_id",
+			FileName:     "trips.txt",
+			Rows:         []int{row},
+			Message:      msg,
+			Severity:     types.SEVERITY_ERROR,
+			ValidationID: "trip_id_validation",
+		})
 	}
 	
-	services.AppMessageService.AddMessage(message)
+	if trip.TripId == "" {
+		addMessage("trip_id is required")
+		return
+	}
+	
+	if gtfs.IdMap["trips"] != nil && len(gtfs.IdMap["trips"][trip.TripId]) > 1 {
+		addMessage("Duplicate trip_id found. Trip IDs must be unique.")
+		return
+	}
 }
