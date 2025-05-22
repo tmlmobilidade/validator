@@ -1,6 +1,7 @@
 package fare_attributes
 
 import (
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -33,7 +34,7 @@ func AgencyIdValidation(severity *types.Severity, fareAttribute *types.FareAttri
 	addMessage := func(msg string) {
 		services.AppMessageService.AddMessage(types.Message{
 			Field:        "agency_id",
-			FileName:     "calendar_dates.txt",
+			FileName:     "fare_attributes.txt",
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     s,
@@ -45,13 +46,19 @@ func AgencyIdValidation(severity *types.Severity, fareAttribute *types.FareAttri
 	if fareAttribute.AgencyId == nil && len(gtfs.Files["agency"]) > 1 {
 		s = types.SEVERITY_ERROR
 		addMessage("Agency ID is required when there is more than one agency")
+		return;
 	}
 
+	if s != types.SEVERITY_IGNORE && fareAttribute.AgencyId == nil {
+		addMessage("Agency ID is " + lib.IfThenElse(s == types.SEVERITY_ERROR, "required", "recommended"))
+		return;
+	}
+
+	// Check if agency_id exists in agencies.txt
 	if fareAttribute.AgencyId != nil {
-		// Check if agency_id is Unique ID
-		if _, ok := gtfs.IdMap["agency"][*fareAttribute.AgencyId]; ok && len(gtfs.IdMap["agency"][*fareAttribute.AgencyId]) > 1 {
+		if _, ok := gtfs.IdMap["agency"][*fareAttribute.AgencyId]; !ok {
 			s = types.SEVERITY_ERROR
-			addMessage("Duplicate agency_id found. Agency IDs must be unique.")
+			addMessage("Agency ID does not exist in agencies.txt")
 		}
 	}
 }
