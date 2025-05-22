@@ -183,12 +183,3 @@ func MergeMaps[T any](a, b map[string]T) map[string]T {
 
 	return result
 }
-
-func Contains[T comparable](slice []T, item T) bool {
-	for _, s := range slice {
-		if s == item {
-			return true
-		}
-	}
-	return false
-}
