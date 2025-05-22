@@ -224,7 +224,7 @@ type Calendar struct {
 /* CALENDAR DATES */
 type CalendarDates struct {
 	Date          string `json:"date"`
-	ExceptionType int    `json:"exception_type"`
+	ExceptionType *int    `json:"exception_type"`
 	ServiceId     string `json:"service_id"`
 }
 
