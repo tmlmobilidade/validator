@@ -20,8 +20,10 @@ func RunValidations(gtfs types.Gtfs) {
 		validations.FareIdValidation(&fareAttribute, i, &gtfs)
 
 		// Validate price
-		validations.PriceValidation(&fareAttribute, i, &gtfs)
-		
+		validations.PriceValidation(&fareAttribute, i)
+
+		// Validate currency_type
+		validations.CurrencyTypeValidation(&fareAttribute, i)
 		
 	}
 }

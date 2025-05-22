@@ -2,9 +2,9 @@ package calendar_dates
 
 import (
 	"fmt"
-	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
@@ -45,7 +45,7 @@ func ExceptionTypeValidation(calendarDate *types.CalendarDates, row int, gtfs *t
 
 	validExceptionTypes := []int{1, 2}
 
-	if !lib.Contains(validExceptionTypes, *calendarDate.ExceptionType) {
+	if !slices.Contains(validExceptionTypes, *calendarDate.ExceptionType) {
 		message.Message = fmt.Sprintf("Wrong exception_type value, must be 1 or 2, got %d", *calendarDate.ExceptionType)
 		services.AppMessageService.AddMessage(message)
 	}

@@ -1,6 +1,7 @@
 package fare_attributes
 
 import (
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -9,35 +10,36 @@ import (
 # Attributes
 
 	- File: [fare_attributes.txt]
-	- Field: price
+	- Field: currency_type
 	- Presence: Required
-	- Type: Non-negative float
+	- Type: Currency code
 
 # Description
 
-Fare price, in the unit specified by currency_type.
+Currency used to pay the fare.
 
 [fare_attributes.txt]: https://gtfs.org/schedule/reference/#fare_attributestxt
 */
-func PriceValidation(fareAttribute *types.FareAttribute, row int) {
+func CurrencyTypeValidation(fareAttribute *types.FareAttribute, row int) {
 
 	addMessage := func(msg string) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field:        "price",
+			Field:        "currency_type",
 			FileName:     "fare_attributes.txt",
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "price_validation",
+			ValidationID: "currency_type_validation",
 		})
 	}
 	
-	if fareAttribute.Price == nil {
-		addMessage("Price is required")
+	if fareAttribute.CurrencyType == nil {
+		addMessage("Currency type is required")
 		return
 	}
 	
-	if *fareAttribute.Price < 0 {
-		addMessage("Price must be non-negative")
+	if errMsg := lib.ValidateCurrencyType(*fareAttribute.CurrencyType); errMsg != "" {
+		addMessage(errMsg)
+		return
 	}
 }
