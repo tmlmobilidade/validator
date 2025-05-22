@@ -3,18 +3,25 @@ package fare_attributes
 import (
 	"main/lib"
 	"main/types"
+	validations "main/validations/fare_attributes/validations"
 )
 
 func RunValidations(gtfs types.Gtfs) {
 	lib.AppLogger.Debug("Running Fare Attributes Validations...")
 
-	// Create validation with default severity
-	// validation := NewParseFareAttributeValidation(nil)
+	for i, rawFareAttributes := range gtfs.Files["fare_attributes"] {
+		fareAttribute := ParseFareAttributes(rawFareAttributes, i, &gtfs)
 
-	// // Run validation
-	// validationMessages := validation.Validate(gtfs)
-	// for _, message := range validationMessages {
-	// 	services.AppMessageService.AddMessage(message)
-	// 	lib.AppLogger.Error("[" + message.FileName + "] " + message.Message)
-	// }
+		if fareAttribute == (types.FareAttribute{}) {
+			continue
+		}
+
+		// Validate fare_id
+		validations.FareIdValidation(&fareAttribute, i, &gtfs)
+
+		// Validate price
+		validations.PriceValidation(&fareAttribute, i, &gtfs)
+		
+		
+	}
 }
