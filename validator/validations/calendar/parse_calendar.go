@@ -6,54 +6,75 @@ import (
 	"main/types"
 )
 
-// Parses a trip row from the trips.txt file to a Trip struct
-func ParseCalendar(rawCalendar map[string]string, row int, gtfs *types.Gtfs) (calendar types.Calendar) {
-	message := types.Message{
-		Field:   "",
-		FileName: "calendar.txt",
-		Rows: []int{row},
-		Message: "",
-		Severity: types.SEVERITY_ERROR,
-		ValidationID: "calendar_parse",
+func ParseCalendar(rawCalendar map[string]string, row int, gtfs *types.Gtfs) types.Calendar {
+	var (
+		calendar                                           types.Calendar = types.Calendar{}
+		serviceId, startDate, endDate                      string
+		monday, tuesday, wednesday, thursday, friday, saturday, sunday                     bool
+		messages                                           []types.Message
+	)
+
+	stringFields := map[string]*string{
+		"service_id":      &serviceId,
+		"start_date":      &startDate,
+		"end_date":        &endDate,
 	}
 
-	var serviceId, startDate, endDate, monday, tuesday, wednesday, thursday, friday, saturday, sunday string
+	boolFields := map[string]*bool{
+		"monday":     &monday,
+		"tuesday":    &tuesday,
+		"wednesday":  &wednesday,
+		"thursday":   &thursday,
+		"friday":     &friday,
+		"saturday":   &saturday,
+		"sunday":     &sunday,
+	}
+	
 
-	fieldMappings := map[string]*string{
-		"service_id":            &serviceId,
-		"monday":                &monday,
-		"tuesday":               &tuesday,
-		"wednesday":             &wednesday,
-		"thursday":              &thursday,
-		"friday":                &friday,
-		"saturday":              &saturday,
-		"sunday":                &sunday,
-		"start_date":            &startDate,
-		"end_date":              &endDate,
+	// Helper to collect error messages
+	addMessage := func(field, msg string) {
+		messages = append(messages, types.Message{
+			Field:        field,
+			FileName:     "trips.txt",
+			Rows:         []int{row},
+			Message:      msg,
+			Severity:     types.SEVERITY_ERROR,
+			ValidationID: "trips_parse",
+		})
 	}
 
-	// Loop through fields and parse each one
-	for field, target := range fieldMappings {
-		msg := lib.ParseStringToPrimitive(rawCalendar[field], target)
-		if msg != "" {
-			message.Message = msg
-			message.Field = field
-			services.AppMessageService.AddMessage(message)
-			return types.Calendar{}
+	// Parse string fields
+	for field, target := range stringFields {
+		if errMsg := lib.ParseStringToPrimitive(rawCalendar[field], target); errMsg != "" {
+			addMessage(field, errMsg)
 		}
 	}
 
+	// Parse bool fields
+	for field, target := range boolFields {
+		if errMsg := lib.ParseStringToPrimitive(rawCalendar[field], target); errMsg != "" {
+			addMessage(field, errMsg)
+		}
+	}
+
+	// If there are any errors, return an empty trip
+	if len(messages) > 0 {
+		services.AppMessageService.AddMessages(messages)
+		return calendar
+	}
+
+	// Required fields
 	calendar.ServiceId = serviceId
 	calendar.StartDate = startDate
 	calendar.EndDate = endDate
-	calendar.Monday = monday == "1"
-	calendar.Tuesday = tuesday == "1"
-	calendar.Wednesday = wednesday == "1"
-	calendar.Thursday = thursday == "1"
-	calendar.Friday = friday == "1"
-	calendar.Saturday = saturday == "1"
-	calendar.Sunday = sunday == "1"
+
+	calendar.Monday = monday
+	calendar.Tuesday = tuesday
+	calendar.Wednesday = wednesday
+	calendar.Thursday = thursday
+	calendar.Friday = friday
+	calendar.Saturday = saturday
+	calendar.Sunday = sunday
 
 	return calendar
 }
-
