@@ -23,6 +23,12 @@ func NewMessageService() *MessageService {
 	}
 }
 
+func (ms *MessageService) AddMessages(messages []types.Message) {
+	for _, message := range messages {
+		ms.AddMessage(message)
+	}
+}
+
 func (ms *MessageService) AddMessage(message types.Message) {
 	for i, m := range ms.messages {
 		if m.ValidationID == message.ValidationID && m.Field == message.Field && m.FileName == message.FileName {

@@ -6,56 +6,76 @@ import (
 	"main/types"
 )
 
-// Parses a trip row from the trips.txt file to a Trip struct
-func ParseTrips(rawTrips map[string]string, row int, gtfs *types.Gtfs) (trip types.Trip) {
-	message := types.Message{
-		Field:   "",
-		FileName: "trips.txt",
-		Rows: []int{row},
-		Message: "",
-		Severity: types.SEVERITY_ERROR,
-		ValidationID: "trips_parse",
+func ParseTrips(rawTrips map[string]string, row int, gtfs *types.Gtfs) types.Trip {
+	var (
+		trip                                           types.Trip = types.Trip{}
+		tripId, routeId, serviceId                     string
+		tripHeadsign, tripShortName, blockId, shapeId  string
+		directionId, wheelchairAccessible, bikesAllowed int
+		messages                                       []types.Message
+	)
+
+	stringFields := map[string]*string{
+		"trip_id":         &tripId,
+		"route_id":        &routeId,
+		"service_id":      &serviceId,
+		"trip_headsign":   &tripHeadsign,
+		"trip_short_name": &tripShortName,
+		"block_id":        &blockId,
+		"shape_id":        &shapeId,
 	}
 
-	var tripId, routeId, serviceId, tripHeadsign, tripShortName, directionId, blockId, shapeId, wheelchairAccessible, bikesAllowed string
-	var directionIdInt, wheelchairAccessibleInt, bikesAllowedInt int
-
-	fieldMappings := map[string]*string{
-		"trip_id":               &tripId,
-		"route_id":              &routeId,
-		"service_id":            &serviceId,
-		"trip_headsign":         &tripHeadsign,
-		"trip_short_name":       &tripShortName,
+	intFields := map[string]*int{
 		"direction_id":          &directionId,
-		"block_id":              &blockId,
-		"shape_id":              &shapeId,
 		"wheelchair_accessible": &wheelchairAccessible,
 		"bikes_allowed":         &bikesAllowed,
 	}
 
-	// Loop through fields and parse each one
-	for field, target := range fieldMappings {
-		msg := lib.ParseStringToPrimitive(rawTrips[field], target)
-		if msg != "" {
-			message.Message = msg
-			message.Field = field
-			services.AppMessageService.AddMessage(message)
-			return types.Trip{}
+	// Helper to collect error messages
+	addMessage := func(field, msg string) {
+		messages = append(messages, types.Message{
+			Field:        field,
+			FileName:     "trips.txt",
+			Rows:         []int{row},
+			Message:      msg,
+			Severity:     types.SEVERITY_ERROR,
+			ValidationID: "trips_parse",
+		})
+	}
+
+	// Parse string fields
+	for field, target := range stringFields {
+		if errMsg := lib.ParseStringToPrimitive(rawTrips[field], target); errMsg != "" {
+			addMessage(field, errMsg)
 		}
 	}
 
+	// Parse int fields
+	for field, target := range intFields {
+		if errMsg := lib.ParseStringToPrimitive(rawTrips[field], target); errMsg != "" {
+			addMessage(field, errMsg)
+		}
+	}
+
+	// If there are any errors, return an empty trip
+	if len(messages) > 0 {
+		services.AppMessageService.AddMessages(messages)
+		return trip
+	}
+
+	// Required fields
 	trip.TripId = tripId
 	trip.RouteId = routeId
 	trip.ServiceId = serviceId
 
-	trip.TripHeadsign = lib.IfThenElse(tripHeadsign != "", &tripHeadsign, nil)
-	trip.TripShortName = lib.IfThenElse(tripShortName != "", &tripShortName, nil)
-	trip.BlockId = lib.IfThenElse(blockId != "", &blockId, nil)
-	trip.ShapeId = lib.IfThenElse(shapeId != "", &shapeId, nil)
-	trip.BikesAllowed = lib.IfThenElse(bikesAllowed != "", &bikesAllowedInt, nil)
-	trip.WheelchairAccessible = lib.IfThenElse(wheelchairAccessible != "", &wheelchairAccessibleInt, nil)
-	trip.DirectionId = lib.IfThenElse(directionId != "", &directionIdInt, nil)
-	
+	// Optional fields
+	trip.TripHeadsign = lib.IfThenElse(rawTrips["trip_headsign"] != "", &tripHeadsign, nil)
+	trip.TripShortName = lib.IfThenElse(rawTrips["trip_short_name"] != "", &tripShortName, nil)
+	trip.BlockId = lib.IfThenElse(rawTrips["block_id"] != "", &blockId, nil)
+	trip.ShapeId = lib.IfThenElse(rawTrips["shape_id"] != "", &shapeId, nil)
+	trip.DirectionId = lib.IfThenElse(rawTrips["direction_id"] != "", &directionId, nil)
+	trip.WheelchairAccessible = lib.IfThenElse(rawTrips["wheelchair_accessible"] != "", &wheelchairAccessible, nil)
+	trip.BikesAllowed = lib.IfThenElse(rawTrips["bikes_allowed"] != "", &bikesAllowed, nil)
+
 	return trip
 }
-
