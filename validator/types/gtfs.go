@@ -84,17 +84,20 @@ type Stop struct {
 
 /* ROUTE */
 type Route struct {
+	// Required fields
+	RouteId           *string  `json:"route_id"`
+	RouteType         *int     `json:"route_type"`
+
+	// Optional fields
 	AgencyId          *string `json:"agency_id"`
 	ContinuousDropOff *string `json:"continuous_drop_off"`
 	ContinuousPickup  *string `json:"continuous_pickup"`
 	RouteColor        *string `json:"route_color"`
 	RouteDesc         *string `json:"route_desc"`
-	RouteId           string  `json:"route_id"`
 	RouteLongName     *string `json:"route_long_name"`
 	RouteShortName    *string `json:"route_short_name"`
 	RouteSortOrder    *int    `json:"route_sort_order"`
 	RouteTextColor    *string `json:"route_text_color"`
-	RouteType         int     `json:"route_type"`
 	RouteUrl          *string `json:"route_url"`
 }
 
