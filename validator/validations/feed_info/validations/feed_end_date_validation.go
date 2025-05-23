@@ -35,13 +35,13 @@ func FeedEndDateValidation(severity *types.Severity, feedInfo *types.FeedInfo, r
 		s = *severity
 	}
 
-	addMessage := func(msg string) {
+	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
 			Field:        "feed_end_date",
 			FileName:     "feed_info.txt",
 			Rows:         []int{row},
 			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
+			Severity:     severity,
 			ValidationID: "feed_start_date_validation",
 		})
 	}
@@ -52,13 +52,13 @@ func FeedEndDateValidation(severity *types.Severity, feedInfo *types.FeedInfo, r
 		}
 		
 		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "required", "recommended")
-		addMessage(fmt.Sprintf("Feed start date is %s", warn))
+		addMessage(fmt.Sprintf("Feed start date is %s", warn), s)
 		return
 	}
 
 	if feedInfo.FeedEndDate != nil && *feedInfo.FeedEndDate != "" {
 		if !lib.IsValidServiceDate(*feedInfo.FeedEndDate) {
-			addMessage("feed_end_date must be in YYYYMMDD format")
+			addMessage("feed_end_date must be in YYYYMMDD format", types.SEVERITY_ERROR)
 			return
 		}
 	}

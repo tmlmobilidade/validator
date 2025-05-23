@@ -28,13 +28,13 @@ func FeedContactUrlValidation(severity *types.Severity, feedInfo *types.FeedInfo
 		s = *severity
 	}
 
-	addMessage := func(msg string) {
+	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
 			Field:        "feed_contact_url",
 			FileName:     "feed_info.txt",
 			Rows:         []int{row},
 			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
+			Severity:     severity,
 			ValidationID: "feed_contact_url_validation",
 		})
 	}
@@ -45,13 +45,13 @@ func FeedContactUrlValidation(severity *types.Severity, feedInfo *types.FeedInfo
 		}
 		
 		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "required", "recommended")
-		addMessage(fmt.Sprintf("Feed contact URL is %s", warn))
+		addMessage(fmt.Sprintf("Feed contact URL is %s", warn), s)
 		return
 	}
 
 	if feedInfo.FeedContactUrl != nil && *feedInfo.FeedContactUrl != "" {
 		if err := lib.ValidateUrl(*feedInfo.FeedContactUrl); err != "" {
-			addMessage(err)
+			addMessage(err, types.SEVERITY_ERROR)
 			return
 		}
 	}

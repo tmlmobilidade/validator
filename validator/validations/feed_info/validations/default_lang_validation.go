@@ -27,13 +27,14 @@ func DefaultLangValidation(severity *types.Severity, feedInfo *types.FeedInfo, r
 		s = *severity
 	}
 
-	addMessage := func(msg string) {
+
+	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
 			Field:        "default_lang",
 			FileName:     "feed_info.txt",
 			Rows:         []int{row},
 			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
+			Severity:     severity,
 			ValidationID: "default_lang_validation",
 		})
 	}
@@ -44,13 +45,13 @@ func DefaultLangValidation(severity *types.Severity, feedInfo *types.FeedInfo, r
 		}
 
 		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "required", "recommended")
-		addMessage(fmt.Sprintf("Default language is %s", warn))
+		addMessage(fmt.Sprintf("Default language is %s", warn), s)
 		return
 	}
 
 	if feedInfo.DefaultLang != nil && *feedInfo.DefaultLang != "" {
 		if err := lib.ValidateLanguage(*feedInfo.DefaultLang); err != "" {
-			addMessage(err)
+			addMessage(err, types.SEVERITY_ERROR)
 			return
 		}
 	}

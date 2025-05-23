@@ -25,9 +25,12 @@ func TestDefaultLangValidation_MissingLang_ErrorSeverity(t *testing.T) {
 
 func TestDefaultLangValidation_MissingLang_WarningSeverity(t *testing.T) {
 	services.AppMessageService.Clear()
+	
 	severity := types.SEVERITY_WARNING
 	feedInfo := &types.FeedInfo{DefaultLang: nil}
+	
 	validations.DefaultLangValidation(&severity, feedInfo, 1)
+	
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual: services.AppMessageService.GetSummary().TotalWarnings,

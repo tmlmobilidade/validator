@@ -27,13 +27,13 @@ func FeedVersionValidation(severity *types.Severity, feedInfo *types.FeedInfo, r
 		s = *severity
 	}
 
-	addMessage := func(msg string) {
+	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
 			Field:        "feed_version",
 			FileName:     "feed_info.txt",
 			Rows:         []int{row},
 			Message:      msg,
-			Severity:     s,
+			Severity:     severity,
 			ValidationID: "feed_version_validation",
 		})
 	}
@@ -44,7 +44,7 @@ func FeedVersionValidation(severity *types.Severity, feedInfo *types.FeedInfo, r
 		}
 		
 		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "required", "recommended")
-		addMessage(fmt.Sprintf("Feed version is %s", warn))
+		addMessage(fmt.Sprintf("Feed version is %s", warn), s)
 		return
 	}
 } 
