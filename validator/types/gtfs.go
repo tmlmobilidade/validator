@@ -241,10 +241,7 @@ type FareAttribute struct {
 
 /* FARE RULES */
 type FareRule struct {
-	// Required fields
-	FareId string `json:"fare_id"` // Identifies a fare class
-
-	// Optional fields
+	FareId 		  *string `json:"fare_id"` // Identifies a fare class
 	RouteId       *string `json:"route_id"`       // Identifies a route associated with the fare class
 	OriginId      *string `json:"origin_id"`      // Identifies an origin zone
 	DestinationId *string `json:"destination_id"` // Identifies a destination zone
