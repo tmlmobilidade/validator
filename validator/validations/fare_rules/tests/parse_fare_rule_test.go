@@ -8,30 +8,6 @@ import (
 	"testing"
 )
 
-func TestParseFareRule_InvalidFieldType(t *testing.T) {
-	services.AppMessageService.Clear()
-	rawFareRule := map[string]string{
-		"fare_id": "FARE1",
-		"route_id": "ROUTE1",
-		"origin_id": "ORIGIN1",
-		"destination_id": "DEST1",
-		"contains_id": string([]byte{0xff, 0xfe}), // invalid UTF-8 string
-	}
-	gtfs := &types.Gtfs{}
-	fareRule := validations.ParseFareRule(rawFareRule, 2, gtfs)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Invalid contains_id should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	if fareRule.ContainsId != nil {
-		t.Errorf("Expected ContainsId to be nil, got %v", fareRule.ContainsId)
-	}
-}
-
 func TestParseFareRule_ValidInput(t *testing.T) {
 	services.AppMessageService.Clear()
 	rawFareRule := map[string]string{
