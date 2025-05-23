@@ -304,9 +304,9 @@ type Levels struct {
 /* FEED INFO */
 type FeedInfo struct {
 	// Required fields
-	FeedLang          string `json:"feed_lang"`
-	FeedPublisherName string `json:"feed_publisher_name"`
-	FeedPublisherUrl  string `json:"feed_publisher_url"`
+	FeedLang          *string `json:"feed_lang"`
+	FeedPublisherName *string `json:"feed_publisher_name"`
+	FeedPublisherUrl  *string `json:"feed_publisher_url"`
 
 	// Optional fields
 	DefaultLang      *string `json:"default_lang"`
