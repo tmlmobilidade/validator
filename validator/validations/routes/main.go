@@ -2,22 +2,21 @@ package routes
 
 import (
 	"main/lib"
-	"main/services"
 	"main/types"
-	"strconv"
+	validations "main/validations/routes/validations"
 )
 
 func RunValidations(gtfs types.Gtfs) {
 	lib.AppLogger.Debug("Running Routes Validations...")
 
-	// Parsing Validation
-	parseRouteValidation := NewParseRouteValidation(nil)
-	routes, messages := parseRouteValidation.Validate(gtfs)
-	for _, message := range messages {
-		services.AppMessageService.AddMessage(message)
-		lib.AppLogger.Error("[" + message.FileName + "] " + message.Message)
-	}
+	for i, rawRoute := range gtfs.Files["routes"] {
+		route := validations.ParseRoutes(rawRoute, i, &gtfs)
 
-	// Print routes
-	lib.AppLogger.Info("Total routes: parsed " + strconv.Itoa(len(routes)) + " routes")
+		if route == (types.Route{}) {
+			continue
+		}
+
+		// Validate route_id
+		validations.RouteIdValidation(&route, i, &gtfs)
+	}
 }

@@ -99,6 +99,7 @@ type Route struct {
 	RouteSortOrder    *int    `json:"route_sort_order"`
 	RouteTextColor    *string `json:"route_text_color"`
 	RouteUrl          *string `json:"route_url"`
+	NetworkId         *string `json:"network_id"`
 }
 
 /* TRIP */
