@@ -45,7 +45,7 @@ var GTFS_PRIMARY_KEYS = map[string]any{
 	"shapes":               []string{"shape_id", "shape_pt_sequence"},
 	"stop_areas":           []string{"area_id", "stop_id"},
 	"stop_times":           []string{"trip_id", "stop_sequence"},
-	"stops":                []string{"stop_id", "zone_id"},
+	"stops":                []string{"stop_id", "zone_id", "stop_code"},
 	"timeframes":           nil,
 	"transfers":            []string{"from_stop_id", "to_stop_id", "from_trip_id", "to_trip_id", "from_route_id", "to_route_id"},
 	"translations":         []string{"table_name", "field_name", "language", "record_id", "record_sub_id", "field_value"},
