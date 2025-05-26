@@ -15,5 +15,8 @@ func RunValidations(gtfs types.Gtfs) {
 		if shape == (types.Shape{}) {
 			continue
 		}
+
+		// Validate shape_id
+		validations.ShapeIdValidation(&shape, row)
 	}
 }
