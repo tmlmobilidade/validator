@@ -45,5 +45,8 @@ func RunValidations(gtfs types.Gtfs) {
 
 		// Validate bikes_allowed
 		validations.BikesAllowedValidation(nil, &trip, i, &gtfs)
+
+		// Validate stop_times.stop_sequence
+		validations.StopSequenceValidation(&trip, i, &gtfs)
 	}
 }
