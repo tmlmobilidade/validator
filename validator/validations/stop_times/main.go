@@ -33,5 +33,8 @@ func RunValidations(gtfs types.Gtfs) {
 
 		// TODO: Validate location_id
 		// validations.LocationIdValidation(&stopTime, i, &gtfs)
+
+		// Validate stop_headsign
+		validations.StopHeadsignValidation(nil, &stopTime, i)
 	}
 }
