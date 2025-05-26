@@ -15,5 +15,8 @@ func RunValidations(gtfs types.Gtfs) {
 		if stop == (types.Stop{}) {
 			continue
 		}
+		
+		// Validate stop_id
+		validations.StopIdValidation(&stop, row, &gtfs)
 	}
 }
