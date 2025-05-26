@@ -105,3 +105,11 @@ func ValidateCurrencyType(currencyType string) string {
 	}
 	return ""
 }
+
+func ValidateTime(t string) string {
+	_, err := time.Parse(time.TimeOnly, t)
+	if err != nil {
+		return fmt.Sprintf("Invalid time, expected format: HH:MM:SS, got: %s", t)
+	}
+	return ""
+}
