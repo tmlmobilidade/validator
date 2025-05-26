@@ -6,6 +6,21 @@ import (
 	"main/types"
 )
 
+/*
+# Attributes
+
+ - File: [stops.txt]
+ - Field: tts_stop_name
+ - Presence: Optional
+ - Type: String
+
+# Description
+
+Readable version of the stop_name. See "Text-to-speech field" in the [Term Definitions] for more.
+
+[stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
+[Term Definitions]: https://gtfs.org/schedule/reference/#term-definitions
+*/
 func TtsStopNameValidation(severity *types.Severity, stop *types.Stop, row int) {
 	s := types.SEVERITY_IGNORE
 	if severity != nil {
