@@ -22,6 +22,9 @@ func RunValidations(gtfs types.Gtfs) {
 		// Validate stop_id
 		validations.StopIdValidation(&stopTime, i, &gtfs)
 
+		// Validate location_group_id
+		validations.LocationGroupIdValidation(&stopTime, i, &gtfs)
+
 		// Validate arrival_time
 		validations.ArrivalTimeValidation(nil, &stopTime, i, &gtfs)
 
