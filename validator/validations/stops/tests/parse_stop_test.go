@@ -25,6 +25,7 @@ func TestParseStop_ValidInput(t *testing.T) {
 		"wheelchair_boarding": "2",
 		"stop_lat": "40.1234",
 		"stop_lon": "-8.5678",
+		"tts_stop_name": "Main St",
 	}
 	
 	stop := validations.ParseStop(raw, row)
@@ -70,6 +71,9 @@ func TestParseStop_ValidInput(t *testing.T) {
 	}
 	if stop.StopLon == nil || *stop.StopLon != float32(-8.5678) {
 		t.Errorf("Expected StopLon '-8.5678', got '%v'", stop.StopLon)
+	}
+	if stop.TtsStopName == nil || *stop.TtsStopName != "Main St" {
+		t.Errorf("Expected TtsStopName 'Main St', got '%v'", stop.TtsStopName)
 	}
 
 	assertion := lib.AssertionMessage{

@@ -11,7 +11,7 @@ func ParseStop(rawStop map[string]string, row int) types.Stop {
 	var (
 		stop types.Stop = types.Stop{}
 		stopId string
-		stopCode, stopName, stopDesc, zoneId, stopUrl, parentStation, stopTimezone, levelId, platformCode string
+		stopCode, stopName, stopDesc, zoneId, stopUrl, parentStation, stopTimezone, levelId, platformCode, ttsStopName string
 		locationType, wheelchairBoarding int
 		stopLat, stopLon float32
 		messages []types.Message
@@ -28,6 +28,7 @@ func ParseStop(rawStop map[string]string, row int) types.Stop {
 		"stop_timezone": &stopTimezone,
 		"level_id": &levelId,
 		"platform_code": &platformCode,
+		"tts_stop_name": &ttsStopName,
 	}
 
 	intFields := map[string]*int{
@@ -90,6 +91,7 @@ func ParseStop(rawStop map[string]string, row int) types.Stop {
 	stop.WheelchairBoarding = lib.IfThenElse(rawStop["wheelchair_boarding"] != "", &wheelchairBoarding, nil)
 	stop.StopLat = lib.IfThenElse(rawStop["stop_lat"] != "", &stopLat, nil)
 	stop.StopLon = lib.IfThenElse(rawStop["stop_lon"] != "", &stopLon, nil)
+	stop.TtsStopName = lib.IfThenElse(rawStop["tts_stop_name"] != "", &ttsStopName, nil)
 
 	return stop
 }
