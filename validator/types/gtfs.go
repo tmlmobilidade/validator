@@ -121,24 +121,24 @@ type Trip struct {
 
 /* STOP TIME */
 type StopTime struct {
-	TripId *string `json:"trip_id"`
-	ArrivalTime *string `json:"arrival_time"`
-	DepartureTime *string `json:"departure_time"`
-	StopId *string `json:"stop_id"`
-	LocationGroupStopId *string `json:"location_group_id"`
-	LocationId *string `json:"location_id"`
-	StopSequence *int `json:"stop_sequence"`
-	StopHeadsign *string `json:"stop_headsign"`
-	StartPickupDropOffWindow *string `json:"start_pickup_drop_off_window"`
-	EndPickupDropOffWindow *string `json:"end_pickup_drop_off_window"`
-	PickupType *int `json:"pickup_type"`
-	DropOffType *int `json:"drop_off_type"`
-	ContinuousPickup *int `json:"continuous_pickup"`
-	ContinuousDropOff *int `json:"continuous_drop_off"`
-	ShapeDistTraveled *float64 `json:"shape_dist_traveled"`
-	Timepoint *int `json:"timepoint"`
-	PickupBookingRuleId *string `json:"pickup_booking_rule_id"`
-	DropOffBookingRuleId *string `json:"drop_off_booking_rule_id"`
+	TripId 					 *string  `json:"trip_id"`
+	ArrivalTime 			 *string  `json:"arrival_time"`
+	DepartureTime 			 *string  `json:"departure_time"`
+	StopId 					 *string  `json:"stop_id"`
+	LocationGroupId 		 *string  `json:"location_group_id"`
+	LocationId 				 *string  `json:"location_id"`
+	StopSequence 			 *int     `json:"stop_sequence"`
+	StopHeadsign 			 *string  `json:"stop_headsign"`
+	StartPickupDropOffWindow *string  `json:"start_pickup_drop_off_window"`
+	EndPickupDropOffWindow 	 *string  `json:"end_pickup_drop_off_window"`
+	PickupType 				 *int 	  `json:"pickup_type"`
+	DropOffType 			 *int 	  `json:"drop_off_type"`
+	ContinuousPickup 		 *int 	  `json:"continuous_pickup"`
+	ContinuousDropOff 		 *int 	  `json:"continuous_drop_off"`
+	ShapeDistTraveled 		 *float64 `json:"shape_dist_traveled"`
+	Timepoint 				 *int 	  `json:"timepoint"`
+	PickupBookingRuleId 	 *string  `json:"pickup_booking_rule_id"`
+	DropOffBookingRuleId 	 *string  `json:"drop_off_booking_rule_id"`
 }
 
 /* CALENDAR */

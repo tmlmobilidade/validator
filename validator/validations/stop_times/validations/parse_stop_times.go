@@ -9,7 +9,9 @@ import (
 func ParseStopTimes(rawStopTimes map[string]string, row int) types.StopTime {
 	var (
 		stopTime types.StopTime = types.StopTime{}
-		tripId,arrivalTime,departureTime,stopId,locationGroupStopId,locationId,stopHeadsign,startPickupDropOffWindow,endPickupDropOffWindow,pickupBookingRuleId,dropOffBookingRuleId string
+		
+		tripId,arrivalTime,departureTime,stopId,locationGroupId,locationId,stopHeadsign,startPickupDropOffWindow,endPickupDropOffWindow,pickupBookingRuleId,dropOffBookingRuleId string
+
 		stopSequence, timepoint, pickupType, dropOffType, continuousPickup, continuousDropOff int
 		shapeDistTraveled float64
 		messages []types.Message
@@ -25,6 +27,8 @@ func ParseStopTimes(rawStopTimes map[string]string, row int) types.StopTime {
 		"end_pickup_drop_off_window": &endPickupDropOffWindow,
 		"pickup_booking_rule_id": &pickupBookingRuleId,
 		"drop_off_booking_rule_id": &dropOffBookingRuleId,
+		"location_group_id": &locationGroupId,
+		"location_id": &locationId,
 	}
 
 	intFields := map[string]*int{
@@ -82,7 +86,7 @@ func ParseStopTimes(rawStopTimes map[string]string, row int) types.StopTime {
 	stopTime.ArrivalTime = lib.IfThenElse(rawStopTimes["arrival_time"] != "", &arrivalTime, nil)
 	stopTime.DepartureTime = lib.IfThenElse(rawStopTimes["departure_time"] != "", &departureTime, nil)
 	stopTime.StopId = lib.IfThenElse(rawStopTimes["stop_id"] != "", &stopId, nil)
-	stopTime.LocationGroupStopId = lib.IfThenElse(rawStopTimes["location_group_stop_id"] != "", &locationGroupStopId, nil)
+	stopTime.LocationGroupId = lib.IfThenElse(rawStopTimes["location_group_id"] != "", &locationGroupId, nil)
 	stopTime.LocationId = lib.IfThenElse(rawStopTimes["location_id"] != "", &locationId, nil)
 	stopTime.StopSequence = lib.IfThenElse(rawStopTimes["stop_sequence"] != "", &stopSequence, nil)
 	stopTime.StopHeadsign = lib.IfThenElse(rawStopTimes["stop_headsign"] != "", &stopHeadsign, nil)
