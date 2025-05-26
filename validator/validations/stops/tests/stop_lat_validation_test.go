@@ -100,19 +100,18 @@ func TestStopLatValidation_OutOfRange(t *testing.T) {
 
 func TestStopLatValidation_SeverityError(t *testing.T) {
 	services.AppMessageService.Clear()
-	lt := 2 // entrance/exit
-	lat := float32(100.0)
-	stop := &types.Stop{
-		LocationType: &lt,
-		StopLat:      &lat,
-	}
+
+	stop := &types.Stop{}
 	severity := types.SEVERITY_ERROR
+	
 	validations.StopLatValidation(&severity, stop, 6)
+	
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,
 		Message: "Out-of-range stop_lat with severity ERROR should error",
 	}
+	
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
@@ -120,20 +119,17 @@ func TestStopLatValidation_SeverityError(t *testing.T) {
 
 func TestStopLatValidation_SeverityWarning(t *testing.T) {
 	services.AppMessageService.Clear()
-	lt := 2 // entrance/exit
-	lat := float32(100.0)
-	stop := &types.Stop{
-		LocationType: &lt,
-		StopLat:      &lat,
-	}
+	stop := &types.Stop{}
 
 	severity := types.SEVERITY_WARNING
 	validations.StopLatValidation(&severity, stop, 7)
+	
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual: services.AppMessageService.GetSummary().TotalWarnings,
 		Message: "Out-of-range stop_lat with severity WARNING should warn",
 	}
+
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
