@@ -183,3 +183,20 @@ func MergeMaps[T any](a, b map[string]T) map[string]T {
 
 	return result
 }
+
+//Removes duplicates from a slice
+//
+//	@param slice []T - The slice to remove duplicates from
+//	@return []T - The slice with duplicates removed
+func RemoveDuplicates[T any](slice []T) []T {
+	seen := make(map[any]bool)
+	result := make([]T, 0)
+
+	for _, v := range slice {
+		if !seen[v] {
+			seen[v] = true
+			result = append(result, v)
+		}
+	}
+	return result
+}
