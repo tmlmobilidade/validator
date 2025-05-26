@@ -6,7 +6,7 @@ import (
 	"main/types"
 )
 
-func ParseTrips(rawTrips map[string]string, row int, gtfs *types.Gtfs) types.Trip {
+func ParseTrips(rawTrips map[string]string, row int) types.Trip {
 	var (
 		trip                                           types.Trip = types.Trip{}
 		tripId, routeId, serviceId                     string

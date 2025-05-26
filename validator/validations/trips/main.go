@@ -10,7 +10,7 @@ func RunValidations(gtfs types.Gtfs) {
 	lib.AppLogger.Debug("Running Trips Validations...")
 
 	for i, rawTrips := range gtfs.Files["trips"] {
-		trip := validations.ParseTrips(rawTrips, i, &gtfs)
+		trip := validations.ParseTrips(rawTrips, i)
 
 		if trip == (types.Trip{}) {
 			continue
