@@ -1,3 +1,11 @@
+package stops
+
+import (
+	"main/lib"
+	"main/services"
+	"main/types"
+)
+
 /*
 # Attributes
 
@@ -18,16 +26,6 @@ Conditionally Required:
 
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
-
-package stops
-
-import (
-	"main/lib"
-	"main/services"
-	"main/types"
-)
-
-// StopLatValidation validates the presence and range of stop_lat in stops.txt according to location_type
 func StopLatValidation(severity *types.Severity, stop *types.Stop, row int) {
 	s := types.SEVERITY_IGNORE
 	if severity != nil {
