@@ -48,5 +48,8 @@ func RunValidations(gtfs types.Gtfs) {
 
 		// Validate continuous_drop_off
 		validations.ContinuousDropOffValidation(nil, &stopTime, i)
+
+		// Validate continuous_pickup
+		validations.ContinuousPickupValidation(nil, &stopTime, i)
 	}
 }
