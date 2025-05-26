@@ -24,5 +24,8 @@ func RunValidations(gtfs types.Gtfs) {
 		
 		// Validate stop_name
 		validations.StopNameValidation(nil, &stop, row)
+		
+		// Validate stop_lat
+		validations.StopLatValidation(nil, &stop, row)
 	}
 }
