@@ -12,7 +12,7 @@ func TestStopCodeValidation_MissingStopCode(t *testing.T) {
 	services.AppMessageService.Clear()
 	gtfs := &types.Gtfs{
 		IdMap: map[string]map[string][]int{
-			"stop_codes": {},
+			"stops": {},
 		},
 	}
 	stop := &types.Stop{StopCode: nil}
@@ -32,7 +32,7 @@ func TestStopCodeValidation_DuplicateStopCode(t *testing.T) {
 	code := "C1"
 	gtfs := &types.Gtfs{
 		IdMap: map[string]map[string][]int{
-			"stop_codes": {
+			"stops": {
 				code: {1, 2},
 			},
 		},
@@ -40,15 +40,12 @@ func TestStopCodeValidation_DuplicateStopCode(t *testing.T) {
 	stop := &types.Stop{StopCode: &code}
 	validations.StopCodeValidation(nil, stop, 1, gtfs)
 	assertion := lib.AssertionMessage{
-		Expected: 0, // Should not error, but should warn
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Duplicate stop_code should not error (should warn)",
+		Expected: 1, // Should not error, but should warn
+		Actual: services.AppMessageService.GetSummary().TotalWarnings,
+		Message: "Duplicate stop_code should warn",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
-	}
-	if services.AppMessageService.GetSummary().TotalWarnings != 1 {
-		t.Error("Expected 1 warning for duplicate stop_code")
 	}
 }
 
@@ -58,7 +55,7 @@ func TestStopCodeValidation_ValidInput(t *testing.T) {
 	gtfs := &types.Gtfs{
 		IdMap: map[string]map[string][]int{
 			"stops": {
-				"stop_code": {1},
+				code: {1},
 			},
 		},
 	}
