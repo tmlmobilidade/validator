@@ -22,8 +22,7 @@ func TestParseTrips_ValidInput(t *testing.T) {
 		"wheelchair_accessible": "2",
 		"bikes_allowed":         "1",
 	}
-	gtfs := &types.Gtfs{}
-	trip := validations.ParseTrips(raw, row, gtfs)
+	trip := validations.ParseTrips(raw, row)
 
 	if trip.TripId != "T1" {
 		t.Errorf("Expected TripId 'T1', got '%s'", trip.TripId)
@@ -72,8 +71,7 @@ func TestParseTrips_ValidIntField(t *testing.T) {
 		"wheelchair_accessible": "2",
 		"bikes_allowed":         "1",
 	}
-	gtfs := &types.Gtfs{}
-	trip := validations.ParseTrips(raw, row, gtfs)
+	trip := validations.ParseTrips(raw, row)
 
 	if trip.DirectionId == nil || *trip.DirectionId != 1 {
 		t.Errorf("Expected DirectionId 1, got '%v'", trip.DirectionId)
@@ -103,8 +101,7 @@ func TestParseTrips_InvalidIntField(t *testing.T) {
 		"wheelchair_accessible": "2",
 		"bikes_allowed":         "1",
 	}
-	gtfs := &types.Gtfs{}
-	trip := validations.ParseTrips(raw, row, gtfs)
+	trip := validations.ParseTrips(raw, row)
 
 	if trip != (types.Trip{}) {
 		t.Errorf("Expected empty Trip struct when int field is invalid, got '%+v'", trip)
@@ -129,8 +126,7 @@ func TestParseTrips_OptionalFieldsEmpty(t *testing.T) {
 		"wheelchair_accessible": "",
 		"bikes_allowed":         "",
 	}
-	gtfs := &types.Gtfs{}
-	trip := validations.ParseTrips(raw, row, gtfs)
+	trip := validations.ParseTrips(raw, row)
 
 	if trip.TripId != "T2" {
 		t.Errorf("Expected TripId 'T2', got '%s'", trip.TripId)
