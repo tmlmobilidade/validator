@@ -9,6 +9,7 @@ import (
 )
 
 func TestTripHeadsignValidation_Required(t *testing.T) {
+	services.AppMessageService.Clear()
 	severity := types.SEVERITY_ERROR
 	trip := &types.Trip{TripHeadsign: nil}
 	gtfs := &types.Gtfs{}
