@@ -3,6 +3,7 @@ package calendar_dates
 import (
 	"main/lib"
 	"main/types"
+	validations "main/validations/calendar_dates/validations"
 )
 
 func RunValidations(gtfs types.Gtfs) {
@@ -16,6 +17,14 @@ func RunValidations(gtfs types.Gtfs) {
 			continue
 		}
 		
+		// Validate service_id
+		validations.ServiceIdValidation(&calendarDate, i, &gtfs)
+
+		// Validate date
+		validations.DateValidation(&calendarDate, i, &gtfs)
+
+		// Validate exception_type
+		validations.ExceptionTypeValidation(&calendarDate, i, &gtfs)
 		
 	}
 }
