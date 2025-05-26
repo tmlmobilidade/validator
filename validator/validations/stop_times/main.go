@@ -45,5 +45,8 @@ func RunValidations(gtfs types.Gtfs) {
 
 		// Validate stop_headsign
 		validations.StopHeadsignValidation(nil, &stopTime, i)
+
+		// Validate continuous_drop_off
+		validations.ContinuousDropOffValidation(nil, &stopTime, i)
 	}
 }
