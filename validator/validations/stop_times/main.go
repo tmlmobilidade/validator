@@ -57,5 +57,8 @@ func RunValidations(gtfs types.Gtfs) {
 
 		// Validate shape_dist_traveled
 		validations.ShapeDistTraveledValidation(nil, &stopTime, i, &gtfs)
+
+		// Validate timepoint
+		validations.TimepointValidation(nil, &stopTime, i)
 	}
 }
