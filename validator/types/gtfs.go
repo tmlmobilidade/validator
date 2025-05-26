@@ -49,7 +49,7 @@ var GTFS_PRIMARY_KEYS = map[string]any{
 	"timeframes":           nil,
 	"transfers":            []string{"from_stop_id", "to_stop_id", "from_trip_id", "to_trip_id", "from_route_id", "to_route_id"},
 	"translations":         []string{"table_name", "field_name", "language", "record_id", "record_sub_id", "field_value"},
-	"trips":                "trip_id",
+	"trips":                []string{"trip_id", "route_id"},
 }
 
 /* AGENCY */
