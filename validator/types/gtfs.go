@@ -72,7 +72,7 @@ type Stop struct {
 	PlatformCode       *string  `json:"platform_code,omitempty"`
 	StopCode           *string  `json:"stop_code,omitempty"`
 	StopDesc           *string  `json:"stop_desc,omitempty"`
-	StopId             string   `json:"stop_id"`
+	StopId             *string   `json:"stop_id"`
 	StopLat            *float32 `json:"stop_lat,omitempty"`
 	StopLon            *float32 `json:"stop_lon,omitempty"`
 	StopName           *string  `json:"stop_name,omitempty"`

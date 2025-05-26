@@ -75,8 +75,8 @@ func ParseStop(rawStop map[string]string, row int) types.Stop {
 		return stop
 	}
 
-	// Assign required and optional fields
-	stop.StopId = stopId // required
+	// Assign fields
+	stop.StopId = lib.IfThenElse(rawStop["stop_id"] != "", &stopId, nil)
 	stop.StopCode = lib.IfThenElse(rawStop["stop_code"] != "", &stopCode, nil)
 	stop.StopName = lib.IfThenElse(rawStop["stop_name"] != "", &stopName, nil)
 	stop.StopDesc = lib.IfThenElse(rawStop["stop_desc"] != "", &stopDesc, nil)

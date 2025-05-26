@@ -29,8 +29,8 @@ func TestParseStop_ValidInput(t *testing.T) {
 	
 	stop := validations.ParseStop(raw, row)
 
-	if stop.StopId != "S1" {
-		t.Errorf("Expected StopId 'S1', got '%s'", stop.StopId)
+	if stop.StopId == nil || *stop.StopId != "S1" {
+		t.Errorf("Expected StopId 'S1', got '%v'", stop.StopId)
 	}
 	if stop.StopCode == nil || *stop.StopCode != "C1" {
 		t.Errorf("Expected StopCode 'C1', got '%v'", stop.StopCode)
