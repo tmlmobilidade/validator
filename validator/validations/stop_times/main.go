@@ -54,5 +54,8 @@ func RunValidations(gtfs types.Gtfs) {
 
 		// Validate drop_off_type
 		validations.DropOffTypeValidation(nil, &stopTime, i)
+
+		// Validate shape_dist_traveled
+		validations.ShapeDistTraveledValidation(nil, &stopTime, i, &gtfs)
 	}
 }
