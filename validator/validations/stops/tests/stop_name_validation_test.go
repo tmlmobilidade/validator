@@ -74,3 +74,38 @@ func TestStopNameValidation_ValidInput(t *testing.T) {
 		t.Error(assert)
 	}
 } 
+
+func TestStopNameValidation_SeverityError(t *testing.T) {
+	services.AppMessageService.Clear()
+	
+	severity := types.SEVERITY_ERROR
+	stop := &types.Stop{}
+	validations.StopNameValidation(&severity, stop, 5)
+	
+	assertion := lib.AssertionMessage{
+		Expected: 1,
+		Actual: services.AppMessageService.GetSummary().TotalErrors,
+		Message: "Missing stop_name with severity ERROR should error",
+	}
+	
+	if assert := lib.Assert(assertion); assert != "" {
+		t.Error(assert)
+	}
+}
+
+func TestStopNameValidation_SeverityWarning(t *testing.T) {
+	services.AppMessageService.Clear()
+	
+	severity := types.SEVERITY_WARNING
+	stop := &types.Stop{}
+	validations.StopNameValidation(&severity, stop, 5)
+	
+	assertion := lib.AssertionMessage{
+		Expected: 1,
+		Actual: services.AppMessageService.GetSummary().TotalWarnings,
+		Message: "Missing stop_name with severity WARNING should warn",
+	}
+	if assert := lib.Assert(assertion); assert != "" {
+		t.Error(assert)
+	}
+}
