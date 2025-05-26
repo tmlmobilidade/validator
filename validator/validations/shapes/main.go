@@ -18,5 +18,11 @@ func RunValidations(gtfs types.Gtfs) {
 
 		// Validate shape_id
 		validations.ShapeIdValidation(&shape, row)
+
+		// Validate shape_pt_lat
+		validations.ShapePtLatValidation(&shape, row)
+
+		// Validate shape_pt_lon
+		validations.ShapePtLonValidation(&shape, row)
 	}
 }
