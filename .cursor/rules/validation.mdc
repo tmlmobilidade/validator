@@ -60,6 +60,7 @@ types.Message{
 ### 4. Severity Handling
 
 If severity is optional, default to `types.SEVERITY_IGNORE` and skip validation if it matches.
+IMPORTANT: If a field is Optional then it should have a severety.
 
 ### 5. Validations
 
