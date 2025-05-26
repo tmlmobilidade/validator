@@ -46,11 +46,13 @@ func RouteDescValidation(severity *types.Severity, route *types.Route, row int) 
 	}
 
 	if route.RouteDesc == nil || *route.RouteDesc == "" {
-		if s != types.SEVERITY_IGNORE {
-			warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "route_desc is recommended.", "route_desc is required.")
-			addMessage(warn, s)
+		if s == types.SEVERITY_IGNORE {
 			return
 		}
+
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "route_desc is recommended.", "route_desc is required.")
+		addMessage(warn, s)
+		return
 	}
 
 	if route.RouteShortName != nil && *route.RouteDesc == *route.RouteShortName {
