@@ -31,6 +31,9 @@ func RunValidations(gtfs types.Gtfs) {
 		// Validate location_group_id
 		validations.LocationGroupIdValidation(&stopTime, i, &gtfs)
 
+		// Validate start_pickup_drop_off_window
+		validations.StartPickupDropOffWindowValidation(nil, &stopTime, i, &gtfs)
+
 		// TODO: Validate location_id
 		// validations.LocationIdValidation(&stopTime, i, &gtfs)
 
