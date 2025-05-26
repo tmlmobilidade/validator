@@ -60,5 +60,8 @@ func RunValidations(gtfs types.Gtfs) {
 
 		// Validate timepoint
 		validations.TimepointValidation(nil, &stopTime, i)
+
+		// Validate pickup_booking_rule_id
+		validations.PickupBookingRuleIdValidation(nil, &stopTime, i, &gtfs)
 	}
 }
