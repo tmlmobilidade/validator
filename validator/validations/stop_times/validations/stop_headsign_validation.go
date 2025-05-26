@@ -31,7 +31,7 @@ If you want to override the `trip_headsign` for multiple `stop_times` in the sam
 func StopHeadsignValidation(severity *types.Severity, stopTime *types.StopTime, row int) {
 
 	s := types.SEVERITY_IGNORE
-	if *severity != types.SEVERITY_IGNORE {
+	if severity != nil {
 		s = *severity
 	}
 
