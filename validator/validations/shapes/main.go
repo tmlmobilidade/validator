@@ -9,6 +9,8 @@ import (
 func RunValidations(gtfs types.Gtfs) {
 	lib.AppLogger.Debug("Running Shapes Validations...")
 
+	var allShapes []types.Shape
+
 	for row, rawShape := range gtfs.Files["shapes"] {
 		shape := validations.ParseShape(rawShape, row)
 
@@ -24,5 +26,11 @@ func RunValidations(gtfs types.Gtfs) {
 
 		// Validate shape_pt_lon
 		validations.ShapePtLonValidation(&shape, row)
+		validations.ShapePtSequenceValidation(&shape, row)
+
+		allShapes = append(allShapes, shape)
 	}
+
+	// Group-level validation: shape_pt_sequence must increase for each shape_id
+	validations.ShapePtSequenceGroupValidation(allShapes)
 }
