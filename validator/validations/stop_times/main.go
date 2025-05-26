@@ -3,18 +3,26 @@ package stop_times
 import (
 	"main/lib"
 	"main/types"
+	validations "main/validations/stop_times/validations"
 )
 
 func RunValidations(gtfs types.Gtfs) {
 	lib.AppLogger.Debug("Running StopTimes Validations...")
 
-	// // Create validation with default severity
-	// validation := NewParseStopTimeValidation(nil)
+	for i, rawStopTimes := range gtfs.Files["stop_times"] {
+		stopTime := validations.ParseStopTimes(rawStopTimes, i)
 
-	// // Run validation
-	// validationMessages := validation.Validate(gtfs)
-	// for _, message := range validationMessages {
-	// 	services.AppMessageService.AddMessage(message)
-	// 	lib.AppLogger.Error("[" + message.FileName + "] " + message.Message)
-	// }
+		if stopTime == (types.StopTime{}) {
+			continue
+		}
+
+		// Validate trip_id
+		validations.TripIdValidation(&stopTime, i, &gtfs)
+
+		// Validate arrival_time
+		validations.ArrivalTimeValidation(nil, &stopTime, i, &gtfs)
+
+		// Validate departure_time
+		validations.DepartureTimeValidation(nil, &stopTime, i, &gtfs)
+	}
 }
