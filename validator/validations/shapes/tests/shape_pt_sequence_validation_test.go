@@ -88,6 +88,4 @@ func TestShapePtSequenceGroupValidation_IncreasingSequence(t *testing.T) {
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
-}
-
-func intPtr(i int) *int { return &i } 
+} 
