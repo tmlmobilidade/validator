@@ -44,7 +44,7 @@ func RunValidations(gtfs types.Gtfs) {
 		validations.LocationTypeValidation(nil, &stop, row)
 
 		// Validate parent_station
-		// validations.ParentStationValidation(nil, &stop, row)
+		validations.ParentStationValidation(nil, &stop, row)
 
 		// // Validate stop_timezone
 		// validations.StopTimezoneValidation(nil, &stop, row)
