@@ -66,15 +66,9 @@ func ParentStationValidation(severity *types.Severity, stop *types.Stop, row int
 		}
 
 		// Allow nil parent_station for location_type=0 (Stop/Platform)
-		if locationType == 0 {
+		if locationType == 0 || locationType == 1 {
 			return
 		}
-	}
-
-	// Validate Foreign Key
-	stopIds := gtfs.IdMap["stops"][*stop.ParentStation]
-	if len(stopIds) != 1 {
-		addMessage("parent_station must reference a valid stop_id", types.SEVERITY_ERROR)
 	}
 
 	// Validate Parent Station for Location Type 1 (Station)
@@ -86,6 +80,13 @@ func ParentStationValidation(severity *types.Severity, stop *types.Stop, row int
 	// Validate Parent Station for Location Type 2 (Entrance/Exit), 3 (Generic Node), or 4 (Boarding Area)
 	if (locationType == 2 || locationType == 3 || locationType == 4) && stop.ParentStation == nil {
 		addMessage("parent_station is required for location_type=2 (Entrance/Exit), 3 (Generic Node), or 4 (Boarding Area)", types.SEVERITY_ERROR)
+		return
+	}
+
+	// Validate Foreign Key
+	stopIds := gtfs.IdMap["stops"][*stop.ParentStation]
+	if len(stopIds) != 1 {
+		addMessage("parent_station must reference a valid stop_id", types.SEVERITY_ERROR)
 		return
 	}
 }
