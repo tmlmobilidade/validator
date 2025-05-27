@@ -25,9 +25,37 @@ func RunValidations(gtfs types.Gtfs) {
 		// Validate stop_name
 		validations.StopNameValidation(nil, &stop, row)
 		
+		// Validate tts_stop_name
+		validations.TtsStopNameValidation(nil, &stop, row)
+
+		// Validate stop_desc
+		validations.StopDescValidation(nil, &stop, row)
+		
 		// Validate stop_lat
 		validations.StopLatValidation(nil, &stop, row)
+
+		// Validate stop_lon
+		validations.StopLonValidation(nil, &stop, row)
+		
 		// Validate zone_id
 		validations.ZoneIdValidation(nil, &stop, row)
+
+		// Validate location_type
+		validations.LocationTypeValidation(nil, &stop, row)
+
+		// Validate parent_station
+		// validations.ParentStationValidation(nil, &stop, row)
+
+		// // Validate stop_timezone
+		// validations.StopTimezoneValidation(nil, &stop, row)
+
+		// // Validate wheelchair_boarding
+		// validations.WheelchairBoardingValidation(nil, &stop, row)
+
+		// // Validate level_id
+		// validations.LevelIdValidation(nil, &stop, row)
+
+		// // Validate platform_code
+		// validations.PlatformCodeValidation(nil, &stop, row)
 	}
 }
