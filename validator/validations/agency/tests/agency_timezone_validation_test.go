@@ -10,7 +10,7 @@ import (
 
 func TestAgencyTimezoneValidation_Required(t *testing.T) {
 	agency := &types.Agency{AgencyTimezone: ""}
-	validations.AgencyTimezoneValidation(agency, 1, nil)
+	validations.AgencyTimezoneValidation(agency, 1)
 
 	// Assert
 	assertion := lib.AssertionMessage{
@@ -27,7 +27,7 @@ func TestAgencyTimezoneValidation_Required(t *testing.T) {
 
 func TestAgencyTimezoneValidation_ValidTimezone(t *testing.T) {
 	agency := &types.Agency{AgencyTimezone: "America/New_York"}
-	validations.AgencyTimezoneValidation(agency, 2, nil)
+	validations.AgencyTimezoneValidation(agency, 2)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,
@@ -42,7 +42,7 @@ func TestAgencyTimezoneValidation_ValidTimezone(t *testing.T) {
 
 func TestAgencyTimezoneValidation_InvalidTimezone(t *testing.T) {
 	agency := &types.Agency{AgencyTimezone: "Invalid/Timezone"}
-	validations.AgencyTimezoneValidation(agency, 3, nil)
+	validations.AgencyTimezoneValidation(agency, 3)
 
 	// Assert
 	assertion := lib.AssertionMessage{

@@ -21,7 +21,7 @@ This email address should be a direct contact point where transit riders can rea
 
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
-func AgencyEmailValidation(severity *types.Severity, agency *types.Agency, row int, gtfs *types.Gtfs) {
+func AgencyEmailValidation(severity *types.Severity, agency *types.Agency, row int) {
 	s := types.SEVERITY_IGNORE
 	if severity != nil {
 		s = *severity

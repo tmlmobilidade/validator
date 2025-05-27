@@ -2,7 +2,6 @@ package agency
 
 import (
 	"main/services"
-	"main/types"
 	validations "main/validations/agency/validations"
 	"testing"
 )
@@ -20,8 +19,7 @@ func TestParseAgency_ValidInput(t *testing.T) {
 		"agency_fare_url": "https://agency.com/fares",
 		"agency_email":    "agency@example.com",
 	}
-	gtfs := &types.Gtfs{}
-	agency := validations.ParseAgency(raw, row, gtfs)
+	agency := validations.ParseAgency(raw, row)
 
 	if agency.AgencyName != "Agency Name" {
 		t.Errorf("Expected AgencyName 'Agency Name', got '%s'", agency.AgencyName)
@@ -62,8 +60,7 @@ func TestParseAgency_OptionalFieldsEmpty(t *testing.T) {
 		"agency_fare_url": "https://agency.com/fares",
 		"agency_email":    "agency@example.com",
 	}
-	gtfs := &types.Gtfs{}
-	agency := validations.ParseAgency(raw, row, gtfs)
+	agency := validations.ParseAgency(raw, row)
 
 	if *agency.AgencyId != "1" {
 		t.Errorf("Expected AgencyId '1', got '%s'", *agency.AgencyId)

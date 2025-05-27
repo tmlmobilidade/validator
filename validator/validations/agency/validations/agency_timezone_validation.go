@@ -21,7 +21,7 @@ If multiple agencies are specified in the dataset, each must have the same 'agen
 
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
-func AgencyTimezoneValidation(agency *types.Agency, row int, gtfs *types.Gtfs) {
+func AgencyTimezoneValidation(agency *types.Agency, row int) {
 	s := types.SEVERITY_ERROR
 
 	// Check if agency_timezone is required

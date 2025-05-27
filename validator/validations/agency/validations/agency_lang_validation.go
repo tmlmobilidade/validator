@@ -21,7 +21,7 @@ Should be provided to help GTFS consumers choose capitalization rules and other 
 
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
-func AgencyLangValidation(severity *types.Severity, agency *types.Agency, row int, gtfs *types.Gtfs) {
+func AgencyLangValidation(severity *types.Severity, agency *types.Agency, row int) {
 	s := types.SEVERITY_IGNORE
 	if severity != nil {
 		s = *severity

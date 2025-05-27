@@ -11,7 +11,7 @@ import (
 func TestAgencyPhoneValidation_Required(t *testing.T) {
 	severity := types.SEVERITY_ERROR
 	agency := &types.Agency{AgencyPhone: nil}
-	validations.AgencyPhoneValidation(&severity, agency, 1, nil)
+	validations.AgencyPhoneValidation(&severity, agency, 1)
 
 	// Assert
 	assertion := lib.AssertionMessage{
@@ -30,7 +30,7 @@ func TestAgencyPhoneValidation_Required(t *testing.T) {
 func TestAgencyPhoneValidation_Recommended(t *testing.T) {
 	severity := types.SEVERITY_WARNING
 	agency := &types.Agency{AgencyPhone: nil}
-	validations.AgencyPhoneValidation(&severity, agency, 2, nil)
+	validations.AgencyPhoneValidation(&severity, agency, 2)
 
 	// Assert
 	assertion := lib.AssertionMessage{
@@ -49,7 +49,7 @@ func TestAgencyPhoneValidation_Recommended(t *testing.T) {
 // 	severity := types.SEVERITY_ERROR
 // 	phone := "503-238-RIDE"
 // 	agency := &types.Agency{AgencyPhone: &phone}
-// 	validations.AgencyPhoneValidation(&severity, agency, 3, nil)
+// 	validations.AgencyPhoneValidation(&severity, agency, 3)
 
 // 	// Assert
 // 	assertion := lib.AssertionMessage{
@@ -68,7 +68,7 @@ func TestAgencyPhoneValidation_Recommended(t *testing.T) {
 // 	severity := types.SEVERITY_ERROR
 // 	phone := "invalid-phone"
 // 	agency := &types.Agency{AgencyPhone: &phone}
-// 	validations.AgencyPhoneValidation(&severity, agency, 4, nil)
+// 	validations.AgencyPhoneValidation(&severity, agency, 4)
 
 // 	// Assert
 // 	assertion := lib.AssertionMessage{

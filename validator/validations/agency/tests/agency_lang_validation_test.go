@@ -11,7 +11,7 @@ import (
 func TestAgencyLangValidation_Required(t *testing.T) {
 	severity := types.SEVERITY_ERROR
 	agency := &types.Agency{AgencyLang: nil}
-	validations.AgencyLangValidation(&severity, agency, 1, nil)
+	validations.AgencyLangValidation(&severity, agency, 1)
 
 	// Assert
 	assertion := lib.AssertionMessage{
@@ -29,7 +29,7 @@ func TestAgencyLangValidation_Required(t *testing.T) {
 func TestAgencyLangValidation_Recommended(t *testing.T) {
 	severity := types.SEVERITY_WARNING
 	agency := &types.Agency{AgencyLang: nil}
-	validations.AgencyLangValidation(&severity, agency, 2, nil)
+	validations.AgencyLangValidation(&severity, agency, 2)
 
 	// Assert
 	assertion := lib.AssertionMessage{
@@ -48,7 +48,7 @@ func TestAgencyLangValidation_ValidLang(t *testing.T) {
 	severity := types.SEVERITY_ERROR
 	lang := "en"
 	agency := &types.Agency{AgencyLang: &lang}
-	validations.AgencyLangValidation(&severity, agency, 3, nil)
+	validations.AgencyLangValidation(&severity, agency, 3)
 
 	// Assert
 	assertion := lib.AssertionMessage{
@@ -67,7 +67,7 @@ func TestAgencyLangValidation_InvalidLang(t *testing.T) {
 	severity := types.SEVERITY_ERROR
 	lang := "invalid-lang"
 	agency := &types.Agency{AgencyLang: &lang}
-	validations.AgencyLangValidation(&severity, agency, 4, nil)
+	validations.AgencyLangValidation(&severity, agency, 4)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,

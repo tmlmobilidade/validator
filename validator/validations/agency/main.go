@@ -11,32 +11,31 @@ func RunValidations(gtfs types.Gtfs) {
 
 	for i, rawAgency := range gtfs.Files["agency"] {
 		// Parse Agency Validation
-		agency := validations.ParseAgency(rawAgency, i, &gtfs)
+		agency := validations.ParseAgency(rawAgency, i)
 
 		if agency == (types.Agency{}) {
 			continue
 		}
 
 		// Duplicate Agencies Validation
-		validations.AgencyIdValidation(nil, &agency, i, &gtfs)
+		validations.AgencyIdValidation(nil, &agency, i, gtfs)
 
 		// Validate Agency URL
-		validations.AgencyUrlValidation(&agency, i, &gtfs)
+		validations.AgencyUrlValidation(&agency, i)
 
 		// Validate Agency Timezone
-		validations.AgencyTimezoneValidation(&agency, i, &gtfs)
+		validations.AgencyTimezoneValidation(&agency, i)
 
 		// Validate Agency Lang
-		validations.AgencyLangValidation(nil, &agency, i, &gtfs)
+		validations.AgencyLangValidation(nil, &agency, i)
 
 		// Validate Agency Phone
-		validations.AgencyPhoneValidation(nil, &agency, i, &gtfs)
+		validations.AgencyPhoneValidation(nil, &agency, i)
 
 		// Validate Agency Fare URL
-		validations.AgencyFareUrlValidation(nil, &agency, i, &gtfs)
+		validations.AgencyFareUrlValidation(nil, &agency, i)
 
 		// Validate Agency Email
-		validations.AgencyEmailValidation(nil, &agency, i, &gtfs)
-		
+		validations.AgencyEmailValidation(nil, &agency, i)
 	}
 }

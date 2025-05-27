@@ -23,7 +23,7 @@ Dialable text (for example, TriMet's "503-238-RIDE") is permitted, but the field
 
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
-func AgencyPhoneValidation(severity *types.Severity, agency *types.Agency, row int, gtfs *types.Gtfs) {
+func AgencyPhoneValidation(severity *types.Severity, agency *types.Agency, row int) {
 	s := types.SEVERITY_IGNORE
 	if severity != nil {
 		s = *severity
@@ -40,18 +40,4 @@ func AgencyPhoneValidation(severity *types.Severity, agency *types.Agency, row i
 			ValidationID: "agency_phone_validation",
 		})
 	}
-
-	// Check if agency_phone is valid
-	// if agency.AgencyPhone != nil {
-	// 	if phoneErrors := lib.ValidatePhone(*agency.AgencyPhone); phoneErrors != "" {
-	// 		services.AppMessageService.AddMessage(types.Message{
-	// 			Field: "agency_phone",
-	// 			FileName: "agency.txt",
-	// 			Message: phoneErrors,
-	// 			Rows: []int{row},
-	// 			Severity: types.SEVERITY_ERROR,
-	// 			ValidationID: "agency_phone_validation",
-	// 		})
-	// 	}
-	// }
 }

@@ -27,40 +27,43 @@ Conditionally Required:
 
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
-func AgencyIdValidation(severity *types.Severity, agency *types.Agency, row int, gtfs *types.Gtfs) {
+func AgencyIdValidation(severity *types.Severity, agency *types.Agency, row int, gtfs types.Gtfs) {
 	s := types.SEVERITY_WARNING
 	if severity != nil {
 		s = *severity
 	}
 
-	message := types.Message{
-		Field: "agency_id",
-		FileName: "agency.txt",
-		Message: lib.IfThenElse(s == types.SEVERITY_ERROR, "Agency ID is required", "Agency ID is recomended"),
-		Rows: []int{row},
-		Severity: s,
-		ValidationID: "agency_id_validation",
+	addMessage := func(msg string, severity types.Severity) {
+		services.AppMessageService.AddMessage(types.Message{
+			Field: "agency_id",
+			FileName: "agency.txt",
+			Message: msg,
+			Rows: []int{row},
+			Severity: severity,
+			ValidationID: "agency_id_validation",
+		})
 	}
 
 	//  Check if agency_id is required
-	if agency.AgencyId == nil && len(gtfs.Files["agency"]) > 1 {
-		message.Message = "Agency ID is required when there is more than one agency"
-		message.Severity = types.SEVERITY_ERROR
+	if agency.AgencyId == nil {
+		if len(gtfs.Files["agency"]) > 1 {
+			addMessage("Agency ID is required when there is more than one agency", types.SEVERITY_ERROR)
+			return
+		}
+
+		if s == types.SEVERITY_IGNORE {
+			return
+		}
+
+		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "Agency ID is required", "Agency ID is recommended")
+		addMessage(warn, s)
+		return
 	}
 
 	if agency.AgencyId != nil {
 		// Check if agency_id is Unique ID
 		if _, ok := gtfs.IdMap["agency"][*agency.AgencyId]; ok && len(gtfs.IdMap["agency"][*agency.AgencyId]) > 1 {
-			services.AppMessageService.AddMessage(types.Message{
-				Field: "agency_id",
-				FileName: "agency.txt",
-				ValidationID: "duplicate_agencies_validation",
-				Message: "Duplicate agency_id found. Agency IDs must be unique.",
-				Rows: []int{row},
-				Severity: types.SEVERITY_ERROR,
-			})
+			addMessage("Duplicate agency_id found. Agency IDs must be unique.", types.SEVERITY_ERROR)
 		}
 	}
-
-	services.AppMessageService.AddMessage(message)
 }

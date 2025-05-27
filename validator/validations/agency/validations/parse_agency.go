@@ -6,7 +6,7 @@ import (
 	"main/types"
 )
 
-func ParseAgency(rawAgency map[string]string, row int, gtfs *types.Gtfs) types.Agency {
+func ParseAgency(rawAgency map[string]string, row int) types.Agency {
 	var (
 		agency                                           types.Agency = types.Agency{}
 		agencyName, agencyUrl, agencyTimezone, agencyId, agencyLang, agencyPhone, agencyFareUrl, agencyEmail                     string

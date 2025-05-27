@@ -10,7 +10,7 @@ import (
 
 func TestAgencyUrlValidation_Required(t *testing.T) {
 	agency := &types.Agency{AgencyUrl: ""}
-	validations.AgencyUrlValidation(agency, 1, nil)
+	validations.AgencyUrlValidation(agency, 1)
 
 	// Assert
 	assertion := lib.AssertionMessage{
@@ -28,7 +28,7 @@ func TestAgencyUrlValidation_Required(t *testing.T) {
 
 func TestAgencyUrlValidation_ValidUrl(t *testing.T) {
 	agency := &types.Agency{AgencyUrl: "https://example.com"}
-	validations.AgencyUrlValidation(agency, 2, nil)
+	validations.AgencyUrlValidation(agency, 2)
 
 	// Assert
 	assertion := lib.AssertionMessage{
@@ -45,7 +45,7 @@ func TestAgencyUrlValidation_ValidUrl(t *testing.T) {
 
 func TestAgencyUrlValidation_InvalidUrl(t *testing.T) {
 	agency := &types.Agency{AgencyUrl: "invalid-url"}
-	validations.AgencyUrlValidation(agency, 3, nil)
+	validations.AgencyUrlValidation(agency, 3)
 
 	// Assert
 	assertion := lib.AssertionMessage{

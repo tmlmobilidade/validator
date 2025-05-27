@@ -20,7 +20,7 @@ URL of the transit agency.
 
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
-func AgencyUrlValidation(agency *types.Agency, row int, gtfs *types.Gtfs) {
+func AgencyUrlValidation(agency *types.Agency, row int) {
 	s := types.SEVERITY_ERROR
 
 	// Check if agency_url is required

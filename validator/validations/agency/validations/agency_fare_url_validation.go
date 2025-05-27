@@ -20,7 +20,7 @@ URL of a web page where a rider can purchase tickets or other fare instruments f
 
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
-func AgencyFareUrlValidation(severity *types.Severity, agency *types.Agency, row int, gtfs *types.Gtfs) {
+func AgencyFareUrlValidation(severity *types.Severity, agency *types.Agency, row int) {
 	s := types.SEVERITY_IGNORE
 	if severity != nil {
 		s = *severity
