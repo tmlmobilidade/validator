@@ -4,7 +4,6 @@ import (
 	"main/lib"
 	"main/services"
 	"main/types"
-	"strconv"
 )
 
 /*
@@ -59,7 +58,6 @@ func StopCodeValidation(severity *types.Severity, stop *types.Stop, row int, gtf
 	if stop.StopCode != nil {
 		count := len(lib.RemoveDuplicates(gtfs.IdMap["stops"][*stop.StopCode]))
 
-		lib.AppLogger.Info("Stop Code: " + *stop.StopCode + " Count: " + strconv.Itoa(count))
 		if count > 1 {
 			addMessage("Duplicate stop_code found: " + *stop.StopCode, types.SEVERITY_WARNING)
 			return
