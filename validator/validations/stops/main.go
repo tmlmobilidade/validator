@@ -44,15 +44,15 @@ func RunValidations(gtfs types.Gtfs) {
 		validations.LocationTypeValidation(nil, &stop, row)
 
 		// Validate parent_station
-		validations.ParentStationValidation(nil, &stop, row)
+		validations.ParentStationValidation(nil, &stop, row, gtfs)
 
-		// // Validate stop_timezone
-		// validations.StopTimezoneValidation(nil, &stop, row)
+		// Validate stop_timezone
+		validations.StopTimezoneValidation(nil, &stop, row)
 
 		// // Validate wheelchair_boarding
 		// validations.WheelchairBoardingValidation(nil, &stop, row)
 
-		// // Validate level_id
+		// Validate level_id
 		// validations.LevelIdValidation(nil, &stop, row)
 
 		// // Validate platform_code
