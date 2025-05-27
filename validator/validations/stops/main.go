@@ -53,7 +53,7 @@ func RunValidations(gtfs types.Gtfs) {
 		// validations.WheelchairBoardingValidation(nil, &stop, row)
 
 		// Validate level_id
-		// validations.LevelIdValidation(nil, &stop, row)
+		validations.LevelIdValidation(nil, &stop, row, gtfs)
 
 		// // Validate platform_code
 		// validations.PlatformCodeValidation(nil, &stop, row)
