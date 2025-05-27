@@ -49,13 +49,13 @@ func RunValidations(gtfs types.Gtfs) {
 		// Validate stop_timezone
 		validations.StopTimezoneValidation(nil, &stop, row)
 
-		// // Validate wheelchair_boarding
-		// validations.WheelchairBoardingValidation(nil, &stop, row)
+		// Validate wheelchair_boarding
+		validations.WheelchairBoardingValidation(nil, &stop, row)
 
 		// Validate level_id
 		validations.LevelIdValidation(nil, &stop, row, gtfs)
 
-		// // Validate platform_code
-		// validations.PlatformCodeValidation(nil, &stop, row)
+		// Validate platform_code
+		validations.PlatformCodeValidation(nil, &stop, row)
 	}
 }
