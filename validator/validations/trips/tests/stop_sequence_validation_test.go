@@ -145,3 +145,33 @@ func TestStopSequenceValidation_InvalidShapeDistTraveled(t *testing.T) {
 		t.Error(assert)
 	}
 }
+
+func TestStopSequenceValidation_ValidInput_NoShapeDistTraveled(t *testing.T) {
+	services.AppMessageService.Clear()
+	
+	trip := &types.Trip{TripId: "T6"}
+	gtfs := &types.Gtfs{
+		Files: map[string][]map[string]string{
+			"stop_times": {
+				{"stop_sequence": "1"},
+				{"stop_sequence": "2"},
+				{"stop_sequence": "3"},
+			},
+		},
+		IdMap: map[string]map[string][]int{
+			"stop_times": {
+				"T6": {0, 1, 2},
+			},
+		},
+	}
+	validations.StopSequenceValidation(trip, 0, gtfs)
+
+	assertion := lib.AssertionMessage{
+		Expected: 0,
+		Actual: services.AppMessageService.GetSummary().TotalErrors,
+		Message: "Valid stop_sequence and shape_dist_traveled should not error",
+	}
+	if assert := lib.Assert(assertion); assert != "" {
+		t.Error(assert)
+	}
+}

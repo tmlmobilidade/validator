@@ -1,8 +1,10 @@
 package trips
 
 import (
+	"main/lib"
 	"main/services"
 	"main/types"
+	"sort"
 	"strconv"
 )
 
@@ -39,8 +41,12 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 	}
 
 	// Check each trip's stop times for pickup/dropoff windows
-	stopSequences := make([]int, 0)
-	shapeDistTraveledSequences := make([]float64, 0)
+	type StopSequence struct {
+		sequence int
+		dist float64
+	}
+
+	stopSequences := make([]StopSequence, 0)
 
 	stopTimes := gtfs.IdMap["stop_times"][trip.TripId]
 	for _, row := range stopTimes {
@@ -51,36 +57,39 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 			return
 		}
 
-		shapeDistTraveled, err := strconv.ParseFloat(gtfs.Files["stop_times"][row]["shape_dist_traveled"], 64)
-		if err != nil {
-			addMessage("shape_dist_traveled must be a float.", types.SEVERITY_ERROR)
-			return
-		}
-
-		stopSequences = append(stopSequences, stopSequence)
-		shapeDistTraveledSequences = append(shapeDistTraveledSequences, shapeDistTraveled)
-	}
-
-	// Bubble Sort based on stopSequences, but also reorders shapeDistTraveledSequences to match
-	for i := range stopSequences {
-		for j := range stopSequences[:len(stopSequences)-i-1] {
-			if stopSequences[j] > stopSequences[j+1] {
-				stopSequences[j], stopSequences[j+1] = stopSequences[j+1], stopSequences[j]
-				shapeDistTraveledSequences[j], shapeDistTraveledSequences[j+1] = shapeDistTraveledSequences[j+1], shapeDistTraveledSequences[j]
+		shapeDistTraveled := -1.0
+		if gtfs.Files["stop_times"][row]["shape_dist_traveled"] != "" {
+			shapeDistTraveled, err = strconv.ParseFloat(gtfs.Files["stop_times"][row]["shape_dist_traveled"], 64)
+			if err != nil {
+				addMessage("shape_dist_traveled must be a float.", types.SEVERITY_ERROR)
+				return
 			}
 		}
+
+		stopSequences = append(stopSequences, StopSequence{
+			sequence: stopSequence,
+			dist: shapeDistTraveled,
+		})
 	}
 
-	// Check if the stopSequences and shapeDistTraveledSequences are increasing
-	for i := 1; i < len(stopSequences); i++ {
-		if stopSequences[i] <= stopSequences[i-1] {
-			addMessage("stop_sequence values must increase along the trip", types.SEVERITY_ERROR)
-			return
-		}
-
-		if shapeDistTraveledSequences[i] <= shapeDistTraveledSequences[i-1] {
-			addMessage("shape_dist_traveled values must increase along the trip", types.SEVERITY_ERROR)
-			return
+	stopSequences = lib.RemoveDuplicates(stopSequences)
+	sort.Slice(stopSequences, func(i, j int) bool {
+		return stopSequences[i].sequence < stopSequences[j].sequence
+	})
+	
+	for i, stopSequence := range stopSequences {
+		if i > 0 {
+			if stopSequence.sequence <= stopSequences[i-1].sequence {
+				addMessage("stop_sequence values must increase along the trip ('"+ trip.TripId + "')", types.SEVERITY_ERROR)
+				return
+			}
+			
+			if stopSequence.dist >= 0 && stopSequences[i-1].dist >= 0 {
+				if stopSequence.dist < stopSequences[i-1].dist {
+					addMessage("shape_dist_traveled values must increase along the trip ('"+ trip.TripId + "')", types.SEVERITY_ERROR)
+					return
+				}
+			}
 		}
 	}
 	
