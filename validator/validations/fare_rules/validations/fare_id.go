@@ -1,0 +1,45 @@
+package fare_rules
+
+import (
+	"main/services"
+	"main/types"
+)
+
+/*
+# Attributes
+
+	- File: [fare_rules.txt]
+	- Field: fare_id
+	- Presence: Required
+	- Type: Foreign ID referencing [fare_attributes.fare_id]
+
+# Description
+
+Identifies a fare class.
+
+[fare_rules.txt]: https://gtfs.org/schedule/reference/#fare_rulestxt
+[fare_attributes.fare_id]: https://gtfs.org/schedule/reference/#fare_attributestxt
+*/
+func FareIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs) {
+
+	addMessage := func(msg string) {
+		services.AppMessageService.AddMessage(types.Message{
+			Field:        "fare_id",
+			FileName:     "fare_rules.txt",
+			Rows:         []int{row},
+			Message:      msg,
+			Severity:     types.SEVERITY_ERROR,
+			ValidationID: "fare_rules_parse",
+		})
+	}
+	
+	if fareRule.FareId == nil {
+		addMessage("Fare ID is required")
+		return
+	}
+
+	if _, ok := gtfs.IdMap["fare_attributes"][*fareRule.FareId]; !ok {
+		addMessage("Fare ID does not exist in fare_attributes.txt")
+		return
+	}
+}

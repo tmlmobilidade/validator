@@ -2,128 +2,64 @@ package calendar_dates
 
 import (
 	"main/lib"
+	"main/services"
 	"main/types"
 )
 
-type parseCalendarDatesValidation struct {
-	*types.Validation
-}
+func ParseCalendarDates(rawCalendarDates map[string]string, row int, gtfs *types.Gtfs) types.CalendarDates {
+	var (
+		calendarDates    types.CalendarDates = types.CalendarDates{}
+		serviceId, date  string
+		exceptionType    int
+		messages         []types.Message
+	)
 
-func NewParseCalendarDatesValidation(severity *types.Severity) *parseCalendarDatesValidation {
-	s := types.SEVERITY_ERROR
-	if severity != nil {
-		s = *severity
+	stringFields := map[string]*string{
+		"service_id":      &serviceId,
+		"date":            &date,
 	}
 
-	return &parseCalendarDatesValidation{
-		Validation: &types.Validation{
-			ID:          "parse_calendar_dates",
-			Description: "Validate calendar dates data",
-			Severity:    s,
-		},
-	}
-}
-
-func (v *parseCalendarDatesValidation) Validate(gtfs types.Gtfs) (calendarDates []types.CalendarDates, messages []types.Message) {
-	// Track unique service_id + date combinations
-	serviceIdDatePairs := make(map[string]bool)
-
-	// Check if calendar.txt exists to determine if calendar_dates.txt is required
-	_, hasCalendar := gtfs.Files["calendar"]
-
-	for i, calendarDate := range gtfs.Files["calendar_dates"] {
-		calendarDate, calendarDateMessages := parseCalendarDate(calendarDate, hasCalendar)
-		calendarDates = append(calendarDates, calendarDate)
-
-		// Check for duplicate service_id + date combinations
-		if calendarDate.ServiceId != "" && calendarDate.Date != "" {
-			pairKey := calendarDate.ServiceId + "_" + calendarDate.Date
-			if serviceIdDatePairs[pairKey] {
-				messages = append(messages, types.Message{
-					Field:        "service_id,date",
-					FileName:     "calendar_dates.txt",
-					Message:      "Duplicate (service_id, date) pair found. Each pair may only appear once in calendar_dates.txt.",
-					Rows:         []int{i + 1},
-					Severity:     v.Severity,
-					ValidationID: v.ID,
-				})
-			}
-			serviceIdDatePairs[pairKey] = true
-		}
-
-		// Update row number and other fields for each message
-		for _, msg := range calendarDateMessages {
-			msg.Rows = []int{i + 1}
-			msg.FileName = "calendar_dates.txt"
-			msg.Severity = v.Severity
-			msg.ValidationID = v.ID
-			messages = append(messages, msg)
-		}
+	intFields := map[string]*int{
+		"exception_type":  &exceptionType,
 	}
 
-	// If calendar.txt is omitted, ensure calendar_dates.txt contains at least one entry
-	if !hasCalendar && len(calendarDates) == 0 {
+
+	// Helper to collect error messages
+	addMessage := func(field, msg string) {
 		messages = append(messages, types.Message{
-			Field:        "",
+			Field:        field,
 			FileName:     "calendar_dates.txt",
-			Message:      "calendar_dates.txt must contain at least one entry when calendar.txt is omitted",
-			Rows:         []int{},
-			Severity:     v.Severity,
-			ValidationID: v.ID,
+			Rows:         []int{row},
+			Message:      msg,
+			Severity:     types.SEVERITY_ERROR,
+			ValidationID: "calendar_dates_parse",
 		})
 	}
 
-	return calendarDates, messages
-}
-
-func parseCalendarDate(m map[string]string, hasCalendar bool) (calendarDate types.CalendarDates, messages []types.Message) {
-	var parsingErrors []string
-
-	// Parse Required Values
-	lib.ParseStringToPrimitive(m["service_id"], &calendarDate.ServiceId, &parsingErrors)
-	lib.ParseStringToPrimitive(m["date"], &calendarDate.Date, &parsingErrors)
-	lib.ParseStringToPrimitive(m["exception_type"], &calendarDate.ExceptionType, &parsingErrors)
-
-	if len(parsingErrors) > 0 {
-		for _, err := range parsingErrors {
-			messages = append(messages, types.Message{
-				Field:   "N/A", //TODO: Add field name
-				Message: err,
-			})
+	// Parse string fields
+	for field, target := range stringFields {
+		if errMsg := lib.ParseStringToPrimitive(rawCalendarDates[field], target); errMsg != "" {
+			addMessage(field, errMsg)
 		}
 	}
 
-	// Validate Required Fields
-	if calendarDate.ServiceId == "" {
-		messages = append(messages, types.Message{
-			Field:   "service_id",
-			Message: "Service ID is required.",
-		})
-	}
-
-	if calendarDate.Date == "" {
-		messages = append(messages, types.Message{
-			Field:   "date",
-			Message: "Date is required.",
-		})
-	} else {
-		// Validate date format (YYYYMMDD)
-		if !lib.IsValidServiceDate(calendarDate.Date) {
-			messages = append(messages, types.Message{
-				Field:   "date",
-				Message: "Invalid date format. Date must be in YYYYMMDD format.",
-			})
+	// Parse int fields
+	for field, target := range intFields {
+		if errMsg := lib.ParseStringToPrimitive(rawCalendarDates[field], target); errMsg != "" {
+			addMessage(field, errMsg)
 		}
 	}
 
-	// Validate exception_type enum values
-	validExceptionTypes := map[int]bool{1: true, 2: true}
-	if !validExceptionTypes[calendarDate.ExceptionType] {
-		messages = append(messages, types.Message{
-			Field:   "exception_type",
-			Message: "Invalid exception_type value. Valid values are 1 (service added) or 2 (service removed).",
-		})
+	// If there are any errors, return an empty trip
+	if len(messages) > 0 {
+		services.AppMessageService.AddMessages(messages)
+		return calendarDates
 	}
 
-	return calendarDate, messages
+	// Required fields
+	calendarDates.ServiceId = serviceId
+	calendarDates.Date = date
+	calendarDates.ExceptionType = lib.IfThenElse(rawCalendarDates["exception_type"] != "", &exceptionType, nil)
+
+	return calendarDates
 }

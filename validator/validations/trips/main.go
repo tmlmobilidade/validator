@@ -2,20 +2,51 @@ package trips
 
 import (
 	"main/lib"
-	"main/services"
 	"main/types"
+	validations "main/validations/trips/validations"
 )
 
 func RunValidations(gtfs types.Gtfs) {
 	lib.AppLogger.Debug("Running Trips Validations...")
 
-	// Create validation with default severity
-	validation := NewParseTripValidation(nil)
+	for i, rawTrips := range gtfs.Files["trips"] {
+		trip := validations.ParseTrips(rawTrips, i)
 
-	// Run validation
-	_, validationMessages := validation.Validate(gtfs)
-	for _, message := range validationMessages {
-		services.AppMessageService.AddMessage(message)
-		lib.AppLogger.Error("[" + message.FileName + "] " + message.Message)
+		if trip == (types.Trip{}) {
+			continue
+		}
+
+		// Validate trip_id
+		validations.TripIdValidation(&trip, i, &gtfs)
+
+		// Validate shape_id
+		validations.ShapeIdValidation(nil, &trip, i, &gtfs)
+
+		// Validate route_id
+		validations.RouteIdValidation(&trip, i, &gtfs)
+
+		// Validate service_id
+		validations.ServiceIdValidation(&trip, i, &gtfs)
+
+		// Validate trip_headsign
+		validations.TripHeadsignValidation(nil, &trip, i, &gtfs)
+
+		// Validate trip_short_name
+		validations.TripShortNameValidation(nil, &trip, i, &gtfs)
+
+		// Validate direction_id
+		validations.DirectionIdValidation(nil, &trip, i, &gtfs)
+
+		// Validate block_id
+		validations.BlockIdValidation(nil, &trip, i, &gtfs)
+
+		// Validate wheelchair_accessible
+		validations.WheelchairAccessibleValidation(nil, &trip, i, &gtfs)
+
+		// Validate bikes_allowed
+		validations.BikesAllowedValidation(nil, &trip, i, &gtfs)
+
+		// Validate stop_times.stop_sequence
+		validations.StopSequenceValidation(&trip, i, &gtfs)
 	}
 }

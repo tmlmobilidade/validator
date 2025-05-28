@@ -1,0 +1,61 @@
+package stop_times
+
+import (
+	"main/services"
+	"main/types"
+)
+
+/*
+# Attributes
+
+ - File: [stop_times.txt]
+ - Field: location_group_id
+ - Presence: Conditionally Forbidden
+ - Type: Foreign ID referencing location_groups.location_group_id
+
+# Description
+
+Identifies the serviced location group that indicates groups of stops where riders may request pickup or drop off. All location groups serviced during a trip must have a record in stop_times.txt. Multiple trips and routes may service the same location group.
+
+On-demand service using location groups should be referenced in the sequence in which service is available at those location groups. A data consumer should assume that travel is possible from one stop or location to any stop or location later in the trip, provided that the pickup/drop_off_type of each stop_time and the time constraints of each start/end_pickup_drop_off_window do not forbid it.
+
+Conditionally Forbidden:
+
+  - Forbidden if `stop_times.stop_id` or `stop_times.location_id` are defined.
+
+[stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
+*/
+func LocationGroupIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
+	addMessage := func(msg string, severity types.Severity) {
+		services.AppMessageService.AddMessage(types.Message{
+			Field:        "location_group_id",
+			FileName:     "stop_times.txt",
+			ValidationID: "location_group_id_validation",
+			Message:      msg,
+			Rows:         []int{row},
+			Severity:     severity,
+		})
+	}
+
+	// Forbidden if stop_id or location_id are defined
+	if (stopTime.StopId != nil && *stopTime.StopId != "") || (stopTime.LocationId != nil && *stopTime.LocationId != "") {
+		if stopTime.LocationGroupId != nil && *stopTime.LocationGroupId != "" {
+			addMessage("location_group_id is forbidden if stop_id or location_id are defined.", types.SEVERITY_ERROR)
+		}
+		return
+	}
+
+	// If location_group_id is present, check foreign key
+	if stopTime.LocationGroupId != nil && *stopTime.LocationGroupId != "" {
+		locationGroupsMap, ok := gtfs.IdMap["location_groups"]
+		if !ok || locationGroupsMap == nil {
+			addMessage("location_groups.txt is missing or not indexed.", types.SEVERITY_ERROR)
+			return
+		}
+		rows, ok := locationGroupsMap[*stopTime.LocationGroupId]
+		if !ok || len(rows) == 0 {
+			addMessage("location_group_id must reference a valid location_group_id from location_groups.txt.", types.SEVERITY_ERROR)
+			return
+		}
+	}
+} 

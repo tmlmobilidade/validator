@@ -23,8 +23,8 @@ import (
 //
 //	@param str string - The string to parse
 //	@param t *T - Pointer to the target variable where the parsed value will be stored
-//	@param errors *[]string - Slice to store any parsing error messages
-func ParseStringToPrimitive[T any](str string, t *T, errors *[]string) {
+//	@return msg string - The error message if parsing fails, empty string otherwise
+func ParseStringToPrimitive[T any](str string, t *T) (msg string) {
 	if str == "" {
 		return
 	}
@@ -36,91 +36,91 @@ func ParseStringToPrimitive[T any](str string, t *T, errors *[]string) {
 	case int8:
 		f, err := strconv.ParseInt(str, 10, 8)
 		if err != nil {
-			*errors = append(*errors, fmt.Sprintf("Failed to parse \"%s\" to int8", str))
+			return fmt.Sprintf("Failed to parse \"%s\" to int8", str)
 		}
 		*t = any(int8(f)).(T)
 		return
 	case int16:
 		f, err := strconv.ParseInt(str, 10, 16)
 		if err != nil {
-			*errors = append(*errors, fmt.Sprintf("Failed to parse \"%s\" to int16", str))
+			return fmt.Sprintf("Failed to parse \"%s\" to int16", str)
 		}
 		*t = any(int16(f)).(T)
 		return
 	case int32:
 		f, err := strconv.ParseInt(str, 10, 32)
 		if err != nil {
-			*errors = append(*errors, fmt.Sprintf("Failed to parse \"%s\" to int32", str))
+			return fmt.Sprintf("Failed to parse \"%s\" to int32", str)
 		}
 		*t = any(int32(f)).(T)
 		return
 	case int64:
 		f, err := strconv.ParseInt(str, 10, 64)
 		if err != nil {
-			*errors = append(*errors, fmt.Sprintf("Failed to parse \"%s\" to int64", str))
+			return fmt.Sprintf("Failed to parse \"%s\" to int64", str)
 		}
 		*t = any(int64(f)).(T)
 		return
 	case int:
 		f, err := strconv.ParseInt(str, 10, 64)
 		if err != nil {
-			*errors = append(*errors, fmt.Sprintf("Failed to parse \"%s\" to int", str))
+			return fmt.Sprintf("Failed to parse \"%s\" to int", str)
 		}
 		*t = any(int(f)).(T)
 		return
 	case uint8:
 		f, err := strconv.ParseUint(str, 10, 8)
 		if err != nil {
-			*errors = append(*errors, fmt.Sprintf("Failed to parse \"%s\" to uint8", str))
+			return fmt.Sprintf("Failed to parse \"%s\" to uint8", str)
 		}
 		*t = any(uint8(f)).(T)
 		return
 	case uint16:
 		f, err := strconv.ParseUint(str, 10, 16)
 		if err != nil {
-			*errors = append(*errors, fmt.Sprintf("Failed to parse \"%s\" to uint16", str))
+			return fmt.Sprintf("Failed to parse \"%s\" to uint16", str)
 		}
 		*t = any(uint16(f)).(T)
 		return
 	case uint32:
 		f, err := strconv.ParseUint(str, 10, 32)
 		if err != nil {
-			*errors = append(*errors, fmt.Sprintf("Failed to parse \"%s\" to uint32", str))
+			return fmt.Sprintf("Failed to parse \"%s\" to uint32", str)
 		}
 		*t = any(uint32(f)).(T)
 		return
 	case uint64:
 		f, err := strconv.ParseUint(str, 10, 64)
 		if err != nil {
-			*errors = append(*errors, fmt.Sprintf("Failed to parse \"%s\" to uint64", str))
+			return fmt.Sprintf("Failed to parse \"%s\" to uint64", str)
 		}
 		*t = any(uint64(f)).(T)
 		return
 	case uint:
 		f, err := strconv.ParseUint(str, 10, 64)
 		if err != nil {
-			*errors = append(*errors, fmt.Sprintf("Failed to parse \"%s\" to uint", str))
+			return fmt.Sprintf("Failed to parse \"%s\" to uint", str)
 		}
 		*t = any(uint(f)).(T)
 		return
 	case float32:
 		f, err := strconv.ParseFloat(str, 32)
 		if err != nil {
-			*errors = append(*errors, fmt.Sprintf("Failed to parse \"%s\" to float32", str))
+			return fmt.Sprintf("Failed to parse \"%s\" to float32", str)
 		}
 		*t = any(float32(f)).(T)
 		return
 	case float64:
 		f, err := strconv.ParseFloat(str, 64)
 		if err != nil {
-			*errors = append(*errors, fmt.Sprintf("Failed to parse \"%s\" to float64", str))
+			return fmt.Sprintf("Failed to parse \"%s\" to float64", str)
 		}
 		*t = any(f).(T)
 		return
 	case bool:
 		f, err := strconv.ParseBool(str)
 		if err != nil {
-			*errors = append(*errors, fmt.Sprintf("Failed to parse \"%s\" to bool", str))
+			return fmt.Sprintf("Failed to parse \"%s\" to bool", str)
 		}
 		*t = any(f).(T)
 		return
@@ -183,3 +183,26 @@ func MergeMaps[T any](a, b map[string]T) map[string]T {
 
 	return result
 }
+
+//Removes duplicates from a slice
+//
+//	@param slice []T - The slice to remove duplicates from
+//	@return []T - The slice with duplicates removed
+func RemoveDuplicates[T any](slice []T) []T {
+	seen := make(map[any]bool)
+	result := make([]T, 0)
+
+	for _, v := range slice {
+		if !seen[v] {
+			seen[v] = true
+			result = append(result, v)
+		}
+	}
+	return result
+}
+
+// Returns a pointer to T value
+//
+//	@param t T - The value to return a pointer to
+//	@return *T - The pointer to the value
+func Ptr[T any](t T) *T { return &t }

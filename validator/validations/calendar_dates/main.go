@@ -2,20 +2,29 @@ package calendar_dates
 
 import (
 	"main/lib"
-	"main/services"
 	"main/types"
+	validations "main/validations/calendar_dates/validations"
 )
 
 func RunValidations(gtfs types.Gtfs) {
+
 	lib.AppLogger.Debug("Running Calendar Dates Validations...")
 
-	// Create validation with default severity
-	validation := NewParseCalendarDatesValidation(nil)
+	for i, rawCalendarDate := range gtfs.Files["calendar_dates"] {
+		calendarDate := ParseCalendarDates(rawCalendarDate, i, &gtfs)
 
-	// Run validation
-	_, validationMessages := validation.Validate(gtfs)
-	for _, message := range validationMessages {
-		services.AppMessageService.AddMessage(message)
-		lib.AppLogger.Error("[" + message.FileName + "] " + message.Message)
+		if calendarDate == (types.CalendarDates{}) {
+			continue
+		}
+		
+		// Validate service_id
+		validations.ServiceIdValidation(&calendarDate, i, &gtfs)
+
+		// Validate date
+		validations.DateValidation(&calendarDate, i, &gtfs)
+
+		// Validate exception_type
+		validations.ExceptionTypeValidation(&calendarDate, i, &gtfs)
+		
 	}
 }

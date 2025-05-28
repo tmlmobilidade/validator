@@ -1,0 +1,45 @@
+package trips
+
+import (
+	"main/services"
+	"main/types"
+)
+
+/*
+# Attributes
+
+	- File: [calendar.txt]
+	- Field: service_id
+	- Presence: Required
+	- Type: Unique ID
+
+# Description
+
+Identifies a set of dates when service is available for one or more routes.
+
+[calendar.txt]: https://gtfs.org/schedule/reference/#calendartxt
+*/
+func ServiceIdValidation(calendar *types.Calendar, row int, gtfs *types.Gtfs) {
+
+	message := types.Message{
+		Field: "service_id",
+		FileName: "calendar.txt",
+		Message: "Service ID is required",
+		Rows: []int{row},
+		Severity: types.SEVERITY_ERROR,
+		ValidationID: "service_id_validation",
+	}
+
+	if calendar.ServiceId != "" {
+		// Check if service_id is Unique ID
+		if gtfs.IdMap["calendar"] != nil && len(gtfs.IdMap["calendar"][calendar.ServiceId]) > 1 {
+			message.Message = "Duplicate service_id found. Service IDs must be unique."
+			message.Severity = types.SEVERITY_ERROR
+			services.AppMessageService.AddMessage(message)
+		}
+		
+		return;
+	}
+	
+	services.AppMessageService.AddMessage(message)
+}

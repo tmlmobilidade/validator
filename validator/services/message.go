@@ -23,7 +23,20 @@ func NewMessageService() *MessageService {
 	}
 }
 
+func (ms *MessageService) AddMessages(messages []types.Message) {
+	for _, message := range messages {
+		ms.AddMessage(message)
+	}
+}
+
 func (ms *MessageService) AddMessage(message types.Message) {
+	
+	// Add +2 to each row in the message.Rows
+	// 1 for the header and 1 for the 0 based index
+	for i, row := range message.Rows {
+		message.Rows[i] = row + 2 
+	}
+
 	for i, m := range ms.messages {
 		if m.ValidationID == message.ValidationID && m.Field == message.Field && m.FileName == message.FileName {
 			// Only keep up to 100 rows, keeping the latest row
@@ -84,6 +97,13 @@ func (ms *MessageService) PrintSummary() {
 
 func (ms *MessageService) PrintJSON() {
 	lib.PrintMap(ms.GetSummary(), true)
+}
+
+func (ms *MessageService) Clear() {
+	ms.messages = []types.Message{}
+	ms.errorCount = 0
+	ms.infoCount = 0
+	ms.warningCount = 0
 }
 
 var AppMessageService = NewMessageService()

@@ -2,22 +2,40 @@ package agency
 
 import (
 	"main/lib"
-	"main/services"
 	"main/types"
-	"strconv"
+	validations "main/validations/agency/validations"
 )
 
 func RunValidations(gtfs types.Gtfs) {
 	lib.AppLogger.Debug("Running Validations for agency.txt")
 
-	// Parsing Validation
-	parseAgencyValidation := NewParseAgencyValidation(nil)
-	agencies, messages := parseAgencyValidation.Validate(gtfs)
-	for _, message := range messages {
-		services.AppMessageService.AddMessage(message)
-		lib.AppLogger.Error("[" + message.FileName + "] " + message.Message)
-	}
+	for i, rawAgency := range gtfs.Files["agency"] {
+		// Parse Agency Validation
+		agency := validations.ParseAgency(rawAgency, i)
 
-	// Print agencies
-	lib.AppLogger.Info("Total agencies: parsed " + strconv.Itoa(len(agencies)) + " agencies")
+		if agency == (types.Agency{}) {
+			continue
+		}
+
+		// Duplicate Agencies Validation
+		validations.AgencyIdValidation(nil, &agency, i, gtfs)
+
+		// Validate Agency URL
+		validations.AgencyUrlValidation(&agency, i)
+
+		// Validate Agency Timezone
+		validations.AgencyTimezoneValidation(&agency, i)
+
+		// Validate Agency Lang
+		validations.AgencyLangValidation(nil, &agency, i)
+
+		// Validate Agency Phone
+		validations.AgencyPhoneValidation(nil, &agency, i)
+
+		// Validate Agency Fare URL
+		validations.AgencyFareUrlValidation(nil, &agency, i)
+
+		// Validate Agency Email
+		validations.AgencyEmailValidation(nil, &agency, i)
+	}
 }
