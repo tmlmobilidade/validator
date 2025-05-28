@@ -24,9 +24,11 @@ func TestShapeDistTraveledValidation_Missing(t *testing.T) {
 
 func TestShapeDistTraveledValidation_Negative(t *testing.T) {
 	services.AppMessageService.Clear()
+	
 	neg := -1.0
 	shape := &types.Shape{ShapeDistTraveled: &neg}
 	validations.ShapeDistTraveledValidation(nil, shape, 2)
+
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,
