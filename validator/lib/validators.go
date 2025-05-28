@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -107,16 +108,21 @@ func ValidateCurrencyType(currencyType string) string {
 }
 
 func ValidateTime(t string) string {
-
-	// Handle 24:00:00
-	splits := strings.Split(t, ":")
-	if len(splits) == 3 && splits[0] == "24" {
-		t = "00:" + splits[1] + ":" + splits[2]
-	}
-
-	_, err := time.Parse(time.TimeOnly, t)
-	if err != nil {
+	if len(t) != 8 {
 		return fmt.Sprintf("Invalid time, expected format: HH:MM:SS, got: %s", t)
 	}
+
+	splits := strings.Split(t, ":")
+	if len(splits) != 3 {
+		return fmt.Sprintf("Invalid time, expected format: HH:MM:SS, got: %s", t)
+	}
+
+	// Check if all splits are numbers
+	for _, split := range splits {
+		if _, err := strconv.Atoi(split); err != nil {
+			return fmt.Sprintf("Invalid time, expected format: HH:MM:SS, got: %s", t)
+		}
+	}
+
 	return ""
 }

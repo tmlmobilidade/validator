@@ -15,8 +15,8 @@ func TestStopSequenceValidation_ValidInput(t *testing.T) {
 		Files: map[string][]map[string]string{
 			"stop_times": {
 				{"stop_sequence": "1", "shape_dist_traveled": "0"},
-				{"stop_sequence": "2", "shape_dist_traveled": "10"},
 				{"stop_sequence": "3", "shape_dist_traveled": "20"},
+				{"stop_sequence": "2", "shape_dist_traveled": "10"},
 			},
 		},
 		IdMap: map[string]map[string][]int{
