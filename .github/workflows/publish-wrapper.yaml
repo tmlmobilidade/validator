@@ -6,6 +6,8 @@ on:
     branches:
       - production
     paths:
+      - "ts-wrapper/**/*"
+      - "validator/**/*"
       - '!bin/**/*'
 
 permissions:
