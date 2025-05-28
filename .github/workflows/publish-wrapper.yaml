@@ -75,7 +75,7 @@ jobs:
 
       - name: Build Binaries
         shell: bash
-        run: sh compile.sh
+        run: sh compile.sh ${{ needs.version-number.outputs.version_number }}
 
       - name: Commit Binaries to Releases
         uses: EndBug/add-and-commit@v9
