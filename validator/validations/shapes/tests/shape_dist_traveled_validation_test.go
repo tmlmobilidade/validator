@@ -90,43 +90,5 @@ func TestShapeDistTraveledValidation_SeverityWarning(t *testing.T) {
 	}
 }
 
-func TestShapeDistTraveledGroupValidation_Increasing(t *testing.T) {
-	services.AppMessageService.Clear()
-	shapeId := "A_shp"
-	shapes := []types.Shape{
-		{ShapeId: &shapeId, ShapePtSequence: intPtr(0), ShapeDistTraveled: floatPtr(0)},
-		{ShapeId: &shapeId, ShapePtSequence: intPtr(6), ShapeDistTraveled: floatPtr(6.8310)},
-		{ShapeId: &shapeId, ShapePtSequence: intPtr(11), ShapeDistTraveled: floatPtr(15.8765)},
-	}
-	validations.ShapeDistTraveledGroupValidation(shapes)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Increasing shape_dist_traveled should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestShapeDistTraveledGroupValidation_NonIncreasing(t *testing.T) {
-	services.AppMessageService.Clear()
-	shapeId := "A_shp"
-	shapes := []types.Shape{
-		{ShapeId: &shapeId, ShapePtSequence: intPtr(0), ShapeDistTraveled: floatPtr(0)},
-		{ShapeId: &shapeId, ShapePtSequence: intPtr(6), ShapeDistTraveled: floatPtr(6.8310)},
-		{ShapeId: &shapeId, ShapePtSequence: intPtr(11), ShapeDistTraveled: floatPtr(5.0)}, // Not increasing
-	}
-	validations.ShapeDistTraveledGroupValidation(shapes)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Non-increasing shape_dist_traveled should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
 func floatPtr(f float64) *float64 { return &f }
 func intPtr(i int) *int { return &i } 

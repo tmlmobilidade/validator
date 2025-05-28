@@ -13,8 +13,12 @@ type ShapePtSequenceGroup struct {
 	row      int
 }
 
-// ShapePtSequenceGroupValidation checks that shape_pt_sequence values increase alongside shape_dist_traveled for each shape_id
-func ShapePtSequenceGroupValidation(shapes []types.Shape) {
+/*
+Validate the shape sequence, based on shape_pt_sequence and shape_dist_traveled.
+
+https://gtfs.org/schedule/reference/#shapestxt
+*/
+func ShapeSequenceValidation(shapes []types.Shape) {
 
 	addMessage := func(msg string, row int) {
 		services.AppMessageService.AddMessage(types.Message{
