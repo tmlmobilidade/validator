@@ -36,13 +36,13 @@
 	"devDependencies": {
 		"@carrismetropolitana/eslint": "^20250418.42.41",
 		"@dotenv-run/cli": "^1.3.6",
-		"@tmlmobilidade/tsconfig": "^20250528.31.35",
+		"@tmlmobilidade/tsconfig": "^20250528.1130.22",
 		"@types/node": "^22.15.23",
 		"ts-node": "^10.9.2",
 		"tsx": "^4.19.4",
 		"typescript": "^5.8.3"
 	},
 	"dependencies": {
-		"@tmlmobilidade/types": "^20250528.31.35"
+		"@tmlmobilidade/types": "^20250528.1130.22"
 	}
 }
