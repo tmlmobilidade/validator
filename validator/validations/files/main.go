@@ -25,123 +25,108 @@ func NewFileValidation(severity *types.Severity) *FileValidation {
 }
 
 func (v *FileValidation) Validate(gtfs types.Gtfs) (messages []types.Message) {
-	// Required files
-	requiredFiles := []string{
-		"agency.txt",
-		"routes.txt",
-		"trips.txt",
-		"stop_times.txt",
-	}
+	messages = append(messages, v.checkRequiredFiles(gtfs)...)
+	messages = append(messages, v.checkStopsConditional(gtfs)...)
+	messages = append(messages, v.checkCalendarFiles(gtfs)...)
+	messages = append(messages, v.checkLevelsIfElevator(gtfs)...)
+	messages = append(messages, v.checkFeedInfoWithTranslations(gtfs)...)
+	messages = append(messages, v.checkForbiddenNetworks(gtfs)...)
+	return
+}
 
-	// Check required files
-	for _, file := range requiredFiles {
+func (v *FileValidation) newMessage(file, msg string) types.Message {
+	return types.Message{
+		Field:        "N/A",
+		Rows:         []int{},
+		FileName:     file,
+		Message:      msg,
+		ValidationID: v.ID,
+		Severity:     v.Severity,
+	}
+}
+
+func (v *FileValidation) checkRequiredFiles(gtfs types.Gtfs) []types.Message {
+	required := []string{"agency.txt", "routes.txt", "trips.txt", "stop_times.txt"}
+	var messages []types.Message
+
+	for _, file := range required {
 		if _, exists := gtfs.Files[file[:len(file)-4]]; !exists {
-			messages = append(messages, types.Message{
-				Field:        "N/A",
-				FileName:     file,
-				Message:      fmt.Sprintf("Required file \"%s\" is missing", file),
-				ValidationID: v.ID,
-				Severity:     v.Severity,
-			})
+			messages = append(messages, v.newMessage(file, fmt.Sprintf("Required file \"%s\" is missing", file)))
 		}
 	}
+	return messages
+}
 
-	// Check conditionally required files
-
-	// Check stops.txt - Required unless demand-responsive zones are defined in locations.geojson
+func (v *FileValidation) checkStopsConditional(gtfs types.Gtfs) []types.Message {
 	if _, hasLocations := gtfs.Files["locations"]; !hasLocations {
 		if _, hasStops := gtfs.Files["stops"]; !hasStops {
-			messages = append(messages, types.Message{
-				Field:        "N/A",
-				FileName:     "stops.txt",
-				Message:      "stops.txt is required when locations.geojson is not present",
-				ValidationID: v.ID,
-				Severity:     v.Severity,
-			})
+			return []types.Message{
+				v.newMessage("stops.txt", "stops.txt is required when locations.geojson is not present"),
+			}
 		}
 	}
+	return nil
+}
 
-	// Check calendar.txt and calendar_dates.txt
+func (v *FileValidation) checkCalendarFiles(gtfs types.Gtfs) []types.Message {
 	_, hasCalendar := gtfs.Files["calendar"]
-	_, hasCalendarDates := gtfs.Files["calendar_dates"]
+	_, hasDates := gtfs.Files["calendar_dates"]
 
-	if !hasCalendar && !hasCalendarDates {
-		messages = append(messages, types.Message{
-			Field:        "N/A",
-			FileName:     "calendar.txt",
-			Message:      "Either calendar.txt or calendar_dates.txt must be present",
-			ValidationID: v.ID,
-			Severity:     v.Severity,
-		})
+	if !hasCalendar && !hasDates {
+		return []types.Message{
+			v.newMessage("calendar.txt", "Either calendar.txt or calendar_dates.txt must be present"),
+		}
+	}
+	return nil
+}
+
+func (v *FileValidation) checkLevelsIfElevator(gtfs types.Gtfs) []types.Message {
+	pathways, hasPathways := gtfs.Files["pathways"]
+	if !hasPathways {
+		return nil
 	}
 
-	// Check levels.txt - Required when describing pathways with elevators
-	if pathways, hasPathways := gtfs.Files["pathways"]; hasPathways {
-		hasElevator := false
-		for _, pathway := range pathways {
-			if pathwayMode, ok := pathway["pathway_mode"]; ok && pathwayMode == "5" { // 5 = elevator
-				hasElevator = true
-				break
-			}
-		}
-
-		if hasElevator {
+	for _, pathway := range pathways {
+		if mode, ok := pathway["pathway_mode"]; ok && mode == "5" {
 			if _, hasLevels := gtfs.Files["levels"]; !hasLevels {
-				messages = append(messages, types.Message{
-					Field:        "N/A",
-					FileName:     "levels.txt",
-					Message:      "levels.txt is required when pathways.txt contains elevators (pathway_mode=5)",
-					ValidationID: v.ID,
-					Severity:     v.Severity,
-				})
+				return []types.Message{
+					v.newMessage("levels.txt", "levels.txt is required when pathways.txt contains elevators (pathway_mode=5)"),
+				}
 			}
+			break
 		}
 	}
+	return nil
+}
 
-	// Check feed_info.txt - Required if translations.txt is provided
+func (v *FileValidation) checkFeedInfoWithTranslations(gtfs types.Gtfs) []types.Message {
 	if _, hasTranslations := gtfs.Files["translations"]; hasTranslations {
 		if _, hasFeedInfo := gtfs.Files["feed_info"]; !hasFeedInfo {
-			messages = append(messages, types.Message{
-				Field:        "N/A",
-				FileName:     "feed_info.txt",
-				Message:      "feed_info.txt is required when translations.txt is present",
-				ValidationID: v.ID,
-				Severity:     v.Severity,
-			})
-		}
-	}
-
-	// Check networks.txt and route_networks.txt - Forbidden if network_id exists in routes.txt
-	if routes, hasRoutes := gtfs.Files["routes"]; hasRoutes {
-		hasNetworkId := false
-		for _, route := range routes {
-			if _, ok := route["network_id"]; ok {
-				hasNetworkId = true
-				break
+			return []types.Message{
+				v.newMessage("feed_info.txt", "feed_info.txt is required when translations.txt is present"),
 			}
 		}
+	}
+	return nil
+}
 
-		if hasNetworkId {
+func (v *FileValidation) checkForbiddenNetworks(gtfs types.Gtfs) []types.Message {
+	routes, hasRoutes := gtfs.Files["routes"]
+	if !hasRoutes {
+		return nil
+	}
+
+	for _, route := range routes {
+		if _, ok := route["network_id"]; ok {
+			var messages []types.Message
 			if _, hasNetworks := gtfs.Files["networks"]; hasNetworks {
-				messages = append(messages, types.Message{
-					Field:        "N/A",
-					FileName:     "networks.txt",
-					Message:      "networks.txt is forbidden when network_id exists in routes.txt",
-					ValidationID: v.ID,
-					Severity:     v.Severity,
-				})
+				messages = append(messages, v.newMessage("networks.txt", "networks.txt is forbidden when network_id exists in routes.txt"))
 			}
 			if _, hasRouteNetworks := gtfs.Files["route_networks"]; hasRouteNetworks {
-				messages = append(messages, types.Message{
-					Field:        "N/A",
-					FileName:     "route_networks.txt",
-					Message:      "route_networks.txt is forbidden when network_id exists in routes.txt",
-					ValidationID: v.ID,
-					Severity:     v.Severity,
-				})
+				messages = append(messages, v.newMessage("route_networks.txt", "route_networks.txt is forbidden when network_id exists in routes.txt"))
 			}
+			return messages
 		}
 	}
-
-	return messages
+	return nil
 }
