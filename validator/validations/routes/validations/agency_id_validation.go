@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -23,7 +24,12 @@ Conditionally Required:
 
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
-func AgencyIdValidation(route *types.Route, row int, gtfs *types.Gtfs) {
+func AgencyIdValidation(severity *types.Severity, route *types.Route, row int, gtfs types.Gtfs) {
+	s := types.SEVERITY_WARNING
+	if severity != nil {
+		s = *severity
+	}
+
 	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
 			Field:        "agency_id",
@@ -35,31 +41,23 @@ func AgencyIdValidation(route *types.Route, row int, gtfs *types.Gtfs) {
 		})
 	}
 
-	agencyMap, hasAgencies := gtfs.IdMap["agency"]
-	numAgencies := 0
-	if hasAgencies {
-		numAgencies = len(agencyMap)
+	numAgencies := len(gtfs.Files["agency"])
+	
+	// Check if agency_id exists and is valid
+	if route.AgencyId != nil && *route.AgencyId != "" {
+		if _, ok := gtfs.IdMap["agency"][*route.AgencyId]; !ok {
+			addMessage("agency_id '" + *route.AgencyId + "' is not a valid agency_id from agency.txt.", types.SEVERITY_ERROR)
+			return
+		}
 	}
 
+	// Handle required vs recommended cases
 	if numAgencies > 1 {
-		// Required
 		if route.AgencyId == nil || *route.AgencyId == "" {
 			addMessage("agency_id is required when multiple agencies are defined in agency.txt.", types.SEVERITY_ERROR)
-			return
 		}
-		if _, ok := agencyMap[*route.AgencyId]; !ok {
-			addMessage("agency_id must reference a valid agency_id from agency.txt.", types.SEVERITY_ERROR)
-			return
-		}
-	} else {
-		// Recommended
-		if route.AgencyId == nil || *route.AgencyId == "" {
-			addMessage("agency_id is recommended even if only one agency is defined in agency.txt.", types.SEVERITY_WARNING)
-			return
-		}
-		if _, ok := agencyMap[*route.AgencyId]; !ok {
-			addMessage("agency_id must reference a valid agency_id from agency.txt.", types.SEVERITY_ERROR)
-			return
-		}
+	} else if route.AgencyId == nil && s != types.SEVERITY_IGNORE {
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "recommended", "required")
+		addMessage("agency_id is " + warn + " even if only one agency is defined in agency.txt.", s)
 	}
 } 

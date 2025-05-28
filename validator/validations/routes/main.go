@@ -20,7 +20,7 @@ func RunValidations(gtfs types.Gtfs) {
 		validations.RouteIdValidation(&route, i, &gtfs)
 
 		// Validate agency_id
-		validations.AgencyIdValidation(&route, i, &gtfs)
+		validations.AgencyIdValidation(nil, &route, i, gtfs)
 
 		// Validate route_short_name
 		validations.RouteShortNameValidation(nil, &route, i)
