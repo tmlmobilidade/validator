@@ -200,3 +200,9 @@ func RemoveDuplicates[T any](slice []T) []T {
 	}
 	return result
 }
+
+// Returns a pointer to T value
+//
+//	@param t T - The value to return a pointer to
+//	@return *T - The pointer to the value
+func Ptr[T any](t T) *T { return &t }
