@@ -56,11 +56,15 @@ func TestShapePtSequenceGroupValidation_NonIncreasingSequence(t *testing.T) {
 	services.AppMessageService.Clear()
 	shapeId := "A_shp"
 	shapes := []types.Shape{
-		{ShapeId: &shapeId, ShapePtSequence: intPtr(0)},
-		{ShapeId: &shapeId, ShapePtSequence: intPtr(6)},
-		{ShapeId: &shapeId, ShapePtSequence: intPtr(5)}, // Not increasing
+		{ShapeId: &shapeId, ShapePtSequence: intPtr(0), ShapeDistTraveled: floatPtr(0)},
+		{ShapeId: &shapeId, ShapePtSequence: intPtr(6), ShapeDistTraveled: floatPtr(50)},
+		{ShapeId: &shapeId, ShapePtSequence: intPtr(5), ShapeDistTraveled: floatPtr(100)}, // Not increasing
 	}
+	
 	validations.ShapePtSequenceGroupValidation(shapes)
+
+	services.AppMessageService.PrintTable()
+
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,
@@ -75,9 +79,9 @@ func TestShapePtSequenceGroupValidation_IncreasingSequence(t *testing.T) {
 	services.AppMessageService.Clear()
 	shapeId := "A_shp"
 	shapes := []types.Shape{
-		{ShapeId: &shapeId, ShapePtSequence: intPtr(0)},
-		{ShapeId: &shapeId, ShapePtSequence: intPtr(6)},
-		{ShapeId: &shapeId, ShapePtSequence: intPtr(11)},
+		{ShapeId: &shapeId, ShapePtSequence: intPtr(0), ShapeDistTraveled: floatPtr(0)},
+		{ShapeId: &shapeId, ShapePtSequence: intPtr(11), ShapeDistTraveled: floatPtr(100)},
+		{ShapeId: &shapeId, ShapePtSequence: intPtr(6), ShapeDistTraveled: floatPtr(50)},
 	}
 	validations.ShapePtSequenceGroupValidation(shapes)
 	assertion := lib.AssertionMessage{
