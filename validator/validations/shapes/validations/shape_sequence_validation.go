@@ -36,17 +36,23 @@ func ShapeSequenceValidation(shapes []types.Shape) {
 	shapeGroups := make(map[string][]ShapePtSequenceGroup)
 
 	for i, shape := range shapes {
-		if shape.ShapeId == nil || shape.ShapePtSequence == nil || shape.ShapeDistTraveled == nil {
-			addMessage("shape_id, shape_pt_sequence, and shape_dist_traveled are required and must not be empty.", i)
+		if shape.ShapeId == nil || shape.ShapePtSequence == nil {
+			addMessage("shape_id and shape_pt_sequence are required and must not be empty.", i)
 			return
 		}
 
-		shapeGroups[*shape.ShapeId] = append(shapeGroups[*shape.ShapeId], ShapePtSequenceGroup{
+		// Only add to group if shape_id and shape_pt_sequence are present
+		group := ShapePtSequenceGroup{
 			shapeId:  *shape.ShapeId,
 			sequence: *shape.ShapePtSequence,
-			dist:     *shape.ShapeDistTraveled,
 			row:      i,
-		})
+		}
+		if shape.ShapeDistTraveled != nil {
+			group.dist = *shape.ShapeDistTraveled
+		} else {
+			group.dist = -1 // Use -1 to indicate missing distance
+		}
+		shapeGroups[*shape.ShapeId] = append(shapeGroups[*shape.ShapeId], group)
 	}
 
 	// Sort shapeGroups by sequence
@@ -57,8 +63,16 @@ func ShapeSequenceValidation(shapes []types.Shape) {
 
 		// Check if the shape_pt_sequence values are increasing
 		for i, shape := range shapeGroup {
-			if i > 0 && (shape.sequence < shapeGroup[i-1].sequence || shape.dist < shapeGroup[i-1].dist) {
-				addMessage("shape_pt_sequence for shape_id '" + shape.shapeId + "' must increase along the trip", shape.row)
+			if i > 0 {
+				if shape.sequence <= shapeGroup[i-1].sequence {
+					addMessage("shape_pt_sequence for shape_id '"+shape.shapeId+"' must increase along the trip", shape.row)
+				}
+				// Only check dist if both current and previous are present
+				if shape.dist >= 0 && shapeGroup[i-1].dist >= 0 {
+					if shape.dist < shapeGroup[i-1].dist {
+						addMessage("shape_dist_traveled for shape_id '"+shape.shapeId+"' must increase along the trip", shape.row)
+					}
+				}
 			}
 		}
 	}
