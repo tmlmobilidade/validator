@@ -72,7 +72,7 @@ func ShapeDistTraveledValidation(severity *types.Severity, shape *types.Shape, r
 
 	// Validate shape_dist_traveled
 	if *shape.ShapeDistTraveled < 0 {
-		addMessage("shape_dist_traveled must be a non-negative float.", s)
+		addMessage("shape_dist_traveled must be a non-negative float.", types.SEVERITY_ERROR)
 		return
 	}
 } 
