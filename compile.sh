@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Modify the version number in the validator/services/cli.go file if a version number is provided
+if [ "$1" ]; then
+    sed -i '' 's/const version = "0.0.0"/const version = "'$1'"/' validator/services/cli.go
+fi
+
 # Check for folder bin and create it if it doesn't exist
 if [ ! -d "bin" ]; then
     mkdir bin

@@ -1,5 +1,6 @@
 {
 	"name": "@tmlmobilidade/gtfs-validator",
+	"description": "A GTFS Validator",
 	"version": "1.0.0",
 	"author": "Jusi Monteiro & João Vasconcelos",
 	"license": "ISC",
@@ -32,7 +33,9 @@
 		"postinstall": "if [ ! -d dist ]; then tsx ./scripts/postinstall.ts; else node ./dist/scripts/postinstall.js; fi",
 		"test": "tsx ./src/test.ts"
 	},
-	"description": "A GTFS Validator",
+	"dependencies": {
+		"@tmlmobilidade/types": "^20250528.1130.22"
+	},
 	"devDependencies": {
 		"@carrismetropolitana/eslint": "^20250418.42.41",
 		"@dotenv-run/cli": "^1.3.6",
@@ -41,8 +44,5 @@
 		"ts-node": "^10.9.2",
 		"tsx": "^4.19.4",
 		"typescript": "^5.8.3"
-	},
-	"dependencies": {
-		"@tmlmobilidade/types": "^20250528.1130.22"
 	}
 }
