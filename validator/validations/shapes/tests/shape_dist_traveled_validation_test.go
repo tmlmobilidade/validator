@@ -89,6 +89,3 @@ func TestShapeDistTraveledValidation_SeverityWarning(t *testing.T) {
 		t.Error(assert)
 	}
 }
-
-func floatPtr(f float64) *float64 { return &f }
-func intPtr(i int) *int { return &i } 
