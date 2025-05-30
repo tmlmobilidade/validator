@@ -58,8 +58,6 @@ func (ms *MessageService) AddMessage(message types.Message) {
 		ms.errorCount++
 	case types.SEVERITY_WARNING:
 		ms.warningCount++
-	case types.SEVERITY_INFO:
-		ms.infoCount++
 	}
 }
 

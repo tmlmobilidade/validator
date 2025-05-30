@@ -5,7 +5,6 @@ type Severity string
 const (
 	SEVERITY_IGNORE  Severity = "ignore"
 	SEVERITY_ERROR   Severity = "error"
-	SEVERITY_INFO    Severity = "info"
 	SEVERITY_WARNING Severity = "warning"
 )
 
