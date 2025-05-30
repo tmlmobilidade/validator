@@ -40,6 +40,10 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 		})
 	}
 
+	if trip.TripId == nil {
+		return
+	}
+
 	// Check each trip's stop times for pickup/dropoff windows
 	type StopSequence struct {
 		sequence int
@@ -48,7 +52,7 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 
 	stopSequences := make([]StopSequence, 0)
 
-	stopTimes := gtfs.IdMap["stop_times"][trip.TripId]
+	stopTimes := gtfs.IdMap["stop_times"][*trip.TripId]
 	for _, row := range stopTimes {
 		
 		stopSequence, err := strconv.Atoi(gtfs.Files["stop_times"][row]["stop_sequence"])
@@ -80,13 +84,13 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 	for i, stopSequence := range stopSequences {
 		if i > 0 {
 			if stopSequence.sequence <= stopSequences[i-1].sequence {
-				addMessage("stop_sequence values must increase along the trip ('"+ trip.TripId + "')", types.SEVERITY_ERROR)
+				addMessage("stop_sequence values must increase along the trip ('"+ *trip.TripId + "')", types.SEVERITY_ERROR)
 				return
 			}
 			
 			if stopSequence.dist >= 0 && stopSequences[i-1].dist >= 0 {
 				if stopSequence.dist < stopSequences[i-1].dist {
-					addMessage("shape_dist_traveled values must increase along the trip ('"+ trip.TripId + "')", types.SEVERITY_ERROR)
+					addMessage("shape_dist_traveled values must increase along the trip ('"+ *trip.TripId + "')", types.SEVERITY_ERROR)
 					return
 				}
 			}

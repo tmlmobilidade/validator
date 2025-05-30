@@ -24,14 +24,14 @@ func TestParseTrips_ValidInput(t *testing.T) {
 	}
 	trip := validations.ParseTrips(raw, row)
 
-	if trip.TripId != "T1" {
-		t.Errorf("Expected TripId 'T1', got '%s'", trip.TripId)
+	if *trip.TripId != "T1" {
+		t.Errorf("Expected TripId 'T1', got '%s'", *trip.TripId)
 	}
-	if trip.RouteId != "R1" {
-		t.Errorf("Expected RouteId 'R1', got '%s'", trip.RouteId)
+	if *trip.RouteId != "R1" {
+		t.Errorf("Expected RouteId 'R1', got '%s'", *trip.RouteId)
 	}
-	if trip.ServiceId != "S1" {
-		t.Errorf("Expected ServiceId 'S1', got '%s'", trip.ServiceId)
+	if *trip.ServiceId != "S1" {
+		t.Errorf("Expected ServiceId 'S1', got '%s'", *trip.ServiceId)
 	}
 	if trip.TripHeadsign == nil || *trip.TripHeadsign != "Headsign" {
 		t.Errorf("Expected TripHeadsign 'Headsign', got '%v'", trip.TripHeadsign)
@@ -128,14 +128,14 @@ func TestParseTrips_OptionalFieldsEmpty(t *testing.T) {
 	}
 	trip := validations.ParseTrips(raw, row)
 
-	if trip.TripId != "T2" {
-		t.Errorf("Expected TripId 'T2', got '%s'", trip.TripId)
+	if *trip.TripId != "T2" {
+		t.Errorf("Expected TripId 'T2', got '%s'", *trip.TripId)
 	}
-	if trip.RouteId != "R2" {
-		t.Errorf("Expected RouteId 'R2', got '%s'", trip.RouteId)
+	if *trip.RouteId != "R2" {
+		t.Errorf("Expected RouteId 'R2', got '%s'", *trip.RouteId)
 	}
-	if trip.ServiceId != "S2" {
-		t.Errorf("Expected ServiceId 'S2', got '%s'", trip.ServiceId)
+	if *trip.ServiceId != "S2" {
+		t.Errorf("Expected ServiceId 'S2', got '%s'", *trip.ServiceId)
 	}
 	if trip.TripHeadsign != nil {
 		t.Errorf("Expected TripHeadsign nil, got '%v'", trip.TripHeadsign)

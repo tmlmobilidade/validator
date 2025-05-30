@@ -64,9 +64,9 @@ func ParseTrips(rawTrips map[string]string, row int) types.Trip {
 	}
 
 	// Required fields
-	trip.TripId = tripId
-	trip.RouteId = routeId
-	trip.ServiceId = serviceId
+	trip.TripId = lib.IfThenElse(tripId != "", &tripId, nil)
+	trip.RouteId = lib.IfThenElse(routeId != "", &routeId, nil)
+	trip.ServiceId = lib.IfThenElse(serviceId != "", &serviceId, nil)
 
 	// Optional fields
 	trip.TripHeadsign = lib.IfThenElse(rawTrips["trip_headsign"] != "", &tripHeadsign, nil)

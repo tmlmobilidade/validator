@@ -29,14 +29,14 @@ func RouteIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 		ValidationID: "route_id_validation",
 	}
 
-	if trip.RouteId == "" {
+	if trip.RouteId == nil {
 		message.Message = "Route ID is required"
 		services.AppMessageService.AddMessage(message)
 		return;
 	}
 
 	// Check if route_id is Foreign Key referencing routes.route_id
-	if _, ok := gtfs.IdMap["routes"][trip.RouteId]; !ok {
+	if _, ok := gtfs.IdMap["routes"][*trip.RouteId]; !ok {
 		message.Message = "Route ID must reference a valid route_id from routes.txt."
 		services.AppMessageService.AddMessage(message)
 	}

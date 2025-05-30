@@ -30,7 +30,7 @@ func ServiceIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 		ValidationID: "service_id_validation",
 	}
 
-	if trip.ServiceId == "" {
+	if trip.ServiceId == nil {
 		message.Message = "Service ID is required"
 		services.AppMessageService.AddMessage(message)
 		return;
@@ -38,7 +38,7 @@ func ServiceIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 
 	// Merge calendar and calendar_dates id maps
 	serviceIds := lib.MergeMaps(gtfs.IdMap["calendar"], gtfs.IdMap["calendar_dates"])
-	if _, ok := serviceIds[trip.ServiceId]; !ok {
+	if _, ok := serviceIds[*trip.ServiceId]; !ok {
 		message.Message = "Service ID must reference a valid service_id from calendar.txt or calendar_dates.txt."
 		services.AppMessageService.AddMessage(message)
 	}

@@ -32,12 +32,12 @@ func TripIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 		})
 	}
 	
-	if trip.TripId == "" {
+	if trip.TripId == nil {
 		addMessage("trip_id is required")
 		return
 	}
 	
-	if gtfs.IdMap["trips"] != nil && len(gtfs.IdMap["trips"][trip.TripId]) > 1 {
+	if gtfs.IdMap["trips"] != nil && len(gtfs.IdMap["trips"][*trip.TripId]) > 1 {
 		addMessage("Duplicate trip_id found. Trip IDs must be unique.")
 		return
 	}

@@ -9,7 +9,7 @@ import (
 )
 
 func TestRouteIdValidation_Required(t *testing.T) {
-	trip := &types.Trip{RouteId: ""}
+	trip := &types.Trip{RouteId: nil}
 	gtfs := &types.Gtfs{}
 	validations.RouteIdValidation(trip, 1, gtfs)
 
@@ -26,7 +26,7 @@ func TestRouteIdValidation_Required(t *testing.T) {
 }
 
 func TestRouteIdValidation_ValidForeignKey(t *testing.T) {
-	trip := &types.Trip{RouteId: "route1"}
+	trip := &types.Trip{RouteId: lib.Ptr("route1")}
 	gtfs := &types.Gtfs{IdMap: map[string]map[string][]int{"routes": {"route1": {1}}}}
 	validations.RouteIdValidation(trip, 2, gtfs)
 
@@ -43,7 +43,7 @@ func TestRouteIdValidation_ValidForeignKey(t *testing.T) {
 }
 
 func TestRouteIdValidation_InvalidForeignKey(t *testing.T) {
-	trip := &types.Trip{RouteId: "invalid"}
+	trip := &types.Trip{RouteId: lib.Ptr("invalid")}
 	gtfs := &types.Gtfs{IdMap: map[string]map[string][]int{"routes": {}}}
 	validations.RouteIdValidation(trip, 3, gtfs)
 

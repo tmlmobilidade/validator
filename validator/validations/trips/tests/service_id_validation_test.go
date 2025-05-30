@@ -9,7 +9,7 @@ import (
 )
 
 func TestServiceIdValidation_Required(t *testing.T) {
-	trip := &types.Trip{ServiceId: ""}
+	trip := &types.Trip{ServiceId: nil}
 	gtfs := &types.Gtfs{}
 	validations.ServiceIdValidation(trip, 1, gtfs)
 
@@ -26,7 +26,7 @@ func TestServiceIdValidation_Required(t *testing.T) {
 }
 
 func TestServiceIdValidation_ValidForeignKey(t *testing.T) {
-	trip := &types.Trip{ServiceId: "service1"}
+	trip := &types.Trip{ServiceId: lib.Ptr("service1")}
 	gtfs := &types.Gtfs{IdMap: map[string]map[string][]int{"calendar": {"service1": {1}}, "calendar_dates": {}}}
 	validations.ServiceIdValidation(trip, 2, gtfs)
 
@@ -43,7 +43,7 @@ func TestServiceIdValidation_ValidForeignKey(t *testing.T) {
 }
 
 func TestServiceIdValidation_InvalidForeignKey(t *testing.T) {
-	trip := &types.Trip{ServiceId: "invalid"}
+	trip := &types.Trip{ServiceId: lib.Ptr("invalid")}
 	gtfs := &types.Gtfs{IdMap: map[string]map[string][]int{"calendar": {}, "calendar_dates": {}}}
 	validations.ServiceIdValidation(trip, 3, gtfs)
 

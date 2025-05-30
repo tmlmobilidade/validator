@@ -10,7 +10,7 @@ import (
 
 func TestStopSequenceValidation_ValidInput(t *testing.T) {
 	services.AppMessageService.Clear()
-	trip := &types.Trip{TripId: "T1"}
+	trip := &types.Trip{TripId: lib.Ptr("T1")}
 	gtfs := &types.Gtfs{
 		Files: map[string][]map[string]string{
 			"stop_times": {
@@ -38,7 +38,7 @@ func TestStopSequenceValidation_ValidInput(t *testing.T) {
 
 func TestStopSequenceValidation_NonIncreasingStopSequence(t *testing.T) {
 	services.AppMessageService.Clear()
-	trip := &types.Trip{TripId: "T2"}
+	trip := &types.Trip{TripId: lib.Ptr("T2")}
 	gtfs := &types.Gtfs{
 		Files: map[string][]map[string]string{
 			"stop_times": {
@@ -66,7 +66,7 @@ func TestStopSequenceValidation_NonIncreasingStopSequence(t *testing.T) {
 
 func TestStopSequenceValidation_NonIncreasingShapeDistTraveled(t *testing.T) {
 	services.AppMessageService.Clear()
-	trip := &types.Trip{TripId: "T3"}
+	trip := &types.Trip{TripId: lib.Ptr("T3")}
 	gtfs := &types.Gtfs{
 		Files: map[string][]map[string]string{
 			"stop_times": {
@@ -94,7 +94,7 @@ func TestStopSequenceValidation_NonIncreasingShapeDistTraveled(t *testing.T) {
 
 func TestStopSequenceValidation_InvalidStopSequence(t *testing.T) {
 	services.AppMessageService.Clear()
-	trip := &types.Trip{TripId: "T4"}
+	trip := &types.Trip{TripId: lib.Ptr("T4")}
 	gtfs := &types.Gtfs{
 		Files: map[string][]map[string]string{
 			"stop_times": {
@@ -121,7 +121,7 @@ func TestStopSequenceValidation_InvalidStopSequence(t *testing.T) {
 
 func TestStopSequenceValidation_InvalidShapeDistTraveled(t *testing.T) {
 	services.AppMessageService.Clear()
-	trip := &types.Trip{TripId: "T5"}
+	trip := &types.Trip{TripId: lib.Ptr("T5")}
 	gtfs := &types.Gtfs{
 		Files: map[string][]map[string]string{
 			"stop_times": {
@@ -149,7 +149,7 @@ func TestStopSequenceValidation_InvalidShapeDistTraveled(t *testing.T) {
 func TestStopSequenceValidation_ValidInput_NoShapeDistTraveled(t *testing.T) {
 	services.AppMessageService.Clear()
 	
-	trip := &types.Trip{TripId: "T6"}
+	trip := &types.Trip{TripId: lib.Ptr("T6")}
 	gtfs := &types.Gtfs{
 		Files: map[string][]map[string]string{
 			"stop_times": {

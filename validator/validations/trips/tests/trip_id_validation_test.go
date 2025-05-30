@@ -9,7 +9,7 @@ import (
 )
 
 func TestTripIdValidation_Required(t *testing.T) {
-	trip := &types.Trip{TripId: ""}
+	trip := &types.Trip{TripId: nil}
 	gtfs := &types.Gtfs{Files: map[string][]map[string]string{"trips": {{}, {}}}} // >1 trip
 	validations.TripIdValidation(trip, 1, gtfs)
 
@@ -27,7 +27,7 @@ func TestTripIdValidation_Required(t *testing.T) {
 
 func TestTripIdValidation_Unique(t *testing.T) {
 	
-	trip := &types.Trip{TripId: "unique"}
+	trip := &types.Trip{TripId: lib.Ptr("unique")}
 	gtfs := &types.Gtfs{IdMap: map[string]map[string][]int{"trips": {"unique": {1}}}}
 
 	validations.TripIdValidation(trip, 2, gtfs)
@@ -45,7 +45,7 @@ func TestTripIdValidation_Unique(t *testing.T) {
 }
 
 func TestTripIdValidation_Duplicate(t *testing.T) {
-	trip := &types.Trip{TripId: "duplicate"}
+	trip := &types.Trip{TripId: lib.Ptr("duplicate")}
 	gtfs := &types.Gtfs{IdMap: map[string]map[string][]int{"trips": {"duplicate": {1, 2}}}}
 	validations.TripIdValidation(trip, 3, gtfs)
 

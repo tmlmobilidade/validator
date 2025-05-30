@@ -10,7 +10,7 @@ import (
 
 func TestShapeIdValidation_Required(t *testing.T) {
 	severity := types.SEVERITY_ERROR
-	trip := &types.Trip{RouteId: "route1", TripId: "trip1", ShapeId: nil}
+	trip := &types.Trip{RouteId: lib.Ptr("route1"), TripId: lib.Ptr("trip1"), ShapeId: nil}
 	gtfs := &types.Gtfs{
 		Files: map[string][]map[string]string{
 			"routes": {{"continuous_pickup": "1"}},
@@ -37,7 +37,7 @@ func TestShapeIdValidation_Required(t *testing.T) {
 func TestShapeIdValidation_Recommended(t *testing.T) {
 	severity := types.SEVERITY_WARNING
 	shape := "shape1"
-	trip := &types.Trip{RouteId: "route1", TripId: "trip1", ShapeId: &shape}
+	trip := &types.Trip{RouteId: lib.Ptr("route1"), TripId: lib.Ptr("trip1"), ShapeId: &shape}
 	gtfs := &types.Gtfs{}
 	validations.ShapeIdValidation(&severity, trip, 2, gtfs)
 
@@ -55,7 +55,7 @@ func TestShapeIdValidation_Recommended(t *testing.T) {
 
 func TestShapeIdValidation_Ignore(t *testing.T) {
 	severity := types.SEVERITY_IGNORE
-	trip := &types.Trip{RouteId: "route1", TripId: "trip1", ShapeId: nil}
+	trip := &types.Trip{RouteId: lib.Ptr("route1"), TripId: lib.Ptr("trip1"), ShapeId: nil}
 	gtfs := &types.Gtfs{}
 	validations.ShapeIdValidation(&severity, trip, 3, gtfs)
 
