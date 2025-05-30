@@ -19,7 +19,7 @@ func NewFileValidation(severity *types.Severity) *FileValidation {
 		Validation: &types.Validation{
 			ID:          "file_validation",
 			Description: "Validate file data",
-			Severity:    s,
+			Severity:    &s,
 		},
 	}
 }
@@ -41,7 +41,7 @@ func (v *FileValidation) newMessage(file, msg string) types.Message {
 		FileName:     file,
 		Message:      msg,
 		ValidationID: v.ID,
-		Severity:     v.Severity,
+		Severity:     v.GetSeverity(),
 	}
 }
 
