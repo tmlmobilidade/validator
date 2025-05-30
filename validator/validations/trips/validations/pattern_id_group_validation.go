@@ -30,16 +30,17 @@ func PatternIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, 
 		})
 	}
 
-	for patternId, trips := range tripsGroupedByPattern {
-		if len(trips) == 0 {
+	var hash string = ""
+	for patternId, group := range tripsGroupedByPattern {
+		if len(group.Trips) == 0 {
 			panic("trips is empty")
 		}
 
-		routeId := trips[0].RouteId
-		directionId := trips[0].DirectionId
-		shapeId := trips[0].ShapeId
+		routeId := group.Trips[0].RouteId
+		directionId := group.Trips[0].DirectionId
+		shapeId := group.Trips[0].ShapeId
 
-		for _, trip := range trips {
+		for _, trip := range group.Trips {
 			//check if route_id is the same
 			if *trip.RouteId != *routeId {
 				addMessage(fmt.Sprintf("For pattern_id %s, route_id %s is not the same as %s found in row %d", patternId, *trip.RouteId, *routeId, trip.Row), trip.Row, types.SEVERITY_ERROR)
@@ -55,6 +56,15 @@ func PatternIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, 
 			//check if shape_id is the same
 			if *trip.ShapeId != *shapeId {
 				addMessage(fmt.Sprintf("For pattern_id %s, shape_id %v is not the same as %v found in row %d", patternId, *trip.ShapeId, *shapeId, trip.Row), trip.Row, types.SEVERITY_ERROR)
+				continue
+			}
+		}
+		
+		if hash == "" {
+			hash = group.Hash
+		} else {
+			if hash != group.Hash {
+				addMessage(fmt.Sprintf("For pattern_id %s, there are trips with multiple stop sequence variations", patternId), group.Trips[0].Row, types.SEVERITY_ERROR)
 				continue
 			}
 		}

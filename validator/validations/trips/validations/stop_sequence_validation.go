@@ -28,7 +28,7 @@ Travel within the same location group or GeoJSON location requires two records i
 
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
-func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
+func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs) (stopSequenceHash string){
 	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
 			Field:        "stop_sequence",
@@ -45,12 +45,8 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 	}
 
 	// Check each trip's stop times for pickup/dropoff windows
-	type StopSequence struct {
-		sequence int
-		dist float64
-	}
 
-	stopSequences := make([]StopSequence, 0)
+	stopSequences := make([]types.StopTime, 0)
 
 	stopTimes := gtfs.IdMap["stop_times"][*trip.TripId]
 	for _, row := range stopTimes {
@@ -70,31 +66,36 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 			}
 		}
 
-		stopSequences = append(stopSequences, StopSequence{
-			sequence: stopSequence,
-			dist: shapeDistTraveled,
+		stopId := gtfs.Files["stop_times"][row]["stop_id"]
+
+		stopSequences = append(stopSequences, types.StopTime{
+			StopSequence: &stopSequence,
+			ShapeDistTraveled: &shapeDistTraveled,
+			StopId: &stopId,
 		})
 	}
 
 	stopSequences = lib.RemoveDuplicates(stopSequences)
 	sort.Slice(stopSequences, func(i, j int) bool {
-		return stopSequences[i].sequence < stopSequences[j].sequence
+		return *stopSequences[i].StopSequence < *stopSequences[j].StopSequence
 	})
 	
 	for i, stopSequence := range stopSequences {
 		if i > 0 {
-			if stopSequence.sequence <= stopSequences[i-1].sequence {
+			if *stopSequence.StopSequence <= *stopSequences[i-1].StopSequence {
 				addMessage("stop_sequence values must increase along the trip ('"+ *trip.TripId + "')", types.SEVERITY_ERROR)
 				return
 			}
 			
-			if stopSequence.dist >= 0 && stopSequences[i-1].dist >= 0 {
-				if stopSequence.dist < stopSequences[i-1].dist {
+			if *stopSequence.ShapeDistTraveled >= 0 && *stopSequences[i-1].ShapeDistTraveled >= 0 {
+				if *stopSequence.ShapeDistTraveled < *stopSequences[i-1].ShapeDistTraveled {
 					addMessage("shape_dist_traveled values must increase along the trip ('"+ *trip.TripId + "')", types.SEVERITY_ERROR)
 					return
 				}
 			}
 		}
 	}
-	
+
+	stopSequenceHash = lib.Hash(stopSequences)
+	return
 } 

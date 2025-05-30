@@ -121,7 +121,10 @@ type Trip struct {
 	Row int
 }
 
-type TripGroupedByPattern map[string][]Trip
+type TripGroupedByPattern map[string]struct {
+	Trips []Trip
+	Hash string
+}
 
 /* STOP TIME */
 type StopTime struct {
