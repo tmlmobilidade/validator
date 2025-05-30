@@ -36,8 +36,7 @@ func TestShapeIdValidation_Required(t *testing.T) {
 
 func TestShapeIdValidation_Recommended(t *testing.T) {
 	severity := types.SEVERITY_WARNING
-	shape := "shape1"
-	trip := &types.Trip{RouteId: lib.Ptr("route1"), TripId: lib.Ptr("trip1"), ShapeId: &shape}
+	trip := &types.Trip{RouteId: lib.Ptr("route1"), TripId: lib.Ptr("trip1"), ShapeId: nil}
 	gtfs := &types.Gtfs{}
 	validations.ShapeIdValidation(&severity, trip, 2, gtfs)
 
@@ -77,12 +76,7 @@ func TestShapeIdValidation_DoesNotExist(t *testing.T) {
 	severity := types.SEVERITY_ERROR
 	trip := &types.Trip{RouteId: lib.Ptr("route1"), TripId: lib.Ptr("trip1"), ShapeId: lib.Ptr("shape1")}
 	gtfs := &types.Gtfs{
-		Files: map[string][]map[string]string{
-			"shapes": {{"shape_id": "shape1"}},
-		},
-		IdMap: map[string]map[string][]int{
-			"shapes": {"shape1": {0}},
-		},
+		IdMap: map[string]map[string][]int{},
 	}
 	validations.ShapeIdValidation(&severity, trip, 4, gtfs)
 
