@@ -1,6 +1,7 @@
 package trips
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -70,5 +71,11 @@ func ShapeIdValidation(severity *types.Severity, trip *types.Trip, row int, gtfs
 		return
 	}
 	
-	
+	// Check if the shape_id exists in the shapes.txt file
+	if trip.ShapeId != nil && gtfs.IdMap["shapes"] != nil && len(gtfs.IdMap["shapes"][*trip.ShapeId]) == 0 {
+		message.Message = fmt.Sprintf("shape_id %s does not exist in the shapes.txt file", *trip.ShapeId)
+		message.Severity = types.SEVERITY_ERROR
+		services.AppMessageService.AddMessage(message)
+		return
+	}
 }

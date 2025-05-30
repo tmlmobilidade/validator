@@ -9,6 +9,8 @@ import (
 func RunValidations(gtfs types.Gtfs) {
 	lib.AppLogger.Debug("Running Trips Validations...")
 
+	var tripsGroupedByPattern types.TripGroupedByPattern = make(types.TripGroupedByPattern)
+
 	for i, rawTrips := range gtfs.Files["trips"] {
 		trip := validations.ParseTrips(rawTrips, i)
 
@@ -47,6 +49,19 @@ func RunValidations(gtfs types.Gtfs) {
 		validations.BikesAllowedValidation(nil, &trip, i, &gtfs)
 
 		// Validate stop_times.stop_sequence
-		validations.StopSequenceValidation(&trip, i, &gtfs)
+		groupHash := validations.StopSequenceValidation(&trip, i, &gtfs)
+
+		
+		// CMET SPECIFIC VALIDATIONS
+		hasPatternId := validations.PatternIdValidation(lib.Ptr(types.SEVERITY_ERROR), &trip, i, &gtfs)
+		if hasPatternId {
+			tripsGroupedByPattern[*trip.PatternId] = struct {
+				Trips []types.Trip
+				Hash string
+			}{Trips: append([]types.Trip{trip}, trip), Hash: groupHash}
+		}
 	}
+
+	//Validate pattern_id_group
+	validations.PatternIdGroupValidation(tripsGroupedByPattern, &gtfs)
 }

@@ -1,6 +1,8 @@
 package lib
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"maps"
@@ -206,3 +208,13 @@ func RemoveDuplicates[T any](slice []T) []T {
 //	@param t T - The value to return a pointer to
 //	@return *T - The pointer to the value
 func Ptr[T any](t T) *T { return &t }
+
+// Returns a hash of the value
+//
+//	@param t T - The value to return a hash of
+//	@return string - The hash of the value
+func Hash(t any) string {
+	hash := sha256.New()
+	hash.Write([]byte(fmt.Sprintf("%v", t)))
+	return hex.EncodeToString(hash.Sum(nil))
+}

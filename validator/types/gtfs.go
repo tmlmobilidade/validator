@@ -118,6 +118,12 @@ type Trip struct {
 	TripId               *string  `json:"trip_id"`
 	TripShortName        *string `json:"trip_short_name"`
 	WheelchairAccessible *int `json:"wheelchair_accessible"`
+	Row int
+}
+
+type TripGroupedByPattern map[string]struct {
+	Trips []Trip
+	Hash string
 }
 
 /* STOP TIME */

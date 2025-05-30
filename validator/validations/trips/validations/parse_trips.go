@@ -9,7 +9,7 @@ import (
 func ParseTrips(rawTrips map[string]string, row int) types.Trip {
 	var (
 		trip                                           types.Trip = types.Trip{}
-		tripId, routeId, serviceId                     string
+		tripId, routeId, serviceId, patternId          string
 		tripHeadsign, tripShortName, blockId, shapeId  string
 		directionId, wheelchairAccessible, bikesAllowed int
 		messages                                       []types.Message
@@ -23,6 +23,7 @@ func ParseTrips(rawTrips map[string]string, row int) types.Trip {
 		"trip_short_name": &tripShortName,
 		"block_id":        &blockId,
 		"shape_id":        &shapeId,
+		"pattern_id":      &patternId,
 	}
 
 	intFields := map[string]*int{
@@ -64,6 +65,7 @@ func ParseTrips(rawTrips map[string]string, row int) types.Trip {
 	}
 
 	// Required fields
+	trip.Row = row
 	trip.TripId = lib.IfThenElse(tripId != "", &tripId, nil)
 	trip.RouteId = lib.IfThenElse(routeId != "", &routeId, nil)
 	trip.ServiceId = lib.IfThenElse(serviceId != "", &serviceId, nil)
@@ -76,6 +78,7 @@ func ParseTrips(rawTrips map[string]string, row int) types.Trip {
 	trip.DirectionId = lib.IfThenElse(rawTrips["direction_id"] != "", &directionId, nil)
 	trip.WheelchairAccessible = lib.IfThenElse(rawTrips["wheelchair_accessible"] != "", &wheelchairAccessible, nil)
 	trip.BikesAllowed = lib.IfThenElse(rawTrips["bikes_allowed"] != "", &bikesAllowed, nil)
+	trip.PatternId = lib.IfThenElse(rawTrips["pattern_id"] != "", &patternId, nil)
 
 	return trip
 }

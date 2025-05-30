@@ -70,3 +70,29 @@ func TestShapeIdValidation_Ignore(t *testing.T) {
 	}
 	services.AppMessageService.Clear()
 } 
+
+func TestShapeIdValidation_DoesNotExist(t *testing.T) {
+	services.AppMessageService.Clear()
+	
+	severity := types.SEVERITY_ERROR
+	trip := &types.Trip{RouteId: lib.Ptr("route1"), TripId: lib.Ptr("trip1"), ShapeId: lib.Ptr("shape1")}
+	gtfs := &types.Gtfs{
+		Files: map[string][]map[string]string{
+			"shapes": {{"shape_id": "shape1"}},
+		},
+		IdMap: map[string]map[string][]int{
+			"shapes": {"shape1": {0}},
+		},
+	}
+	validations.ShapeIdValidation(&severity, trip, 4, gtfs)
+
+	assertion := lib.AssertionMessage{
+		Expected: 1,
+		Actual: services.AppMessageService.GetSummary().TotalErrors,
+		Message: "shape_id does not exist in the shapes.txt file",
+	}
+
+	if assert := lib.Assert(assertion); assert != "" {
+		t.Error(assert)
+	}
+}

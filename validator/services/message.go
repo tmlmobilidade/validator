@@ -38,7 +38,7 @@ func (ms *MessageService) AddMessage(message types.Message) {
 	}
 
 	for i, m := range ms.messages {
-		if m.ValidationID == message.ValidationID && m.Field == message.Field && m.FileName == message.FileName {
+		if m.Message == message.Message {
 			// Only keep up to 100 rows, keeping the latest row
 			newRows := append(m.Rows, message.Rows...)
 			if len(newRows) > 100 {
@@ -58,8 +58,6 @@ func (ms *MessageService) AddMessage(message types.Message) {
 		ms.errorCount++
 	case types.SEVERITY_WARNING:
 		ms.warningCount++
-	case types.SEVERITY_INFO:
-		ms.infoCount++
 	}
 }
 
