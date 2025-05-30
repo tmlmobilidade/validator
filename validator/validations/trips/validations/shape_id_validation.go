@@ -1,7 +1,6 @@
 package trips
 
 import (
-	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -30,12 +29,15 @@ func ShapeIdValidation(severity *types.Severity, trip *types.Trip, row int, gtfs
 		s = *severity
 	}
 
-	message := types.Message{
-		Field: "shape_id",
-		FileName: "trips.txt",
-		Rows: []int{row},
-		Severity: s,
-		ValidationID: "shape_id_validation",
+	addMessage := func(message string, severity types.Severity) {
+		services.AppMessageService.AddMessage(types.Message{
+			Field: "shape_id",
+			FileName: "trips.txt",
+			Rows: []int{row},
+			Severity: severity,
+			Message: message,
+			ValidationID: "shape_id_validation",
+		})
 	}
 
 	hasContinuousPickupDropoff := false
@@ -58,24 +60,23 @@ func ShapeIdValidation(severity *types.Severity, trip *types.Trip, row int, gtfs
 	}
 
 	if hasContinuousPickupDropoff && trip.ShapeId == nil {
-		message.Message = "shape_id is required when a continuous pickup or drop-off behavior is defined either in routes.txt or in stop_times.txt."
-		message.Severity = types.SEVERITY_ERROR
-
-		services.AppMessageService.AddMessage(message)
+		addMessage("shape_id is required when a continuous pickup or drop-off behavior is defined either in routes.txt or in stop_times.txt.", types.SEVERITY_ERROR)
 		return
 	}
 
-	if trip.ShapeId != nil && s != types.SEVERITY_IGNORE {
-		message.Message = lib.IfThenElse(s == types.SEVERITY_ERROR, "shape_id is required", "shape_id is recommended")
-		services.AppMessageService.AddMessage(message)
+	if trip.ShapeId == nil {
+		if s == types.SEVERITY_IGNORE {
+			return
+		}
+
+		message := lib.IfThenElse(s == types.SEVERITY_ERROR, "shape_id is required", "shape_id is recommended")
+		addMessage(message, s)
 		return
-	}
-	
-	// Check if the shape_id exists in the shapes.txt file
-	if trip.ShapeId != nil && gtfs.IdMap["shapes"] != nil && len(gtfs.IdMap["shapes"][*trip.ShapeId]) == 0 {
-		message.Message = fmt.Sprintf("shape_id %s does not exist in the shapes.txt file", *trip.ShapeId)
-		message.Severity = types.SEVERITY_ERROR
-		services.AppMessageService.AddMessage(message)
+	}	
+
+	// Check Foreign Key
+	if !lib.GtfsIdMapKeyExists(gtfs, "shapes", *trip.ShapeId) {
+		addMessage("shape_id '"+ *trip.ShapeId + "' does not exist in shapes.txt", types.SEVERITY_ERROR)
 		return
 	}
 }
