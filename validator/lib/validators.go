@@ -2,6 +2,7 @@ package lib
 
 import (
 	"fmt"
+	"main/types"
 	"net/mail"
 	"net/url"
 	"regexp"
@@ -125,4 +126,19 @@ func ValidateTime(t string) string {
 	}
 
 	return ""
+}
+
+// KeyExists checks if a given key exists in a map.
+func GtfsIdMapKeyExists(gtfs *types.Gtfs, fileName string, key string) bool {
+	if gtfs.IdMap == nil {
+		return false
+	}
+
+	rows, ok := gtfs.IdMap[fileName]
+	if !ok || rows == nil {
+		return false
+	}
+
+	_, ok = rows[key]
+	return ok && len(rows[key]) > 0
 }

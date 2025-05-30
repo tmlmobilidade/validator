@@ -1,6 +1,7 @@
 package trips
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -47,6 +48,7 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs) (stopSe
 	// Check each trip's stop times for pickup/dropoff windows
 
 	stopSequences := make([]types.StopTime, 0)
+	hash := ""
 
 	stopTimes := gtfs.IdMap["stop_times"][*trip.TripId]
 	for _, row := range stopTimes {
@@ -73,6 +75,8 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs) (stopSe
 			ShapeDistTraveled: &shapeDistTraveled,
 			StopId: &stopId,
 		})
+
+		hash += fmt.Sprintf("%s-%v-%v", stopId, shapeDistTraveled, stopSequence)
 	}
 
 	stopSequences = lib.RemoveDuplicates(stopSequences)
@@ -96,6 +100,6 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs) (stopSe
 		}
 	}
 
-	stopSequenceHash = lib.Hash(stopSequences)
+	stopSequenceHash = lib.Hash(hash)
 	return
 } 

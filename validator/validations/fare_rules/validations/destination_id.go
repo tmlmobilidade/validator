@@ -58,8 +58,9 @@ func DestinationIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs
 		return
 	}
 
-	if _, ok := gtfs.IdMap["stops"][*fareRule.DestinationId]; !ok {
-		addMessage("Destination ID does not exist in stops.txt", types.SEVERITY_ERROR)
+	// Check Foreign Key
+	if !lib.GtfsIdMapKeyExists(gtfs, "stops", *fareRule.DestinationId) {
+		addMessage("destination_id '"+ *fareRule.DestinationId + "' does not exist in stops.txt", types.SEVERITY_ERROR)
 		return
 	}
 } 

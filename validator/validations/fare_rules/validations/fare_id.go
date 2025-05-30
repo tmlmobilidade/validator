@@ -1,6 +1,7 @@
 package fare_rules
 
 import (
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -38,8 +39,9 @@ func FareIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs) {
 		return
 	}
 
-	if _, ok := gtfs.IdMap["fare_attributes"][*fareRule.FareId]; !ok {
-		addMessage("Fare ID does not exist in fare_attributes.txt")
+	// Check Foreign Key
+	if !lib.GtfsIdMapKeyExists(gtfs, "fare_attributes", *fareRule.FareId) {
+		addMessage("fare_id '"+ *fareRule.FareId + "' does not exist in fare_attributes.txt")
 		return
 	}
 }

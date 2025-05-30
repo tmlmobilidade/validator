@@ -209,12 +209,10 @@ func RemoveDuplicates[T any](slice []T) []T {
 //	@return *T - The pointer to the value
 func Ptr[T any](t T) *T { return &t }
 
-// Returns a hash of the value
+// Returns a hash of the values of a map
 //
-//	@param t T - The value to return a hash of
-//	@return string - The hash of the value
-func Hash(t any) string {
-	hash := sha256.New()
-	hash.Write([]byte(fmt.Sprintf("%v", t)))
-	return hex.EncodeToString(hash.Sum(nil))
+//	@param m map[string]any - The map to hash
+//	@return string - The hash of the values of the map
+func Hash(str string) string {
+	return hex.EncodeToString(sha256.New().Sum([]byte(str)))
 }

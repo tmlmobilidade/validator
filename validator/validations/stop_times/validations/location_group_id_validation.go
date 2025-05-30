@@ -1,6 +1,7 @@
 package stop_times
 
 import (
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -47,14 +48,9 @@ func LocationGroupIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gt
 
 	// If location_group_id is present, check foreign key
 	if stopTime.LocationGroupId != nil && *stopTime.LocationGroupId != "" {
-		locationGroupsMap, ok := gtfs.IdMap["location_groups"]
-		if !ok || locationGroupsMap == nil {
-			addMessage("location_groups.txt is missing or not indexed.", types.SEVERITY_ERROR)
-			return
-		}
-		rows, ok := locationGroupsMap[*stopTime.LocationGroupId]
-		if !ok || len(rows) == 0 {
-			addMessage("location_group_id must reference a valid location_group_id from location_groups.txt.", types.SEVERITY_ERROR)
+		// Check Foreign Key
+		if !lib.GtfsIdMapKeyExists(gtfs, "location_groups", *stopTime.LocationGroupId) {
+			addMessage("location_group_id '"+ *stopTime.LocationGroupId + "' does not exist in location_groups.txt", types.SEVERITY_ERROR)
 			return
 		}
 	}

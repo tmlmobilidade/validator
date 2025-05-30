@@ -85,4 +85,4 @@ func TestAgencyEmailValidation_InvalidEmail(t *testing.T) {
 	}
 
 	services.AppMessageService.Clear()
-} 
+}

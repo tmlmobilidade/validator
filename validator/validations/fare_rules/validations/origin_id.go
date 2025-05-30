@@ -58,8 +58,9 @@ func OriginIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, sev
 		return
 	}
 
-	if _, ok := gtfs.IdMap["stops"][*fareRule.OriginId]; !ok {
-		addMessage("Origin ID does not exist in stops.txt", types.SEVERITY_ERROR)
+	// Check Foreign Key
+	if !lib.GtfsIdMapKeyExists(gtfs, "stops", *fareRule.OriginId) {
+		addMessage("origin_id '"+ *fareRule.OriginId + "' does not exist in stops.txt", types.SEVERITY_ERROR)
 		return
 	}
 } 

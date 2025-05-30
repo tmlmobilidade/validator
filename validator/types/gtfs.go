@@ -123,7 +123,7 @@ type Trip struct {
 
 type TripGroupedByPattern map[string]struct {
 	Trips []Trip
-	Hash string
+	Hash []string
 }
 
 /* STOP TIME */

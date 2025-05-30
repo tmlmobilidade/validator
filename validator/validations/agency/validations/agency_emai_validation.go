@@ -7,6 +7,14 @@ import (
 )
 
 /*
+$validation
+id: agency.agency_email_validation
+severity_options: [error, warning, ignore]
+description: Validates if the agency email is present and valid.
+name: Agency Email Validation
+*/
+
+/*
 # Attributes
 
 	- File: [agency.txt]
@@ -27,29 +35,44 @@ func AgencyEmailValidation(severity *types.Severity, agency *types.Agency, row i
 		s = *severity
 	}
 
-	// Check if agency_phone is required
-	if agency.AgencyEmail == nil && s != types.SEVERITY_IGNORE {
+	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
 			Field: "agency_email",
 			FileName: "agency.txt",
-			Message: lib.IfThenElse(s == types.SEVERITY_ERROR, "Agency email is required", "Agency email is recommended"),
+			Message: msg,
 			Rows: []int{row},
-			Severity: s,
-			ValidationID: "agency_email_validation",
+			Severity: severity,
+			ValidationID: "agency.agency_email_validation",
 		})
 	}
 
-	// Check if agency_phone is valid
-	if agency.AgencyEmail != nil {
-		if emailErrors := lib.ValidateEmail(*agency.AgencyEmail); emailErrors != "" {
-			services.AppMessageService.AddMessage(types.Message{
-				Field: "agency_email",
-				FileName: "agency.txt",
-				Message: emailErrors,
-				Rows: []int{row},
-				Severity: types.SEVERITY_ERROR,
-				ValidationID: "agency_email_validation",
-			})
+	// Check if agency_email is required
+	if agency.AgencyEmail == nil {
+		if s == types.SEVERITY_IGNORE {
+			return
 		}
+
+		message := lib.IfThenElse(s == types.SEVERITY_ERROR, "Agency email is required", "Agency email is recommended")
+		addMessage(message, s)
 	}
+
+	// Check if agency_email is valid
+	if emailErrors := lib.ValidateEmail(*agency.AgencyEmail); emailErrors != "" {
+		addMessage(emailErrors, types.SEVERITY_ERROR)
+	}
+}
+
+func AgencyEmailValidationSettings() *types.Validation {
+	return types.CreateValidation(
+			"agency.agency_email_validation", 
+			"Agency Email Validation", 
+			"Validates if the agency email is present and valid.",
+			"agency_email",
+			"agency.txt",
+			[]types.Severity{
+				types.SEVERITY_ERROR,
+				types.SEVERITY_WARNING,
+				types.SEVERITY_IGNORE,
+			},
+		)
 }

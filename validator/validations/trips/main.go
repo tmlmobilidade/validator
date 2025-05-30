@@ -4,6 +4,7 @@ import (
 	"main/lib"
 	"main/types"
 	validations "main/validations/trips/validations"
+	"slices"
 )
 
 func RunValidations(gtfs types.Gtfs) {
@@ -50,15 +51,18 @@ func RunValidations(gtfs types.Gtfs) {
 
 		// Validate stop_times.stop_sequence
 		groupHash := validations.StopSequenceValidation(&trip, i, &gtfs)
-
 		
 		// CMET SPECIFIC VALIDATIONS
 		hasPatternId := validations.PatternIdValidation(lib.Ptr(types.SEVERITY_ERROR), &trip, i, &gtfs)
 		if hasPatternId {
-			tripsGroupedByPattern[*trip.PatternId] = struct {
-				Trips []types.Trip
-				Hash string
-			}{Trips: append([]types.Trip{trip}, trip), Hash: groupHash}
+			group := tripsGroupedByPattern[*trip.PatternId]
+			group.Trips = append(group.Trips, trip)
+			
+			if !slices.Contains(group.Hash, groupHash) {
+				group.Hash = append(group.Hash, groupHash)
+			}
+			
+			tripsGroupedByPattern[*trip.PatternId] = group
 		}
 	}
 

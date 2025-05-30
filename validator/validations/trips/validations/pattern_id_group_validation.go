@@ -30,7 +30,6 @@ func PatternIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, 
 		})
 	}
 
-	var hash string = ""
 	for patternId, group := range tripsGroupedByPattern {
 		if len(group.Trips) == 0 {
 			panic("trips is empty")
@@ -59,14 +58,9 @@ func PatternIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, 
 				continue
 			}
 		}
-		
-		if hash == "" {
-			hash = group.Hash
-		} else {
-			if hash != group.Hash {
-				addMessage(fmt.Sprintf("For pattern_id %s, there are trips with multiple stop sequence variations", patternId), group.Trips[0].Row, types.SEVERITY_ERROR)
-				continue
-			}
+
+		if len(group.Hash) > 1 {
+			addMessage(fmt.Sprintf("For pattern_id %s, there are trips with multiple stop sequence variations", patternId), group.Trips[0].Row, types.SEVERITY_ERROR)
 		}
 	}
 	
