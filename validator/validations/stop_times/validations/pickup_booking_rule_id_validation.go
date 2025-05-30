@@ -49,16 +49,8 @@ func PickupBookingRuleIdValidation(severity *types.Severity, stopTime *types.Sto
 	}
 
 	// Foreign key check: must reference a valid booking_rule_id from booking_rules.txt
-	if gtfs.IdMap != nil {
-		bookingRulesMap, ok := gtfs.IdMap["booking_rules"]
-		if !ok || bookingRulesMap == nil {
-			addMessage("booking_rules.txt is missing or not indexed.", types.SEVERITY_ERROR)
-			return
-		}
-		rows, ok := bookingRulesMap[*stopTime.PickupBookingRuleId]
-		if !ok || len(rows) == 0 {
-			addMessage("pickup_booking_rule_id must reference a valid booking_rule_id from booking_rules.txt.", types.SEVERITY_ERROR)
-			return
-		}
+	if !lib.GtfsIdMapKeyExists(gtfs, "booking_rules", *stopTime.PickupBookingRuleId) {
+		addMessage("pickup_booking_rule_id '"+ *stopTime.PickupBookingRuleId + "' does not exist in booking_rules.txt", types.SEVERITY_ERROR)
+		return
 	}
 } 

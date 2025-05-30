@@ -1,6 +1,7 @@
 package fare_rules
 
 import (
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -46,8 +47,9 @@ func RouteIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs) {
 		})
 	}
 
-	if _, ok := gtfs.IdMap["routes"][*fareRule.RouteId]; !ok {
-		addMessage("Route ID does not exist in routes.txt")
+	// Check Foreign Key
+	if !lib.GtfsIdMapKeyExists(gtfs, "routes", *fareRule.RouteId) {
+		addMessage("route_id '"+ *fareRule.RouteId + "' does not exist in routes.txt")
 		return
 	}
 } 

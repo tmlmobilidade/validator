@@ -47,8 +47,9 @@ func LevelIdValidation(severity *types.Severity, stop *types.Stop, row int, gtfs
 		return
 	}
 
-	levelIds := gtfs.IdMap["levels"][*stop.LevelId]
-	if len(levelIds) != 1 {
-		addMessage("level_id must reference a valid level_id", types.SEVERITY_ERROR)
+	// Check Foreign Key
+	if !lib.GtfsIdMapKeyExists(&gtfs, "levels", *stop.LevelId) {
+		addMessage("level_id '"+ *stop.LevelId + "' does not exist in levels.txt", types.SEVERITY_ERROR)
+		return
 	}
 }

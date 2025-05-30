@@ -45,7 +45,8 @@ func AgencyIdValidation(severity *types.Severity, route *types.Route, row int, g
 	
 	// Check if agency_id exists and is valid
 	if route.AgencyId != nil && *route.AgencyId != "" {
-		if _, ok := gtfs.IdMap["agency"][*route.AgencyId]; !ok {
+		// Check Foreign Key
+		if !lib.GtfsIdMapKeyExists(&gtfs, "agency", *route.AgencyId) {
 			addMessage("agency_id '" + *route.AgencyId + "' is not a valid agency_id from agency.txt.", types.SEVERITY_ERROR)
 			return
 		}

@@ -84,9 +84,8 @@ func ParentStationValidation(severity *types.Severity, stop *types.Stop, row int
 	}
 
 	// Validate Foreign Key
-	stopIds := gtfs.IdMap["stops"][*stop.ParentStation]
-	if len(stopIds) != 1 {
-		addMessage("parent_station must reference a valid stop_id", types.SEVERITY_ERROR)
+	if !lib.GtfsIdMapKeyExists(&gtfs, "stops", *stop.ParentStation) {
+		addMessage("parent_station '"+ *stop.ParentStation + "' does not exist in stops.txt", types.SEVERITY_ERROR)
 		return
 	}
 }

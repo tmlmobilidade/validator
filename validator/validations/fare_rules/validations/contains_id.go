@@ -52,7 +52,6 @@ func ContainsIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, s
 	}
 
 	if fareRule.ContainsId == nil {
-		
 		if s == types.SEVERITY_IGNORE {
 			return
 		}
@@ -62,8 +61,9 @@ func ContainsIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, s
 		return
 	}
 
-	if _, ok := gtfs.IdMap["stops"][*fareRule.ContainsId]; !ok {
-		addMessage("Contains ID does not exist in stops.txt", types.SEVERITY_ERROR)
+	// Check Foreign Key
+	if !lib.GtfsIdMapKeyExists(gtfs, "stops", *fareRule.ContainsId) {
+		addMessage("contains_id '"+ *fareRule.ContainsId + "' does not exist in stops.txt", types.SEVERITY_ERROR)
 		return
 	}
 } 
