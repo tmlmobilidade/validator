@@ -129,7 +129,7 @@ func TestParseStopTimes_InvalidInts(t *testing.T) {
 	validations.ParseStopTimes(raw, 1)
 	
 	assertion := lib.AssertionMessage{
-		Expected: 1,
+		Expected: 6,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,
 		Message: "Invalid ints should error",
 	}
