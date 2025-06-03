@@ -54,10 +54,12 @@ func AgencyEmailValidation(severity *types.Severity, agency *types.Agency, row i
 
 		message := lib.IfThenElse(s == types.SEVERITY_ERROR, "Agency email is required", "Agency email is recommended")
 		addMessage(message, s)
+		return
 	}
 
 	// Check if agency_email is valid
 	if emailErrors := lib.ValidateEmail(*agency.AgencyEmail); emailErrors != "" {
 		addMessage(emailErrors, types.SEVERITY_ERROR)
+		return
 	}
 }
