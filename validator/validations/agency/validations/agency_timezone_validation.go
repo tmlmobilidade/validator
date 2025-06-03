@@ -22,30 +22,25 @@ If multiple agencies are specified in the dataset, each must have the same 'agen
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
 func AgencyTimezoneValidation(agency *types.Agency, row int) {
-	s := types.SEVERITY_ERROR
-
-	// Check if agency_timezone is required
-	if agency.AgencyTimezone == nil {
+	addMessage := func(message string) {
 		services.AppMessageService.AddMessage(types.Message{
 			Field: "agency_timezone",
 			FileName: "agency.txt",
-			Message: "Agency timezone is required",
+			Message: message,
 			Rows: []int{row},
-			Severity: s,
+			Severity: types.SEVERITY_ERROR,
 			ValidationID: "agency_timezone_validation",
 		})
 	}
 
-	// Check if agency_timezone is valid
+	if agency.AgencyTimezone == nil {
+		addMessage("Agency timezone is required")
+		return
+	}
+
 	err := lib.ValidateTimezone(*agency.AgencyTimezone)
 	if err != "" {
-		services.AppMessageService.AddMessage(types.Message{
-			Field: "agency_timezone",
-			FileName: "agency.txt",
-			Message: err,
-			Rows: []int{row},
-			Severity: s,
-			ValidationID: "agency_timezone_validation",
-		})
+		addMessage(err)
+		return
 	}
 }
