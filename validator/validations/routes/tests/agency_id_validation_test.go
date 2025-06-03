@@ -84,8 +84,6 @@ func TestAgencyIdValidation_ValidAgencyId_MultipleAgencies(t *testing.T) {
 	
 	validations.AgencyIdValidation(nil, route, 3, gtfs)
 
-	services.AppMessageService.PrintTable()
-
 	assertion := lib.AssertionMessage{
 		Expected: 0,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,
