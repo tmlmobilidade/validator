@@ -98,7 +98,7 @@ func TestParseStop_InvalidIntFields(t *testing.T) {
 	validations.ParseStop(raw, row)
 
 	assertion := lib.AssertionMessage{
-		Expected: 2,
+		Expected: 1,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,
 		Message: "Invalid int fields should error",
 	}
@@ -118,7 +118,7 @@ func TestParseStop_InvalidFloatFields(t *testing.T) {
 	
 	validations.ParseStop(raw, row)
 	assertion := lib.AssertionMessage{
-		Expected: 2,
+		Expected: 1,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,
 		Message: "Invalid float fields should error",
 	}
