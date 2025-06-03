@@ -25,7 +25,7 @@ func AgencyTimezoneValidation(agency *types.Agency, row int) {
 	s := types.SEVERITY_ERROR
 
 	// Check if agency_timezone is required
-	if agency.AgencyTimezone == "" {
+	if agency.AgencyTimezone == nil {
 		services.AppMessageService.AddMessage(types.Message{
 			Field: "agency_timezone",
 			FileName: "agency.txt",
@@ -37,7 +37,7 @@ func AgencyTimezoneValidation(agency *types.Agency, row int) {
 	}
 
 	// Check if agency_timezone is valid
-	err := lib.ValidateTimezone(agency.AgencyTimezone)
+	err := lib.ValidateTimezone(*agency.AgencyTimezone)
 	if err != "" {
 		services.AppMessageService.AddMessage(types.Message{
 			Field: "agency_timezone",

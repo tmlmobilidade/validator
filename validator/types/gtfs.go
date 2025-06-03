@@ -58,10 +58,10 @@ type Agency struct {
 	AgencyFareUrl  *string `json:"agency_fare_url"`
 	AgencyId       *string `json:"agency_id"`
 	AgencyLang     *string `json:"agency_lang"`
-	AgencyName     string  `json:"agency_name"`
+	AgencyName     *string  `json:"agency_name"`
 	AgencyPhone    *string `json:"agency_phone"`
-	AgencyTimezone string  `json:"agency_timezone"`
-	AgencyUrl      string  `json:"agency_url"`
+	AgencyTimezone *string  `json:"agency_timezone"`
+	AgencyUrl      *string  `json:"agency_url"`
 }
 
 /* STOP */

@@ -21,14 +21,14 @@ func TestParseAgency_ValidInput(t *testing.T) {
 	}
 	agency := validations.ParseAgency(raw, row)
 
-	if agency.AgencyName != "Agency Name" {
-		t.Errorf("Expected AgencyName 'Agency Name', got '%s'", agency.AgencyName)
+	if *agency.AgencyName != "Agency Name" {
+		t.Errorf("Expected AgencyName 'Agency Name', got '%s'", *agency.AgencyName)
 	}
-	if agency.AgencyUrl != "https://agency.com" {
-		t.Errorf("Expected AgencyUrl 'https://agency.com', got '%s'", agency.AgencyUrl)
+	if *agency.AgencyUrl != "https://agency.com" {
+		t.Errorf("Expected AgencyUrl 'https://agency.com', got '%s'", *agency.AgencyUrl)
 	}
-	if agency.AgencyTimezone != "America/New_York" {
-		t.Errorf("Expected AgencyTimezone 'America/New_York', got '%s'", agency.AgencyTimezone)
+	if *agency.AgencyTimezone != "America/New_York" {
+		t.Errorf("Expected AgencyTimezone 'America/New_York', got '%s'", *agency.AgencyTimezone)
 	}
 	if *agency.AgencyId != "1" {
 		t.Errorf("Expected AgencyId '1', got '%s'", *agency.AgencyId)

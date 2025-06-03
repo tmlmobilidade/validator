@@ -51,9 +51,9 @@ func ParseAgency(rawAgency map[string]string, row int) types.Agency {
 	}
 
 	// Required fields
-	agency.AgencyName = agencyName
-	agency.AgencyUrl = agencyUrl
-	agency.AgencyTimezone = agencyTimezone
+	agency.AgencyName = lib.IfThenElse(agencyName != "", &agencyName, nil)
+	agency.AgencyUrl = lib.IfThenElse(agencyUrl != "", &agencyUrl, nil)
+	agency.AgencyTimezone = lib.IfThenElse(agencyTimezone != "", &agencyTimezone, nil)
 
 	agency.AgencyId = lib.IfThenElse(rawAgency["agency_id"] != "", &agencyId, nil)
 	agency.AgencyLang = lib.IfThenElse(rawAgency["agency_lang"] != "", &agencyLang, nil)

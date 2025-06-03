@@ -21,30 +21,26 @@ URL of the transit agency.
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
 func AgencyUrlValidation(agency *types.Agency, row int) {
-	s := types.SEVERITY_ERROR
-
-	// Check if agency_url is required
-	if agency.AgencyUrl == "" {
+	
+	addMessage := func(message string) {
 		services.AppMessageService.AddMessage(types.Message{
 			Field: "agency_url",
 			FileName: "agency.txt",
-			Message: "Agency URL is required",
+			Message: message,
 			Rows: []int{row},
-			Severity: s,
+			Severity: types.SEVERITY_ERROR,
 			ValidationID: "agency_url_validation",
 		})
 	}
 
-	// Check if agency_url is valid
-	err := lib.ValidateUrl(agency.AgencyUrl)
+	if agency.AgencyUrl == nil {
+		addMessage("Agency URL is required")
+		return
+	}
+
+	err := lib.ValidateUrl(*agency.AgencyUrl)
 	if err != "" {
-		services.AppMessageService.AddMessage(types.Message{
-			Field: "agency_url",
-			FileName: "agency.txt",
-			Message: err,
-			Rows: []int{row},
-			Severity: s,
-			ValidationID: "agency_url_validation",
-		})
+		addMessage(err)
+		return
 	}
 }
