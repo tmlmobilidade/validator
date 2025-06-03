@@ -141,8 +141,6 @@ func TestContinuousDropOffValidation_ValidInputWithDropOffWindow(t *testing.T) {
 	severity := types.SEVERITY_ERROR
 	validations.ContinuousDropOffValidation(&severity, route, 4, gtfs)
 
-	services.AppMessageService.PrintTable()
-
 	assertion := lib.AssertionMessage{
 		Expected: 0,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,
