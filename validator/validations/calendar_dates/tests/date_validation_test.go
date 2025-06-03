@@ -19,8 +19,6 @@ func TestDateValidation_Valid(t *testing.T) {
 	
 	gtfs := &types.Gtfs{}
 	validations.DateValidation(calendarDate, row, gtfs)
-
-	services.AppMessageService.PrintTable()
 	
 	assertion := lib.AssertionMessage{
 		Expected: 0,
