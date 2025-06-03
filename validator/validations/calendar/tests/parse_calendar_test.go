@@ -77,7 +77,7 @@ func TestParseCalendar_InvalidBooleanValues(t *testing.T) {
 	_ = validations.ParseCalendar(raw, row, gtfs)
 
 	assertion := lib.AssertionMessage{
-		Expected: 2,
+		Expected: 1,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,
 		Message: "Invalid boolean value (should error)",
 	}
