@@ -61,18 +61,3 @@ func AgencyEmailValidation(severity *types.Severity, agency *types.Agency, row i
 		addMessage(emailErrors, types.SEVERITY_ERROR)
 	}
 }
-
-func AgencyEmailValidationSettings() *types.Validation {
-	return types.CreateValidation(
-			"agency.agency_email_validation", 
-			"Agency Email Validation", 
-			"Validates if the agency email is present and valid.",
-			"agency_email",
-			"agency.txt",
-			[]types.Severity{
-				types.SEVERITY_ERROR,
-				types.SEVERITY_WARNING,
-				types.SEVERITY_IGNORE,
-			},
-		)
-}

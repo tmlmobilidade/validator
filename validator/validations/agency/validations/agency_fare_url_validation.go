@@ -7,6 +7,14 @@ import (
 )
 
 /*
+$validation-settings
+id: agency.agency_fare_url_validation
+severity_options: [error, warning, ignore]
+description: Validates if the agency fare URL is present and valid.
+name: Agency Fare URL Validation
+*/
+
+/*
 # Attributes
 
 	- File: [agency.txt]
@@ -50,19 +58,4 @@ func AgencyFareUrlValidation(severity *types.Severity, agency *types.Agency, row
 			addMessage(urlErrors, types.SEVERITY_ERROR)
 		}
 	}
-}
-
-func AgencyFareUrlValidationSettings() *types.Validation {
-	return types.CreateValidation(
-		"agency.agency_fare_url_validation",
-		"Agency Fare URL Validation",
-		"Validates if the agency fare URL is present and valid.",
-		"agency_fare_url",
-		"agency.txt",
-		[]types.Severity{
-			types.SEVERITY_ERROR,
-			types.SEVERITY_WARNING,
-			types.SEVERITY_IGNORE,
-		},
-	)
 }
