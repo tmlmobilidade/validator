@@ -24,21 +24,24 @@ End service day for the service interval. This service day is included in the in
 */
 func DateValidation(date string, dateType string,row int) {
 
-	message := types.Message{
+	addMessage := func(message string) {
+		services.AppMessageService.AddMessage(types.Message{
 		Field: dateType,
 		FileName: "calendar.txt",
 		Message: "Service date is required",
 		Rows: []int{row},
 		Severity: types.SEVERITY_ERROR,
 		ValidationID: "date_validation",
+		})
 	}
 
 	if date == "" {
-		services.AppMessageService.AddMessage(message)
+		addMessage("Service date is required")
+		return
 	}
 
 	if !lib.IsValidServiceDate(date) {
-		message.Message = "Invalid service date, must be in format YYYYMMDD"
-		services.AppMessageService.AddMessage(message)
+		addMessage("Invalid service date, must be in format YYYYMMDD")
+		return
 	}
 }
