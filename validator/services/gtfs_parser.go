@@ -49,12 +49,10 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 	defer zipReader.Close()
 
 	gtfsFiles := make(types.GtfsFiles)
-	gtfsFieldCount := make(types.GtfsFieldCount)
 	gtfsIdsMap := make(types.GtfsIdMap)
 
 	// Add mutexes to protect concurrent access to shared maps
 	// What is a mutex? https://stackoverflow.com/questions/34524/what-is-a-mutex
-	var fieldCountMutex sync.Mutex
 	var idsMapMutex sync.Mutex
 
 	type result struct {
@@ -96,7 +94,7 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 					continue
 				}
 
-				parsedData, err := parseCSV(content, fileNameWithoutExt, &gtfsFieldCount, &gtfsIdsMap, &fieldCountMutex, &idsMapMutex)
+				parsedData, err := parseCSV(content, fileNameWithoutExt, &gtfsIdsMap, &idsMapMutex)
 				if err != nil {
 					lib.AppLogger.Error("Error parsing file: " + fileName + " " + err.Error())
 					continue
@@ -132,7 +130,6 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 
 	return types.Gtfs{
 		Files:        gtfsFiles,
-		FieldCounter: gtfsFieldCount,
 		IdMap:        gtfsIdsMap,
 	}, nil
 }
@@ -171,7 +168,7 @@ func handlePrimaryKeyMapping(primaryKey any, header string, value string, fileNa
 // parseCSV parses CSV content into a slice of maps where each map represents a row
 // with column headers as keys and cell values as values.
 // Returns an error if the CSV is empty or cannot be parsed.
-func parseCSV(content []byte, fileNameWithoutExt string, fieldCount *types.GtfsFieldCount, idsMap *types.GtfsIdMap, fieldCountMutex *sync.Mutex, idsMapMutex *sync.Mutex) ([]map[string]string, error) {
+func parseCSV(content []byte, fileNameWithoutExt string, idsMap *types.GtfsIdMap, idsMapMutex *sync.Mutex) ([]map[string]string, error) {
 	reader := csv.NewReader(bytes.NewReader(content))
 	reader.TrimLeadingSpace = true
 
@@ -217,16 +214,6 @@ func parseCSV(content []byte, fileNameWithoutExt string, fieldCount *types.GtfsF
 		}
 		result = append(result, entry)
 	}
-
-	// Now update fieldCount once
-	fieldCountMutex.Lock()
-	if (*fieldCount)[fileNameWithoutExt] == nil {
-		(*fieldCount)[fileNameWithoutExt] = make(map[string]int)
-	}
-	for header, count := range localCounts {
-		(*fieldCount)[fileNameWithoutExt][header] += count
-	}
-	fieldCountMutex.Unlock()
 
 	return result, nil
 }
