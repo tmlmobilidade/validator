@@ -6,7 +6,7 @@ import (
 	"main/types"
 )
 
-func ParseFareRule(rawFareRule map[string]string, row int, gtfs *types.Gtfs) types.FareRule {
+func ParseFareRule(rawFareRule types.FareRuleRaw, row int) types.FareRule {
 	var (
 		fareRule types.FareRule = types.FareRule{}
 		fareId, routeId, originId, destinationId, containsId string
@@ -35,7 +35,7 @@ func ParseFareRule(rawFareRule map[string]string, row int, gtfs *types.Gtfs) typ
 
 	// Parse string fields
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(rawFareRule[field], target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawFareRule, field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
@@ -45,11 +45,11 @@ func ParseFareRule(rawFareRule map[string]string, row int, gtfs *types.Gtfs) typ
 		return fareRule
 	}
 	
-	fareRule.FareId = lib.IfThenElse(rawFareRule["fare_id"] != "", &fareId, nil)
-	fareRule.RouteId = lib.IfThenElse(rawFareRule["route_id"] != "", &routeId, nil)
-	fareRule.OriginId = lib.IfThenElse(rawFareRule["origin_id"] != "", &originId, nil)
-	fareRule.DestinationId = lib.IfThenElse(rawFareRule["destination_id"] != "", &destinationId, nil)
-	fareRule.ContainsId = lib.IfThenElse(rawFareRule["contains_id"] != "", &containsId, nil)
+	fareRule.FareId = lib.IfThenElse(rawFareRule.FareId != "", &fareId, nil)
+	fareRule.RouteId = lib.IfThenElse(rawFareRule.RouteId != "", &routeId, nil)
+	fareRule.OriginId = lib.IfThenElse(rawFareRule.OriginId != "", &originId, nil)
+	fareRule.DestinationId = lib.IfThenElse(rawFareRule.DestinationId != "", &destinationId, nil)
+	fareRule.ContainsId = lib.IfThenElse(rawFareRule.ContainsId != "", &containsId, nil)
 	
 	return fareRule
 }

@@ -49,13 +49,11 @@ func TestContinuousDropOffValidation_ForbiddenValueWithDropOffWindow(t *testing.
 	route := &types.Route{RouteId: &routeId, ContinuousDropOff: &continuousDropOff}
 	// Simulate GTFS with a trip and stop_times with pickup window
 	gtfs := &types.Gtfs{
-		Files: map[string][]map[string]string{
-			"trips": {
-				{"trip_id": "MY_TRIP_ID"},
-			},
-			"stop_times": {
-				{"start_pickup_drop_off_window": "08:00:00", "end_pickup_drop_off_window": "09:00:00"},
-			},
+		Trip: []types.TripRaw{
+			{TripId: "MY_TRIP_ID"},
+		},
+		StopTime: []types.StopTimeRaw{
+			{StartPickupDropOffWindow: "08:00:00", EndPickupDropOffWindow: "09:00:00"},
 		},
 		IdMap: map[string]map[string][]int{
 			"trips": {
@@ -85,13 +83,11 @@ func TestContinuousDropOffValidation_ValidInput(t *testing.T) {
 	route := &types.Route{RouteId: &routeId, ContinuousDropOff: &continuousDropOff}
 	// Simulate GTFS with a trip and stop_times without pickup window
 	gtfs := &types.Gtfs{
-		Files: map[string][]map[string]string{
-			"trips": {
-				{"trip_id": "MY_TRIP_ID"},
-			},
-			"stop_times": {
-				{"start_pickup_drop_off_window": "", "end_pickup_drop_off_window": ""},
-			},
+		Trip: []types.TripRaw{
+			{TripId: "MY_TRIP_ID"},
+		},
+		StopTime: []types.StopTimeRaw{
+			{StartPickupDropOffWindow: "", EndPickupDropOffWindow: ""},
 		},
 		IdMap: map[string]map[string][]int{
 			"trips": {
@@ -121,13 +117,11 @@ func TestContinuousDropOffValidation_ValidInputWithDropOffWindow(t *testing.T) {
 	route := &types.Route{RouteId: &routeId, ContinuousDropOff: &continuousDropOff}
 	// Simulate GTFS with a trip and stop_times with pickup window
 	gtfs := &types.Gtfs{
-		Files: map[string][]map[string]string{
-			"trips": {
-				{"trip_id": "MY_TRIP_ID"},
-			},
-			"stop_times": {
-				{"start_pickup_drop_off_window": "08:00:00", "end_pickup_drop_off_window": "09:00:00"},
-			},
+		Trip: []types.TripRaw{
+			{TripId: "MY_TRIP_ID"},
+		},
+		StopTime: []types.StopTimeRaw{
+			{StartPickupDropOffWindow: "08:00:00", EndPickupDropOffWindow: "09:00:00"},
 		},
 		IdMap: map[string]map[string][]int{
 			"trips": {

@@ -6,7 +6,7 @@ import (
 	"main/types"
 )
 
-func ParseAgency(rawAgency map[string]string, row int) types.Agency {
+func ParseAgency(rawAgency types.AgencyRaw, row int) types.Agency {
 	var (
 		agency                                           types.Agency = types.Agency{}
 		agencyName, agencyUrl, agencyTimezone, agencyId, agencyLang, agencyPhone, agencyFareUrl, agencyEmail                     string
@@ -39,7 +39,7 @@ func ParseAgency(rawAgency map[string]string, row int) types.Agency {
 
 	// Parse string fields
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(rawAgency[field], target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawAgency, field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
@@ -55,11 +55,11 @@ func ParseAgency(rawAgency map[string]string, row int) types.Agency {
 	agency.AgencyUrl = lib.IfThenElse(agencyUrl != "", &agencyUrl, nil)
 	agency.AgencyTimezone = lib.IfThenElse(agencyTimezone != "", &agencyTimezone, nil)
 
-	agency.AgencyId = lib.IfThenElse(rawAgency["agency_id"] != "", &agencyId, nil)
-	agency.AgencyLang = lib.IfThenElse(rawAgency["agency_lang"] != "", &agencyLang, nil)
-	agency.AgencyPhone = lib.IfThenElse(rawAgency["agency_phone"] != "", &agencyPhone, nil)
-	agency.AgencyFareUrl = lib.IfThenElse(rawAgency["agency_fare_url"] != "", &agencyFareUrl, nil)
-	agency.AgencyEmail = lib.IfThenElse(rawAgency["agency_email"] != "", &agencyEmail, nil)
+	agency.AgencyId = lib.IfThenElse(rawAgency.AgencyId != "", &agencyId, nil)
+	agency.AgencyLang = lib.IfThenElse(rawAgency.AgencyLang != "", &agencyLang, nil)
+	agency.AgencyPhone = lib.IfThenElse(rawAgency.AgencyPhone != "", &agencyPhone, nil)
+	agency.AgencyFareUrl = lib.IfThenElse(rawAgency.AgencyFareUrl != "", &agencyFareUrl, nil)
+	agency.AgencyEmail = lib.IfThenElse(rawAgency.AgencyEmail != "", &agencyEmail, nil)
 
 	return agency
 }

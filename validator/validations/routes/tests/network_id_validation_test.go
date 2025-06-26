@@ -14,7 +14,7 @@ func TestNetworkIdValidation_MissingNetworkId(t *testing.T) {
 	
 	severity := types.SEVERITY_ERROR
 	route := &types.Route{NetworkId: nil}
-	gtfs := &types.Gtfs{Files: types.GtfsFiles{}}
+	gtfs := &types.Gtfs{}
 	
 	validations.NetworkIdValidation(&severity, route, 1, gtfs)
 	
@@ -36,7 +36,7 @@ func TestNetworkIdValidation_ForbiddenNetworkIdIfRouteNetworksExists(t *testing.
 	severity := types.SEVERITY_ERROR
 	networkId := "N1"
 	route := &types.Route{NetworkId: &networkId}
-	gtfs := &types.Gtfs{Files: types.GtfsFiles{"route_networks": {map[string]string{}}}}
+	gtfs := &types.Gtfs{}
 	
 	validations.NetworkIdValidation(&severity, route, 2, gtfs)
 	
@@ -58,7 +58,7 @@ func TestNetworkIdValidation_ValidInput(t *testing.T) {
 	severity := types.SEVERITY_ERROR
 	networkId := "N2"
 	route := &types.Route{NetworkId: &networkId}
-	gtfs := &types.Gtfs{Files: types.GtfsFiles{}}
+	gtfs := &types.Gtfs{}
 	
 	validations.NetworkIdValidation(&severity, route, 3, gtfs)
 	

@@ -18,8 +18,8 @@ func TestStopIdValidation_Required(t *testing.T) {
 		IdMap: map[string]map[string][]int{
 			"stops": {"S1": {0}},
 		},
-		Files: map[string][]map[string]string{
-			"stops": {{"stop_id": "S1", "location_type": "0"}},
+		Stop: []types.StopRaw{
+			{StopId: "S1", LocationType: "0"},
 		},
 	}
 	validations.StopIdValidation(stopTime, 1, gtfs)
@@ -100,8 +100,8 @@ func TestStopIdValidation_InvalidLocationType(t *testing.T) {
 		IdMap: map[string]map[string][]int{
 			"stops": {"S2": {0}},
 		},
-		Files: map[string][]map[string]string{
-			"stops": {{"stop_id": "S2", "location_type": "1"}},
+		Stop: []types.StopRaw{
+			{StopId: "S2", LocationType: "1"},
 		},
 	}
 	validations.StopIdValidation(stopTime, 5, gtfs)

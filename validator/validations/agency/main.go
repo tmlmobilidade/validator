@@ -9,7 +9,7 @@ import (
 func RunValidations(gtfs types.Gtfs) {
 	lib.AppLogger.Debug("Running Validations for agency.txt")
 
-	for i, rawAgency := range gtfs.Files["agency"] {
+	for i, rawAgency := range gtfs.Agency {
 		// Parse Agency Validation
 		agency := validations.ParseAgency(rawAgency, i)
 

@@ -6,8 +6,8 @@ import (
 	"main/types"
 )
 
-func ParseFareAttributes(rawFareAttributes map[string]string, row int, gtfs *types.Gtfs) types.FareAttribute {
-	var (
+func ParseFareAttributes(rawFareAttributes types.FareAttributeRaw, row int) types.FareAttribute {
+	var (	
 		fareAttribute types.FareAttribute = types.FareAttribute{}
 		fareId, currencyType, agencyId string
 		paymentMethod, transfers, transferDuration int
@@ -45,21 +45,21 @@ func ParseFareAttributes(rawFareAttributes map[string]string, row int, gtfs *typ
 
 	// Parse string fields
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(rawFareAttributes[field], target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawFareAttributes, field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
 
 	// Parse int fields
 	for field, target := range intFields {
-		if errMsg := lib.ParseStringToPrimitive(rawFareAttributes[field], target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawFareAttributes, field), target); errMsg != "" {
 			addMessage(field, errMsg)
-		}
+		}			
 	}
 	
 	// Parse float fields
 	for field, target := range floatFields {
-		if errMsg := lib.ParseStringToPrimitive(rawFareAttributes[field], target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawFareAttributes, field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
@@ -70,13 +70,13 @@ func ParseFareAttributes(rawFareAttributes map[string]string, row int, gtfs *typ
 		return fareAttribute
 	}
 	
-	fareAttribute.FareId = lib.IfThenElse(rawFareAttributes["fare_id"] != "", &fareId, nil)
-	fareAttribute.CurrencyType = lib.IfThenElse(rawFareAttributes["currency_type"] != "", &currencyType, nil)
-	fareAttribute.Price = lib.IfThenElse(rawFareAttributes["price"] != "", &price, nil)
-	fareAttribute.AgencyId = lib.IfThenElse(rawFareAttributes["agency_id"] != "", &agencyId, nil)
-	fareAttribute.PaymentMethod = lib.IfThenElse(rawFareAttributes["payment_method"] != "", &paymentMethod, nil)
-	fareAttribute.Transfers = lib.IfThenElse(rawFareAttributes["transfers"] != "", &transfers, nil)
-	fareAttribute.TransferDuration = lib.IfThenElse(rawFareAttributes["transfer_duration"] != "", &transferDuration, nil)
+	fareAttribute.FareId = lib.IfThenElse(rawFareAttributes.FareId != "", &fareId, nil)
+	fareAttribute.CurrencyType = lib.IfThenElse(rawFareAttributes.CurrencyType != "", &currencyType, nil)
+	fareAttribute.Price = lib.IfThenElse(rawFareAttributes.Price != "", &price, nil)
+	fareAttribute.AgencyId = lib.IfThenElse(rawFareAttributes.AgencyId != "", &agencyId, nil)
+	fareAttribute.PaymentMethod = lib.IfThenElse(rawFareAttributes.PaymentMethod != "", &paymentMethod, nil)
+	fareAttribute.Transfers = lib.IfThenElse(rawFareAttributes.Transfers != "", &transfers, nil)
+	fareAttribute.TransferDuration = lib.IfThenElse(rawFareAttributes.TransferDuration != "", &transferDuration, nil)
 
 	return fareAttribute
 }

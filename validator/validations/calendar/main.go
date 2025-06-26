@@ -9,7 +9,7 @@ import (
 func RunValidations(gtfs types.Gtfs) {
 	lib.AppLogger.Debug("Running Calendar Validations...")
 
-	for i, rawCalendar := range gtfs.Files["calendar"] {
+	for i, rawCalendar := range gtfs.Calendar {
 		calendar := ParseCalendar(rawCalendar, i, &gtfs)
 
 		if calendar == (types.Calendar{}) {

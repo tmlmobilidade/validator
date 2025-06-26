@@ -9,8 +9,8 @@ import (
 func RunValidations(gtfs types.Gtfs) {
 	lib.AppLogger.Debug("Running Routes Validations...")
 
-	for i, rawRoute := range gtfs.Files["routes"] {
-		route := validations.ParseRoutes(rawRoute, i, &gtfs)
+	for i, rawRoute := range gtfs.Route {
+		route := validations.ParseRoutes(rawRoute, i)
 
 		if route == (types.Route{}) {
 			continue

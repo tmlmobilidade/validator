@@ -41,7 +41,7 @@ func AgencyIdValidation(severity *types.Severity, route *types.Route, row int, g
 		})
 	}
 
-	numAgencies := len(gtfs.Files["agency"])
+	numAgencies := len(gtfs.Agency)
 	
 	// Check if agency_id exists and is valid
 	if route.AgencyId != nil && *route.AgencyId != "" {

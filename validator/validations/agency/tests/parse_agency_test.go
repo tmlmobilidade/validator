@@ -2,6 +2,7 @@ package agency
 
 import (
 	"main/services"
+	"main/types"
 	validations "main/validations/agency/validations"
 	"testing"
 )
@@ -9,15 +10,15 @@ import (
 func TestParseAgency_ValidInput(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
-	raw := map[string]string{
-		"agency_name":     "Agency Name",
-		"agency_url":      "https://agency.com",
-		"agency_timezone": "America/New_York",
-		"agency_id":       "1",
-		"agency_lang":     "en",
-		"agency_phone":    "1234567890",
-		"agency_fare_url": "https://agency.com/fares",
-		"agency_email":    "agency@example.com",
+	raw := types.AgencyRaw{
+		AgencyName:     "Agency Name",
+		AgencyUrl:      "https://agency.com",
+		AgencyTimezone: "America/New_York",
+		AgencyId:       "1",
+		AgencyLang:     "en",
+		AgencyPhone:    "1234567890",
+		AgencyFareUrl:  "https://agency.com/fares",
+		AgencyEmail:    "agency@example.com",
 	}
 	agency := validations.ParseAgency(raw, row)
 
@@ -50,15 +51,15 @@ func TestParseAgency_ValidInput(t *testing.T) {
 func TestParseAgency_OptionalFieldsEmpty(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 4
-	raw := map[string]string{
-		"agency_name":     "Agency Name",
-		"agency_url":      "https://agency.com",
-		"agency_timezone": "America/New_York",
-		"agency_id":       "1",
-		"agency_lang":     "en",
-		"agency_phone":    "1234567890",
-		"agency_fare_url": "https://agency.com/fares",
-		"agency_email":    "agency@example.com",
+	raw := types.AgencyRaw{
+		AgencyName:     "Agency Name",
+		AgencyUrl:      "https://agency.com",
+		AgencyTimezone: "America/New_York",
+		AgencyId:       "1",
+		AgencyLang:     "en",
+		AgencyPhone:    "1234567890",
+		AgencyFareUrl:  "https://agency.com/fares",
+		AgencyEmail:    "agency@example.com",
 	}
 	agency := validations.ParseAgency(raw, row)
 

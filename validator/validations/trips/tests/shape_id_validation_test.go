@@ -12,13 +12,9 @@ func TestShapeIdValidation_Required(t *testing.T) {
 	severity := types.SEVERITY_ERROR
 	trip := &types.Trip{RouteId: lib.Ptr("route1"), TripId: lib.Ptr("trip1"), ShapeId: nil}
 	gtfs := &types.Gtfs{
-		Files: map[string][]map[string]string{
-			"routes": {{"continuous_pickup": "1"}},
-			"stop_times": {},
-		},
-		IdMap: map[string]map[string][]int{
-			"routes": {"route1": {0}},
-		},
+		Route: []types.RouteRaw{{ContinuousPickup: "1"}},
+		StopTime: []types.StopTimeRaw{},
+		IdMap: map[string]map[string][]int{},
 	}
 	validations.ShapeIdValidation(&severity, trip, 1, gtfs)
 

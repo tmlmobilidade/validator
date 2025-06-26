@@ -10,19 +10,18 @@ import (
 
 func TestParseFeedInfo_ValidInput(t *testing.T) {
 	services.AppMessageService.Clear()
-	rawFeedInfo := map[string]string{
-		"feed_lang": "en",
-		"feed_publisher_name": "Transit Co",
-		"feed_publisher_url": "https://transit.example.com",
-		"default_lang": "en",
-		"feed_contact_email": "info@transit.example.com",
-		"feed_contact_url": "https://transit.example.com/contact",
-		"feed_end_date": "20241231",
-		"feed_start_date": "20240101",
-		"feed_version": "1.0.0",
+	rawFeedInfo := types.FeedInfoRaw{
+		FeedLang: "en",
+		FeedPublisherName: "Transit Co",
+		FeedPublisherUrl: "https://transit.example.com",
+		DefaultLang: "en",
+		FeedContactEmail: "info@transit.example.com",
+		FeedContactUrl: "https://transit.example.com/contact",
+		FeedEndDate: "20241231",
+		FeedStartDate: "20240101",
+		FeedVersion: "1.0.0",
 	}
-	gtfs := &types.Gtfs{}
-	feedInfo := validations.ParseFeedInfo(rawFeedInfo, 2, gtfs)
+	feedInfo := validations.ParseFeedInfo(rawFeedInfo, 2)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,

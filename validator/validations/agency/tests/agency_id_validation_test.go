@@ -11,8 +11,7 @@ import (
 func TestAgencyIdValidation_Required(t *testing.T) {
 	severity := types.SEVERITY_ERROR
 	agency := &types.Agency{AgencyId: nil}
-	gtfs := types.Gtfs{Files: map[string][]map[string]string{"agency": {{}}}}
-	gtfs.Files["agency"] = append(gtfs.Files["agency"], map[string]string{}) // Add a second agency for >1
+	gtfs := types.Gtfs{Agency: []types.AgencyRaw{{}, {}}}
 	validations.AgencyIdValidation(&severity, agency, 1, gtfs)
 
 	// Assert
@@ -31,7 +30,7 @@ func TestAgencyIdValidation_Required(t *testing.T) {
 func TestAgencyIdValidation_Recommended(t *testing.T) {
 	severity := types.SEVERITY_WARNING
 	agency := &types.Agency{AgencyId: nil}
-	gtfs := types.Gtfs{Files: map[string][]map[string]string{"agency": {{}}}}
+	gtfs := types.Gtfs{Agency: []types.AgencyRaw{{}}}
 	validations.AgencyIdValidation(&severity, agency, 2, gtfs)
 
 	// Assert

@@ -10,7 +10,7 @@ import (
 
 func TestTripIdValidation_Required(t *testing.T) {
 	trip := &types.Trip{TripId: nil}
-	gtfs := &types.Gtfs{Files: map[string][]map[string]string{"trips": {{}, {}}}} // >1 trip
+	gtfs := &types.Gtfs{Trip: []types.TripRaw{{}, {}}} // >1 trip
 	validations.TripIdValidation(trip, 1, gtfs)
 
 	assertion := lib.AssertionMessage{

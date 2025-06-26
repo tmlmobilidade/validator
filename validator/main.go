@@ -15,7 +15,7 @@ func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker) {
 	var wg sync.WaitGroup
 
 	// Run Validations for each file concurrently
-	for fileName := range gtfs.Files {
+	for fileName := range gtfs.IdMap {
 		// If fileName is not in the GTFS_FILE_RULES_MAP, skip
 		if _, ok := validations.GTFS_FILE_RULES_MAP[fileName]; !ok {
 			// TODO: Add to warning messages

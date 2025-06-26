@@ -69,7 +69,7 @@ func ContinuousDropOffValidation(severity *types.Severity, route *types.Route, r
 	tripIds := make([]string, 0)
 	if trips, exists := gtfs.IdMap["trips"][*route.RouteId]; exists {
 		for _, row := range trips {
-			if tripId := gtfs.Files["trips"][row]["trip_id"]; tripId != "" {
+			if tripId := gtfs.Trip[row].TripId; tripId != "" {
 				tripIds = append(tripIds, tripId)
 			}
 		}
@@ -79,8 +79,8 @@ func ContinuousDropOffValidation(severity *types.Severity, route *types.Route, r
 	for _, tripId := range tripIds {
 		if stopTimes, exists := gtfs.IdMap["stop_times"][tripId]; exists {
 			for _, row := range stopTimes {
-				startWindow := gtfs.Files["stop_times"][row]["start_pickup_drop_off_window"]
-				endWindow := gtfs.Files["stop_times"][row]["end_pickup_drop_off_window"]
+				startWindow := gtfs.StopTime[row].StartPickupDropOffWindow
+				endWindow := gtfs.StopTime[row].EndPickupDropOffWindow
 				
 				if startWindow != "" || endWindow != "" {
 					lib.AppLogger.Accent("route.ContinuousDropOff", *route.ContinuousDropOff)

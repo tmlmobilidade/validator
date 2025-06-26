@@ -70,12 +70,10 @@ func TestDepartureTimeValidation_ValidInput(t *testing.T) {
 	}
 
 	gtfs := &types.Gtfs{
-		Files: map[string][]map[string]string{
-			"stop_times": {
-				{"stop_sequence": "1"},
-				{"stop_sequence": "2"},
-				{"stop_sequence": "5"},
-			},
+		StopTime: []types.StopTimeRaw{
+			{StopSequence: "1"},
+			{StopSequence: "2"},
+			{StopSequence: "5"},
 		},
 		IdMap: map[string]map[string][]int{
 			"stop_times": {
@@ -110,12 +108,10 @@ func TestDepartureTimeValidation_InvalidTime(t *testing.T) {
 	}
 
 	gtfs := &types.Gtfs{
-		Files: map[string][]map[string]string{
-			"stop_times": {
-				{"stop_sequence": "1"},
-				{"stop_sequence": "2"},
-				{"stop_sequence": "5"},
-			},
+		StopTime: []types.StopTimeRaw{
+			{StopSequence: "1"},
+			{StopSequence: "2"},
+			{StopSequence: "5"},
 		},
 		IdMap: map[string]map[string][]int{
 			"stop_times": {

@@ -12,12 +12,10 @@ func TestStopSequenceValidation_ValidInput(t *testing.T) {
 	services.AppMessageService.Clear()
 	trip := &types.Trip{TripId: lib.Ptr("T1")}
 	gtfs := &types.Gtfs{
-		Files: map[string][]map[string]string{
-			"stop_times": {
-				{"stop_sequence": "1", "shape_dist_traveled": "0"},
-				{"stop_sequence": "3", "shape_dist_traveled": "20"},
-				{"stop_sequence": "2", "shape_dist_traveled": "10"},
-			},
+		StopTime: []types.StopTimeRaw{
+			{StopSequence: "1", ShapeDistTraveled: "0"},
+			{StopSequence: "3", ShapeDistTraveled: "20"},
+			{StopSequence: "2", ShapeDistTraveled: "10"},
 		},
 		IdMap: map[string]map[string][]int{
 			"stop_times": {
@@ -40,12 +38,10 @@ func TestStopSequenceValidation_NonIncreasingStopSequence(t *testing.T) {
 	services.AppMessageService.Clear()
 	trip := &types.Trip{TripId: lib.Ptr("T2")}
 	gtfs := &types.Gtfs{
-		Files: map[string][]map[string]string{
-			"stop_times": {
-				{"stop_sequence": "1", "shape_dist_traveled": "0"},
-				{"stop_sequence": "2", "shape_dist_traveled": "10"},
-				{"stop_sequence": "2", "shape_dist_traveled": "20"},
-			},
+		StopTime: []types.StopTimeRaw{
+			{StopSequence: "1", ShapeDistTraveled: "0"},
+			{StopSequence: "2", ShapeDistTraveled: "10"},
+			{StopSequence: "2", ShapeDistTraveled: "20"},
 		},
 		IdMap: map[string]map[string][]int{
 			"stop_times": {
@@ -68,12 +64,10 @@ func TestStopSequenceValidation_NonIncreasingShapeDistTraveled(t *testing.T) {
 	services.AppMessageService.Clear()
 	trip := &types.Trip{TripId: lib.Ptr("T3")}
 	gtfs := &types.Gtfs{
-		Files: map[string][]map[string]string{
-			"stop_times": {
-				{"stop_sequence": "1", "shape_dist_traveled": "0"},
-				{"stop_sequence": "2", "shape_dist_traveled": "10"},
-				{"stop_sequence": "3", "shape_dist_traveled": "5"},
-			},
+		StopTime: []types.StopTimeRaw{
+			{StopSequence: "1", ShapeDistTraveled: "0"},
+			{StopSequence: "2", ShapeDistTraveled: "10"},
+			{StopSequence: "3", ShapeDistTraveled: "5"},
 		},
 		IdMap: map[string]map[string][]int{
 			"stop_times": {
@@ -96,17 +90,11 @@ func TestStopSequenceValidation_InvalidStopSequence(t *testing.T) {
 	services.AppMessageService.Clear()
 	trip := &types.Trip{TripId: lib.Ptr("T4")}
 	gtfs := &types.Gtfs{
-		Files: map[string][]map[string]string{
-			"stop_times": {
-				{"stop_sequence": "A", "shape_dist_traveled": "0"},
-				{"stop_sequence": "2", "shape_dist_traveled": "10"},
-			},
+		StopTime: []types.StopTimeRaw{
+			{StopSequence: "A", ShapeDistTraveled: "0"},
+			{StopSequence: "2", ShapeDistTraveled: "10"},
 		},
-		IdMap: map[string]map[string][]int{
-			"stop_times": {
-				"T4": {0, 1},
-			},
-		},
+		IdMap: map[string]map[string][]int{},
 	}
 	validations.StopSequenceValidation(trip, 0, gtfs)
 	assertion := lib.AssertionMessage{
@@ -123,17 +111,12 @@ func TestStopSequenceValidation_InvalidShapeDistTraveled(t *testing.T) {
 	services.AppMessageService.Clear()
 	trip := &types.Trip{TripId: lib.Ptr("T5")}
 	gtfs := &types.Gtfs{
-		Files: map[string][]map[string]string{
-			"stop_times": {
-				{"stop_sequence": "1", "shape_dist_traveled": "foo"},
-				{"stop_sequence": "2", "shape_dist_traveled": "10"},
+		
+			StopTime: []types.StopTimeRaw{
+				{StopSequence: "1", ShapeDistTraveled: "foo"},
+				{StopSequence: "2", ShapeDistTraveled: "10"},
 			},
-		},
-		IdMap: map[string]map[string][]int{
-			"stop_times": {
-				"T5": {0, 1},
-			},
-		},
+		IdMap: map[string]map[string][]int{},
 	}
 	validations.StopSequenceValidation(trip, 0, gtfs)
 	assertion := lib.AssertionMessage{
@@ -151,12 +134,10 @@ func TestStopSequenceValidation_ValidInput_NoShapeDistTraveled(t *testing.T) {
 	
 	trip := &types.Trip{TripId: lib.Ptr("T6")}
 	gtfs := &types.Gtfs{
-		Files: map[string][]map[string]string{
-			"stop_times": {
-				{"stop_sequence": "1"},
-				{"stop_sequence": "2"},
-				{"stop_sequence": "3"},
-			},
+		StopTime: []types.StopTimeRaw{
+			{StopSequence: "1"},
+			{StopSequence: "2"},
+			{StopSequence: "3"},
 		},
 		IdMap: map[string]map[string][]int{
 			"stop_times": {

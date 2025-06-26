@@ -9,8 +9,8 @@ import (
 func RunValidations(gtfs types.Gtfs) {
 	lib.AppLogger.Debug("Running Fare Attributes Validations...")
 
-	for i, rawFareAttributes := range gtfs.Files["fare_attributes"] {
-		fareAttribute := ParseFareAttributes(rawFareAttributes, i, &gtfs)
+	for i, rawFareAttributes := range gtfs.FareAttribute {
+		fareAttribute := ParseFareAttributes(rawFareAttributes, i)
 
 		if fareAttribute == (types.FareAttribute{}) {
 			continue

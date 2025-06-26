@@ -48,7 +48,7 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 	}
 	defer zipReader.Close()
 
-	gtfsFiles := make(types.GtfsFiles)
+	gtfs := types.NewGtfs()
 	gtfsIdsMap := make(types.GtfsIdMap)
 
 	// Add mutexes to protect concurrent access to shared maps
@@ -125,13 +125,15 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 			lib.AppLogger.Error("Error processing file: " + res.fileNameWithoutExt + " " + res.err.Error())
 			continue
 		}
-		gtfsFiles[res.fileNameWithoutExt] = res.data
+		if err := gtfs.SetFieldData(res.fileNameWithoutExt, res.data); err != nil {
+			lib.AppLogger.Error("Error setting field data: " + res.fileNameWithoutExt + " " + err.Error())
+			continue
+		}
 	}
 
-	return types.Gtfs{
-		Files:        gtfsFiles,
-		IdMap:        gtfsIdsMap,
-	}, nil
+	gtfs.IdMap = gtfsIdsMap
+
+	return *gtfs, nil
 }
 
 // handlePrimaryKeyMapping processes the primary key mapping for a given file, header, and value.

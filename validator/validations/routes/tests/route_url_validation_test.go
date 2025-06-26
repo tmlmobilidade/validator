@@ -50,13 +50,8 @@ func TestRouteUrlValidation_SameAsAgencyUrl(t *testing.T) {
 
 	route := &types.Route{RouteUrl: &agencyUrl, AgencyId: &agencyId}
 	gtfs := &types.Gtfs{
-		Files: types.GtfsFiles{
-			"agency": {
-				{
-					"agency_id": "my_agency_id",
-					"agency_url": agencyUrl,
-				},
-			},
+		Agency: []types.AgencyRaw{
+			{AgencyId: agencyId, AgencyUrl: agencyUrl},
 		},
 		IdMap: types.GtfsIdMap{
 			"agency": {

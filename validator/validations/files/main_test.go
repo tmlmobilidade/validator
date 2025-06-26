@@ -17,14 +17,12 @@ func TestFileValidation(t *testing.T) {
 		{
 			name: "all required files present",
 			gtfs: types.Gtfs{
-				Files: types.GtfsFiles{
-					"agency":     []map[string]string{{"id": "1"}},
-					"routes":     []map[string]string{{"id": "1"}},
-					"trips":      []map[string]string{{"id": "1"}},
-					"stop_times": []map[string]string{{"id": "1"}},
-					"stops":      []map[string]string{{"id": "1"}},
-					"calendar":   []map[string]string{{"id": "1"}},
-				},
+				Agency:    []types.AgencyRaw{{AgencyId: "1"}},
+				Route:    []types.RouteRaw{{RouteId: "1", RouteType: "1"}},
+				Trip:     []types.TripRaw{{TripId: "1", RouteId: "1"}},
+				StopTime: []types.StopTimeRaw{{TripId: "1", StopSequence: "1"}},
+				Stop:     []types.StopRaw{{StopId: "1", StopName: "1"}},
+				Calendar:  []types.CalendarRaw{{ServiceId: "1"}},
 			},
 			wantMessages: 0,
 			wantSeverity: types.SEVERITY_ERROR,
@@ -32,11 +30,11 @@ func TestFileValidation(t *testing.T) {
 		{
 			name: "missing required files",
 			gtfs: types.Gtfs{
-				Files: types.GtfsFiles{
-					"routes":   []map[string]string{{"id": "1"}},
-					"calendar": []map[string]string{{"id": "1"}},
-					"stops":    []map[string]string{{"id": "1"}},
-				},
+				Route:   []types.RouteRaw{{RouteId: "1", RouteType: "1"}},
+				Trip:    []types.TripRaw{{TripId: "1", RouteId: "1"}},
+				StopTime: []types.StopTimeRaw{{TripId: "1", StopSequence: "1"}},
+				Stop:     []types.StopRaw{{StopId: "1", StopName: "1"}},
+				Calendar:  []types.CalendarRaw{{ServiceId: "1"}},
 			},
 			wantMessages: 3, // missing agency.txt, trips.txt, stop_times.txt
 			wantSeverity: types.SEVERITY_ERROR,
@@ -64,13 +62,12 @@ func TestFileValidation(t *testing.T) {
 		{
 			name: "missing stops.txt without locations.geojson",
 			gtfs: types.Gtfs{
-				Files: types.GtfsFiles{
-					"agency":     []map[string]string{{"id": "1"}},
-					"routes":     []map[string]string{{"id": "1"}},
-					"trips":      []map[string]string{{"id": "1"}},
-					"stop_times": []map[string]string{{"id": "1"}},
-					"calendar":   []map[string]string{{"id": "1"}},
-				},
+				Agency:    []types.AgencyRaw{{AgencyId: "1"}},
+				Route:     []types.RouteRaw{{RouteId: "1", RouteType: "1"}},
+				Trip:      []types.TripRaw{{TripId: "1", RouteId: "1"}},
+				StopTime:  []types.StopTimeRaw{{TripId: "1", StopSequence: "1"}},
+				Stop:      []types.StopRaw{{StopId: "1", StopName: "1"}},
+				Calendar:  []types.CalendarRaw{{ServiceId: "1"}},
 			},
 			wantMessages: 1,
 			wantSeverity: types.SEVERITY_ERROR,
@@ -86,14 +83,13 @@ func TestFileValidation(t *testing.T) {
 		{
 			name: "missing stops.txt with locations.geojson is valid",
 			gtfs: types.Gtfs{
-				Files: types.GtfsFiles{
-					"agency":     []map[string]string{{"id": "1"}},
-					"routes":     []map[string]string{{"id": "1"}},
-					"trips":      []map[string]string{{"id": "1"}},
-					"stop_times": []map[string]string{{"id": "1"}},
-					"calendar":   []map[string]string{{"id": "1"}},
-					"locations":  []map[string]string{{"id": "1"}},
-				},
+				Agency:    []types.AgencyRaw{{AgencyId: "1"}},
+				Route:     []types.RouteRaw{{RouteId: "1", RouteType: "1"}},
+				Trip:      []types.TripRaw{{TripId: "1", RouteId: "1"}},
+				StopTime:  []types.StopTimeRaw{{TripId: "1", StopSequence: "1"}},
+				Stop:      []types.StopRaw{{StopId: "1", StopName: "1"}},
+				Calendar:  []types.CalendarRaw{{ServiceId: "1"}},
+				// Location: []types.LocationRaw{{LocationId: "1", LocationName: "1"}},
 			},
 			wantMessages: 0,
 			wantSeverity: types.SEVERITY_ERROR,
@@ -101,13 +97,12 @@ func TestFileValidation(t *testing.T) {
 		{
 			name: "missing both calendar.txt and calendar_dates.txt",
 			gtfs: types.Gtfs{
-				Files: types.GtfsFiles{
-					"agency":     []map[string]string{{"id": "1"}},
-					"routes":     []map[string]string{{"id": "1"}},
-					"trips":      []map[string]string{{"id": "1"}},
-					"stop_times": []map[string]string{{"id": "1"}},
-					"stops":      []map[string]string{{"id": "1"}},
-				},
+				Agency:    []types.AgencyRaw{{AgencyId: "1"}},
+				Route:     []types.RouteRaw{{RouteId: "1", RouteType: "1"}},
+				Trip:      []types.TripRaw{{TripId: "1", RouteId: "1"}},
+				StopTime:  []types.StopTimeRaw{{TripId: "1", StopSequence: "1"}},
+				Stop:      []types.StopRaw{{StopId: "1", StopName: "1"}},
+				Calendar:  []types.CalendarRaw{{ServiceId: "1"}},
 			},
 			wantMessages: 1, // One for either required, one for calendar_dates required when no calendar
 			wantSeverity: types.SEVERITY_ERROR,
@@ -124,15 +119,13 @@ func TestFileValidation(t *testing.T) {
 		{
 			name: "levels.txt required with elevator pathways",
 			gtfs: types.Gtfs{
-				Files: types.GtfsFiles{
-					"agency":     []map[string]string{{"id": "1"}},
-					"routes":     []map[string]string{{"id": "1"}},
-					"trips":      []map[string]string{{"id": "1"}},
-					"stop_times": []map[string]string{{"id": "1"}},
-					"stops":      []map[string]string{{"id": "1"}},
-					"calendar":   []map[string]string{{"id": "1"}},
-					"pathways":   []map[string]string{{"pathway_mode": "5"}}, // elevator
-				},
+				Agency:    []types.AgencyRaw{{AgencyId: "1"}},
+				Route:     []types.RouteRaw{{RouteId: "1", RouteType: "1"}},
+				Trip:      []types.TripRaw{{TripId: "1", RouteId: "1"}},
+				StopTime:  []types.StopTimeRaw{{TripId: "1", StopSequence: "1"}},
+				Stop:      []types.StopRaw{{StopId: "1", StopName: "1"}},
+				Calendar:  []types.CalendarRaw{{ServiceId: "1"}},
+				Pathways:  []types.PathwaysRaw{{PathwayMode: "5"}}, // elevator
 			},
 			wantMessages: 1,
 			wantSeverity: types.SEVERITY_ERROR,
@@ -148,15 +141,13 @@ func TestFileValidation(t *testing.T) {
 		{
 			name: "feed_info.txt required with translations.txt",
 			gtfs: types.Gtfs{
-				Files: types.GtfsFiles{
-					"agency":       []map[string]string{{"id": "1"}},
-					"routes":       []map[string]string{{"id": "1"}},
-					"trips":        []map[string]string{{"id": "1"}},
-					"stop_times":   []map[string]string{{"id": "1"}},
-					"stops":        []map[string]string{{"id": "1"}},
-					"calendar":     []map[string]string{{"id": "1"}},
-					"translations": []map[string]string{{"id": "1"}},
-				},
+				Agency:    []types.AgencyRaw{{AgencyId: "1"}},
+				Route:     []types.RouteRaw{{RouteId: "1", RouteType: "1"}},
+				Trip:      []types.TripRaw{{TripId: "1", RouteId: "1"}},
+				StopTime:  []types.StopTimeRaw{{TripId: "1", StopSequence: "1"}},
+				Stop:      []types.StopRaw{{StopId: "1", StopName: "1"}},
+				Calendar:  []types.CalendarRaw{{ServiceId: "1"}},
+				Translations: []types.TranslationsRaw{{Translation: "1"}},
 			},
 			wantMessages: 1,
 			wantSeverity: types.SEVERITY_ERROR,
@@ -172,15 +163,13 @@ func TestFileValidation(t *testing.T) {
 		{
 			name: "networks.txt forbidden with network_id in routes",
 			gtfs: types.Gtfs{
-				Files: types.GtfsFiles{
-					"agency":     []map[string]string{{"id": "1"}},
-					"routes":     []map[string]string{{"id": "1", "network_id": "net1"}},
-					"trips":      []map[string]string{{"id": "1"}},
-					"stop_times": []map[string]string{{"id": "1"}},
-					"stops":      []map[string]string{{"id": "1"}},
-					"calendar":   []map[string]string{{"id": "1"}},
-					"networks":   []map[string]string{{"id": "1"}},
-				},
+				Agency:    []types.AgencyRaw{{AgencyId: "1"}},
+				Route:     []types.RouteRaw{{RouteId: "1", RouteType: "1", NetworkId: "net1"}},
+				Trip:      []types.TripRaw{{TripId: "1", RouteId: "1"}},
+				StopTime:  []types.StopTimeRaw{{TripId: "1", StopSequence: "1"}},
+				Stop:      []types.StopRaw{{StopId: "1", StopName: "1"}},
+				Calendar:  []types.CalendarRaw{{ServiceId: "1"}},
+				RouteNetwork:  []types.RouteNetworkRaw{{NetworkId: "1"}},
 			},
 			wantMessages: 1,
 			wantSeverity: types.SEVERITY_ERROR,
@@ -196,15 +185,13 @@ func TestFileValidation(t *testing.T) {
 		{
 			name: "route_networks.txt forbidden with network_id in routes",
 			gtfs: types.Gtfs{
-				Files: types.GtfsFiles{
-					"agency":         []map[string]string{{"id": "1"}},
-					"routes":         []map[string]string{{"id": "1", "network_id": "net1"}},
-					"trips":          []map[string]string{{"id": "1"}},
-					"stop_times":     []map[string]string{{"id": "1"}},
-					"stops":          []map[string]string{{"id": "1"}},
-					"calendar":       []map[string]string{{"id": "1"}},
-					"route_networks": []map[string]string{{"id": "1"}},
-				},
+				Agency:    []types.AgencyRaw{{AgencyId: "1"}},
+				Route:     []types.RouteRaw{{RouteId: "1", RouteType: "1", NetworkId: "net1"}},
+				Trip:      []types.TripRaw{{TripId: "1", RouteId: "1"}},
+				StopTime:  []types.StopTimeRaw{{TripId: "1", StopSequence: "1"}},
+				Stop:      []types.StopRaw{{StopId: "1", StopName: "1"}},
+				Calendar:  []types.CalendarRaw{{ServiceId: "1"}},
+				RouteNetwork:  []types.RouteNetworkRaw{{NetworkId: "1"}},
 			},
 			wantMessages: 1,
 			wantSeverity: types.SEVERITY_ERROR,

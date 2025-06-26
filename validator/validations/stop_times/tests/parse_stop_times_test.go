@@ -3,6 +3,7 @@ package stop_times
 import (
 	"main/lib"
 	"main/services"
+	"main/types"
 	validations "main/validations/stop_times/validations"
 	"testing"
 )
@@ -10,25 +11,25 @@ import (
 func TestParseStopTimes_ValidInput(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
-	raw := map[string]string{
-		"trip_id": "T1",
-		"arrival_time": "08:00:00",
-		"departure_time": "09:00:00",
-		"stop_id": "S1",
-		"stop_sequence": "1",
-		"stop_headsign": "Headsign",
-		"start_pickup_drop_off_window": "07:00:00",
-		"end_pickup_drop_off_window": "09:00:00",
-		"pickup_type": "1",
-		"drop_off_type": "1",
-		"continuous_pickup": "1",
-		"continuous_drop_off": "1",
-		"shape_dist_traveled": "100.0",
-		"timepoint": "1",
-		"pickup_booking_rule_id": "R1",
-		"drop_off_booking_rule_id": "R2",
-		"location_group_id": "L1",
-		"location_id": "L2",
+	raw := types.StopTimeRaw{
+		TripId: "T1",
+		ArrivalTime: "08:00:00",
+		DepartureTime: "09:00:00",
+		StopId: "S1",
+		StopSequence: "1",
+		StopHeadsign: "Headsign",
+		StartPickupDropOffWindow: "07:00:00",
+		EndPickupDropOffWindow: "09:00:00",
+		PickupType: "1",
+		DropOffType: "1",
+		ContinuousPickup: "1",
+		ContinuousDropOff: "1",
+		ShapeDistTraveled: "100.0",
+		Timepoint: "1",
+		PickupBookingRuleId: "R1",
+		DropOffBookingRuleId: "R2",
+		LocationGroupId: "L1",
+		LocationId: "L2",
 	}
 	stopTime := validations.ParseStopTimes(raw, row)
 
@@ -117,13 +118,13 @@ func TestParseStopTimes_ValidInput(t *testing.T) {
 
 func TestParseStopTimes_InvalidInts(t *testing.T) {
 	services.AppMessageService.Clear()
-	raw := map[string]string{
-		"stop_sequence": "INVALID",
-		"pickup_type": "INVALID",
-		"drop_off_type": "INVALID",
-		"continuous_pickup": "INVALID",
-		"continuous_drop_off": "INVALID",
-		"timepoint": "INVALID",
+	raw := types.StopTimeRaw{
+		StopSequence: "INVALID",
+		PickupType: "INVALID",
+		DropOffType: "INVALID",
+		ContinuousPickup: "INVALID",
+		ContinuousDropOff: "INVALID",
+		Timepoint: "INVALID",
 	}
 	
 	validations.ParseStopTimes(raw, 1)

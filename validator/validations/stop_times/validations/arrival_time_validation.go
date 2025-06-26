@@ -76,7 +76,7 @@ func ArrivalTimeValidation(severity *types.Severity, stopTime *types.StopTime, r
 		maxStopSequence := math.MinInt
 
 		for _, row := range stopTimes {
-			stopSequence, err := strconv.Atoi(gtfs.Files["stop_times"][row]["stop_sequence"])
+			stopSequence, err := strconv.Atoi(gtfs.StopTime[row].StopSequence)
 			if err != nil {
 				addMessage("stop_sequence must be an integer.", types.SEVERITY_ERROR)
 				return

@@ -71,8 +71,8 @@ func StopIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
 
 		// Check location_type is 0 or empty
 		rowIdx := rows[0]
-		stopRow := gtfs.Files["stops"][rowIdx]
-		locationTypeStr := stopRow["location_type"]
+		stopRow := gtfs.Stop[rowIdx]
+		locationTypeStr := stopRow.LocationType
 		if locationTypeStr != "" && locationTypeStr != "0" {
 			addMessage("stop_id must reference a stop with location_type 0 or empty (platform/stop).", types.SEVERITY_ERROR)
 			return

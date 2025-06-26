@@ -56,7 +56,7 @@ func RouteUrlValidation(severity *types.Severity, route *types.Route,row int, gt
 	if route.AgencyId != nil {
 		agencyId := *route.AgencyId
 		agencyRow := gtfs.IdMap["agency"][agencyId]
-		agencyUrl := gtfs.Files["agency"][agencyRow[0]]["agency_url"]
+		agencyUrl := gtfs.Agency[agencyRow[0]].AgencyUrl
 
 		if agencyUrl != "" && *route.RouteUrl == agencyUrl {
 			addMessage("route_url should be different from agency_url", types.SEVERITY_WARNING)

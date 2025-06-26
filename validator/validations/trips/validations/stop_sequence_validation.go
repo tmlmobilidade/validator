@@ -53,22 +53,22 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs) (stopSe
 	stopTimes := gtfs.IdMap["stop_times"][*trip.TripId]
 	for _, row := range stopTimes {
 		
-		stopSequence, err := strconv.Atoi(gtfs.Files["stop_times"][row]["stop_sequence"])
+		stopSequence, err := strconv.Atoi(gtfs.StopTime[row].StopSequence)
 		if err != nil {
 			addMessage("stop_sequence must be a non-negative integer.", types.SEVERITY_ERROR)
 			return
 		}
 
 		shapeDistTraveled := -1.0
-		if gtfs.Files["stop_times"][row]["shape_dist_traveled"] != "" {
-			shapeDistTraveled, err = strconv.ParseFloat(gtfs.Files["stop_times"][row]["shape_dist_traveled"], 64)
+		if gtfs.StopTime[row].ShapeDistTraveled != "" {
+			shapeDistTraveled, err = strconv.ParseFloat(gtfs.StopTime[row].ShapeDistTraveled, 64)
 			if err != nil {
 				addMessage("shape_dist_traveled must be a float.", types.SEVERITY_ERROR)
 				return
 			}
 		}
 
-		stopId := gtfs.Files["stop_times"][row]["stop_id"]
+		stopId := gtfs.StopTime[row].StopId
 
 		stopSequences = append(stopSequences, types.StopTime{
 			StopSequence: &stopSequence,

@@ -6,7 +6,7 @@ import (
 	"main/types"
 )
 
-func ParseTrips(rawTrips map[string]string, row int) types.Trip {
+func ParseTrips(rawTrips types.TripRaw, row int) types.Trip {
 	var (
 		trip                                           types.Trip = types.Trip{}
 		tripId, routeId, serviceId, patternId          string
@@ -46,14 +46,14 @@ func ParseTrips(rawTrips map[string]string, row int) types.Trip {
 
 	// Parse string fields
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(rawTrips[field], target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawTrips, field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
 
 	// Parse int fields
 	for field, target := range intFields {
-		if errMsg := lib.ParseStringToPrimitive(rawTrips[field], target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawTrips, field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
@@ -71,14 +71,14 @@ func ParseTrips(rawTrips map[string]string, row int) types.Trip {
 	trip.ServiceId = lib.IfThenElse(serviceId != "", &serviceId, nil)
 
 	// Optional fields
-	trip.TripHeadsign = lib.IfThenElse(rawTrips["trip_headsign"] != "", &tripHeadsign, nil)
-	trip.TripShortName = lib.IfThenElse(rawTrips["trip_short_name"] != "", &tripShortName, nil)
-	trip.BlockId = lib.IfThenElse(rawTrips["block_id"] != "", &blockId, nil)
-	trip.ShapeId = lib.IfThenElse(rawTrips["shape_id"] != "", &shapeId, nil)
-	trip.DirectionId = lib.IfThenElse(rawTrips["direction_id"] != "", &directionId, nil)
-	trip.WheelchairAccessible = lib.IfThenElse(rawTrips["wheelchair_accessible"] != "", &wheelchairAccessible, nil)
-	trip.BikesAllowed = lib.IfThenElse(rawTrips["bikes_allowed"] != "", &bikesAllowed, nil)
-	trip.PatternId = lib.IfThenElse(rawTrips["pattern_id"] != "", &patternId, nil)
+	trip.TripHeadsign = lib.IfThenElse(rawTrips.TripHeadsign != "", &tripHeadsign, nil)
+	trip.TripShortName = lib.IfThenElse(rawTrips.TripShortName != "", &tripShortName, nil)
+	trip.BlockId = lib.IfThenElse(rawTrips.BlockId != "", &blockId, nil)
+	trip.ShapeId = lib.IfThenElse(rawTrips.ShapeId != "", &shapeId, nil)
+	trip.DirectionId = lib.IfThenElse(rawTrips.DirectionId != "", &directionId, nil)
+	trip.WheelchairAccessible = lib.IfThenElse(rawTrips.WheelchairAccessible != "", &wheelchairAccessible, nil)
+	trip.BikesAllowed = lib.IfThenElse(rawTrips.BikesAllowed != "", &bikesAllowed, nil)
+	trip.PatternId = lib.IfThenElse(rawTrips.PatternId != "", &patternId, nil)
 
 	return trip
 }

@@ -11,15 +11,10 @@ import (
 func TestAgencyIdValidation_MissingAgencyId_MultipleAgencies(t *testing.T) {
 	services.AppMessageService.Clear()
 	route := &types.Route{AgencyId: nil}
-	gtfs := types.Gtfs{Files: types.GtfsFiles{
-		"agency": {
-			{
-				"agency_id": "A1",
-			},
-			{
-				"agency_id": "A2",
-			},
-		},
+	gtfs := types.Gtfs{
+		Agency: []types.AgencyRaw{
+			{AgencyId: "A1"},
+			{AgencyId: "A2"},
 	}}
 	
 	validations.AgencyIdValidation(nil, route, 1, gtfs)
@@ -38,16 +33,13 @@ func TestAgencyIdValidation_InvalidAgencyId_MultipleAgencies(t *testing.T) {
 	services.AppMessageService.Clear()
 	agencyId := "INVALID"
 	route := &types.Route{AgencyId: &agencyId}
-	gtfs := types.Gtfs{Files: types.GtfsFiles{
-		"agency": {
-			{
-				"agency_id": "A1",
-			},
-			{
-				"agency_id": "A2",
-			},
+	gtfs := types.Gtfs{
+		Agency: []types.AgencyRaw{
+			{AgencyId: "A1"},
+			{AgencyId: "A2"},
 		},
-	}}
+	}
+
 	validations.AgencyIdValidation(nil, route, 2, gtfs)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
@@ -64,15 +56,9 @@ func TestAgencyIdValidation_ValidAgencyId_MultipleAgencies(t *testing.T) {
 	agencyId := "A1"
 	route := &types.Route{AgencyId: &agencyId}
 	gtfs := types.Gtfs{
-		Files: types.GtfsFiles{
-			"agency": {
-				{
-					"agency_id": "A1",
-				},
-				{
-					"agency_id": "A2",
-				},
-			},
+		Agency: []types.AgencyRaw{
+			{AgencyId: "A1"},
+			{AgencyId: "A2"},
 		},
 		IdMap: types.GtfsIdMap{
 			"agency": {
@@ -97,13 +83,11 @@ func TestAgencyIdValidation_ValidAgencyId_MultipleAgencies(t *testing.T) {
 func TestAgencyIdValidation_MissingAgencyId_OneAgency(t *testing.T) {
 	services.AppMessageService.Clear()
 	route := &types.Route{AgencyId: nil}
-	gtfs := types.Gtfs{Files: types.GtfsFiles{
-		"agency": {
-			{
-				"agency_id": "A1",
-			},
+	gtfs := types.Gtfs{
+		Agency: []types.AgencyRaw{
+			{AgencyId: "A1"},
 		},
-	}}
+	}
 	validations.AgencyIdValidation(nil, route, 4, gtfs)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
@@ -122,13 +106,11 @@ func TestAgencyIdValidation_InvalidAgencyId_OneAgency(t *testing.T) {
 	services.AppMessageService.Clear()
 	agencyId := "INVALID"
 	route := &types.Route{AgencyId: &agencyId}
-	gtfs := types.Gtfs{Files: types.GtfsFiles{
-		"agency": {
-			{
-				"agency_id": "A1",
-			},
+	gtfs := types.Gtfs{
+		Agency: []types.AgencyRaw{
+			{AgencyId: "A1"},
 		},
-	}}
+	}
 	validations.AgencyIdValidation(nil, route, 5, gtfs)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
@@ -147,12 +129,8 @@ func TestAgencyIdValidation_ValidAgencyId_OneAgency(t *testing.T) {
 	agencyId := "A1"
 	route := &types.Route{AgencyId: &agencyId}
 	gtfs := types.Gtfs{
-		Files: types.GtfsFiles{
-			"agency": {
-				{
-					"agency_id": "A1",
-				},
-			},
+		Agency: []types.AgencyRaw{
+			{AgencyId: "A1"},
 		},
 		IdMap: types.GtfsIdMap{
 			"agency": {
