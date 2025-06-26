@@ -6,7 +6,7 @@ import (
 	"main/types"
 )
 
-func ParseFeedInfo(rawFeedInfo map[string]string, row int, gtfs *types.Gtfs) types.FeedInfo {
+func ParseFeedInfo(rawFeedInfo types.FeedInfoRaw, row int) types.FeedInfo {
 	var (
 		feedInfo types.FeedInfo = types.FeedInfo{}
 		feedLang, feedPublisherName, feedPublisherUrl string
@@ -39,7 +39,7 @@ func ParseFeedInfo(rawFeedInfo map[string]string, row int, gtfs *types.Gtfs) typ
 
 	// Parse string fields
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(rawFeedInfo[field], target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawFeedInfo, field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
@@ -55,12 +55,12 @@ func ParseFeedInfo(rawFeedInfo map[string]string, row int, gtfs *types.Gtfs) typ
 	feedInfo.FeedPublisherUrl = lib.IfThenElse(feedPublisherUrl != "", &feedPublisherUrl, nil)
 
 	// Assign optional fields
-	feedInfo.DefaultLang = lib.IfThenElse(rawFeedInfo["default_lang"] != "", &defaultLang, nil)
-	feedInfo.FeedContactEmail = lib.IfThenElse(rawFeedInfo["feed_contact_email"] != "", &feedContactEmail, nil)
-	feedInfo.FeedContactUrl = lib.IfThenElse(rawFeedInfo["feed_contact_url"] != "", &feedContactUrl, nil)
-	feedInfo.FeedEndDate = lib.IfThenElse(rawFeedInfo["feed_end_date"] != "", &feedEndDate, nil)
-	feedInfo.FeedStartDate = lib.IfThenElse(rawFeedInfo["feed_start_date"] != "", &feedStartDate, nil)
-	feedInfo.FeedVersion = lib.IfThenElse(rawFeedInfo["feed_version"] != "", &feedVersion, nil)
+	feedInfo.DefaultLang = lib.IfThenElse(rawFeedInfo.DefaultLang != "", &defaultLang, nil)
+	feedInfo.FeedContactEmail = lib.IfThenElse(rawFeedInfo.FeedContactEmail != "", &feedContactEmail, nil)
+	feedInfo.FeedContactUrl = lib.IfThenElse(rawFeedInfo.FeedContactUrl != "", &feedContactUrl, nil)
+	feedInfo.FeedEndDate = lib.IfThenElse(rawFeedInfo.FeedEndDate != "", &feedEndDate, nil)
+	feedInfo.FeedStartDate = lib.IfThenElse(rawFeedInfo.FeedStartDate != "", &feedStartDate, nil)
+	feedInfo.FeedVersion = lib.IfThenElse(rawFeedInfo.FeedVersion != "", &feedVersion, nil)
 
 	return feedInfo
 }

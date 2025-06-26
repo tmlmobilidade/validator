@@ -10,12 +10,12 @@ import (
 func TestParseShape_ValidInput(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
-	raw := map[string]string{
-		"shape_id": "SHP1",
-		"shape_pt_lat": "37.61956",
-		"shape_pt_lon": "-122.48161",
-		"shape_pt_sequence": "0",
-		"shape_dist_traveled": "0.0",
+	raw := types.ShapeRaw{
+		ShapeId: "SHP1",
+		ShapePtLat: "37.61956",
+		ShapePtLon: "-122.48161",
+		ShapePtSequence: "0",
+		ShapeDistTraveled: "0.0",
 	}
 	shape := validations.ParseShape(raw, row)
 
@@ -39,12 +39,12 @@ func TestParseShape_ValidInput(t *testing.T) {
 func TestParseShape_InvalidFloatField(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 2
-	raw := map[string]string{
-		"shape_id": "SHP2",
-		"shape_pt_lat": "not_a_float",
-		"shape_pt_lon": "-122.48161",
-		"shape_pt_sequence": "1",
-		"shape_dist_traveled": "1.5",
+	raw := types.ShapeRaw{
+		ShapeId: "SHP2",
+		ShapePtLat: "not_a_float",
+		ShapePtLon: "-122.48161",
+		ShapePtSequence: "1",
+		ShapeDistTraveled: "1.5",
 	}
 	shape := validations.ParseShape(raw, row)
 
@@ -59,12 +59,12 @@ func TestParseShape_InvalidFloatField(t *testing.T) {
 func TestParseShape_InvalidIntField(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 3
-	raw := map[string]string{
-		"shape_id": "SHP3",
-		"shape_pt_lat": "37.61956",
-		"shape_pt_lon": "-122.48161",
-		"shape_pt_sequence": "not_an_int",
-		"shape_dist_traveled": "2.5",
+	raw := types.ShapeRaw{
+		ShapeId: "SHP3",
+		ShapePtLat: "37.61956",
+		ShapePtLon: "-122.48161",
+		ShapePtSequence: "not_an_int",
+		ShapeDistTraveled: "2.5",
 	}
 	shape := validations.ParseShape(raw, row)
 
@@ -79,12 +79,12 @@ func TestParseShape_InvalidIntField(t *testing.T) {
 func TestParseShape_OptionalFieldsEmpty(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 4
-	raw := map[string]string{
-		"shape_id": "SHP4",
-		"shape_pt_lat": "37.61956",
-		"shape_pt_lon": "-122.48161",
-		"shape_pt_sequence": "2",
-		"shape_dist_traveled": "",
+	raw := types.ShapeRaw{
+		ShapeId: "SHP4",
+		ShapePtLat: "37.61956",
+		ShapePtLon: "-122.48161",
+		ShapePtSequence: "2",
+		ShapeDistTraveled: "",
 	}
 	shape := validations.ParseShape(raw, row)
 

@@ -6,7 +6,7 @@ import (
 	"main/types"
 )
 
-func ParseRoutes(rawRoute map[string]string, row int, gtfs *types.Gtfs) types.Route {
+func ParseRoutes(rawRoute types.RouteRaw, row int) types.Route {
 	var (
 		route types.Route = types.Route{}
 		routeId string
@@ -46,13 +46,13 @@ func ParseRoutes(rawRoute map[string]string, row int, gtfs *types.Gtfs) types.Ro
 	}
 
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(rawRoute[field], target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawRoute, field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
 
 	for field, target := range intFields {
-		if errMsg := lib.ParseStringToPrimitive(rawRoute[field], target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawRoute, field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
@@ -62,18 +62,18 @@ func ParseRoutes(rawRoute map[string]string, row int, gtfs *types.Gtfs) types.Ro
 		return route
 	}
 
-	route.RouteId = lib.IfThenElse(rawRoute["route_id"] != "", &routeId, nil)
-	route.RouteType = lib.IfThenElse(rawRoute["route_type"] != "", &routeType, nil)
-	route.AgencyId = lib.IfThenElse(rawRoute["agency_id"] != "", &agencyId, nil)
-	route.ContinuousDropOff = lib.IfThenElse(rawRoute["continuous_drop_off"] != "", &continuousDropOff, nil)
-	route.ContinuousPickup = lib.IfThenElse(rawRoute["continuous_pickup"] != "", &continuousPickup, nil)
-	route.RouteColor = lib.IfThenElse(rawRoute["route_color"] != "", &routeColor, nil)
-	route.RouteDesc = lib.IfThenElse(rawRoute["route_desc"] != "", &routeDesc, nil)
-	route.RouteLongName = lib.IfThenElse(rawRoute["route_long_name"] != "", &routeLongName, nil)
-	route.RouteShortName = lib.IfThenElse(rawRoute["route_short_name"] != "", &routeShortName, nil)
-	route.RouteSortOrder = lib.IfThenElse(rawRoute["route_sort_order"] != "", &routeSortOrder, nil)
-	route.RouteTextColor = lib.IfThenElse(rawRoute["route_text_color"] != "", &routeTextColor, nil)
-	route.RouteUrl = lib.IfThenElse(rawRoute["route_url"] != "", &routeUrl, nil)
+	route.RouteId = lib.IfThenElse(rawRoute.RouteId != "", &routeId, nil)
+	route.RouteType = lib.IfThenElse(rawRoute.RouteType != "", &routeType, nil)
+	route.AgencyId = lib.IfThenElse(rawRoute.AgencyId != "", &agencyId, nil)
+	route.ContinuousDropOff = lib.IfThenElse(rawRoute.ContinuousDropOff != "", &continuousDropOff, nil)
+	route.ContinuousPickup = lib.IfThenElse(rawRoute.ContinuousPickup != "", &continuousPickup, nil)
+	route.RouteColor = lib.IfThenElse(rawRoute.RouteColor != "", &routeColor, nil)
+	route.RouteDesc = lib.IfThenElse(rawRoute.RouteDesc != "", &routeDesc, nil)
+	route.RouteLongName = lib.IfThenElse(rawRoute.RouteLongName != "", &routeLongName, nil)
+	route.RouteShortName = lib.IfThenElse(rawRoute.RouteShortName != "", &routeShortName, nil)
+	route.RouteSortOrder = lib.IfThenElse(rawRoute.RouteSortOrder != "", &routeSortOrder, nil)
+	route.RouteTextColor = lib.IfThenElse(rawRoute.RouteTextColor != "", &routeTextColor, nil)
+	route.RouteUrl = lib.IfThenElse(rawRoute.RouteUrl != "", &routeUrl, nil)
 
 	return route
 }

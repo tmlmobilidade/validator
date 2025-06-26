@@ -48,7 +48,7 @@ func NetworkIdValidation(severity *types.Severity, route *types.Route, row int, 
 		return
 	}
 
-	if _, exists := gtfs.Files["route_networks"]; exists && route.NetworkId != nil {
+	if len(gtfs.RouteNetwork) > 0 && route.NetworkId != nil {
 		addMessage("network_id is forbidden if route_networks.txt exists", types.SEVERITY_ERROR)
 		return
 	}

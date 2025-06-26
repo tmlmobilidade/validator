@@ -9,7 +9,7 @@ import (
 func RunValidations(gtfs types.Gtfs) {
 	lib.AppLogger.Debug("Running StopTimes Validations...")
 
-	for i, rawStopTimes := range gtfs.Files["stop_times"] {
+	for i, rawStopTimes := range gtfs.StopTime {
 		stopTime := validations.ParseStopTimes(rawStopTimes, i)
 
 		if stopTime == (types.StopTime{}) {

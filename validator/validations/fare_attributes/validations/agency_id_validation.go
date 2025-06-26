@@ -43,7 +43,7 @@ func AgencyIdValidation(severity *types.Severity, fareAttribute *types.FareAttri
 	}
 
 	//  Check if agency_id is required
-	if fareAttribute.AgencyId == nil && len(gtfs.Files["agency"]) > 1 {
+	if fareAttribute.AgencyId == nil && len(gtfs.Agency) > 1 {
 		s = types.SEVERITY_ERROR
 		addMessage("Agency ID is required when there is more than one agency")
 		return;

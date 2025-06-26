@@ -6,7 +6,7 @@ import (
 	"main/types"
 )
 
-func ParseCalendarDates(rawCalendarDates map[string]string, row int, gtfs *types.Gtfs) types.CalendarDates {
+func ParseCalendarDates(rawCalendarDates types.CalendarDatesRaw, row int) types.CalendarDates {
 	var (
 		calendarDates    types.CalendarDates = types.CalendarDates{}
 		serviceId, date  string
@@ -38,14 +38,14 @@ func ParseCalendarDates(rawCalendarDates map[string]string, row int, gtfs *types
 
 	// Parse string fields
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(rawCalendarDates[field], target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawCalendarDates, field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
 
 	// Parse int fields
 	for field, target := range intFields {
-		if errMsg := lib.ParseStringToPrimitive(rawCalendarDates[field], target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawCalendarDates, field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
@@ -59,7 +59,7 @@ func ParseCalendarDates(rawCalendarDates map[string]string, row int, gtfs *types
 	// Required fields
 	calendarDates.ServiceId = serviceId
 	calendarDates.Date = date
-	calendarDates.ExceptionType = lib.IfThenElse(rawCalendarDates["exception_type"] != "", &exceptionType, nil)
+	calendarDates.ExceptionType = lib.IfThenElse(types.GetFieldByTag(&rawCalendarDates, "exception_type") != "", &exceptionType, nil)
 
 	return calendarDates
 }

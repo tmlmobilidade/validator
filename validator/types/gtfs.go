@@ -1,15 +1,5 @@
 package types
 
-// Gtfs represents a collection of parsed GTFS data files where the key is the filename (without  extension)
-// and the value is a slice of maps containing the CSV data with column headers as keys.
-type GtfsFiles map[string][]map[string]string
-type GtfsIdMap map[string]map[string][]int // key is the filename, value is a map of ids and their row number
-
-type Gtfs struct {
-	Files        GtfsFiles
-	IdMap        GtfsIdMap
-}
-
 /* PRIMARY KEYS */
 var GTFS_PRIMARY_KEYS = map[string]any{
 	"afetacao":             nil,

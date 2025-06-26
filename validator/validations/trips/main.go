@@ -12,7 +12,7 @@ func RunValidations(gtfs types.Gtfs) {
 
 	var tripsGroupedByPattern types.TripGroupedByPattern = make(types.TripGroupedByPattern)
 
-	for i, rawTrips := range gtfs.Files["trips"] {
+	for i, rawTrips := range gtfs.Trip {
 		trip := validations.ParseTrips(rawTrips, i)
 
 		if trip == (types.Trip{}) {

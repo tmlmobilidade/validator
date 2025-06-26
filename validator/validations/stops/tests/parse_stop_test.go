@@ -3,6 +3,7 @@ package stops
 import (
 	"main/lib"
 	"main/services"
+	"main/types"
 	validations "main/validations/stops/validations"
 	"testing"
 )
@@ -10,22 +11,22 @@ import (
 func TestParseStop_ValidInput(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
-	raw := map[string]string{
-		"stop_id": "S1",
-		"stop_code": "C1",
-		"stop_name": "Main St",
-		"stop_desc": "Main Street Stop",
-		"zone_id": "Z1",
-		"stop_url": "http://example.com",
-		"parent_station": "P1",
-		"stop_timezone": "Europe/Lisbon",
-		"level_id": "L1",
-		"platform_code": "PL1",
-		"location_type": "1",
-		"wheelchair_boarding": "2",
-		"stop_lat": "40.1234",
-		"stop_lon": "-8.5678",
-		"tts_stop_name": "Main St",
+	raw := types.StopRaw{
+		StopId: "S1",
+		StopCode: "C1",
+		StopName: "Main St",
+		StopDesc: "Main Street Stop",
+		ZoneId: "Z1",
+		StopUrl: "http://example.com",
+		ParentStation: "P1",
+		StopTimezone: "Europe/Lisbon",
+		LevelId: "L1",
+		PlatformCode: "PL1",
+		LocationType: "1",
+		WheelchairBoarding: "2",
+		StopLat: "40.1234",
+		StopLon: "-8.5678",
+		TtsStopName: "Main St",
 	}
 	
 	stop := validations.ParseStop(raw, row)
@@ -89,10 +90,10 @@ func TestParseStop_ValidInput(t *testing.T) {
 func TestParseStop_InvalidIntFields(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 3
-	raw := map[string]string{
-		"stop_id": "S2",
-		"location_type": "INVALID",
-		"wheelchair_boarding": "INVALID",
+	raw := types.StopRaw{
+		StopId: "S2",
+		LocationType: "INVALID",
+		WheelchairBoarding: "INVALID",
 	}
 	
 	validations.ParseStop(raw, row)
@@ -110,10 +111,10 @@ func TestParseStop_InvalidIntFields(t *testing.T) {
 func TestParseStop_InvalidFloatFields(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 3
-	raw := map[string]string{
-		"stop_id": "S2",
-		"stop_lat": "INVALID",
-		"stop_lon": "INVALID",
+	raw := types.StopRaw{
+		StopId: "S2",
+		StopLat: "INVALID",
+		StopLon: "INVALID",
 	}
 	
 	validations.ParseStop(raw, row)

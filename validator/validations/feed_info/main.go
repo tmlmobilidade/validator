@@ -9,8 +9,8 @@ import (
 func RunValidations(gtfs types.Gtfs) {
 	lib.AppLogger.Debug("Running FeedInfo Validations...")
 
-	for i, feedInfo := range gtfs.Files["feed_info"] {
-		feedInfo := validations.ParseFeedInfo(feedInfo, i, &gtfs)
+	for i, feedInfo := range gtfs.FeedInfo {
+		feedInfo := validations.ParseFeedInfo(feedInfo, i)
 
 		if feedInfo == (types.FeedInfo{}) {
 			continue

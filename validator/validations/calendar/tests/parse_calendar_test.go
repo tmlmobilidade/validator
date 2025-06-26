@@ -11,17 +11,17 @@ import (
 func TestParseCalendar_ValidInput(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
-	raw := map[string]string{
-		"service_id": "S1",
-		"start_date": "20240101",
-		"end_date":   "20241231",
-		"monday":     "1",
-		"tuesday":    "1",
-		"wednesday":  "1",
-		"thursday":   "1",
-		"friday":     "1",
-		"saturday":   "0",
-		"sunday":     "0",
+	raw := types.CalendarRaw{
+		ServiceId: "S1",
+		StartDate: "20240101",
+		EndDate:   "20241231",
+		Monday:     "1",
+		Tuesday:    "1",
+		Wednesday:  "1",
+		Thursday:   "1",
+		Friday:     "1",
+		Saturday:   "0",
+		Sunday:     "0",
 	}
 	gtfs := &types.Gtfs{}
 	calendar := validations.ParseCalendar(raw, row, gtfs)
@@ -61,20 +61,20 @@ func TestParseCalendar_ValidInput(t *testing.T) {
 func TestParseCalendar_InvalidBooleanValues(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 3
-	raw := map[string]string{
-		"service_id": "S1",
-		"start_date": "20240101",
-		"end_date":   "20241231",
-		"monday":     "2", // Invalid boolean value
-		"tuesday":    "1",
-		"wednesday":  "1",
-		"thursday":   "2", // Invalid boolean value
-		"friday":     "1",
-		"saturday":   "0",
-		"sunday":     "0",
+	raw := types.CalendarRaw{
+		ServiceId: "S1",
+		StartDate: "20240101",
+		EndDate:   "20241231",
+		Monday:     "2", // Invalid boolean value
+		Tuesday:    "1",
+		Wednesday:  "1",
+		Thursday:   "2", // Invalid boolean value
+		Friday:     "1",
+		Saturday:   "0",
+		Sunday:     "0",
 	}
 	gtfs := &types.Gtfs{}
-	_ = validations.ParseCalendar(raw, row, gtfs)
+	validations.ParseCalendar(raw, row, gtfs)
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,
@@ -89,17 +89,17 @@ func TestParseCalendar_InvalidBooleanValues(t *testing.T) {
 func TestParseCalendar_AllDaysDisabled(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 4
-	raw := map[string]string{
-		"service_id": "S1",
-		"start_date": "20240101",
-		"end_date":   "20241231",
-		"monday":     "0",
-		"tuesday":    "0",
-		"wednesday":  "0",
-		"thursday":   "0",
-		"friday":     "0",
-		"saturday":   "0",
-		"sunday":     "0",
+	raw := types.CalendarRaw{
+		ServiceId: "S1",
+		StartDate: "20240101",
+		EndDate:   "20241231",
+		Monday:     "0",
+		Tuesday:    "0",
+		Wednesday:  "0",
+		Thursday:   "0",
+		Friday:     "0",
+		Saturday:   "0",
+		Sunday:     "0",
 	}
 	gtfs := &types.Gtfs{}
 	calendar := validations.ParseCalendar(raw, row, gtfs)
@@ -113,17 +113,17 @@ func TestParseCalendar_AllDaysDisabled(t *testing.T) {
 func TestParseCalendar_AllDaysEnabled(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 5
-	raw := map[string]string{
-		"service_id": "S1",
-		"start_date": "20240101",
-		"end_date":   "20241231",
-		"monday":     "1",
-		"tuesday":    "1",
-		"wednesday":  "1",
-		"thursday":   "1",
-		"friday":     "1",
-		"saturday":   "1",
-		"sunday":     "1",
+	raw := types.CalendarRaw{
+		ServiceId: "S1",
+		StartDate: "20240101",
+		EndDate:   "20241231",
+		Monday:     "1",
+		Tuesday:    "1",
+		Wednesday:  "1",
+		Thursday:   "1",
+		Friday:     "1",
+		Saturday:   "1",
+		Sunday:     "1",
 	}
 	gtfs := &types.Gtfs{}
 	calendar := validations.ParseCalendar(raw, row, gtfs)

@@ -10,17 +10,17 @@ import (
 func TestParseTrips_ValidInput(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
-	raw := map[string]string{
-		"trip_id":               "T1",
-		"route_id":              "R1",
-		"service_id":            "S1",
-		"trip_headsign":         "Headsign",
-		"trip_short_name":       "Short",
-		"direction_id":          "1",
-		"block_id":              "B1",
-		"shape_id":              "SH1",
-		"wheelchair_accessible": "2",
-		"bikes_allowed":         "1",
+	raw := types.TripRaw{
+		TripId:               "T1",
+		RouteId:              "R1",
+		ServiceId:            "S1",
+		TripHeadsign:         "Headsign",
+		TripShortName:       "Short",
+		DirectionId:          "1",
+		BlockId:              "B1",
+		ShapeId:              "SH1",
+		WheelchairAccessible: "2",
+		BikesAllowed:         "1",
 	}
 	trip := validations.ParseTrips(raw, row)
 
@@ -59,17 +59,17 @@ func TestParseTrips_ValidInput(t *testing.T) {
 func TestParseTrips_ValidIntField(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 2
-	raw := map[string]string{
-		"trip_id":               "T1",
-		"route_id":              "R1",
-		"service_id":            "S1",
-		"trip_headsign":         "Headsign",
-		"trip_short_name":       "Short",
-		"direction_id":          "1",
-		"block_id":              "B1",
-		"shape_id":              "SH1",
-		"wheelchair_accessible": "2",
-		"bikes_allowed":         "1",
+	raw := types.TripRaw{
+		TripId:               "T1",
+		RouteId:              "R1",
+		ServiceId:            "S1",
+		TripHeadsign:         "Headsign",
+		TripShortName:       "Short",
+		DirectionId:          "1",
+		BlockId:              "B1",
+		ShapeId:              "SH1",
+		WheelchairAccessible: "2",
+		BikesAllowed:         "1",
 	}
 	trip := validations.ParseTrips(raw, row)
 
@@ -89,17 +89,17 @@ func TestParseTrips_ValidIntField(t *testing.T) {
 func TestParseTrips_InvalidIntField(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 3
-	raw := map[string]string{
-		"trip_id":               "T1",
-		"route_id":              "R1",
-		"service_id":            "S1",
-		"trip_headsign":         "Headsign",
-		"trip_short_name":       "Short",
-		"direction_id":          "not_an_int",
-		"block_id":              "B1",
-		"shape_id":              "SH1",
-		"wheelchair_accessible": "2",
-		"bikes_allowed":         "1",
+	raw := types.TripRaw{
+		TripId:               "T1",
+		RouteId:              "R1",
+		ServiceId:            "S1",
+		TripHeadsign:         "Headsign",
+		TripShortName:       "Short",
+		DirectionId:          "not_an_int",
+		BlockId:              "B1",
+		ShapeId:              "SH1",
+		WheelchairAccessible: "2",
+		BikesAllowed:         "1",
 	}
 	trip := validations.ParseTrips(raw, row)
 
@@ -114,17 +114,17 @@ func TestParseTrips_InvalidIntField(t *testing.T) {
 func TestParseTrips_OptionalFieldsEmpty(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 4
-	raw := map[string]string{
-		"trip_id":               "T2",
-		"route_id":              "R2",
-		"service_id":            "S2",
-		"trip_headsign":         "",
-		"trip_short_name":       "",
-		"direction_id":          "",
-		"block_id":              "",
-		"shape_id":              "",
-		"wheelchair_accessible": "",
-		"bikes_allowed":         "",
+	raw := types.TripRaw{
+		TripId:               "T2",
+		RouteId:              "R2",
+		ServiceId:            "S2",
+		TripHeadsign:         "",
+		TripShortName:       "",
+		DirectionId:          "",
+		BlockId:              "",
+		ShapeId:              "",
+		WheelchairAccessible: "",
+		BikesAllowed:         "",
 	}
 	trip := validations.ParseTrips(raw, row)
 

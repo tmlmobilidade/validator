@@ -11,13 +11,12 @@ import (
 func TestParseRoutes_InvalidTypes(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 2
-	gtfs := &types.Gtfs{}
 	// route_type should be int, but is given as string
-	input := map[string]string{
-		"route_id": "R1",
-		"route_type": "not_an_int",
+	input := types.RouteRaw{
+		RouteId: "R1",
+		RouteType: "not_an_int",
 	}
-	_ = validations.ParseRoutes(input, row, gtfs)
+	_ = validations.ParseRoutes(input, row)
 	assertion := lib.AssertionMessage{
 		Expected: 1, // route_type parse error
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
@@ -31,19 +30,18 @@ func TestParseRoutes_InvalidTypes(t *testing.T) {
 func TestParseRoutes_ValidInput(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 3
-	gtfs := &types.Gtfs{}
-	input := map[string]string{
-		"route_id": "R1",
-		"route_type": "3",
-		"agency_id": "A1",
-		"route_short_name": "10A",
-		"route_long_name": "Main Street",
-		"route_color": "FFFFFF",
-		"route_text_color": "000000",
-		"route_url": "http://example.com",
-		"route_sort_order": "1",
+	input := types.RouteRaw{
+		RouteId: "R1",
+		RouteType: "3",
+		AgencyId: "A1",
+		RouteShortName: "10A",
+		RouteLongName: "Main Street",
+		RouteColor: "FFFFFF",
+		RouteTextColor: "000000",
+		RouteUrl: "http://example.com",
+		RouteSortOrder: "1",
 	}
-	route := validations.ParseRoutes(input, row, gtfs)
+	route := validations.ParseRoutes(input, row)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,

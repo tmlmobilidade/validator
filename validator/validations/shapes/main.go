@@ -11,7 +11,7 @@ func RunValidations(gtfs types.Gtfs) {
 
 	var allShapes []types.Shape
 
-	for row, rawShape := range gtfs.Files["shapes"] {
+	for row, rawShape := range gtfs.Shape {
 		shape := validations.ParseShape(rawShape, row)
 
 		if shape == (types.Shape{}) {

@@ -13,13 +13,12 @@ import (
 func TestParseCalendarDates_ValidInput(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 2
-	raw := map[string]string{
-		"date": "20240101",
-		"exception_type": "1",
-		"service_id": "S1",
+	raw := types.CalendarDatesRaw{
+		Date: "20240101",
+		ExceptionType: "1",
+		ServiceId: "S1",
 	}
-	gtfs := &types.Gtfs{}
-	calendarDate := validations.ParseCalendarDates(raw, row, gtfs)
+	calendarDate := validations.ParseCalendarDates(raw, row)
 
 	if calendarDate.Date != "20240101" {
 		t.Errorf("Expected date to be 20240101, got %s", calendarDate.Date)
@@ -35,13 +34,12 @@ func TestParseCalendarDates_ValidInput(t *testing.T) {
 func TestParseCalendarDates_InvalidExceptionType(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 2
-	raw := map[string]string{
-		"date": "20240101",
-		"exception_type": "WRONG VALUE",
-		"service_id": "S1",
+	raw := types.CalendarDatesRaw{
+		Date: "20240101",
+		ExceptionType: "WRONG VALUE",
+		ServiceId: "S1",
 	}
-	gtfs := &types.Gtfs{}
-	_ = validations.ParseCalendarDates(raw, row, gtfs)
+	validations.ParseCalendarDates(raw, row)
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,

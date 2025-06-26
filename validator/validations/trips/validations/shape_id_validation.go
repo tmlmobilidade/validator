@@ -44,7 +44,7 @@ func ShapeIdValidation(severity *types.Severity, trip *types.Trip, row int, gtfs
 	
 	// Check if the route has continuous pickup/dropoff behavior
 	routeRow := gtfs.IdMap["routes"][*trip.RouteId]
-	if gtfs.IdMap["routes"] != nil && gtfs.Files["routes"][routeRow[0]]["continuous_pickup"] != "" {
+	if gtfs.IdMap["routes"] != nil && gtfs.Route[routeRow[0]].ContinuousPickup != "" {
 		hasContinuousPickupDropoff = true
 	}
 
@@ -52,7 +52,7 @@ func ShapeIdValidation(severity *types.Severity, trip *types.Trip, row int, gtfs
 	if gtfs.IdMap["stop_times"] != nil && len(gtfs.IdMap["stop_times"][*trip.TripId]) > 0 && !hasContinuousPickupDropoff {
 
 		for _, rowIndex := range gtfs.IdMap["stop_times"][*trip.TripId] {
-			if continuousPickup := gtfs.Files["stop_times"][rowIndex]["continuous_pickup"]; continuousPickup != "" {
+			if continuousPickup := gtfs.StopTime[rowIndex].ContinuousPickup; continuousPickup != "" {
 				hasContinuousPickupDropoff = true
 				break // Exit early once we find a continuous pickup
 			}

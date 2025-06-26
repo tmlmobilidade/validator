@@ -7,7 +7,7 @@ import (
 )
 
 // ParseShape parses a row from shapes.txt into a Shape struct, following gtfs-parser-validation best practices
-func ParseShape(rawShape map[string]string, row int) types.Shape {
+func ParseShape(rawShape types.ShapeRaw, row int) types.Shape {
 	var (
 		shape types.Shape = types.Shape{}
 		shapeId string
@@ -44,25 +44,25 @@ func ParseShape(rawShape map[string]string, row int) types.Shape {
 
 	// Parse string fields
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(rawShape[field], target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawShape, field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
 	// Parse float32 fields
 	for field, target := range float32Fields {
-		if errMsg := lib.ParseStringToPrimitive(rawShape[field], target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawShape, field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
 	// Parse int fields
 	for field, target := range intFields {
-		if errMsg := lib.ParseStringToPrimitive(rawShape[field], target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawShape, field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
 	// Parse float64 fields
 	for field, target := range float64Fields {
-		if errMsg := lib.ParseStringToPrimitive(rawShape[field], target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawShape, field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
@@ -74,10 +74,10 @@ func ParseShape(rawShape map[string]string, row int) types.Shape {
 
 	// Assign fields
 	shape.ShapeId = lib.IfThenElse(shapeId != "", &shapeId, nil)
-	shape.ShapePtLat = lib.IfThenElse(rawShape["shape_pt_lat"] != "", &shapePtLat, nil)
-	shape.ShapePtLon = lib.IfThenElse(rawShape["shape_pt_lon"] != "", &shapePtLon, nil)
-	shape.ShapePtSequence = lib.IfThenElse(rawShape["shape_pt_sequence"] != "", &shapePtSequence, nil)
-	shape.ShapeDistTraveled = lib.IfThenElse(rawShape["shape_dist_traveled"] != "", &shapeDistTraveled, nil)
+	shape.ShapePtLat = lib.IfThenElse(rawShape.ShapePtLat != "", &shapePtLat, nil)
+	shape.ShapePtLon = lib.IfThenElse(rawShape.ShapePtLon != "", &shapePtLon, nil)
+	shape.ShapePtSequence = lib.IfThenElse(rawShape.ShapePtSequence != "", &shapePtSequence, nil)
+	shape.ShapeDistTraveled = lib.IfThenElse(rawShape.ShapeDistTraveled != "", &shapeDistTraveled, nil)
 
 	return shape
 }

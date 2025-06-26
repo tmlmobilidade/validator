@@ -10,15 +10,15 @@ import (
 
 func TestParseFareRule_ValidInput(t *testing.T) {
 	services.AppMessageService.Clear()
-	rawFareRule := map[string]string{
-		"fare_id": "FARE1",
-		"route_id": "ROUTE1",
-		"origin_id": "ORIGIN1",
-		"destination_id": "DEST1",
-		"contains_id": "CONTAIN1",
+	rawFareRule := types.FareRuleRaw{
+		FareId: "FARE1",
+		RouteId: "ROUTE1",
+		OriginId: "ORIGIN1",
+		DestinationId: "DEST1",
+		ContainsId: "CONTAIN1",
 	}
-	gtfs := &types.Gtfs{}
-	fareRule := validations.ParseFareRule(rawFareRule, 3, gtfs)
+	
+	fareRule := validations.ParseFareRule(rawFareRule, 3)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,

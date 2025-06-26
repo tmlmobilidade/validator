@@ -10,8 +10,8 @@ func RunValidations(gtfs types.Gtfs) {
 
 	lib.AppLogger.Debug("Running Calendar Dates Validations...")
 
-	for i, rawCalendarDate := range gtfs.Files["calendar_dates"] {
-		calendarDate := ParseCalendarDates(rawCalendarDate, i, &gtfs)
+	for i, rawCalendarDate := range gtfs.CalendarDates {
+		calendarDate := ParseCalendarDates(rawCalendarDate, i)
 
 		if calendarDate == (types.CalendarDates{}) {
 			continue

@@ -6,7 +6,7 @@ import (
 	"main/types"
 )
 
-func ParseCalendar(rawCalendar map[string]string, row int, gtfs *types.Gtfs) types.Calendar {
+func ParseCalendar(rawCalendar types.CalendarRaw, row int, gtfs *types.Gtfs) types.Calendar {
 	var (
 		calendar                                           types.Calendar = types.Calendar{}
 		serviceId, startDate, endDate                      string
@@ -45,14 +45,14 @@ func ParseCalendar(rawCalendar map[string]string, row int, gtfs *types.Gtfs) typ
 
 	// Parse string fields
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(rawCalendar[field], target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawCalendar, field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
 
 	// Parse bool fields
 	for field, target := range boolFields {
-		if errMsg := lib.ParseStringToPrimitive(rawCalendar[field], target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawCalendar, field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}

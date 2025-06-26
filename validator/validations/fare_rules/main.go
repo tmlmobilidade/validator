@@ -9,9 +9,9 @@ import (
 func RunValidations(gtfs types.Gtfs) {
 	lib.AppLogger.Debug("Running FareRules Validations...")
 	
-	for i, rawFareRule := range gtfs.Files["fare_rules"] {
+	for i, rawFareRule := range gtfs.FareRule {
 		// Parse Fare Rule Validation
-		fareRule := validations.ParseFareRule(rawFareRule, i, &gtfs)
+		fareRule := validations.ParseFareRule(rawFareRule, i)
 
 		if fareRule == (types.FareRule{}) {
 			continue
