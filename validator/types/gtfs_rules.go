@@ -12,7 +12,7 @@ type AgencyRules struct {
 	AgencyId    RuleConfig `json:"agency_id"`
 	AgencyName  RuleConfig `json:"agency_name"`
 	AgencyUrl   RuleConfig `json:"agency_url"`
-	AgencyTz    RuleConfig `json:"agency_timezone"`
+	AgencyTimezone    RuleConfig `json:"agency_timezone"`
 	AgencyLang  RuleConfig `json:"agency_lang"`
 	AgencyPhone RuleConfig `json:"agency_phone"`
 	AgencyFare  RuleConfig `json:"agency_fare_url"`

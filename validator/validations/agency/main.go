@@ -27,18 +27,18 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		validations.AgencyUrlValidation(&agency, i, &rules.Agency)
 
 		// Validate Agency Timezone
-		validations.AgencyTimezoneValidation(&agency, i)
+		validations.AgencyTimezoneValidation(&agency, i, &rules.Agency)
 
 		// Validate Agency Lang
-		validations.AgencyLangValidation(nil, &agency, i)
+		validations.AgencyLangValidation(&agency, i, &rules.Agency)
 
 		// Validate Agency Phone
-		validations.AgencyPhoneValidation(nil, &agency, i)
+		validations.AgencyPhoneValidation(&agency, i, &rules.Agency)
 
 		// Validate Agency Fare URL
-		validations.AgencyFareUrlValidation(nil, &agency, i)
+		validations.AgencyFareUrlValidation(&agency, i, &rules.Agency)
 
 		// Validate Agency Email
-		validations.AgencyEmailValidation(nil, &agency, i)
+		validations.AgencyEmailValidation(&agency, i, &rules.Agency)
 	}
 }

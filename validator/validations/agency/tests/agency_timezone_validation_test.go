@@ -10,7 +10,7 @@ import (
 
 func TestAgencyTimezoneValidation_Required(t *testing.T) {
 	agency := &types.Agency{AgencyTimezone: nil}
-	validations.AgencyTimezoneValidation(agency, 1)
+	validations.AgencyTimezoneValidation(agency, 1, &types.AgencyRules{AgencyTimezone: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 
 	// Assert
 	assertion := lib.AssertionMessage{
@@ -27,7 +27,7 @@ func TestAgencyTimezoneValidation_Required(t *testing.T) {
 
 func TestAgencyTimezoneValidation_ValidTimezone(t *testing.T) {
 	agency := &types.Agency{AgencyTimezone: lib.Ptr("America/New_York")}
-	validations.AgencyTimezoneValidation(agency, 2)
+	validations.AgencyTimezoneValidation(agency, 2, &types.AgencyRules{AgencyTimezone: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 	assertion := lib.AssertionMessage{
 		Expected: 0,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,
@@ -42,7 +42,7 @@ func TestAgencyTimezoneValidation_ValidTimezone(t *testing.T) {
 
 func TestAgencyTimezoneValidation_InvalidTimezone(t *testing.T) {
 	agency := &types.Agency{AgencyTimezone: lib.Ptr("Invalid/Timezone")}
-	validations.AgencyTimezoneValidation(agency, 3)
+	validations.AgencyTimezoneValidation(agency, 3, &types.AgencyRules{AgencyTimezone: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 
 	// Assert
 	assertion := lib.AssertionMessage{

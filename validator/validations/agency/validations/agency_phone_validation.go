@@ -1,9 +1,11 @@
 package agency
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
@@ -23,21 +25,39 @@ Dialable text (for example, TriMet's "503-238-RIDE") is permitted, but the field
 
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
-func AgencyPhoneValidation(severity *types.Severity, agency *types.Agency, row int) {
+func AgencyPhoneValidation(agency *types.Agency, row int, rules *types.AgencyRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.AgencyPhone.Severity != "" {
+		s = rules.AgencyPhone.Severity
+	}
+
+	addMessage := func(message string, severity types.Severity) {
+		services.AppMessageService.AddMessage(types.Message{
+			Field: "agency_phone",
+			FileName: "agency.txt",
+			Message: message,
+			Rows: []int{row},
+			Severity: severity,
+			ValidationID: "agency_phone_validation",
+		})
 	}
 
 	// Check if agency_phone is required
 	if agency.AgencyPhone == nil && s != types.SEVERITY_IGNORE {
-		services.AppMessageService.AddMessage(types.Message{
-			Field: "agency_phone",
-			FileName: "agency.txt",
-			Message: lib.IfThenElse(s == types.SEVERITY_ERROR, "Agency phone is required", "Agency phone is recommended"),
-			Rows: []int{row},
-			Severity: s,
-			ValidationID: "agency_phone_validation",
-		})
+		addMessage(lib.IfThenElse(s == types.SEVERITY_ERROR, "Agency phone is required", "Agency phone is recommended"), s)
+	}
+
+	// Validate rules
+	if rules != nil && rules.AgencyPhone.Options != nil {
+		if slices.Contains(*rules.AgencyPhone.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if slices.Contains(*rules.AgencyPhone.Options, *agency.AgencyPhone) {
+			return
+		}
+
+		addMessage(fmt.Sprintf("Agency phone is not allowed: %s", *agency.AgencyPhone), types.SEVERITY_ERROR)
+		return
 	}
 }

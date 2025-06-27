@@ -1,9 +1,11 @@
 package agency
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
@@ -29,10 +31,10 @@ This email address should be a direct contact point where transit riders can rea
 
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
-func AgencyEmailValidation(severity *types.Severity, agency *types.Agency, row int) {
+func AgencyEmailValidation(agency *types.Agency, row int, rules *types.AgencyRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.AgencyEmail.Severity != "" {
+		s = rules.AgencyEmail.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -60,6 +62,20 @@ func AgencyEmailValidation(severity *types.Severity, agency *types.Agency, row i
 	// Check if agency_email is valid
 	if emailErrors := lib.ValidateEmail(*agency.AgencyEmail); emailErrors != "" {
 		addMessage(emailErrors, types.SEVERITY_ERROR)
+		return
+	}
+
+	// Validate rules
+	if rules != nil && rules.AgencyEmail.Options != nil {
+		if slices.Contains(*rules.AgencyEmail.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if slices.Contains(*rules.AgencyEmail.Options, *agency.AgencyEmail) {
+			return
+		}
+
+		addMessage(fmt.Sprintf("Agency email is not allowed: %s", *agency.AgencyEmail), types.SEVERITY_ERROR)
 		return
 	}
 }

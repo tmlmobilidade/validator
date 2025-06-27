@@ -11,7 +11,7 @@ import (
 func TestAgencyPhoneValidation_Required(t *testing.T) {
 	severity := types.SEVERITY_ERROR
 	agency := &types.Agency{AgencyPhone: nil}
-	validations.AgencyPhoneValidation(&severity, agency, 1)
+	validations.AgencyPhoneValidation(agency, 1, &types.AgencyRules{AgencyPhone: types.RuleConfig{Severity: severity}})
 
 	// Assert
 	assertion := lib.AssertionMessage{
@@ -30,7 +30,7 @@ func TestAgencyPhoneValidation_Required(t *testing.T) {
 func TestAgencyPhoneValidation_Recommended(t *testing.T) {
 	severity := types.SEVERITY_WARNING
 	agency := &types.Agency{AgencyPhone: nil}
-	validations.AgencyPhoneValidation(&severity, agency, 2)
+	validations.AgencyPhoneValidation(agency, 2, &types.AgencyRules{AgencyPhone: types.RuleConfig{Severity: severity}})
 
 	// Assert
 	assertion := lib.AssertionMessage{
