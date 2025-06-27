@@ -46,13 +46,13 @@ func ParseRoutes(rawRoute types.RouteRaw, row int) types.Route {
 	}
 
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawRoute, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawRoute, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
 
 	for field, target := range intFields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawRoute, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawRoute, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}

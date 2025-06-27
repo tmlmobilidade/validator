@@ -38,14 +38,14 @@ func ParseCalendarDates(rawCalendarDates types.CalendarDatesRaw, row int) types.
 
 	// Parse string fields
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawCalendarDates, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawCalendarDates, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
 
 	// Parse int fields
 	for field, target := range intFields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawCalendarDates, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawCalendarDates, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
@@ -59,7 +59,7 @@ func ParseCalendarDates(rawCalendarDates types.CalendarDatesRaw, row int) types.
 	// Required fields
 	calendarDates.ServiceId = serviceId
 	calendarDates.Date = date
-	calendarDates.ExceptionType = lib.IfThenElse(types.GetFieldByTag(&rawCalendarDates, "exception_type") != "", &exceptionType, nil)
+	calendarDates.ExceptionType = lib.IfThenElse(lib.GetFieldByTag(&rawCalendarDates, "gtfs", "exception_type") != "", &exceptionType, nil)
 
 	return calendarDates
 }

@@ -39,7 +39,7 @@ import (
 	"main/validations/trips"
 )
 
-var GTFS_FILE_RULES_MAP = map[string]func(gtfs types.Gtfs){
+var GTFS_FILE_RULES_MAP = map[string]func(gtfs types.Gtfs, rules *types.GtfsRules){
 	"afetacao":             afetacao.RunValidations,
 	"agency":               agency.RunValidations,
 	"archives":             archives.RunValidations,

@@ -10,6 +10,7 @@ type CliOptions struct {
 	InputPath  string // Path to the GTFS zip file
 	OutputPath string // Path to the output file
 	LogLevel   string // Log level (debug, info, error)
+	RulesPath  string // Path to the rules file
 	Version    bool   // Show version
 }
 
@@ -32,7 +33,7 @@ func (c *CLI) Parse() {
 	flag.StringVar(&c.Options.InputPath, "input", "", "Path to the GTFS zip file")
 	flag.StringVar(&c.Options.OutputPath, "output", "", "Path to the output file")
 	flag.StringVar(&c.Options.LogLevel, "log", "info", "Log level (debug, info, error)")
-	
+	flag.StringVar(&c.Options.RulesPath, "rules", "", "Path to the rules file")
 	flag.BoolVar(&c.Options.Version, "v", false, "Show version")
 	flag.BoolVar(&c.Options.Version, "version", false, "Show help")
 

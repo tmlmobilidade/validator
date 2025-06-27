@@ -6,6 +6,7 @@ import (
 	"main/types"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/olekukonko/tablewriter"
 )
@@ -82,9 +83,12 @@ func (ms *MessageService) PrintTable() {
 	table.SetHeader([]string{"Validation ID", "Message", "Severity", "Field", "File Name", "Row"})
 	table.SetRowSeparator("-")
 	table.SetFooter([]string{"", "", "Errors: " + strconv.Itoa(ms.errorCount), "Warnings: " + strconv.Itoa(ms.warningCount), "Total: " + strconv.Itoa(ms.errorCount+ms.warningCount)})
-
 	for _, message := range ms.messages {
-		table.Append([]string{message.ValidationID, message.Message, string(message.Severity), message.Field, message.FileName, strconv.Itoa(message.Rows[0])})
+		rows := make([]string, len(message.Rows))
+		for i, row := range message.Rows {
+			rows[i] = strconv.Itoa(row)
+		}
+		table.Append([]string{message.ValidationID, message.Message, string(message.Severity), message.Field, message.FileName, strings.Join(rows, ", ")})
 	}
 	table.Render()
 }

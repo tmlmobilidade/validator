@@ -9,8 +9,9 @@ import (
 )
 
 func TestAgencyUrlValidation_Required(t *testing.T) {
+	rules := &types.GtfsRules{Agency: types.AgencyRules{AgencyUrl: types.RuleConfig{Severity: types.SEVERITY_ERROR}}}
 	agency := &types.Agency{AgencyUrl: nil}
-	validations.AgencyUrlValidation(agency, 1)
+	validations.AgencyUrlValidation(agency, 1, &rules.Agency)
 
 	// Assert
 	assertion := lib.AssertionMessage{
@@ -28,7 +29,7 @@ func TestAgencyUrlValidation_Required(t *testing.T) {
 
 func TestAgencyUrlValidation_ValidUrl(t *testing.T) {
 	agency := &types.Agency{AgencyUrl: lib.Ptr("https://example.com")}
-	validations.AgencyUrlValidation(agency, 2)
+	validations.AgencyUrlValidation(agency, 2, nil)
 
 	// Assert
 	assertion := lib.AssertionMessage{
@@ -45,7 +46,7 @@ func TestAgencyUrlValidation_ValidUrl(t *testing.T) {
 
 func TestAgencyUrlValidation_InvalidUrl(t *testing.T) {
 	agency := &types.Agency{AgencyUrl: lib.Ptr("invalid-url")}
-	validations.AgencyUrlValidation(agency, 3)
+	validations.AgencyUrlValidation(agency, 3, nil)
 
 	// Assert
 	assertion := lib.AssertionMessage{

@@ -1,9 +1,11 @@
 package agency
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
@@ -20,7 +22,7 @@ URL of the transit agency.
 
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
-func AgencyUrlValidation(agency *types.Agency, row int) {
+func AgencyUrlValidation(agency *types.Agency, row int, rules *types.AgencyRules) {
 	
 	addMessage := func(message string) {
 		services.AppMessageService.AddMessage(types.Message{
@@ -41,6 +43,20 @@ func AgencyUrlValidation(agency *types.Agency, row int) {
 	err := lib.ValidateUrl(*agency.AgencyUrl)
 	if err != "" {
 		addMessage(err)
+		return
+	}
+
+	// Validate rules
+	if rules != nil && rules.AgencyUrl.Options != nil {
+		if slices.Contains(*rules.AgencyUrl.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if slices.Contains(*rules.AgencyUrl.Options, *agency.AgencyUrl) {
+			return
+		}
+
+		addMessage(fmt.Sprintf("Agency URL is not allowed: %s", *agency.AgencyUrl))
 		return
 	}
 }

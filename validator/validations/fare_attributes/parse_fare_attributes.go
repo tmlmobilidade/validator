@@ -45,21 +45,21 @@ func ParseFareAttributes(rawFareAttributes types.FareAttributeRaw, row int) type
 
 	// Parse string fields
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawFareAttributes, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawFareAttributes, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
 
 	// Parse int fields
 	for field, target := range intFields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawFareAttributes, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawFareAttributes, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}			
 	}
 	
 	// Parse float fields
 	for field, target := range floatFields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawFareAttributes, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawFareAttributes, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}

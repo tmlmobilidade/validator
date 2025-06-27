@@ -635,20 +635,3 @@ func convertToStructSlice[T any](data []map[string]string) []T {
 	}
 	return result
 }
-
-// GetFieldByTag retrieves a field's value by its GTFS tag name from any struct
-func GetFieldByTag[T any](obj *T, tagName string) string {
-	v := reflect.ValueOf(obj).Elem()
-	t := v.Type()
-	
-	for i := range v.NumField() {
-		field := v.Field(i)
-		fieldType := t.Field(i)
-		tag := fieldType.Tag.Get("gtfs")
-		
-		if tag == tagName {
-			return field.String()
-		}
-	}
-	return ""
-}

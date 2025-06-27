@@ -6,7 +6,7 @@ import (
 	validations "main/validations/fare_attributes/validations"
 )
 
-func RunValidations(gtfs types.Gtfs) {
+func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Fare Attributes Validations...")
 
 	for i, rawFareAttributes := range gtfs.FareAttribute {

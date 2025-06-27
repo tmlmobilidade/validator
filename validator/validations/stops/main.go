@@ -6,7 +6,7 @@ import (
 	validations "main/validations/stops/validations"
 )
 
-func RunValidations(gtfs types.Gtfs) {
+func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Validations for stops.txt")
 
 	for row, rawStop := range gtfs.Stop {

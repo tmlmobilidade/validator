@@ -58,21 +58,21 @@ func ParseStopTimes(rawStopTimes types.StopTimeRaw, row int) types.StopTime {
 
 	// Parse string fields
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawStopTimes, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawStopTimes, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
 
 	// Parse int fields
 	for field, target := range intFields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawStopTimes, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawStopTimes, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
 
 	// Parse float fields
 	for field, target := range floatFields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawStopTimes, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawStopTimes, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}

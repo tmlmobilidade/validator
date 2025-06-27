@@ -39,7 +39,7 @@ func ParseFeedInfo(rawFeedInfo types.FeedInfoRaw, row int) types.FeedInfo {
 
 	// Parse string fields
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawFeedInfo, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawFeedInfo, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}

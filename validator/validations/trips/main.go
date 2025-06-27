@@ -7,7 +7,7 @@ import (
 	"slices"
 )
 
-func RunValidations(gtfs types.Gtfs) {
+func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Trips Validations...")
 
 	var tripsGroupedByPattern types.TripGroupedByPattern = make(types.TripGroupedByPattern)

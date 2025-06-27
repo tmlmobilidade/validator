@@ -6,7 +6,7 @@ import (
 	validations "main/validations/agency/validations"
 )
 
-func RunValidations(gtfs types.Gtfs) {
+func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Validations for agency.txt")
 
 	for i, rawAgency := range gtfs.Agency {
@@ -18,10 +18,13 @@ func RunValidations(gtfs types.Gtfs) {
 		}
 
 		// Duplicate Agencies Validation
-		validations.AgencyIdValidation(nil, &agency, i, gtfs)
+		validations.AgencyIdValidation(&agency, i, gtfs, &rules.Agency)
+
+		// Validate Agency Name
+		validations.AgencyNameValidation(&agency, i, &rules.Agency)
 
 		// Validate Agency URL
-		validations.AgencyUrlValidation(&agency, i)
+		validations.AgencyUrlValidation(&agency, i, &rules.Agency)
 
 		// Validate Agency Timezone
 		validations.AgencyTimezoneValidation(&agency, i)

@@ -216,3 +216,42 @@ func Ptr[T any](t T) *T { return &t }
 func Hash(str string) string {
 	return hex.EncodeToString(sha256.New().Sum([]byte(str)))
 }
+
+// GetAllStructTagValues retrieves all values of a tag from a struct
+//
+//	@param obj T - The struct to retrieve the tag values from
+//	@param tagKey string - The tag key to retrieve the values from
+//	@return []string - The values of the tag
+func GetAllStructTagValues[T any](obj T, tagKey string) []string {
+	v := reflect.ValueOf(obj)
+	t := v.Type()
+
+	values := make([]string, 0)
+
+	for i := range v.NumField() {
+		fieldType := t.Field(i)
+		tag := fieldType.Tag.Get(tagKey)
+		values = append(values, tag)
+	}
+
+	return values
+}
+
+// GetFieldByTag retrieves a field's value by its GTFS tag name from any struct
+func GetFieldByTag[T any](obj *T, tagKey string, tagValue string) string {
+
+	v := reflect.ValueOf(obj).Elem()
+	t := v.Type()
+	
+	for i := range v.NumField() {
+		field := v.Field(i)
+		fieldType := t.Field(i)
+		tag := fieldType.Tag.Get(tagKey)
+		
+		if tag == tagValue {
+			return field.String()
+		}
+	}
+	
+	return ""
+}

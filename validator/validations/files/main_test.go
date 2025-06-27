@@ -209,7 +209,7 @@ func TestFileValidation(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			v := NewFileValidation(&tt.wantSeverity)
-			messages := v.Validate(tt.gtfs)
+			messages := v.Validate(tt.gtfs, nil)
 
 			if len(messages) != tt.wantMessages {
 				t.Errorf("[%v] FileValidation.Validate() got %v messages, want %v", tt.name, len(messages), tt.wantMessages)

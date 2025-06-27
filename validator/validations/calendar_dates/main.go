@@ -6,7 +6,7 @@ import (
 	validations "main/validations/calendar_dates/validations"
 )
 
-func RunValidations(gtfs types.Gtfs) {
+func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 	lib.AppLogger.Debug("Running Calendar Dates Validations...")
 

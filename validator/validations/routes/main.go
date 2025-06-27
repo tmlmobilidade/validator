@@ -6,7 +6,7 @@ import (
 	validations "main/validations/routes/validations"
 )
 
-func RunValidations(gtfs types.Gtfs) {
+func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Routes Validations...")
 
 	for i, rawRoute := range gtfs.Route {
