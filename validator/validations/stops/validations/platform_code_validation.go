@@ -11,10 +11,10 @@ import (
 /*
 # Attributes
 
- - File: [stops.txt]
- - Field: platform_code
- - Presence: Optional
- - Type: String
+  - File: [stops.txt]
+  - Field: platform_code
+  - Presence: Optional
+  - Type: String
 
 # Description
 
@@ -62,7 +62,7 @@ func PlatformCodeValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 			return
 		}
 
-		addMessage(fmt.Sprintf("platform_code is not allowed: %s", *stop.PlatformCode), types.SEVERITY_ERROR)
+		addMessage(fmt.Sprintf("platform_code is not allowed: %s", *stop.PlatformCode), s)
 		return
 	}
 }

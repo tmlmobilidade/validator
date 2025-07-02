@@ -10,10 +10,10 @@ import (
 /*
 # Attributes
 
-	- File: [agency.txt]
-	- Field: agency_name
-	- Presence: Required
-	- Type: String
+  - File: [agency.txt]
+  - Field: agency_name
+  - Presence: Required
+  - Type: String
 
 # Description
 
@@ -26,11 +26,11 @@ func AgencyNameValidation(agency *types.Agency, row int, rules *types.AgencyRule
 
 	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field: "agency_name",
-			FileName: "agency.txt",
-			Message: msg,
-			Rows: []int{row},
-			Severity: severity,
+			Field:        "agency_name",
+			FileName:     "agency.txt",
+			Message:      msg,
+			Rows:         []int{row},
+			Severity:     severity,
 			ValidationID: "agency.agency_name_validation",
 		})
 	}
@@ -50,7 +50,7 @@ func AgencyNameValidation(agency *types.Agency, row int, rules *types.AgencyRule
 		if slices.Contains(*rules.AgencyName.Options, *agency.AgencyName) {
 			return
 		}
-		
+
 		addMessage(fmt.Sprintf("Agency name is not allowed: %s", *agency.AgencyName), s)
 		return
 	}

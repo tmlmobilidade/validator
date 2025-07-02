@@ -72,7 +72,7 @@ func StopTimezoneValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 			return
 		}
 
-		addMessage(fmt.Sprintf("stop_timezone is not allowed: %s", *stop.StopTimezone), types.SEVERITY_ERROR)
+		addMessage(fmt.Sprintf("stop_timezone is not allowed: %s", *stop.StopTimezone), s)
 		return
 	}
-} 
+}

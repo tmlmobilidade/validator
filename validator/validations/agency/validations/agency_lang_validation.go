@@ -11,10 +11,10 @@ import (
 /*
 # Attributes
 
-	- File: [agency.txt]
-	- Field: agency_lang
-	- Presence: Optional
-	- Type: Language Code
+  - File: [agency.txt]
+  - Field: agency_lang
+  - Presence: Optional
+  - Type: Language Code
 
 # Description
 
@@ -31,11 +31,11 @@ func AgencyLangValidation(agency *types.Agency, row int, rules *types.AgencyRule
 
 	addMessage := func(message string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field: "agency_lang",
-			FileName: "agency.txt",
-			Message: message,
-			Rows: []int{row},
-			Severity: severity,
+			Field:        "agency_lang",
+			FileName:     "agency.txt",
+			Message:      message,
+			Rows:         []int{row},
+			Severity:     severity,
 			ValidationID: "agency_lang_validation",
 		})
 	}
@@ -61,8 +61,8 @@ func AgencyLangValidation(agency *types.Agency, row int, rules *types.AgencyRule
 		if slices.Contains(*rules.AgencyTimezone.Options, *agency.AgencyTimezone) {
 			return
 		}
-		
-		addMessage(fmt.Sprintf("Agency language is not allowed: %s", *agency.AgencyLang), types.SEVERITY_ERROR)
+
+		addMessage(fmt.Sprintf("Agency language is not allowed: %s", *agency.AgencyLang), s)
 		return
 	}
 }

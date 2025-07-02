@@ -1,9 +1,11 @@
 package routes
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
@@ -21,16 +23,16 @@ Full name of a route. This name is generally more descriptive than the route_sho
 Both route_short_name and route_long_name may be defined.
 
 Conditionally Required:
-    - Required if routes.route_short_name is empty.
-    - Optional otherwise.
+  - Required if routes.route_short_name is empty.
+  - Optional otherwise.
 
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
-func RouteLongNameValidation(severity *types.Severity, route *types.Route, row int) {
+func RouteLongNameValidation(route *types.Route, row int, rules *types.RoutesRules) {
 
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.RouteLongName.Severity != "" {
+		s = rules.RouteLongName.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -57,4 +59,18 @@ func RouteLongNameValidation(severity *types.Severity, route *types.Route, row i
 		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "route_long_name is recommended.", "route_long_name is required.")
 		addMessage(warn, s)
 	}
-} 
+
+	// Validate rules
+	if rules != nil && rules.RouteLongName.Options != nil {
+		if slices.Contains(*rules.RouteLongName.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if slices.Contains(*rules.RouteLongName.Options, *route.RouteLongName) {
+			return
+		}
+
+		addMessage(fmt.Sprintf("route_long_name is not allowed: %s", *route.RouteLongName), s)
+		return
+	}
+}

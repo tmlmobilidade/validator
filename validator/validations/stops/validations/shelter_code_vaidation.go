@@ -59,7 +59,7 @@ func ShelterCodeValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		addMessage(fmt.Sprintf("This shelter_code is not allowed: %s", *stop.ShelterCode), types.SEVERITY_ERROR)
+		addMessage(fmt.Sprintf("This shelter_code is not allowed: %s", *stop.ShelterCode), s)
 		return
 	}
 }

@@ -11,11 +11,11 @@ import (
 func TestRouteTextColorValidation_MissingColor(t *testing.T) {
 	services.AppMessageService.Clear()
 	route := &types.Route{RouteTextColor: nil}
-	validations.RouteTextColorValidation(nil, route, 1)
+	validations.RouteTextColorValidation(route, 1, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing route_text_color should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing route_text_color should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -26,11 +26,11 @@ func TestRouteTextColorValidation_EmptyColor(t *testing.T) {
 	services.AppMessageService.Clear()
 	empty := ""
 	route := &types.Route{RouteTextColor: &empty}
-	validations.RouteTextColorValidation(nil, route, 2)
+	validations.RouteTextColorValidation(route, 2, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Empty route_text_color should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Empty route_text_color should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -41,11 +41,11 @@ func TestRouteTextColorValidation_InvalidColor(t *testing.T) {
 	services.AppMessageService.Clear()
 	color := "ZZZZZZ"
 	route := &types.Route{RouteTextColor: &color}
-	validations.RouteTextColorValidation(nil, route, 3)
+	validations.RouteTextColorValidation(route, 3, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Invalid route_text_color should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Invalid route_text_color should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -56,26 +56,26 @@ func TestRouteTextColorValidation_ValidColor(t *testing.T) {
 	services.AppMessageService.Clear()
 	color := "123ABC"
 	route := &types.Route{RouteTextColor: &color}
-	validations.RouteTextColorValidation(nil, route, 4)
+	validations.RouteTextColorValidation(route, 4, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid route_text_color should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid route_text_color should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
-} 
+}
 
 func TestRouteTextColorValidation_NoColor_SeverityWarning(t *testing.T) {
 	services.AppMessageService.Clear()
 	route := &types.Route{RouteTextColor: nil}
 	severity := types.SEVERITY_WARNING
-	validations.RouteTextColorValidation(&severity, route, 5)
+	validations.RouteTextColorValidation(route, 5, &types.RoutesRules{RouteTextColor: types.RuleConfig{Severity: severity}})
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalWarnings,
-		Message: "No route_text_color should warn",
+		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
+		Message:  "No route_text_color should warn",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -86,11 +86,11 @@ func TestRouteTextColorValidation_NoColor_SeverityError(t *testing.T) {
 	services.AppMessageService.Clear()
 	route := &types.Route{RouteTextColor: nil}
 	severity := types.SEVERITY_ERROR
-	validations.RouteTextColorValidation(&severity, route, 6)
+	validations.RouteTextColorValidation(route, 6, &types.RoutesRules{RouteTextColor: types.RuleConfig{Severity: severity}})
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "No route_text_color should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "No route_text_color should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)

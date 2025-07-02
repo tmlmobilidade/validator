@@ -1,9 +1,11 @@
 package routes
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
@@ -23,15 +25,15 @@ Description of a route that provides useful, quality information. Should not be 
 "A" trains operate between Inwood-207 St, Manhattan and Far Rockaway-Mott Avenue, Queens at all times. Also from about 6AM until about midnight, additional "A" trains operate between Inwood-207 St and Lefferts Boulevard (trains typically alternate between Lefferts Blvd and Far Rockaway).
 
 Conditionally Required:
-    - Required if routes.route_short_name is empty.
-    - Optional otherwise.
+  - Required if routes.route_short_name is empty.
+  - Optional otherwise.
 
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
-func RouteDescValidation(severity *types.Severity, route *types.Route, row int) {
+func RouteDescValidation(route *types.Route, row int, rules *types.RoutesRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.RouteDesc.Severity != "" {
+		s = rules.RouteDesc.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -61,4 +63,18 @@ func RouteDescValidation(severity *types.Severity, route *types.Route, row int) 
 	if route.RouteLongName != nil && *route.RouteDesc == *route.RouteLongName {
 		addMessage("route_desc should not duplicate route_long_name.", types.SEVERITY_WARNING)
 	}
-} 
+
+	// Validate rules
+	if rules != nil && rules.RouteDesc.Options != nil {
+		if slices.Contains(*rules.RouteDesc.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if slices.Contains(*rules.RouteDesc.Options, *route.RouteDesc) {
+			return
+		}
+
+		addMessage(fmt.Sprintf("route_desc is not allowed: %s", *route.RouteDesc), s)
+		return
+	}
+}

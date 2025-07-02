@@ -11,10 +11,10 @@ import (
 /*
 # Attributes
 
- - File: [stops.txt]
- - Field: parent_station
- - Presence: Optional
- - Type: Foreign ID referencing stops.stop_id
+  - File: [stops.txt]
+  - Field: parent_station
+  - Presence: Optional
+  - Type: Foreign ID referencing stops.stop_id
 
 # Description
 
@@ -59,7 +59,7 @@ func ParentStationValidation(stop *types.Stop, row int, gtfs types.Gtfs, rules *
 
 	// Handle Nil Parent Station
 	if stop.ParentStation == nil {
-		
+
 		// Handle Severity
 		if s != types.SEVERITY_IGNORE {
 			warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "parent_station is required", "parent_station is recommended")
@@ -87,7 +87,7 @@ func ParentStationValidation(stop *types.Stop, row int, gtfs types.Gtfs, rules *
 
 	// Validate Foreign Key
 	if !lib.GtfsIdMapKeyExists(&gtfs, "stops", *stop.ParentStation) {
-		addMessage("parent_station '"+ *stop.ParentStation + "' does not exist in stops.txt", types.SEVERITY_ERROR)
+		addMessage("parent_station '"+*stop.ParentStation+"' does not exist in stops.txt", types.SEVERITY_ERROR)
 		return
 	}
 
@@ -101,7 +101,7 @@ func ParentStationValidation(stop *types.Stop, row int, gtfs types.Gtfs, rules *
 			return
 		}
 
-		addMessage(fmt.Sprintf("parent_station is not allowed: %s", *stop.ParentStation), types.SEVERITY_ERROR)
+		addMessage(fmt.Sprintf("parent_station is not allowed: %s", *stop.ParentStation), s)
 		return
 	}
 }

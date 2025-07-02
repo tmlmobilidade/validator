@@ -11,10 +11,10 @@ import (
 /*
 # Attributes
 
-	- File: [agency.txt]
-	- Field: agency_timezone
-	- Presence: Required
-	- Type: Timezone
+  - File: [agency.txt]
+  - Field: agency_timezone
+  - Presence: Required
+  - Type: Timezone
 
 # Description
 
@@ -26,11 +26,11 @@ If multiple agencies are specified in the dataset, each must have the same 'agen
 func AgencyTimezoneValidation(agency *types.Agency, row int, rules *types.AgencyRules) {
 	addMessage := func(message string) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field: "agency_timezone",
-			FileName: "agency.txt",
-			Message: message,
-			Rows: []int{row},
-			Severity: types.SEVERITY_ERROR,
+			Field:        "agency_timezone",
+			FileName:     "agency.txt",
+			Message:      message,
+			Rows:         []int{row},
+			Severity:     types.SEVERITY_ERROR,
 			ValidationID: "agency_timezone_validation",
 		})
 	}
@@ -55,7 +55,7 @@ func AgencyTimezoneValidation(agency *types.Agency, row int, rules *types.Agency
 		if slices.Contains(*rules.AgencyTimezone.Options, *agency.AgencyTimezone) {
 			return
 		}
-		
+
 		addMessage(fmt.Sprintf("Agency timezone is not allowed: %s", *agency.AgencyTimezone))
 		return
 	}

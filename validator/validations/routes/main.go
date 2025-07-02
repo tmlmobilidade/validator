@@ -20,39 +20,39 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		validations.RouteIdValidation(&route, i, &gtfs)
 
 		// Validate agency_id
-		validations.AgencyIdValidation(nil, &route, i, gtfs)
+		validations.AgencyIdValidation(&route, i, gtfs, &rules.Routes)
 
 		// Validate route_short_name
-		validations.RouteShortNameValidation(nil, &route, i)
+		validations.RouteShortNameValidation(&route, i, &rules.Routes)
 
 		// Validate route_long_name
-		validations.RouteLongNameValidation(nil, &route, i)
+		validations.RouteLongNameValidation(&route, i, &rules.Routes)
 
 		// Validate route_desc
-		validations.RouteDescValidation(nil, &route, i)
-		
+		validations.RouteDescValidation(&route, i, &rules.Routes)
+
 		// Validate route_type
-		validations.RouteTypeValidation(&route, i)
+		validations.RouteTypeValidation(&route, i, &rules.Routes)
 
 		// Validate route_url
-		validations.RouteUrlValidation(nil, &route, i, &gtfs)
+		validations.RouteUrlValidation(&route, i, &gtfs, &rules.Routes)
 
 		// Validate route_color
-		validations.RouteColorValidation(nil, &route, i)
+		validations.RouteColorValidation(&route, i, &rules.Routes)
 
 		// Validate route_text_color
-		validations.RouteTextColorValidation(nil, &route, i)
+		validations.RouteTextColorValidation(&route, i, &rules.Routes)
 
 		// Validate route_sort_order
-		validations.RouteSortOrderValidation(nil, &route, i)
+		validations.RouteSortOrderValidation(&route, i, &rules.Routes)
 
 		// Validate continuous_drop_off
-		validations.ContinuousDropOffValidation(nil, &route, i, &gtfs)
+		validations.ContinuousDropOffValidation(&route, i, &gtfs, &rules.Routes)
 
 		// Validate continuous_pickup
-		validations.ContinuousPickupValidation(nil, &route, i, &gtfs)
+		validations.ContinuousPickupValidation(&route, i, &gtfs, &rules.Routes)
 
 		// Validate network_id
-		validations.NetworkIdValidation(nil, &route, i, &gtfs)
+		validations.NetworkIdValidation(&route, i, &gtfs, &rules.Routes)
 	}
 }

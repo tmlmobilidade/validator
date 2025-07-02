@@ -11,10 +11,10 @@ import (
 /*
 # Attributes
 
- - File: [stops.txt]
- - Field: tts_stop_name
- - Presence: Optional
- - Type: String
+  - File: [stops.txt]
+  - Field: tts_stop_name
+  - Presence: Optional
+  - Type: String
 
 # Description
 
@@ -40,7 +40,6 @@ func TtsStopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		})
 	}
 
-
 	if stop.TtsStopName == nil || *stop.TtsStopName == "" {
 		if s == types.SEVERITY_IGNORE {
 			return
@@ -61,7 +60,7 @@ func TtsStopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		addMessage(fmt.Sprintf("tts_stop_name is not allowed: %s", *stop.TtsStopName), types.SEVERITY_ERROR)
+		addMessage(fmt.Sprintf("tts_stop_name is not allowed: %s", *stop.TtsStopName), s)
 		return
 	}
 }

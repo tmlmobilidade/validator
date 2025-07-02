@@ -59,7 +59,7 @@ func ParishIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		addMessage(fmt.Sprintf("This parish_id is not allowed: %s", *stop.ParishId), types.SEVERITY_ERROR)
+		addMessage(fmt.Sprintf("This parish_id is not allowed: %s", *stop.ParishId), s)
 		return
 	}
 }

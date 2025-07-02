@@ -1,9 +1,11 @@
 package routes
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
@@ -20,10 +22,10 @@ URL of a web page about the particular route. Should be different from the agenc
 
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
-func RouteUrlValidation(severity *types.Severity, route *types.Route,row int, gtfs *types.Gtfs, ) {
+func RouteUrlValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *types.RoutesRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.RouteUrl.Severity != "" {
+		s = rules.RouteUrl.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -62,4 +64,18 @@ func RouteUrlValidation(severity *types.Severity, route *types.Route,row int, gt
 			addMessage("route_url should be different from agency_url", types.SEVERITY_WARNING)
 		}
 	}
-} 
+
+	// Validate rules
+	if rules != nil && rules.RouteUrl.Options != nil {
+		if slices.Contains(*rules.RouteUrl.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if slices.Contains(*rules.RouteUrl.Options, *route.RouteUrl) {
+			return
+		}
+
+		addMessage(fmt.Sprintf("route_url is not allowed: %s", *route.RouteUrl), s)
+		return
+	}
+}

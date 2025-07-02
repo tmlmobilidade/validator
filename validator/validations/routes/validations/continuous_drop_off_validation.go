@@ -1,9 +1,11 @@
 package routes
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
@@ -33,10 +35,10 @@ Conditionally Forbidden:
 
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
-func ContinuousDropOffValidation(severity *types.Severity, route *types.Route, row int, gtfs *types.Gtfs) {
+func ContinuousDropOffValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *types.RoutesRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.ContinuousDropOff.Severity != "" {
+		s = rules.ContinuousDropOff.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -64,7 +66,7 @@ func ContinuousDropOffValidation(severity *types.Severity, route *types.Route, r
 		addMessage(warn, s)
 		return
 	}
-	
+
 	// Get all trip IDs for this route
 	tripIds := make([]string, 0)
 	if trips, exists := gtfs.IdMap["trips"][*route.RouteId]; exists {
@@ -81,13 +83,27 @@ func ContinuousDropOffValidation(severity *types.Severity, route *types.Route, r
 			for _, row := range stopTimes {
 				startWindow := gtfs.StopTime[row].StartPickupDropOffWindow
 				endWindow := gtfs.StopTime[row].EndPickupDropOffWindow
-				
+
 				if startWindow != "" || endWindow != "" {
 					lib.AppLogger.Accent("route.ContinuousDropOff", *route.ContinuousDropOff)
-						addMessage("continuous_drop_off must be 1 or empty if start_pickup_drop_off_window or end_pickup_drop_off_window is defined", types.SEVERITY_ERROR)
+					addMessage("continuous_drop_off must be 1 or empty if start_pickup_drop_off_window or end_pickup_drop_off_window is defined", types.SEVERITY_ERROR)
 					return
 				}
 			}
 		}
+	}
+
+	// Validate rules
+	if rules != nil && rules.ContinuousDropOff.Options != nil {
+		if slices.Contains(*rules.ContinuousDropOff.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if slices.Contains(*rules.ContinuousDropOff.Options, *route.ContinuousDropOff) {
+			return
+		}
+
+		addMessage(fmt.Sprintf("continuous_drop_off is not allowed: %s", *route.ContinuousDropOff), s)
+		return
 	}
 }

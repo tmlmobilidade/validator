@@ -59,7 +59,7 @@ func ShelterMaintainerValidation(stop *types.Stop, row int, rules *types.StopsRu
 			return
 		}
 
-		addMessage(fmt.Sprintf("This shelter_maintainer is not allowed: %s", *stop.ShelterMaintainer), types.SEVERITY_ERROR)
+		addMessage(fmt.Sprintf("This shelter_maintainer is not allowed: %s", *stop.ShelterMaintainer), s)
 		return
 	}
 }

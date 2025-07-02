@@ -11,10 +11,10 @@ import (
 /*
 # Attributes
 
-	- File: [agency.txt]
-	- Field: agency_phone
-	- Presence: Optional
-	- Type: Phone Number
+  - File: [agency.txt]
+  - Field: agency_phone
+  - Presence: Optional
+  - Type: Phone Number
 
 # Description
 
@@ -33,11 +33,11 @@ func AgencyPhoneValidation(agency *types.Agency, row int, rules *types.AgencyRul
 
 	addMessage := func(message string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field: "agency_phone",
-			FileName: "agency.txt",
-			Message: message,
-			Rows: []int{row},
-			Severity: severity,
+			Field:        "agency_phone",
+			FileName:     "agency.txt",
+			Message:      message,
+			Rows:         []int{row},
+			Severity:     severity,
 			ValidationID: "agency_phone_validation",
 		})
 	}
@@ -57,7 +57,7 @@ func AgencyPhoneValidation(agency *types.Agency, row int, rules *types.AgencyRul
 			return
 		}
 
-		addMessage(fmt.Sprintf("Agency phone is not allowed: %s", *agency.AgencyPhone), types.SEVERITY_ERROR)
+		addMessage(fmt.Sprintf("Agency phone is not allowed: %s", *agency.AgencyPhone), s)
 		return
 	}
 }

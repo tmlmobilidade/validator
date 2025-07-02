@@ -11,10 +11,10 @@ import (
 /*
 # Attributes
 
- - File: [stops.txt]
- - Field: stop_code
- - Presence: Optional
- - Type: String
+  - File: [stops.txt]
+  - Field: stop_code
+  - Presence: Optional
+  - Type: String
 
 # Description
 
@@ -61,7 +61,7 @@ func StopCodeValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *type
 		count := len(lib.RemoveDuplicates(gtfs.IdMap["stops"][*stop.StopCode]))
 
 		if count > 1 {
-			addMessage("Duplicate stop_code found: " + *stop.StopCode, types.SEVERITY_WARNING)
+			addMessage("Duplicate stop_code found: "+*stop.StopCode, types.SEVERITY_WARNING)
 			return
 		}
 	}
@@ -76,8 +76,8 @@ func StopCodeValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *type
 			return
 		}
 
-		addMessage(fmt.Sprintf("Stop code is not allowed: %s", *stop.StopCode), types.SEVERITY_ERROR)
+		addMessage(fmt.Sprintf("Stop code is not allowed: %s", *stop.StopCode), s)
 		return
 	}
-	
-} 
+
+}

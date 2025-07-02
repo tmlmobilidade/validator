@@ -82,7 +82,7 @@ func StopShortNameValidation(stop *types.Stop, row int, rules *types.StopsRules)
 			return
 		}
 
-		addMessage(fmt.Sprintf("stop_short_name is not allowed: %s", *stop.StopShortName), types.SEVERITY_ERROR)
+		addMessage(fmt.Sprintf("stop_short_name is not allowed: %s", *stop.StopShortName), s)
 		return
 	}
-} 
+}

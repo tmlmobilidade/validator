@@ -11,10 +11,10 @@ import (
 /*
 # Attributes
 
- - File: [stops.txt]
- - Field: location_type
- - Presence: Optional
- - Type: Enum
+  - File: [stops.txt]
+  - Field: location_type
+  - Presence: Optional
+  - Type: Enum
 
 # Description
 
@@ -73,7 +73,7 @@ func LocationTypeValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 			return
 		}
 
-		addMessage(fmt.Sprintf("location_type is not allowed: %d", *stop.LocationType), types.SEVERITY_ERROR)
+		addMessage(fmt.Sprintf("location_type is not allowed: %d", *stop.LocationType), s)
 		return
 	}
-} 
+}

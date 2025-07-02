@@ -11,10 +11,10 @@ import (
 /*
 # Attributes
 
- - File: [stops.txt]
- - Field: wheelchair_boarding
- - Presence: Optional
- - Type: Enum
+  - File: [stops.txt]
+  - Field: wheelchair_boarding
+  - Presence: Optional
+  - Type: Enum
 
 # Description
 
@@ -87,7 +87,7 @@ func WheelchairBoardingValidation(stop *types.Stop, row int, rules *types.StopsR
 			return
 		}
 
-		addMessage(fmt.Sprintf("wheelchair_boarding is not allowed: %d", *stop.WheelchairBoarding), types.SEVERITY_ERROR)
+		addMessage(fmt.Sprintf("wheelchair_boarding is not allowed: %d", *stop.WheelchairBoarding), s)
 		return
 	}
 }

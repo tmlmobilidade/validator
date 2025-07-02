@@ -59,7 +59,7 @@ func RegionIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		addMessage(fmt.Sprintf("This region_id is not allowed: %s", *stop.RegionId), types.SEVERITY_ERROR)
+		addMessage(fmt.Sprintf("This region_id is not allowed: %s", *stop.RegionId), s)
 		return
 	}
 }

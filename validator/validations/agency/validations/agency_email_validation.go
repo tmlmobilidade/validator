@@ -19,10 +19,10 @@ name: Agency Email Validation
 /*
 # Attributes
 
-	- File: [agency.txt]
-	- Field: agency_email
-	- Presence: Optional
-	- Type: Email
+  - File: [agency.txt]
+  - Field: agency_email
+  - Presence: Optional
+  - Type: Email
 
 # Description
 
@@ -39,11 +39,11 @@ func AgencyEmailValidation(agency *types.Agency, row int, rules *types.AgencyRul
 
 	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field: "agency_email",
-			FileName: "agency.txt",
-			Message: msg,
-			Rows: []int{row},
-			Severity: severity,
+			Field:        "agency_email",
+			FileName:     "agency.txt",
+			Message:      msg,
+			Rows:         []int{row},
+			Severity:     severity,
 			ValidationID: "agency.agency_email_validation",
 		})
 	}
@@ -75,7 +75,7 @@ func AgencyEmailValidation(agency *types.Agency, row int, rules *types.AgencyRul
 			return
 		}
 
-		addMessage(fmt.Sprintf("Agency email is not allowed: %s", *agency.AgencyEmail), types.SEVERITY_ERROR)
+		addMessage(fmt.Sprintf("Agency email is not allowed: %s", *agency.AgencyEmail), s)
 		return
 	}
 }

@@ -20,15 +20,15 @@ Identifies a route.
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
 func RouteIdValidation(route *types.Route, row int, gtfs *types.Gtfs) {
-	
+
 	addMessage := func(msg string) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field: "route_id",
-			FileName: "routes.txt",
+			Field:        "route_id",
+			FileName:     "routes.txt",
 			ValidationID: "route_id_validation",
-			Message: msg,
-			Rows: []int{row},
-			Severity: types.SEVERITY_ERROR,
+			Message:      msg,
+			Rows:         []int{row},
+			Severity:     types.SEVERITY_ERROR,
 		})
 	}
 
@@ -37,10 +37,9 @@ func RouteIdValidation(route *types.Route, row int, gtfs *types.Gtfs) {
 		return
 	}
 
-	
 	// Check if route_id is Unique ID
 	if _, ok := gtfs.IdMap["routes"][*route.RouteId]; ok && len(gtfs.IdMap["routes"][*route.RouteId]) > 1 {
 		addMessage("Duplicate route_id found. Route IDs must be unique.")
 		return
 	}
-} 
+}

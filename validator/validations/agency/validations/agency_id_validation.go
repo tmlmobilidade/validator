@@ -11,10 +11,10 @@ import (
 /*
 # Attributes
 
-	- File: [agency.txt]
-	- Field: agency_id
-	- Presence: Conditionally Required
-	- Type: Unique ID
+  - File: [agency.txt]
+  - Field: agency_id
+  - Presence: Conditionally Required
+  - Type: Unique ID
 
 # Description
 
@@ -24,8 +24,8 @@ Note that in some cases, such as when a single agency operates multiple separate
 This document uses the term "agency" in place of "brand". A dataset may contain data from multiple agencies.
 
 Conditionally Required:
-	- Required when the dataset contains data for multiple transit agencies.
-	- Recommended otherwise.
+  - Required when the dataset contains data for multiple transit agencies.
+  - Recommended otherwise.
 
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
@@ -37,11 +37,11 @@ func AgencyIdValidation(agency *types.Agency, row int, gtfs types.Gtfs, rules *t
 
 	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field: "agency_id",
-			FileName: "agency.txt",
-			Message: msg,
-			Rows: []int{row},
-			Severity: severity,
+			Field:        "agency_id",
+			FileName:     "agency.txt",
+			Message:      msg,
+			Rows:         []int{row},
+			Severity:     severity,
 			ValidationID: "agency_id_validation",
 		})
 	}
@@ -77,9 +77,8 @@ func AgencyIdValidation(agency *types.Agency, row int, gtfs types.Gtfs, rules *t
 			if slices.Contains(*rules.AgencyId.Options, *agency.AgencyId) {
 				return
 			}
-			
-			lib.AppLogger.Accent(fmt.Sprintf("Agency ID is not allowed: %s | Options: %s", *agency.AgencyId, *rules.AgencyId.Options))
-			addMessage(fmt.Sprintf("Agency ID is not allowed: %s", *agency.AgencyId), types.SEVERITY_ERROR)
+
+			addMessage(fmt.Sprintf("Agency ID is not allowed: %s", *agency.AgencyId), s)
 			return
 		}
 	}

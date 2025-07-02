@@ -40,7 +40,7 @@ func ZoneIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			ValidationID: "zone_id_validation",
 		})
 	}
-	
+
 	if stop.ZoneId == nil || *stop.ZoneId == "" {
 		if s == types.SEVERITY_IGNORE {
 			return
@@ -61,7 +61,7 @@ func ZoneIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		addMessage(fmt.Sprintf("zone_id is not allowed: %s", *stop.ZoneId), types.SEVERITY_ERROR)
+		addMessage(fmt.Sprintf("zone_id is not allowed: %s", *stop.ZoneId), s)
 		return
 	}
-} 
+}

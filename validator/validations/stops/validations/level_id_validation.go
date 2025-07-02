@@ -11,10 +11,10 @@ import (
 /*
 # Attributes
 
- - File: [stops.txt]
- - Field: level_id
- - Presence: Optional
- - Type: Foreign ID referencing levels.level_id
+  - File: [stops.txt]
+  - Field: level_id
+  - Presence: Optional
+  - Type: Foreign ID referencing levels.level_id
 
 # Description
 
@@ -51,7 +51,7 @@ func LevelIdValidation(stop *types.Stop, row int, gtfs types.Gtfs, rules *types.
 
 	// Check Foreign Key
 	if !lib.GtfsIdMapKeyExists(&gtfs, "levels", *stop.LevelId) {
-		addMessage("level_id '"+ *stop.LevelId + "' does not exist in levels.txt", types.SEVERITY_ERROR)
+		addMessage("level_id '"+*stop.LevelId+"' does not exist in levels.txt", types.SEVERITY_ERROR)
 		return
 	}
 
@@ -65,7 +65,7 @@ func LevelIdValidation(stop *types.Stop, row int, gtfs types.Gtfs, rules *types.
 			return
 		}
 
-		addMessage(fmt.Sprintf("level_id is not allowed: %s", *stop.LevelId), types.SEVERITY_ERROR)
+		addMessage(fmt.Sprintf("level_id is not allowed: %s", *stop.LevelId), s)
 		return
 	}
 }

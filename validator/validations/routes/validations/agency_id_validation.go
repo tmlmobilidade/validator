@@ -24,10 +24,10 @@ Conditionally Required:
 
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
-func AgencyIdValidation(severity *types.Severity, route *types.Route, row int, gtfs types.Gtfs) {
+func AgencyIdValidation(route *types.Route, row int, gtfs types.Gtfs, rules *types.RoutesRules) {
 	s := types.SEVERITY_WARNING
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.AgencyId.Severity != "" {
+		s = rules.AgencyId.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -42,12 +42,12 @@ func AgencyIdValidation(severity *types.Severity, route *types.Route, row int, g
 	}
 
 	numAgencies := len(gtfs.Agency)
-	
+
 	// Check if agency_id exists and is valid
 	if route.AgencyId != nil && *route.AgencyId != "" {
 		// Check Foreign Key
 		if !lib.GtfsIdMapKeyExists(&gtfs, "agency", *route.AgencyId) {
-			addMessage("agency_id '" + *route.AgencyId + "' is not a valid agency_id from agency.txt.", types.SEVERITY_ERROR)
+			addMessage("agency_id '"+*route.AgencyId+"' is not a valid agency_id from agency.txt.", types.SEVERITY_ERROR)
 			return
 		}
 	}
@@ -59,6 +59,6 @@ func AgencyIdValidation(severity *types.Severity, route *types.Route, row int, g
 		}
 	} else if route.AgencyId == nil && s != types.SEVERITY_IGNORE {
 		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "recommended", "required")
-		addMessage("agency_id is " + warn + " even if only one agency is defined in agency.txt.", s)
+		addMessage("agency_id is "+warn+" even if only one agency is defined in agency.txt.", s)
 	}
-} 
+}

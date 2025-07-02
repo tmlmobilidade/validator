@@ -19,10 +19,10 @@ name: Agency Fare URL Validation
 /*
 # Attributes
 
-	- File: [agency.txt]
-	- Field: agency_phone
-	- Presence: Optional
-	- Type: URL
+  - File: [agency.txt]
+  - Field: agency_phone
+  - Presence: Optional
+  - Type: URL
 
 # Description
 
@@ -38,11 +38,11 @@ func AgencyFareUrlValidation(agency *types.Agency, row int, rules *types.AgencyR
 
 	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field: "agency_fare_url",
-			FileName: "agency.txt",
-			Message: msg,
-			Rows: []int{row},
-			Severity: severity,
+			Field:        "agency_fare_url",
+			FileName:     "agency.txt",
+			Message:      msg,
+			Rows:         []int{row},
+			Severity:     severity,
 			ValidationID: "agency_fare_url_validation",
 		})
 	}
@@ -70,7 +70,7 @@ func AgencyFareUrlValidation(agency *types.Agency, row int, rules *types.AgencyR
 			return
 		}
 
-		addMessage(fmt.Sprintf("Agency fare URL is not allowed: %s", *agency.AgencyFareUrl), types.SEVERITY_ERROR)
+		addMessage(fmt.Sprintf("Agency fare URL is not allowed: %s", *agency.AgencyFareUrl), s)
 		return
 	}
 }

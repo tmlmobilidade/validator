@@ -1,9 +1,11 @@
 package routes
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
@@ -25,10 +27,10 @@ Conditionally Forbidden:
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 [route_networks.txt]: https://gtfs.org/schedule/reference/#routenetworkstxt
 */
-func NetworkIdValidation(severity *types.Severity, route *types.Route, row int, gtfs *types.Gtfs) {
+func NetworkIdValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *types.RoutesRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.NetworkId.Severity != "" {
+		s = rules.NetworkId.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -50,6 +52,20 @@ func NetworkIdValidation(severity *types.Severity, route *types.Route, row int, 
 
 	if len(gtfs.RouteNetwork) > 0 && route.NetworkId != nil {
 		addMessage("network_id is forbidden if route_networks.txt exists", types.SEVERITY_ERROR)
+		return
+	}
+
+	// Validate rules
+	if rules != nil && rules.NetworkId.Options != nil {
+		if slices.Contains(*rules.NetworkId.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if slices.Contains(*rules.NetworkId.Options, *route.NetworkId) {
+			return
+		}
+
+		addMessage(fmt.Sprintf("network_id is not allowed: %s", *route.NetworkId), s)
 		return
 	}
 }
