@@ -12,21 +12,29 @@ func TestParseStop_ValidInput(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
 	raw := types.StopRaw{
-		StopId:             "S1",
-		StopCode:           "C1",
-		StopName:           "Main St",
-		StopDesc:           "Main Street Stop",
-		ZoneId:             "Z1",
-		StopUrl:            "http://example.com",
-		ParentStation:      "P1",
-		StopTimezone:       "Europe/Lisbon",
-		LevelId:            "L1",
-		PlatformCode:       "PL1",
-		LocationType:       "1",
-		WheelchairBoarding: "2",
-		StopLat:            "40.1234",
-		StopLon:            "-8.5678",
-		TtsStopName:        "Main St",
+		StopId:                "S1",
+		StopCode:              "C1",
+		StopName:              "Main St",
+		StopDesc:              "Main Street Stop",
+		ZoneId:                "Z1",
+		StopUrl:               "http://example.com",
+		ParentStation:         "P1",
+		StopTimezone:          "Europe/Lisbon",
+		LevelId:               "L1",
+		PlatformCode:          "PL1",
+		LocationType:          "1",
+		WheelchairBoarding:    "2",
+		StopLat:               "40.1234",
+		StopLon:               "-8.5678",
+		TtsStopName:           "Main St",
+		HasTariffsInformation: "true",
+		HasShelter:            "true",
+		HasStopSign:           "true",
+		HasNetworkMap:         "true",
+		HasPipRealTime:        "true",
+		HasSchedules:          "true",
+		HasBench:              "true",
+		PublicVisible:         "true",
 	}
 
 	stop := validations.ParseStop(raw, row)
@@ -122,6 +130,32 @@ func TestParseStop_InvalidFloatFields(t *testing.T) {
 		Expected: 1,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
 		Message:  "Invalid float fields should error",
+	}
+	if assert := lib.Assert(assertion); assert != "" {
+		t.Error(assert)
+	}
+}
+
+func TestParseStop_InvalidBoolFields(t *testing.T) {
+	services.AppMessageService.Clear()
+	row := 3
+	raw := types.StopRaw{
+		StopId:                "S2",
+		HasTariffsInformation: "INVALID",
+		HasShelter:            "INVALID",
+		HasStopSign:           "INVALID",
+		HasNetworkMap:         "INVALID",
+		HasPipRealTime:        "INVALID",
+		HasSchedules:          "INVALID",
+		HasBench:              "INVALID",
+		PublicVisible:         "INVALID",
+	}
+
+	validations.ParseStop(raw, row)
+	assertion := lib.AssertionMessage{
+		Expected: 1,
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Invalid bool fields should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)

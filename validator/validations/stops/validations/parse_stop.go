@@ -71,7 +71,6 @@ func ParseStop(rawStop types.StopRaw, row int) types.Stop {
 
 	// Parse string fields
 	for field, target := range stringFields {
-		lib.AppLogger.Accent("Parsing string field: " + field + " with value: " + lib.GetFieldByTag(&rawStop, "gtfs", field))
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawStop, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
@@ -120,7 +119,6 @@ func ParseStop(rawStop types.StopRaw, row int) types.Stop {
 	stop.ShelterCode = lib.IfThenElse(rawStop.ShelterCode != "", &shelterCode, nil)
 	stop.ShelterMaintainer = lib.IfThenElse(rawStop.ShelterMaintainer != "", &shelterMaintainer, nil)
 	stop.StopCode = lib.IfThenElse(rawStop.StopCode != "", &stopCode, nil)
-	lib.AppLogger.Accent("Setting StopCode: " + *stop.StopCode)
 	stop.StopDesc = lib.IfThenElse(rawStop.StopDesc != "", &stopDesc, nil)
 	stop.StopId = lib.IfThenElse(rawStop.StopId != "", &stopId, nil)
 	stop.StopLat = lib.IfThenElse(rawStop.StopLat != "", &stopLat, nil)
