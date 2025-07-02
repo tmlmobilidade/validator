@@ -54,19 +54,33 @@ type Agency struct {
 
 /* STOP */
 type Stop struct {
+	HasBench           *bool    `json:"has_bench,omitempty"`
+	HasNetworkMap      *bool    `json:"has_network_map,omitempty"`
+	HasPipRealTime     *bool    `json:"has_pip_real_time,omitempty"`
+	HasSchedules       *bool    `json:"has_schedules,omitempty"`
+	HasShelter         *bool    `json:"has_shelter,omitempty"`
+	HasStopSign        *bool    `json:"has_stop_sign,omitempty"`
+	HasTariffsInformation *bool    `json:"has_tariffs_information,omitempty"`
 	LevelId            *string  `json:"level_id,omitempty"`
 	LocationType       *int     `json:"location_type,omitempty"`
+	MunicipalityId     *string  `json:"municipality_id,omitempty"`
 	ParentStation      *string  `json:"parent_station,omitempty"`
+	ParishId           *string  `json:"parish_id,omitempty"`
 	PlatformCode       *string  `json:"platform_code,omitempty"`
+	PublicVisible      *bool    `json:"public_visible,omitempty"`
+	RegionId           *string  `json:"region_id,omitempty"`
+	ShelterCode        *string  `json:"shelter_code,omitempty"`
+	ShelterMaintainer  *string  `json:"shelter_maintainer,omitempty"`
 	StopCode           *string  `json:"stop_code,omitempty"`
-	StopName           *string  `json:"stop_name,omitempty"`
-	TtsStopName        *string  `json:"tts_stop_name,omitempty"`
 	StopDesc           *string  `json:"stop_desc,omitempty"`
 	StopId             *string   `json:"stop_id"`
 	StopLat            *float32 `json:"stop_lat,omitempty"`
 	StopLon            *float32 `json:"stop_lon,omitempty"`
+	StopName           *string  `json:"stop_name,omitempty"`
+	StopShortName      *string  `json:"stop_short_name,omitempty"`
 	StopTimezone       *string  `json:"stop_timezone,omitempty"`
 	StopUrl            *string  `json:"stop_url,omitempty"`
+	TtsStopName        *string  `json:"tts_stop_name,omitempty"`
 	WheelchairBoarding *int     `json:"wheelchair_boarding,omitempty"`
 	ZoneId             *string  `json:"zone_id,omitempty"`
 }

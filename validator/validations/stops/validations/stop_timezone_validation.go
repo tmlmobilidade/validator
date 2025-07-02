@@ -22,16 +22,18 @@ The times provided in stop_times.txt are in the timezone specified by `agency.ag
 package stops
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 // StopTimezoneValidation validates the stop_timezone field in stops.txt
-func StopTimezoneValidation(severity *types.Severity, stop *types.Stop, row int) {
+func StopTimezoneValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.StopTimezone.Severity != "" {
+		s = rules.StopTimezone.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -57,6 +59,20 @@ func StopTimezoneValidation(severity *types.Severity, stop *types.Stop, row int)
 	err := lib.ValidateTimezone(*stop.StopTimezone)
 	if err != "" {
 		addMessage(err, types.SEVERITY_ERROR)
+		return
+	}
+
+	// Validate rules
+	if rules != nil && rules.StopTimezone.Options != nil {
+		if slices.Contains(*rules.StopTimezone.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if slices.Contains(*rules.StopTimezone.Options, *stop.StopTimezone) {
+			return
+		}
+
+		addMessage(fmt.Sprintf("stop_timezone is not allowed: %s", *stop.StopTimezone), types.SEVERITY_ERROR)
 		return
 	}
 } 

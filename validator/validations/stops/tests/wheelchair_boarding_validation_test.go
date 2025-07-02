@@ -11,11 +11,11 @@ import (
 func TestWheelchairBoardingValidation_MissingWheelchairBoarding_DefaultSeverity(t *testing.T) {
 	services.AppMessageService.Clear()
 	stop := &types.Stop{WheelchairBoarding: nil}
-	validations.WheelchairBoardingValidation(nil, stop, 1)
+	validations.WheelchairBoardingValidation(stop, 1, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0, // Default severity is IGNORE, so should not error
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing wheelchair_boarding with default severity should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing wheelchair_boarding with default severity should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -26,11 +26,11 @@ func TestWheelchairBoardingValidation_MissingWheelchairBoarding_SeverityError(t 
 	services.AppMessageService.Clear()
 	stop := &types.Stop{WheelchairBoarding: nil}
 	severity := types.SEVERITY_ERROR
-	validations.WheelchairBoardingValidation(&severity, stop, 2)
+	validations.WheelchairBoardingValidation(stop, 2, &types.StopsRules{WheelchairBoarding: types.RuleConfig{Severity: severity}})
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing wheelchair_boarding with severity ERROR should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing wheelchair_boarding with severity ERROR should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -41,7 +41,7 @@ func TestWheelchairBoardingValidation_MissingWheelchairBoarding_SeverityWarning(
 	services.AppMessageService.Clear()
 	stop := &types.Stop{WheelchairBoarding: nil}
 	severity := types.SEVERITY_WARNING
-	validations.WheelchairBoardingValidation(&severity, stop, 3)
+	validations.WheelchairBoardingValidation(stop, 3, &types.StopsRules{WheelchairBoarding: types.RuleConfig{Severity: severity}})
 	if services.AppMessageService.GetSummary().TotalWarnings != 1 {
 		t.Error("Missing wheelchair_boarding with severity WARNING should warn")
 	}
@@ -51,11 +51,11 @@ func TestWheelchairBoardingValidation_InvalidValue(t *testing.T) {
 	services.AppMessageService.Clear()
 	val := 5
 	stop := &types.Stop{WheelchairBoarding: &val}
-	validations.WheelchairBoardingValidation(nil, stop, 4)
+	validations.WheelchairBoardingValidation(stop, 4, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Invalid wheelchair_boarding value should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Invalid wheelchair_boarding value should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -67,14 +67,14 @@ func TestWheelchairBoardingValidation_ValidValues(t *testing.T) {
 		services.AppMessageService.Clear()
 		val := v
 		stop := &types.Stop{WheelchairBoarding: &val}
-		validations.WheelchairBoardingValidation(nil, stop, 5+v)
+		validations.WheelchairBoardingValidation(stop, 5+v, nil)
 		assertion := lib.AssertionMessage{
 			Expected: 0,
-			Actual: services.AppMessageService.GetSummary().TotalErrors,
-			Message: "Valid wheelchair_boarding value should not error",
+			Actual:   services.AppMessageService.GetSummary().TotalErrors,
+			Message:  "Valid wheelchair_boarding value should not error",
 		}
 		if assert := lib.Assert(assertion); assert != "" {
 			t.Errorf("wheelchair_boarding %d: %s", v, assert)
 		}
 	}
-} 
+}

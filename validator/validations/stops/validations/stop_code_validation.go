@@ -1,9 +1,11 @@
 package stops
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
@@ -26,11 +28,11 @@ This field should be left empty for locations without a code presented to riders
 
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
-func StopCodeValidation(severity *types.Severity, stop *types.Stop, row int, gtfs *types.Gtfs) {
+func StopCodeValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.StopsRules) {
 
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.StopCode.Severity != "" {
+		s = rules.StopCode.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -62,6 +64,20 @@ func StopCodeValidation(severity *types.Severity, stop *types.Stop, row int, gtf
 			addMessage("Duplicate stop_code found: " + *stop.StopCode, types.SEVERITY_WARNING)
 			return
 		}
+	}
+
+	// Validate rules
+	if rules != nil && rules.StopCode.Options != nil {
+		if slices.Contains(*rules.StopCode.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if slices.Contains(*rules.StopCode.Options, *stop.StopCode) {
+			return
+		}
+
+		addMessage(fmt.Sprintf("Stop code is not allowed: %s", *stop.StopCode), types.SEVERITY_ERROR)
+		return
 	}
 	
 } 

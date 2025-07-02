@@ -16,11 +16,11 @@ func TestStopCodeValidation_MissingStopCode(t *testing.T) {
 		},
 	}
 	stop := &types.Stop{StopCode: nil}
-	validations.StopCodeValidation(nil, stop, 1, gtfs)
+	validations.StopCodeValidation(stop, 1, gtfs, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing stop_code should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing stop_code should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -38,11 +38,11 @@ func TestStopCodeValidation_DuplicateStopCode(t *testing.T) {
 		},
 	}
 	stop := &types.Stop{StopCode: &code}
-	validations.StopCodeValidation(nil, stop, 1, gtfs)
+	validations.StopCodeValidation(stop, 1, gtfs, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1, // Should not error, but should warn
-		Actual: services.AppMessageService.GetSummary().TotalWarnings,
-		Message: "Duplicate stop_code should warn",
+		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
+		Message:  "Duplicate stop_code should warn",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -60,11 +60,11 @@ func TestStopCodeValidation_ValidInput(t *testing.T) {
 		},
 	}
 	stop := &types.Stop{StopCode: &code}
-	validations.StopCodeValidation(nil, stop, 1, gtfs)
+	validations.StopCodeValidation(stop, 1, gtfs, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid stop_code should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid stop_code should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -72,4 +72,4 @@ func TestStopCodeValidation_ValidInput(t *testing.T) {
 	if services.AppMessageService.GetSummary().TotalWarnings != 0 {
 		t.Error("Expected 0 warnings for valid stop_code")
 	}
-} 
+}

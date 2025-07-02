@@ -32,10 +32,10 @@ import (
 )
 
 // StopNameValidation validates the presence of stop_name in stops.txt according to location_type
-func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
+func StopShortNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	s := types.SEVERITY_IGNORE
-	if rules != nil && rules.StopName.Severity != "" {
-		s = rules.StopName.Severity
+	if rules != nil && rules.StopShortName.Severity != "" {
+		s = rules.StopShortName.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -73,16 +73,16 @@ func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	}
 
 	// Validate rules
-	if rules != nil && rules.StopName.Options != nil {
-		if slices.Contains(*rules.StopName.Options, types.ALL_OPTIONS) {
+	if rules != nil && rules.StopShortName.Options != nil {
+		if slices.Contains(*rules.StopShortName.Options, types.ALL_OPTIONS) {
 			return
 		}
 
-		if slices.Contains(*rules.StopName.Options, *stop.StopName) {
+		if slices.Contains(*rules.StopShortName.Options, *stop.StopShortName) {
 			return
 		}
 
-		addMessage(fmt.Sprintf("stop_name is not allowed: %s", *stop.StopName), types.SEVERITY_ERROR)
+		addMessage(fmt.Sprintf("stop_short_name is not allowed: %s", *stop.StopShortName), types.SEVERITY_ERROR)
 		return
 	}
 } 

@@ -1,9 +1,11 @@
 package stops
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
@@ -20,10 +22,10 @@ Description of the location that provides useful, quality information. Should no
 
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
-func StopDescValidation(severity *types.Severity, stop *types.Stop, row int) {
+func StopDescValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.StopDesc.Severity != "" {
+		s = rules.StopDesc.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -50,6 +52,20 @@ func StopDescValidation(severity *types.Severity, stop *types.Stop, row int) {
 
 	if stop.StopName != nil && *stop.StopName == *stop.StopDesc {
 		addMessage("stop_desc should not be a duplicate of stop_name", types.SEVERITY_WARNING)
+		return
+	}
+
+	// Validate rules
+	if rules != nil && rules.StopDesc.Options != nil {
+		if slices.Contains(*rules.StopDesc.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if slices.Contains(*rules.StopDesc.Options, *stop.StopDesc) {
+			return
+		}
+
+		addMessage(fmt.Sprintf("stop_desc is not allowed: %s", *stop.StopDesc), types.SEVERITY_ERROR)
 		return
 	}
 	

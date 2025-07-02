@@ -14,11 +14,11 @@ func TestStopNameValidation_MissingRequiredStopName(t *testing.T) {
 		LocationType: func() *int { i := 0; return &i }(), // stop
 		StopName:     nil,
 	}
-	validations.StopNameValidation(nil, stop, 1)
+	validations.StopNameValidation(stop, 1, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0, // Default severity is IGNORE, so should not error
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing stop_name with default severity should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing stop_name with default severity should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -27,11 +27,11 @@ func TestStopNameValidation_MissingRequiredStopName(t *testing.T) {
 	// Now test with severity ERROR
 	services.AppMessageService.Clear()
 	severity := types.SEVERITY_ERROR
-	validations.StopNameValidation(&severity, stop, 2)
+	validations.StopNameValidation(stop, 2, &types.StopsRules{StopName: types.RuleConfig{Severity: severity}})
 	assertion = lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing stop_name with severity ERROR should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing stop_name with severity ERROR should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -45,11 +45,11 @@ func TestStopNameValidation_OptionalStopName(t *testing.T) {
 		LocationType: &lt,
 		StopName:     nil,
 	}
-	validations.StopNameValidation(nil, stop, 3)
+	validations.StopNameValidation(stop, 3, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing stop_name for optional location_type should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing stop_name for optional location_type should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -64,30 +64,30 @@ func TestStopNameValidation_ValidInput(t *testing.T) {
 		LocationType: &lt,
 		StopName:     &name,
 	}
-	validations.StopNameValidation(nil, stop, 4)
+	validations.StopNameValidation(stop, 4, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid stop_name should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid stop_name should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
-} 
+}
 
 func TestStopNameValidation_SeverityError(t *testing.T) {
 	services.AppMessageService.Clear()
-	
+
 	severity := types.SEVERITY_ERROR
 	stop := &types.Stop{}
-	validations.StopNameValidation(&severity, stop, 5)
-	
+	validations.StopNameValidation(stop, 5, &types.StopsRules{StopName: types.RuleConfig{Severity: severity}})
+
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing stop_name with severity ERROR should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing stop_name with severity ERROR should error",
 	}
-	
+
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
@@ -95,15 +95,15 @@ func TestStopNameValidation_SeverityError(t *testing.T) {
 
 func TestStopNameValidation_SeverityWarning(t *testing.T) {
 	services.AppMessageService.Clear()
-	
+
 	severity := types.SEVERITY_WARNING
 	stop := &types.Stop{}
-	validations.StopNameValidation(&severity, stop, 5)
-	
+	validations.StopNameValidation(stop, 5, &types.StopsRules{StopName: types.RuleConfig{Severity: severity}})
+
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalWarnings,
-		Message: "Missing stop_name with severity WARNING should warn",
+		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
+		Message:  "Missing stop_name with severity WARNING should warn",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)

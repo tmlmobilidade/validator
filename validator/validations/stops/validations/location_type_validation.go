@@ -1,9 +1,11 @@
 package stops
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
@@ -28,10 +30,10 @@ Valid options are:
 
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
-func LocationTypeValidation(severity *types.Severity, stop *types.Stop, row int) {
+func LocationTypeValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.LocationType.Severity != "" {
+		s = rules.LocationType.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -58,6 +60,20 @@ func LocationTypeValidation(severity *types.Severity, stop *types.Stop, row int)
 	validValues := map[int]bool{0: true, 1: true, 2: true, 3: true, 4: true}
 	if !validValues[*stop.LocationType] {
 		addMessage("Invalid location_type: must be one of 0, 1, 2, 3, 4", types.SEVERITY_ERROR)
+		return
+	}
+
+	// Validate rules
+	if rules != nil && rules.LocationType.Options != nil {
+		if slices.Contains(*rules.LocationType.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if slices.Contains(*rules.LocationType.Options, fmt.Sprintf("%d", *stop.LocationType)) {
+			return
+		}
+
+		addMessage(fmt.Sprintf("location_type is not allowed: %d", *stop.LocationType), types.SEVERITY_ERROR)
 		return
 	}
 } 

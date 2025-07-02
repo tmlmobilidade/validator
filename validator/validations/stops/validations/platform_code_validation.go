@@ -1,9 +1,11 @@
 package stops
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
@@ -23,10 +25,10 @@ This allows feed consumers to more easily internationalize and localize the plat
 
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
-func PlatformCodeValidation(severity *types.Severity, stop *types.Stop, row int) {
+func PlatformCodeValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.PlatformCode.Severity != "" {
+		s = rules.PlatformCode.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -47,6 +49,20 @@ func PlatformCodeValidation(severity *types.Severity, stop *types.Stop, row int)
 
 		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "platform_code is required", "platform_code is recommended")
 		addMessage(warn, s)
+		return
+	}
+
+	// Validate rules
+	if rules != nil && rules.PlatformCode.Options != nil {
+		if slices.Contains(*rules.PlatformCode.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if slices.Contains(*rules.PlatformCode.Options, *stop.PlatformCode) {
+			return
+		}
+
+		addMessage(fmt.Sprintf("platform_code is not allowed: %s", *stop.PlatformCode), types.SEVERITY_ERROR)
 		return
 	}
 }

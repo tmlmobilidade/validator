@@ -26,10 +26,10 @@ Conditionally Required:
 
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
-func StopLonValidation(severity *types.Severity, stop *types.Stop, row int) {
+func StopLonValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.StopLon.Severity != "" {
+		s = rules.StopLon.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {

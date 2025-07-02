@@ -1,9 +1,11 @@
 package stops
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
@@ -33,10 +35,10 @@ Conditionally Required:
 
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
-func ParentStationValidation(severity *types.Severity, stop *types.Stop, row int, gtfs types.Gtfs) {
+func ParentStationValidation(stop *types.Stop, row int, gtfs types.Gtfs, rules *types.StopsRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.ParentStation.Severity != "" {
+		s = rules.ParentStation.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -86,6 +88,20 @@ func ParentStationValidation(severity *types.Severity, stop *types.Stop, row int
 	// Validate Foreign Key
 	if !lib.GtfsIdMapKeyExists(&gtfs, "stops", *stop.ParentStation) {
 		addMessage("parent_station '"+ *stop.ParentStation + "' does not exist in stops.txt", types.SEVERITY_ERROR)
+		return
+	}
+
+	// Validate rules
+	if rules != nil && rules.ParentStation.Options != nil {
+		if slices.Contains(*rules.ParentStation.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if slices.Contains(*rules.ParentStation.Options, *stop.ParentStation) {
+			return
+		}
+
+		addMessage(fmt.Sprintf("parent_station is not allowed: %s", *stop.ParentStation), types.SEVERITY_ERROR)
 		return
 	}
 }
