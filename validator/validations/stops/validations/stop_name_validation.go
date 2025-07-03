@@ -24,16 +24,18 @@ Conditionally Required:
 package stops
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 // StopNameValidation validates the presence of stop_name in stops.txt according to location_type
-func StopNameValidation(severity *types.Severity, stop *types.Stop, row int) {
+func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.StopName.Severity != "" {
+		s = rules.StopName.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -69,4 +71,16 @@ func StopNameValidation(severity *types.Severity, stop *types.Stop, row int) {
 		addMessage(warn, s)
 		return
 	}
-} 
+
+	// Validate rules
+	if rules != nil && rules.StopName.Options != nil {
+		if slices.Contains(*rules.StopName.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.StopName.Options, *stop.StopName) {
+			addMessage(fmt.Sprintf("stop_name is not allowed: %s", *stop.StopName), s)
+			return
+		}
+	}
+}

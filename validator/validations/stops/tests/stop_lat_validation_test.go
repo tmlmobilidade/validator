@@ -15,12 +15,12 @@ func TestStopLatValidation_MissingRequiredStopLat(t *testing.T) {
 		LocationType: &lt,
 		StopLat:      nil,
 	}
-	
-	validations.StopLatValidation(nil, stop, 1)
+
+	validations.StopLatValidation(stop, 1, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing stop_lat should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing stop_lat should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -29,11 +29,11 @@ func TestStopLatValidation_MissingRequiredStopLat(t *testing.T) {
 	// Now test with severity ERROR
 	services.AppMessageService.Clear()
 	severity := types.SEVERITY_ERROR
-	validations.StopLatValidation(&severity, stop, 2)
+	validations.StopLatValidation(stop, 2, &types.StopsRules{StopLat: types.RuleConfig{Severity: severity}})
 	assertion = lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing stop_lat with severity ERROR should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing stop_lat with severity ERROR should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -47,11 +47,11 @@ func TestStopLatValidation_OptionalStopLat(t *testing.T) {
 		LocationType: &lt,
 		StopLat:      nil,
 	}
-	validations.StopLatValidation(nil, stop, 3)
+	validations.StopLatValidation(stop, 3, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing stop_lat for optional location_type should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing stop_lat for optional location_type should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -66,11 +66,11 @@ func TestStopLatValidation_ValidInput(t *testing.T) {
 		LocationType: &lt,
 		StopLat:      &lat,
 	}
-	validations.StopLatValidation(nil, stop, 4)
+	validations.StopLatValidation(stop, 4, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid stop_lat should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid stop_lat should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -79,39 +79,39 @@ func TestStopLatValidation_ValidInput(t *testing.T) {
 
 func TestStopLatValidation_OutOfRange(t *testing.T) {
 	services.AppMessageService.Clear()
-	
-	lt := 2 // entrance/exit
+
+	lt := 2               // entrance/exit
 	lat := float32(100.0) // out of range
 	stop := &types.Stop{
 		LocationType: &lt,
 		StopLat:      &lat,
 	}
-	validations.StopLatValidation(nil, stop, 5)
+	validations.StopLatValidation(stop, 5, nil)
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Out-of-range stop_lat should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Out-of-range stop_lat should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
-} 
+}
 
 func TestStopLatValidation_SeverityError(t *testing.T) {
 	services.AppMessageService.Clear()
 
 	stop := &types.Stop{}
 	severity := types.SEVERITY_ERROR
-	
-	validations.StopLatValidation(&severity, stop, 6)
-	
+
+	validations.StopLatValidation(stop, 6, &types.StopsRules{StopLat: types.RuleConfig{Severity: severity}})
+
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Out-of-range stop_lat with severity ERROR should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Out-of-range stop_lat with severity ERROR should error",
 	}
-	
+
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
@@ -122,12 +122,12 @@ func TestStopLatValidation_SeverityWarning(t *testing.T) {
 	stop := &types.Stop{}
 
 	severity := types.SEVERITY_WARNING
-	validations.StopLatValidation(&severity, stop, 7)
-	
+	validations.StopLatValidation(stop, 7, &types.StopsRules{StopLat: types.RuleConfig{Severity: severity}})
+
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalWarnings,
-		Message: "Out-of-range stop_lat with severity WARNING should warn",
+		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
+		Message:  "Out-of-range stop_lat with severity WARNING should warn",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {

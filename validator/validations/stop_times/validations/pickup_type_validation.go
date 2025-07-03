@@ -1,18 +1,20 @@
 package stop_times
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
 # Attributes
 
- - File: [stop_times.txt]
- - Field: pickup_type
- - Presence: Conditionally Required
- - Type: Enum
+  - File: [stop_times.txt]
+  - Field: pickup_type
+  - Presence: Conditionally Required
+  - Type: Enum
 
 # Description
 
@@ -33,11 +35,11 @@ Conditionally Forbidden:
 
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
-func PickupTypeValidation(severity *types.Severity, stopTime *types.StopTime, row int) {
+func PickupTypeValidation(stopTime *types.StopTime, row int, rules *types.StopTimesRules) {
 
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.PickupType.Severity != "" {
+		s = rules.PickupType.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -74,4 +76,16 @@ func PickupTypeValidation(severity *types.Severity, stopTime *types.StopTime, ro
 		addMessage("pickup_type 0 or 3 is forbidden if start_pickup_drop_off_window or end_pickup_drop_off_window are defined.", types.SEVERITY_ERROR)
 		return
 	}
-} 
+
+	// Validate Rule Options
+	if rules != nil && rules.PickupType.Options != nil {
+		if slices.Contains(*rules.PickupType.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.PickupType.Options, fmt.Sprintf("%d", pt)) {
+			addMessage(fmt.Sprintf("pickup_type is not allowed: %d", pt), s)
+			return
+		}
+	}
+}

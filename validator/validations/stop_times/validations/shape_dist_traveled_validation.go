@@ -9,10 +9,10 @@ import (
 /*
 # Attributes
 
- - File: [stop_times.txt]
- - Field: shape_dist_traveled
- - Presence: Optional
- - Type: Non-negative Float
+  - File: [stop_times.txt]
+  - Field: shape_dist_traveled
+  - Presence: Optional
+  - Type: Non-negative Float
 
 # Description
 
@@ -35,10 +35,10 @@ If a bus travels a distance of 5.25 kilometers from the start of the shape to th
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 [shapes.txt]: https://gtfs.org/schedule/reference/#shapestxt
 */
-func ShapeDistTraveledValidation(severity *types.Severity, stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
+func ShapeDistTraveledValidation(stopTime *types.StopTime, row int, rules *types.StopTimesRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.ShapeDistTraveled.Severity != "" {
+		s = rules.ShapeDistTraveled.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -65,4 +65,4 @@ func ShapeDistTraveledValidation(severity *types.Severity, stopTime *types.StopT
 		addMessage("shape_dist_traveled must be a non-negative float.", types.SEVERITY_ERROR)
 		return
 	}
-} 
+}

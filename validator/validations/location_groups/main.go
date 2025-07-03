@@ -5,6 +5,6 @@ import (
 	"main/types"
 )
 
-func RunValidations(gtfs types.Gtfs) {
+func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running LocationGroups Validations...")
 }

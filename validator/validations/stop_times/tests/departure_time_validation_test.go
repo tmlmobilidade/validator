@@ -13,12 +13,12 @@ func TestDepartureTimeValidation_MissingForTimepoint1(t *testing.T) {
 
 	timepoint := 1
 	stopTime := &types.StopTime{
-		Timepoint:   &timepoint,
+		Timepoint:     &timepoint,
 		DepartureTime: nil,
 	}
 	gtfs := &types.Gtfs{}
 
-	validations.DepartureTimeValidation(nil, stopTime, 1, gtfs)
+	validations.DepartureTimeValidation(stopTime, 1, gtfs, nil)
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,
@@ -36,22 +36,22 @@ func TestDepartureTimeValidation_ForbiddenWithPickupDropOffWindow(t *testing.T) 
 
 	startWindow := "08:00:00"
 	departure := "09:00:00"
-	
+
 	stopTime := &types.StopTime{
 		StartPickupDropOffWindow: &startWindow,
-		DepartureTime: &departure,
+		DepartureTime:            &departure,
 	}
-	
+
 	gtfs := &types.Gtfs{}
-	
-	validations.DepartureTimeValidation(nil, stopTime, 2, gtfs)
-	
+
+	validations.DepartureTimeValidation(stopTime, 2, gtfs, nil)
+
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
 		Message:  "departure_time is forbidden when start_pickup_drop_off_window is defined",
 	}
-	
+
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
@@ -64,8 +64,8 @@ func TestDepartureTimeValidation_ValidInput(t *testing.T) {
 	tripId := "trip1"
 	departure := "10:00:00"
 	stopTime := &types.StopTime{
-		StopSequence: &stopSeq,
-		TripId:      &tripId,
+		StopSequence:  &stopSeq,
+		TripId:        &tripId,
 		DepartureTime: &departure,
 	}
 
@@ -82,7 +82,7 @@ func TestDepartureTimeValidation_ValidInput(t *testing.T) {
 		},
 	}
 
-	validations.DepartureTimeValidation(nil, stopTime, 6, gtfs)
+	validations.DepartureTimeValidation(stopTime, 6, gtfs, nil)
 
 	assertion := lib.AssertionMessage{
 		Expected: 0,
@@ -102,8 +102,8 @@ func TestDepartureTimeValidation_InvalidTime(t *testing.T) {
 	tripId := "trip1"
 	departure := "INVALID"
 	stopTime := &types.StopTime{
-		StopSequence: &stopSeq,
-		TripId:      &tripId,
+		StopSequence:  &stopSeq,
+		TripId:        &tripId,
 		DepartureTime: &departure,
 	}
 
@@ -120,7 +120,7 @@ func TestDepartureTimeValidation_InvalidTime(t *testing.T) {
 		},
 	}
 
-	validations.DepartureTimeValidation(nil, stopTime, 8, gtfs)
+	validations.DepartureTimeValidation(stopTime, 8, gtfs, nil)
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,
@@ -136,9 +136,9 @@ func TestDepartureTimeValidation_InvalidTime(t *testing.T) {
 func TestDepartureTimeValidation_SeverityError(t *testing.T) {
 	services.AppMessageService.Clear()
 	stopTime := &types.StopTime{}
-	
+
 	severity := types.SEVERITY_ERROR
-	validations.DepartureTimeValidation(&severity, stopTime, 1, &types.Gtfs{})
+	validations.DepartureTimeValidation(stopTime, 1, &types.Gtfs{}, &types.StopTimesRules{DepartureTime: types.RuleConfig{Severity: severity}})
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,
@@ -154,9 +154,9 @@ func TestDepartureTimeValidation_SeverityError(t *testing.T) {
 func TestDepartureTimeValidation_SeverityWarning(t *testing.T) {
 	services.AppMessageService.Clear()
 	stopTime := &types.StopTime{}
-	
+
 	severity := types.SEVERITY_WARNING
-	validations.DepartureTimeValidation(&severity, stopTime, 1, &types.Gtfs{})
+	validations.DepartureTimeValidation(stopTime, 1, &types.Gtfs{}, &types.StopTimesRules{DepartureTime: types.RuleConfig{Severity: severity}})
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,

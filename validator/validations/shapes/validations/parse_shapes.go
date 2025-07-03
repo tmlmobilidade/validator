@@ -44,25 +44,25 @@ func ParseShape(rawShape types.ShapeRaw, row int) types.Shape {
 
 	// Parse string fields
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawShape, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawShape, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
 	// Parse float32 fields
 	for field, target := range float32Fields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawShape, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawShape, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
 	// Parse int fields
 	for field, target := range intFields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawShape, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawShape, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
 	// Parse float64 fields
 	for field, target := range float64Fields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawShape, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawShape, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}

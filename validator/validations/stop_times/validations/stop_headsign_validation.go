@@ -1,18 +1,20 @@
 package stop_times
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
 # Attributes
 
- - File: [stop_times.txt]
- - Field: stop_headsign
- - Presence: Optional
- - Type: String
+  - File: [stop_times.txt]
+  - Field: stop_headsign
+  - Presence: Optional
+  - Type: String
 
 # Description
 
@@ -28,11 +30,11 @@ If you want to override the `trip_headsign` for multiple `stop_times` in the sam
 
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
-func StopHeadsignValidation(severity *types.Severity, stopTime *types.StopTime, row int) {
+func StopHeadsignValidation(stopTime *types.StopTime, row int, rules *types.StopTimesRules) {
 
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.StopHeadsign.Severity != "" {
+		s = rules.StopHeadsign.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -54,5 +56,17 @@ func StopHeadsignValidation(severity *types.Severity, stopTime *types.StopTime, 
 		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "stop_headsign is recommended", "stop_headsign is required")
 		addMessage(warn, s)
 		return
+	}
+
+	// Validate Rule Options
+	if rules != nil && rules.StopHeadsign.Options != nil {
+		if slices.Contains(*rules.StopHeadsign.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.StopHeadsign.Options, *stopTime.StopHeadsign) {
+			addMessage(fmt.Sprintf("stop_headsign is not allowed: %s", *stopTime.StopHeadsign), s)
+			return
+		}
 	}
 }

@@ -16,16 +16,18 @@ Identifies the fare zone for a stop. If this record represents a station or stat
 package stops
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 // ZoneIdValidation validates the zone_id field in stops.txt
-func ZoneIdValidation(severity *types.Severity, stop *types.Stop, row int) {
+func ZoneIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.ZoneId.Severity != "" {
+		s = rules.ZoneId.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -38,7 +40,7 @@ func ZoneIdValidation(severity *types.Severity, stop *types.Stop, row int) {
 			ValidationID: "zone_id_validation",
 		})
 	}
-	
+
 	if stop.ZoneId == nil || *stop.ZoneId == "" {
 		if s == types.SEVERITY_IGNORE {
 			return
@@ -48,4 +50,16 @@ func ZoneIdValidation(severity *types.Severity, stop *types.Stop, row int) {
 		addMessage(warn, s)
 		return
 	}
-} 
+
+	// Validate rules
+	if rules != nil && rules.ZoneId.Options != nil {
+		if slices.Contains(*rules.ZoneId.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.ZoneId.Options, *stop.ZoneId) {
+			addMessage(fmt.Sprintf("zone_id is not allowed: %s", *stop.ZoneId), s)
+			return
+		}
+	}
+}

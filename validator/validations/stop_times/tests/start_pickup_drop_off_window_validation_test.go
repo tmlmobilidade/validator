@@ -14,12 +14,12 @@ func TestStartPickupDropOffWindowValidation_RequiredWithLocationGroupId(t *testi
 	stopTime := &types.StopTime{
 		LocationGroupId: &locationGroupId,
 	}
-	gtfs := &types.Gtfs{}
-	validations.StartPickupDropOffWindowValidation(nil, stopTime, 1, gtfs)
+
+	validations.StartPickupDropOffWindowValidation(stopTime, 1, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing start_pickup_drop_off_window with location_group_id should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing start_pickup_drop_off_window with location_group_id should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -32,12 +32,12 @@ func TestStartPickupDropOffWindowValidation_RequiredWithLocationId(t *testing.T)
 	stopTime := &types.StopTime{
 		LocationId: &locationId,
 	}
-	gtfs := &types.Gtfs{}
-	validations.StartPickupDropOffWindowValidation(nil, stopTime, 2, gtfs)
+
+	validations.StartPickupDropOffWindowValidation(stopTime, 2, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing start_pickup_drop_off_window with location_id should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing start_pickup_drop_off_window with location_id should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -50,12 +50,12 @@ func TestStartPickupDropOffWindowValidation_RequiredWithEndPickupDropOffWindow(t
 	stopTime := &types.StopTime{
 		EndPickupDropOffWindow: &endWindow,
 	}
-	gtfs := &types.Gtfs{}
-	validations.StartPickupDropOffWindowValidation(nil, stopTime, 3, gtfs)
+
+	validations.StartPickupDropOffWindowValidation(stopTime, 3, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing start_pickup_drop_off_window with end_pickup_drop_off_window should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing start_pickup_drop_off_window with end_pickup_drop_off_window should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -67,15 +67,15 @@ func TestStartPickupDropOffWindowValidation_ForbiddenWithArrivalTime(t *testing.
 	arrival := "08:00:00"
 	startWindow := "07:00:00"
 	stopTime := &types.StopTime{
-		ArrivalTime: &arrival,
+		ArrivalTime:              &arrival,
 		StartPickupDropOffWindow: &startWindow,
 	}
-	gtfs := &types.Gtfs{}
-	validations.StartPickupDropOffWindowValidation(nil, stopTime, 4, gtfs)
+
+	validations.StartPickupDropOffWindowValidation(stopTime, 4, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "start_pickup_drop_off_window should be forbidden if arrival_time is defined",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "start_pickup_drop_off_window should be forbidden if arrival_time is defined",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -87,15 +87,15 @@ func TestStartPickupDropOffWindowValidation_ForbiddenWithDepartureTime(t *testin
 	departure := "09:00:00"
 	startWindow := "07:00:00"
 	stopTime := &types.StopTime{
-		DepartureTime: &departure,
+		DepartureTime:            &departure,
 		StartPickupDropOffWindow: &startWindow,
 	}
-	gtfs := &types.Gtfs{}
-	validations.StartPickupDropOffWindowValidation(nil, stopTime, 5, gtfs)
+
+	validations.StartPickupDropOffWindowValidation(stopTime, 5, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "start_pickup_drop_off_window should be forbidden if departure_time is defined",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "start_pickup_drop_off_window should be forbidden if departure_time is defined",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -107,15 +107,15 @@ func TestStartPickupDropOffWindowValidation_ValidInput(t *testing.T) {
 	locationGroupId := "LG1"
 	startWindow := "07:00:00"
 	stopTime := &types.StopTime{
-		LocationGroupId: &locationGroupId,
+		LocationGroupId:          &locationGroupId,
 		StartPickupDropOffWindow: &startWindow,
 	}
-	gtfs := &types.Gtfs{}
-	validations.StartPickupDropOffWindowValidation(nil, stopTime, 6, gtfs)
+
+	validations.StartPickupDropOffWindowValidation(stopTime, 6, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid start_pickup_drop_off_window should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid start_pickup_drop_off_window should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -127,15 +127,15 @@ func TestStartPickupDropOffWindowValidation_InvalidTime(t *testing.T) {
 	locationGroupId := "LG1"
 	startWindow := "INVALID"
 	stopTime := &types.StopTime{
-		LocationGroupId: &locationGroupId,
+		LocationGroupId:          &locationGroupId,
 		StartPickupDropOffWindow: &startWindow,
 	}
-	gtfs := &types.Gtfs{}
-	validations.StartPickupDropOffWindowValidation(nil, stopTime, 7, gtfs)
+
+	validations.StartPickupDropOffWindowValidation(stopTime, 7, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Invalid time for start_pickup_drop_off_window should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Invalid time for start_pickup_drop_off_window should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -145,14 +145,14 @@ func TestStartPickupDropOffWindowValidation_InvalidTime(t *testing.T) {
 func TestStartPickupDropOffWindowValidation_Optional(t *testing.T) {
 	services.AppMessageService.Clear()
 	stopTime := &types.StopTime{}
-	gtfs := &types.Gtfs{}
-	validations.StartPickupDropOffWindowValidation(nil, stopTime, 8, gtfs)
+
+	validations.StartPickupDropOffWindowValidation(stopTime, 8, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Optional start_pickup_drop_off_window should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Optional start_pickup_drop_off_window should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
-} 
+}

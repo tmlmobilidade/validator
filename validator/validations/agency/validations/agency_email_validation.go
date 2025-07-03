@@ -1,9 +1,11 @@
 package agency
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
@@ -17,10 +19,10 @@ name: Agency Email Validation
 /*
 # Attributes
 
-	- File: [agency.txt]
-	- Field: agency_email
-	- Presence: Optional
-	- Type: Email
+  - File: [agency.txt]
+  - Field: agency_email
+  - Presence: Optional
+  - Type: Email
 
 # Description
 
@@ -29,19 +31,19 @@ This email address should be a direct contact point where transit riders can rea
 
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
-func AgencyEmailValidation(severity *types.Severity, agency *types.Agency, row int) {
+func AgencyEmailValidation(agency *types.Agency, row int, rules *types.AgencyRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.AgencyEmail.Severity != "" {
+		s = rules.AgencyEmail.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field: "agency_email",
-			FileName: "agency.txt",
-			Message: msg,
-			Rows: []int{row},
-			Severity: severity,
+			Field:        "agency_email",
+			FileName:     "agency.txt",
+			Message:      msg,
+			Rows:         []int{row},
+			Severity:     severity,
 			ValidationID: "agency.agency_email_validation",
 		})
 	}
@@ -61,5 +63,17 @@ func AgencyEmailValidation(severity *types.Severity, agency *types.Agency, row i
 	if emailErrors := lib.ValidateEmail(*agency.AgencyEmail); emailErrors != "" {
 		addMessage(emailErrors, types.SEVERITY_ERROR)
 		return
+	}
+
+	// Validate rules
+	if rules != nil && rules.AgencyEmail.Options != nil {
+		if slices.Contains(*rules.AgencyEmail.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.AgencyEmail.Options, *agency.AgencyEmail) {
+			addMessage(fmt.Sprintf("Agency email is not allowed: %s", *agency.AgencyEmail), s)
+			return
+		}
 	}
 }

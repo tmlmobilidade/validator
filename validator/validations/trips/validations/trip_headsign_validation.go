@@ -9,10 +9,10 @@ import (
 /*
 # Attributes
 
-	- File: [trips.txt]
-	- Field: trip_headsign
-	- Presence: Optional
-	- Type: Text
+  - File: [trips.txt]
+  - Field: trip_headsign
+  - Presence: Optional
+  - Type: Text
 
 # Description
 
@@ -23,26 +23,26 @@ If the headsign changes during a trip, values for `trip_headsign` may be overrid
 
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 */
-func TripHeadsignValidation(severity *types.Severity, trip *types.Trip, row int, gtfs *types.Gtfs) {
+func TripHeadsignValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.TripHeadsign.Severity != "" {
+		s = rules.TripHeadsign.Severity
 	}
-	
+
 	if s == types.SEVERITY_IGNORE {
-		return;
+		return
 	}
 
 	if trip.TripHeadsign != nil {
-		return;
+		return
 	}
 
 	message := types.Message{
-		Field: "trip_headsign",
-		FileName: "trips.txt",
-		Message: lib.IfThenElse(s == types.SEVERITY_ERROR, "Trip headsign is required", "Trip headsign is recommended"),
-		Rows: []int{row},
-		Severity: s,
+		Field:        "trip_headsign",
+		FileName:     "trips.txt",
+		Message:      lib.IfThenElse(s == types.SEVERITY_ERROR, "Trip headsign is required", "Trip headsign is recommended"),
+		Rows:         []int{row},
+		Severity:     s,
 		ValidationID: "trip_headsign_validation",
 	}
 

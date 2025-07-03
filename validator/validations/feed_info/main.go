@@ -6,7 +6,7 @@ import (
 	validations "main/validations/feed_info/validations"
 )
 
-func RunValidations(gtfs types.Gtfs) {
+func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running FeedInfo Validations...")
 
 	for i, feedInfo := range gtfs.FeedInfo {

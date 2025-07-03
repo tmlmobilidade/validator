@@ -45,14 +45,14 @@ func ParseCalendar(rawCalendar types.CalendarRaw, row int, gtfs *types.Gtfs) typ
 
 	// Parse string fields
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawCalendar, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawCalendar, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
 
 	// Parse bool fields
 	for field, target := range boolFields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawCalendar, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawCalendar, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}

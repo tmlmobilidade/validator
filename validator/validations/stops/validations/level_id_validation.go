@@ -1,18 +1,20 @@
 package stops
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
 # Attributes
 
- - File: [stops.txt]
- - Field: level_id
- - Presence: Optional
- - Type: Foreign ID referencing levels.level_id
+  - File: [stops.txt]
+  - Field: level_id
+  - Presence: Optional
+  - Type: Foreign ID referencing levels.level_id
 
 # Description
 
@@ -20,10 +22,10 @@ Level of the location. The same level may be used by multiple unlinked stations.
 
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
-func LevelIdValidation(severity *types.Severity, stop *types.Stop, row int, gtfs types.Gtfs) {
+func LevelIdValidation(stop *types.Stop, row int, gtfs types.Gtfs, rules *types.StopsRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.LevelId.Severity != "" {
+		s = rules.LevelId.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -49,7 +51,19 @@ func LevelIdValidation(severity *types.Severity, stop *types.Stop, row int, gtfs
 
 	// Check Foreign Key
 	if !lib.GtfsIdMapKeyExists(&gtfs, "levels", *stop.LevelId) {
-		addMessage("level_id '"+ *stop.LevelId + "' does not exist in levels.txt", types.SEVERITY_ERROR)
+		addMessage("level_id '"+*stop.LevelId+"' does not exist in levels.txt", types.SEVERITY_ERROR)
 		return
+	}
+
+	// Validate rules
+	if rules != nil && rules.LevelId.Options != nil {
+		if slices.Contains(*rules.LevelId.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.LevelId.Options, *stop.LevelId) {
+			addMessage(fmt.Sprintf("level_id is not allowed: %s", *stop.LevelId), s)
+			return
+		}
 	}
 }

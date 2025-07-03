@@ -9,10 +9,10 @@ import (
 /*
 # Attributes
 
-	- File: [trips.txt]
-	- Field: block_id
-	- Presence: Optional
-	- Type: ID
+  - File: [trips.txt]
+  - Field: block_id
+  - Presence: Optional
+  - Type: ID
 
 # Description
 
@@ -35,32 +35,32 @@ The example below is valid, with distinct blocks every day of the week.
 
 Notes on above table:
 
-	- On Friday into Saturday morning, for example, a single vehicle operates `trip_1`, `trip_2`, and `trip_3` (10:00 PM through 12:55 AM). Note that the last trip occurs on Saturday, 12:00 AM to 12:55 AM, but is part of the Friday “service day” because the times are 24:00:00 to 24:55:00.
-	- On Monday, Tuesday, Wednesday, and Thursday, a single vehicle operates `trip_1`, `trip_4`, and `trip_5` in a block from 8:00 PM to 10:55 PM.
+  - On Friday into Saturday morning, for example, a single vehicle operates `trip_1`, `trip_2`, and `trip_3` (10:00 PM through 12:55 AM). Note that the last trip occurs on Saturday, 12:00 AM to 12:55 AM, but is part of the Friday “service day” because the times are 24:00:00 to 24:55:00.
+  - On Monday, Tuesday, Wednesday, and Thursday, a single vehicle operates `trip_1`, `trip_4`, and `trip_5` in a block from 8:00 PM to 10:55 PM.
 
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 [transfers]: https://gtfs.org/documentation/schedule/reference/#transferstxt
 */
-func BlockIdValidation(severity *types.Severity, trip *types.Trip, row int, gtfs *types.Gtfs) {
+func BlockIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.BlockId.Severity != "" {
+		s = rules.BlockId.Severity
 	}
 
 	if s == types.SEVERITY_IGNORE {
-		return;
+		return
 	}
 
 	if trip.BlockId == nil {
 		message := types.Message{
-			Field: "block_id",
-			FileName: "trips.txt",
-			Message: lib.IfThenElse(s == types.SEVERITY_ERROR, "block_id is required", "block_id is recommended"),
-			Rows: []int{row},
-			Severity: s,
+			Field:        "block_id",
+			FileName:     "trips.txt",
+			Message:      lib.IfThenElse(s == types.SEVERITY_ERROR, "block_id is required", "block_id is recommended"),
+			Rows:         []int{row},
+			Severity:     s,
 			ValidationID: "block_id_validation",
 		}
 		services.AppMessageService.AddMessage(message)
-		return;
+		return
 	}
 }

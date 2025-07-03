@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"main/lib"
 	"main/services"
@@ -10,7 +11,7 @@ import (
 	"sync"
 )
 
-func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker) {
+func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *types.GtfsRules) {
 	// Create a wait group to wait for all validations to complete
 	var wg sync.WaitGroup
 
@@ -18,14 +19,21 @@ func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker) {
 	for fileName := range gtfs.IdMap {
 		// If fileName is not in the GTFS_FILE_RULES_MAP, skip
 		if _, ok := validations.GTFS_FILE_RULES_MAP[fileName]; !ok {
-			// TODO: Add to warning messages
+			services.AppMessageService.AddMessage(types.Message{
+				Rows:         []int{},
+				Field:        "N/A",
+				FileName:     fileName,
+				Message:      fmt.Sprintf("The file \"%s\" is is not supported by the validator.", fileName),
+				ValidationID: "FileNotFoundInRules",
+				Severity:     types.SEVERITY_WARNING,
+			})
 			continue
 		}
 
 		wg.Add(1)
 		go func(name string) {
 			defer wg.Done()
-			validations.GTFS_FILE_RULES_MAP[name](gtfs)
+			validations.GTFS_FILE_RULES_MAP[name](gtfs, rules)
 		}(fileName)
 	}
 
@@ -37,6 +45,12 @@ func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker) {
 func main() {
 	services.AppCLI.Run()
 	lib.AppLogger.SetLogLevel(services.AppCLI.Options.LogLevel)
+
+	// Parse Rules
+	rules, err := services.NewRulesParser(services.AppCLI.Options.RulesPath).ParseRules()
+	if err != nil {
+		log.Fatalf("Error parsing rules: %v", err)
+	}
 
 	// Clear the terminal
 	lib.AppLogger.Clear()
@@ -52,22 +66,26 @@ func main() {
 	}
 
 	// Check File Requirements
-	if errs := file_validation.NewFileValidation(nil).Validate(gtfs); len(errs) > 0 {
+	if errs := file_validation.NewFileValidation(nil).Validate(gtfs, rules); len(errs) > 0 {
 		for _, err := range errs {
 			services.AppMessageService.AddMessage(err)
 		}
 
 		// Print JSON
-		services.AppMessageService.PrintJSON()
+		// services.AppMessageService.PrintJSON()
+
+		services.AppMessageService.PrintTable()
 		return
 	}
 
 	// Run Validations for each file
-	runValidations(gtfs, tracker)
+	runValidations(gtfs, tracker, rules)
 
-	// Print Table
-	// services.AppMessageService.PrintTable()
-
-	// Print JSON
-	services.AppMessageService.PrintJSON()
+	// Output Summary
+	if services.AppCLI.Options.OutputPath != "" {
+		services.AppMessageService.WriteToFile(services.AppCLI.Options.OutputPath)
+		lib.AppLogger.Info("Summary written to: " + services.AppCLI.Options.OutputPath)
+	} else {
+		services.AppMessageService.PrintJSON()
+	}
 }

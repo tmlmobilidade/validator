@@ -1,18 +1,20 @@
 package stop_times
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
 # Attributes
 
- - File: [stop_times.txt]
- - Field: timepoint
- - Presence: Optional
- - Type: Enum
+  - File: [stop_times.txt]
+  - Field: timepoint
+  - Presence: Optional
+  - Type: Enum
 
 # Description
 
@@ -27,10 +29,10 @@ All records of [stop_times.txt] with defined arrival or departure times should h
 
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
-func TimepointValidation(severity *types.Severity, stopTime *types.StopTime, row int) {
+func TimepointValidation(stopTime *types.StopTime, row int, rules *types.StopTimesRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.Timepoint.Severity != "" {
+		s = rules.Timepoint.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -58,4 +60,16 @@ func TimepointValidation(severity *types.Severity, stopTime *types.StopTime, row
 		addMessage("timepoint must be 0 or 1.", types.SEVERITY_ERROR)
 		return
 	}
-} 
+
+	// Validate Rule Options
+	if rules != nil && rules.Timepoint.Options != nil {
+		if slices.Contains(*rules.Timepoint.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.Timepoint.Options, fmt.Sprintf("%d", tp)) {
+			addMessage(fmt.Sprintf("timepoint is not allowed: %d", tp), s)
+			return
+		}
+	}
+}

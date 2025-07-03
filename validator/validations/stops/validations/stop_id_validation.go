@@ -18,14 +18,15 @@ ID must be unique across all stops.stop_id, locations.geojson id, and location_g
 package stops
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 // StopIdValidation validates the presence and uniqueness of stop_id in stops.txt
-func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs) {
-
+func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.StopsRules) {
 	addMessage := func(msg string) {
 		services.AppMessageService.AddMessage(types.Message{
 			Field:        "stop_id",
@@ -45,10 +46,22 @@ func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs) {
 	// Check if stop_id is unique
 	if stop.StopId != nil {
 		count := len(lib.RemoveDuplicates(gtfs.IdMap["stops"][*stop.StopId]))
-		
+
 		if count > 1 {
 			addMessage("Duplicate stop_id found: " + *stop.StopId)
 			return
 		}
 	}
-} 
+
+	// Validate rules
+	if rules != nil && rules.StopId.Options != nil {
+		if slices.Contains(*rules.StopId.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.StopId.Options, *stop.StopId) {
+			addMessage(fmt.Sprintf("stop_id is not allowed: %s", *stop.StopId))
+			return
+		}
+	}
+}

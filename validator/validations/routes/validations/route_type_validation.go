@@ -1,8 +1,11 @@
 package routes
 
 import (
+	"fmt"
 	"main/services"
 	"main/types"
+	"slices"
+	"strconv"
 )
 
 /*
@@ -32,7 +35,7 @@ Valid options are:
 
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
-func RouteTypeValidation(route *types.Route, row int) {
+func RouteTypeValidation(route *types.Route, row int, rules *types.RoutesRules) {
 	addMessage := func(msg string) {
 		services.AppMessageService.AddMessage(types.Message{
 			Field:        "route_type",
@@ -56,4 +59,16 @@ func RouteTypeValidation(route *types.Route, row int) {
 	if _, ok := validTypes[*route.RouteType]; !ok {
 		addMessage("route_type must be one of the valid GTFS enum values (0,1,2,3,4,5,6,7,11,12).")
 	}
-} 
+
+	// Validate rules
+	if rules != nil && rules.RouteType.Options != nil {
+		if slices.Contains(*rules.RouteType.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.RouteType.Options, strconv.Itoa(*route.RouteType)) {
+			addMessage(fmt.Sprintf("route_type is not allowed: %d", *route.RouteType))
+			return
+		}
+	}
+}

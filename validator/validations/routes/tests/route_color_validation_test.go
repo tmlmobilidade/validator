@@ -11,11 +11,11 @@ import (
 func TestRouteColorValidation_MissingColor(t *testing.T) {
 	services.AppMessageService.Clear()
 	route := &types.Route{RouteColor: nil}
-	validations.RouteColorValidation(nil, route, 1)
+	validations.RouteColorValidation(route, 1, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing route_color should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing route_color should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -26,11 +26,11 @@ func TestRouteColorValidation_EmptyColor(t *testing.T) {
 	services.AppMessageService.Clear()
 	empty := ""
 	route := &types.Route{RouteColor: &empty}
-	validations.RouteColorValidation(nil, route, 2)
+	validations.RouteColorValidation(route, 2, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Empty route_color should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Empty route_color should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -41,11 +41,11 @@ func TestRouteColorValidation_InvalidColor(t *testing.T) {
 	services.AppMessageService.Clear()
 	color := "ZZZZZZ"
 	route := &types.Route{RouteColor: &color}
-	validations.RouteColorValidation(nil, route, 3)
+	validations.RouteColorValidation(route, 3, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Invalid route_color should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Invalid route_color should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -56,26 +56,26 @@ func TestRouteColorValidation_ValidColor(t *testing.T) {
 	services.AppMessageService.Clear()
 	color := "123ABC"
 	route := &types.Route{RouteColor: &color}
-	validations.RouteColorValidation(nil, route, 4)
+	validations.RouteColorValidation(route, 4, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid route_color should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid route_color should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
-} 
+}
 
 func TestRouteColorValidation_NoColor_SeverityWarning(t *testing.T) {
 	services.AppMessageService.Clear()
 	route := &types.Route{RouteColor: nil}
 	severity := types.SEVERITY_WARNING
-	validations.RouteColorValidation(&severity, route, 5)
+	validations.RouteColorValidation(route, 5, &types.RoutesRules{RouteColor: types.RuleConfig{Severity: severity}})
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalWarnings,
-		Message: "No route_color should warn",
+		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
+		Message:  "No route_color should warn",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -86,11 +86,11 @@ func TestRouteColorValidation_NoColor_SeverityError(t *testing.T) {
 	services.AppMessageService.Clear()
 	route := &types.Route{RouteColor: nil}
 	severity := types.SEVERITY_ERROR
-	validations.RouteColorValidation(&severity, route, 6)
+	validations.RouteColorValidation(route, 6, &types.RoutesRules{RouteColor: types.RuleConfig{Severity: severity}})
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "No route_color should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "No route_color should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)

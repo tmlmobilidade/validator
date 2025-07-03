@@ -56,6 +56,9 @@
 	},
 	"github-actions.workflows.pinned.workflows": [
 		".github/workflows/build-alerts.yml"
-	]
+	],
+	"[go]": {
+		"editor.defaultFormatter": "golang.go"
+	}
 
 }

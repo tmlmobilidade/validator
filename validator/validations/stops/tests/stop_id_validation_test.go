@@ -17,11 +17,11 @@ func TestStopIdValidation_MissingStopId(t *testing.T) {
 		},
 	}
 	stop := &types.Stop{StopId: &empty}
-	validations.StopIdValidation(stop, 1, gtfs)
+	validations.StopIdValidation(stop, 1, gtfs, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing stop_id should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing stop_id should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -39,11 +39,11 @@ func TestStopIdValidation_DuplicateStopId_Error(t *testing.T) {
 		},
 	}
 	stop := &types.Stop{StopId: &stopId}
-	validations.StopIdValidation(stop, 1, gtfs)
+	validations.StopIdValidation(stop, 1, gtfs, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Duplicate stop_id should not error, because it is not a duplicate in different rows",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Duplicate stop_id should not error, because it is not a duplicate in different rows",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -61,11 +61,11 @@ func TestStopIdValidation_DuplicateStopId(t *testing.T) {
 		},
 	}
 	stop := &types.Stop{StopId: &stopId}
-	validations.StopIdValidation(stop, 1, gtfs)
+	validations.StopIdValidation(stop, 1, gtfs, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Duplicate stop_id should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Duplicate stop_id should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -83,13 +83,13 @@ func TestStopIdValidation_ValidInput(t *testing.T) {
 		},
 	}
 	stop := &types.Stop{StopId: &stopId}
-	validations.StopIdValidation(stop, 1, gtfs)
+	validations.StopIdValidation(stop, 1, gtfs, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid stop_id should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid stop_id should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
-} 
+}

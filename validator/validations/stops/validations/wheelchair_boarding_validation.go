@@ -1,6 +1,7 @@
 package stops
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -10,10 +11,10 @@ import (
 /*
 # Attributes
 
- - File: [stops.txt]
- - Field: wheelchair_boarding
- - Presence: Optional
- - Type: Enum
+  - File: [stops.txt]
+  - Field: wheelchair_boarding
+  - Presence: Optional
+  - Type: Enum
 
 # Description
 
@@ -41,10 +42,10 @@ For station entrances/exits:
 
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
-func WheelchairBoardingValidation(severity *types.Severity, stop *types.Stop, row int) {
+func WheelchairBoardingValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.WheelchairBoarding.Severity != "" {
+		s = rules.WheelchairBoarding.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -75,5 +76,16 @@ func WheelchairBoardingValidation(severity *types.Severity, stop *types.Stop, ro
 		addMessage("wheelchair_boarding must be 0, 1, or 2", types.SEVERITY_ERROR)
 		return
 	}
-	
+
+	// Validate rules
+	if rules != nil && rules.WheelchairBoarding.Options != nil {
+		if slices.Contains(*rules.WheelchairBoarding.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.WheelchairBoarding.Options, fmt.Sprintf("%d", *stop.WheelchairBoarding)) {
+			addMessage(fmt.Sprintf("wheelchair_boarding is not allowed: %d", *stop.WheelchairBoarding), s)
+			return
+		}
+	}
 }

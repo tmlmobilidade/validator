@@ -10,17 +10,17 @@ import (
 
 func TestRouteShortNameValidation_BothNamesMissing(t *testing.T) {
 	services.AppMessageService.Clear()
-	
+
 	route := &types.Route{RouteShortName: nil, RouteLongName: nil}
-	
-	validations.RouteShortNameValidation(nil, route, 1)
-	
+
+	validations.RouteShortNameValidation(route, 1, nil)
+
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing both names should produce a warning",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing both names should produce a warning",
 	}
-	
+
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
@@ -28,34 +28,34 @@ func TestRouteShortNameValidation_BothNamesMissing(t *testing.T) {
 
 func TestRouteShortNameValidation_MissingShortName_LongNamePresent(t *testing.T) {
 	services.AppMessageService.Clear()
-	
+
 	longName := "Long Route Name"
 	route := &types.Route{RouteShortName: nil, RouteLongName: &longName}
-	
-	validations.RouteShortNameValidation(nil, route, 2)
-	
+
+	validations.RouteShortNameValidation(route, 2, nil)
+
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing short name with long name present should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing short name with long name present should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
-	
+
 }
 
 func TestRouteShortNameValidation_MissingShortName_LongNameMissing(t *testing.T) {
 	services.AppMessageService.Clear()
-	
+
 	route := &types.Route{RouteShortName: nil}
-	
-	validations.RouteShortNameValidation(nil, route, 3)
-	
+
+	validations.RouteShortNameValidation(route, 3, nil)
+
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing short name with empty long name should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing short name with empty long name should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -67,11 +67,11 @@ func TestRouteShortNameValidation_ShortNamePresent_LongNameMissing(t *testing.T)
 	shortName := "32"
 	longName := ""
 	route := &types.Route{RouteShortName: &shortName, RouteLongName: &longName}
-	validations.RouteShortNameValidation(nil, route, 4)
+	validations.RouteShortNameValidation(route, 4, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Short name present, long name missing should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Short name present, long name missing should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -83,7 +83,7 @@ func TestRouteShortNameValidation_ShortNameTooLong(t *testing.T) {
 	shortName := "1234567890123" // 13 chars
 	longName := ""
 	route := &types.Route{RouteShortName: &shortName, RouteLongName: &longName}
-	validations.RouteShortNameValidation(nil, route, 5)
+	validations.RouteShortNameValidation(route, 5, nil)
 	if services.AppMessageService.GetSummary().TotalWarnings != 1 {
 		t.Error("Short name > 12 chars should warn")
 	}
@@ -94,7 +94,7 @@ func TestRouteShortNameValidation_ShortNameValidLength(t *testing.T) {
 	shortName := "Green"
 	longName := ""
 	route := &types.Route{RouteShortName: &shortName, RouteLongName: &longName}
-	validations.RouteShortNameValidation(nil, route, 6)
+	validations.RouteShortNameValidation(route, 6, nil)
 	if services.AppMessageService.GetSummary().TotalWarnings != 0 {
 		t.Error("Short name <= 12 chars should not warn")
 	}
@@ -105,7 +105,7 @@ func TestRouteShortNameValidation_MissingShortName_LongNamePresent_SeverityError
 	longName := "Long Route Name"
 	route := &types.Route{RouteShortName: nil, RouteLongName: &longName}
 	severity := types.SEVERITY_ERROR
-	validations.RouteShortNameValidation(&severity, route, 7)
+	validations.RouteShortNameValidation(route, 7, &types.RoutesRules{RouteShortName: types.RuleConfig{Severity: severity}})
 	if services.AppMessageService.GetSummary().TotalErrors != 1 {
 		t.Error("Missing short name with long name present should error")
 	}
@@ -116,7 +116,7 @@ func TestRouteShortNameValidation_MissingShortName_LongNamePresent_SeverityWarni
 	longName := "Long Route Name"
 	route := &types.Route{RouteShortName: nil, RouteLongName: &longName}
 	severity := types.SEVERITY_WARNING
-	validations.RouteShortNameValidation(&severity, route, 8)
+	validations.RouteShortNameValidation(route, 8, &types.RoutesRules{RouteShortName: types.RuleConfig{Severity: severity}})
 	if services.AppMessageService.GetSummary().TotalWarnings != 1 {
 		t.Error("Missing short name with long name present should warn")
 	}

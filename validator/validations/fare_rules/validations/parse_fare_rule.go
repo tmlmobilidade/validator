@@ -35,7 +35,7 @@ func ParseFareRule(rawFareRule types.FareRuleRaw, row int) types.FareRule {
 
 	// Parse string fields
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawFareRule, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawFareRule, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}

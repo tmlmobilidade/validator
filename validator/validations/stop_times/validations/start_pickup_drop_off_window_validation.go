@@ -9,10 +9,10 @@ import (
 /*
 # Attributes
 
- - File: [stop_times.txt]
- - Field: start_pickup_drop_off_window
- - Presence: Conditionally Required
- - Type: Time
+  - File: [stop_times.txt]
+  - Field: start_pickup_drop_off_window
+  - Presence: Conditionally Required
+  - Type: Time
 
 # Description
 
@@ -27,10 +27,10 @@ Conditionally Required:
 
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
-func StartPickupDropOffWindowValidation(severity *types.Severity, stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
+func StartPickupDropOffWindowValidation(stopTime *types.StopTime, row int, rules *types.StopTimesRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.StartPickupDropOffWindow.Severity != "" {
+		s = rules.StartPickupDropOffWindow.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -83,4 +83,4 @@ func StartPickupDropOffWindowValidation(severity *types.Severity, stopTime *type
 		addMessage(warn, s)
 		return
 	}
-} 
+}

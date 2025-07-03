@@ -2,6 +2,8 @@ package file_validation
 
 import (
 	"fmt"
+	"main/lib"
+	"main/services"
 	"main/types"
 )
 
@@ -24,8 +26,8 @@ func NewFileValidation(severity *types.Severity) *FileValidation {
 	}
 }
 
-func (v *FileValidation) Validate(gtfs types.Gtfs) (messages []types.Message) {
-	messages = append(messages, v.checkRequiredFiles(gtfs)...)
+func (v *FileValidation) Validate(gtfs types.Gtfs, rules *types.GtfsRules) (messages []types.Message) {
+	messages = append(messages, v.checkRequiredFiles(gtfs, rules)...)
 	messages = append(messages, v.checkStopsConditional(gtfs)...)
 	messages = append(messages, v.checkCalendarFiles(gtfs)...)
 	messages = append(messages, v.checkLevelsIfElevator(gtfs)...)
@@ -45,11 +47,15 @@ func (v *FileValidation) newMessage(file, msg string) types.Message {
 	}
 }
 
-func (v *FileValidation) checkRequiredFiles(gtfs types.Gtfs) []types.Message {
-	required := []string{"agency.txt", "routes.txt", "trips.txt", "stop_times.txt"}
+func (v *FileValidation) checkRequiredFiles(gtfs types.Gtfs, rules *types.GtfsRules) []types.Message {
+	minRequired := []string{"agency.txt", "routes.txt", "trips.txt", "stop_times.txt"}
+	requiredFromRules := services.NewRulesParser(services.AppCLI.Options.RulesPath).GetRequiredFiles(rules)
+
+	mergedRequired := lib.RemoveDuplicates(append(minRequired, requiredFromRules...))
+
 	var messages []types.Message
 
-	for _, file := range required {
+	for _, file := range mergedRequired {
 		if _, exists := gtfs.IdMap[file[:len(file)-4]]; !exists {
 			messages = append(messages, v.newMessage(file, fmt.Sprintf("Required file \"%s\" is missing", file)))
 		}

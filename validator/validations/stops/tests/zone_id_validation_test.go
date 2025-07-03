@@ -10,14 +10,14 @@ import (
 
 func TestZoneIdValidation_MissingZoneId(t *testing.T) {
 	services.AppMessageService.Clear()
-	
+
 	stop := &types.Stop{}
-	validations.ZoneIdValidation(nil, stop, 3)
-	
+	validations.ZoneIdValidation(stop, 3, nil)
+
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing zone_id should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing zone_id should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -29,31 +29,31 @@ func TestZoneIdValidation_ValidZoneId(t *testing.T) {
 
 	zone := "Z3"
 	stop := &types.Stop{
-		ZoneId:       &zone,
+		ZoneId: &zone,
 	}
-	validations.ZoneIdValidation(nil, stop, 4)
-	
+	validations.ZoneIdValidation(stop, 4, nil)
+
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid zone_id should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid zone_id should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
-} 
+}
 
 func TestZoneIdValidation_SeverityError(t *testing.T) {
 	services.AppMessageService.Clear()
-	
+
 	stop := &types.Stop{}
 	severity := types.SEVERITY_ERROR
-	validations.ZoneIdValidation(&severity, stop, 5)
-	
+	validations.ZoneIdValidation(stop, 5, &types.StopsRules{ZoneId: types.RuleConfig{Severity: severity}})
+
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing zone_id with severity ERROR should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing zone_id with severity ERROR should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -62,15 +62,15 @@ func TestZoneIdValidation_SeverityError(t *testing.T) {
 
 func TestZoneIdValidation_SeverityWarning(t *testing.T) {
 	services.AppMessageService.Clear()
-	
+
 	stop := &types.Stop{}
 	severity := types.SEVERITY_WARNING
-	validations.ZoneIdValidation(&severity, stop, 6)
-	
+	validations.ZoneIdValidation(stop, 6, &types.StopsRules{ZoneId: types.RuleConfig{Severity: severity}})
+
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalWarnings,
-		Message: "Missing zone_id with severity WARNING should warn",
+		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
+		Message:  "Missing zone_id with severity WARNING should warn",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)

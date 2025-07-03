@@ -1,18 +1,20 @@
 package stops
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
 # Attributes
 
- - File: [stops.txt]
- - Field: location_type
- - Presence: Optional
- - Type: Enum
+  - File: [stops.txt]
+  - Field: location_type
+  - Presence: Optional
+  - Type: Enum
 
 # Description
 
@@ -28,10 +30,10 @@ Valid options are:
 
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
-func LocationTypeValidation(severity *types.Severity, stop *types.Stop, row int) {
+func LocationTypeValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.LocationType.Severity != "" {
+		s = rules.LocationType.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -60,4 +62,16 @@ func LocationTypeValidation(severity *types.Severity, stop *types.Stop, row int)
 		addMessage("Invalid location_type: must be one of 0, 1, 2, 3, 4", types.SEVERITY_ERROR)
 		return
 	}
-} 
+
+	// Validate rules
+	if rules != nil && rules.LocationType.Options != nil {
+		if slices.Contains(*rules.LocationType.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.LocationType.Options, fmt.Sprintf("%d", *stop.LocationType)) {
+			addMessage(fmt.Sprintf("location_type is not allowed: %d", *stop.LocationType), s)
+			return
+		}
+	}
+}

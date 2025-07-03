@@ -6,7 +6,7 @@ import (
 	validations "main/validations/shapes/validations"
 )
 
-func RunValidations(gtfs types.Gtfs) {
+func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Shapes Validations...")
 
 	var allShapes []types.Shape

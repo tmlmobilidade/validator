@@ -39,7 +39,7 @@ func ParseAgency(rawAgency types.AgencyRaw, row int) types.Agency {
 
 	// Parse string fields
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(types.GetFieldByTag(&rawAgency, field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawAgency, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}

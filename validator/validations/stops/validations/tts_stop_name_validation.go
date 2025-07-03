@@ -1,18 +1,20 @@
 package stops
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
 # Attributes
 
- - File: [stops.txt]
- - Field: tts_stop_name
- - Presence: Optional
- - Type: String
+  - File: [stops.txt]
+  - Field: tts_stop_name
+  - Presence: Optional
+  - Type: String
 
 # Description
 
@@ -21,10 +23,10 @@ Readable version of the stop_name. See "Text-to-speech field" in the [Term Defin
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 [Term Definitions]: https://gtfs.org/schedule/reference/#term-definitions
 */
-func TtsStopNameValidation(severity *types.Severity, stop *types.Stop, row int) {
+func TtsStopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.TtsStopName.Severity != "" {
+		s = rules.TtsStopName.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -38,7 +40,6 @@ func TtsStopNameValidation(severity *types.Severity, stop *types.Stop, row int) 
 		})
 	}
 
-
 	if stop.TtsStopName == nil || *stop.TtsStopName == "" {
 		if s == types.SEVERITY_IGNORE {
 			return
@@ -48,5 +49,16 @@ func TtsStopNameValidation(severity *types.Severity, stop *types.Stop, row int) 
 		addMessage(warn, s)
 		return
 	}
-	
+
+	// Validate rules
+	if rules != nil && rules.TtsStopName.Options != nil {
+		if slices.Contains(*rules.TtsStopName.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.TtsStopName.Options, *stop.TtsStopName) {
+			addMessage(fmt.Sprintf("tts_stop_name is not allowed: %s", *stop.TtsStopName), s)
+			return
+		}
+	}
 }

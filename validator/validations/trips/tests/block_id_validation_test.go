@@ -12,12 +12,12 @@ func TestBlockIdValidation_Required(t *testing.T) {
 	severity := types.SEVERITY_ERROR
 	trip := &types.Trip{BlockId: nil}
 	gtfs := &types.Gtfs{}
-	validations.BlockIdValidation(&severity, trip, 1, gtfs)
+	validations.BlockIdValidation(trip, 1, gtfs, &types.TripsRules{BlockId: types.RuleConfig{Severity: severity}})
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "block_id is required",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "block_id is required",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
@@ -30,12 +30,12 @@ func TestBlockIdValidation_Recommended(t *testing.T) {
 	severity := types.SEVERITY_WARNING
 	trip := &types.Trip{BlockId: nil}
 	gtfs := &types.Gtfs{}
-	validations.BlockIdValidation(&severity, trip, 2, gtfs)
+	validations.BlockIdValidation(trip, 2, gtfs, &types.TripsRules{BlockId: types.RuleConfig{Severity: severity}})
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalWarnings,
-		Message: "block_id is recommended",
+		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
+		Message:  "block_id is recommended",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
@@ -48,16 +48,16 @@ func TestBlockIdValidation_Ignore(t *testing.T) {
 	severity := types.SEVERITY_IGNORE
 	trip := &types.Trip{BlockId: nil}
 	gtfs := &types.Gtfs{}
-	validations.BlockIdValidation(&severity, trip, 3, gtfs)
+	validations.BlockIdValidation(trip, 3, gtfs, &types.TripsRules{BlockId: types.RuleConfig{Severity: severity}})
 
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors + services.AppMessageService.GetSummary().TotalWarnings,
-		Message: "block_id is ignored, no error or warning should be reported",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors + services.AppMessageService.GetSummary().TotalWarnings,
+		Message:  "block_id is ignored, no error or warning should be reported",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
 	services.AppMessageService.Clear()
-} 
+}

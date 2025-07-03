@@ -11,10 +11,10 @@ import (
 /*
 # Attributes
 
- - File: [stop_times.txt]
- - Field: arrival_time
- - Presence: Conditionally Required
- - Type: Time
+  - File: [stop_times.txt]
+  - Field: arrival_time
+  - Presence: Conditionally Required
+  - Type: Time
 
 # Description
 
@@ -35,10 +35,10 @@ Conditionally Required:
 
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
-func ArrivalTimeValidation(severity *types.Severity, stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
+func ArrivalTimeValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs, rules *types.StopTimesRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.ArrivalTime.Severity != "" {
+		s = rules.ArrivalTime.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -108,7 +108,7 @@ func ArrivalTimeValidation(severity *types.Severity, stopTime *types.StopTime, r
 			return
 		}
 	}
-	
+
 	// Optional
 	if stopTime.ArrivalTime == nil && s != types.SEVERITY_IGNORE {
 		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "arrival_time is required.", "arrival_time is recommended.")

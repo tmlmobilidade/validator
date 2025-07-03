@@ -1,18 +1,20 @@
 package trips
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
 # Attributes
 
-	- File: [trips.txt]
-	- Field: direction_id
-	- Presence: Optional
-	- Type: Enum
+  - File: [trips.txt]
+  - Field: direction_id
+  - Presence: Optional
+  - Type: Enum
 
 # Description
 
@@ -21,9 +23,8 @@ This field should not be used in routing; it provides a way to separate trips by
 
 Valid options are:
 
-	- 0 - Travel in one direction (e.g. outbound travel).
-	- 1 - Travel in the opposite direction (e.g. inbound travel).
-
+  - 0 - Travel in one direction (e.g. outbound travel).
+  - 1 - Travel in the opposite direction (e.g. inbound travel).
 
 # Example
 
@@ -35,44 +36,51 @@ The `trip_headsign` and `direction_id` fields may be used together to assign a n
 
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 */
-func DirectionIdValidation(severity *types.Severity, trip *types.Trip, row int, gtfs *types.Gtfs) {
+func DirectionIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.DirectionId.Severity != "" {
+		s = rules.DirectionId.Severity
+	}
+
+	addMessage := func(msg string, severity types.Severity) {
+		services.AppMessageService.AddMessage(types.Message{
+			Field:        "direction_id",
+			FileName:     "trips.txt",
+			Message:      msg,
+			Rows:         []int{row},
+			Severity:     severity,
+			ValidationID: "direction_id_validation",
+		})
 	}
 
 	// 1. Validate direction_id is 0 or 1 if it exists
 	if trip.DirectionId != nil {
 		validDirectionIds := map[int]bool{0: true, 1: true}
 		if !validDirectionIds[*trip.DirectionId] {
-			message := types.Message{
-				Field: "direction_id",
-				FileName: "trips.txt",
-				Message: "Invalid direction_id value. Valid values are 0 and 1.",
-				Rows: []int{row},
-				Severity: s,
-				ValidationID: "direction_id_validation",
-			}
-			services.AppMessageService.AddMessage(message)
+			addMessage("Invalid direction_id value. Valid values are 0 and 1.", s)
 			return
 		}
 	}
-	
+
 	// 2. Validate direction_id is required
 	if s == types.SEVERITY_IGNORE {
-		return;
+		return
 	}
-	
+
 	if trip.DirectionId == nil {
-		message := types.Message{
-			Field: "direction_id",
-			FileName: "trips.txt",
-			Message: lib.IfThenElse(s == types.SEVERITY_ERROR, "Direction ID is required", "Direction ID is recommended"),
-			Rows: []int{row},
-			Severity: s,
-			ValidationID: "direction_id_validation",
+		addMessage(lib.IfThenElse(s == types.SEVERITY_ERROR, "direction_id is required", "direction_id is recommended"), s)
+		return
+	}
+
+	// Validate Rule Options
+	if rules != nil && rules.DirectionId.Options != nil {
+		if slices.Contains(*rules.DirectionId.Options, types.ALL_OPTIONS) {
+			return
 		}
-		services.AppMessageService.AddMessage(message)
-		return;
+
+		if !slices.Contains(*rules.DirectionId.Options, fmt.Sprintf("%d", *trip.DirectionId)) {
+			addMessage(fmt.Sprintf("direction_id is not allowed: %d", *trip.DirectionId), s)
+			return
+		}
 	}
 }

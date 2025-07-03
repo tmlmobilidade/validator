@@ -11,7 +11,7 @@ import (
 func TestAgencyFareUrlValidation_Required(t *testing.T) {
 	severity := types.SEVERITY_ERROR
 	agency := &types.Agency{AgencyFareUrl: nil}
-	validations.AgencyFareUrlValidation(&severity, agency, 1)
+	validations.AgencyFareUrlValidation(agency, 1, &types.AgencyRules{AgencyFare: types.RuleConfig{Severity: severity}})
 
 	// Assert
 	assertion := lib.AssertionMessage{
@@ -29,7 +29,7 @@ func TestAgencyFareUrlValidation_Required(t *testing.T) {
 func TestAgencyFareUrlValidation_Recommended(t *testing.T) {
 	severity := types.SEVERITY_WARNING
 	agency := &types.Agency{AgencyFareUrl: nil}
-	validations.AgencyFareUrlValidation(&severity, agency, 2)
+	validations.AgencyFareUrlValidation(agency, 2, &types.AgencyRules{AgencyFare: types.RuleConfig{Severity: severity}})
 
 	// Assert
 	assertion := lib.AssertionMessage{
@@ -48,7 +48,7 @@ func TestAgencyFareUrlValidation_ValidUrl(t *testing.T) {
 	severity := types.SEVERITY_ERROR
 	url := "https://example.com/fare"
 	agency := &types.Agency{AgencyFareUrl: &url}
-	validations.AgencyFareUrlValidation(&severity, agency, 3)
+	validations.AgencyFareUrlValidation(agency, 3, &types.AgencyRules{AgencyFare: types.RuleConfig{Severity: severity}})
 
 	// Assert
 	assertion := lib.AssertionMessage{
@@ -67,7 +67,7 @@ func TestAgencyFareUrlValidation_InvalidUrl(t *testing.T) {
 	severity := types.SEVERITY_ERROR
 	url := "invalid-url"
 	agency := &types.Agency{AgencyFareUrl: &url}
-	validations.AgencyFareUrlValidation(&severity, agency, 4)
+	validations.AgencyFareUrlValidation(agency, 4, &types.AgencyRules{AgencyFare: types.RuleConfig{Severity: severity}})
 
 	// Assert
 	assertion := lib.AssertionMessage{

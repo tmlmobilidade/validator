@@ -13,11 +13,11 @@ func TestContinuousDropOffValidation_MissingContinuousDropOff(t *testing.T) {
 	routeId := "MY_ROUTE_ID"
 	route := &types.Route{RouteId: &routeId, ContinuousDropOff: nil}
 	gtfs := &types.Gtfs{}
-	validations.ContinuousDropOffValidation(nil, route, 1, gtfs)
+	validations.ContinuousDropOffValidation(route, 1, gtfs, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing continuous_pickup should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing continuous_pickup should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -31,11 +31,11 @@ func TestContinuousDropOffValidation_MissingRequiredContinuousDropOff(t *testing
 	gtfs := &types.Gtfs{}
 
 	severity := types.SEVERITY_ERROR
-	validations.ContinuousDropOffValidation(&severity, route, 1, gtfs)
+	validations.ContinuousDropOffValidation(route, 1, gtfs, &types.RoutesRules{ContinuousDropOff: types.RuleConfig{Severity: severity}})
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing required continuous_pickup should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing required continuous_pickup should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -65,11 +65,11 @@ func TestContinuousDropOffValidation_ForbiddenValueWithDropOffWindow(t *testing.
 		},
 	}
 	severity := types.SEVERITY_ERROR
-	validations.ContinuousDropOffValidation(&severity, route, 2, gtfs)
+	validations.ContinuousDropOffValidation(route, 2, gtfs, &types.RoutesRules{ContinuousDropOff: types.RuleConfig{Severity: severity}})
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Forbidden continuous_pickup value with pickup window should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Forbidden continuous_pickup value with pickup window should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -99,16 +99,16 @@ func TestContinuousDropOffValidation_ValidInput(t *testing.T) {
 		},
 	}
 	severity := types.SEVERITY_ERROR
-	validations.ContinuousDropOffValidation(&severity, route, 3, gtfs)
+	validations.ContinuousDropOffValidation(route, 3, gtfs, &types.RoutesRules{ContinuousDropOff: types.RuleConfig{Severity: severity}})
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid continuous_pickup with no pickup window should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid continuous_pickup with no pickup window should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
-} 
+}
 
 func TestContinuousDropOffValidation_ValidInputWithDropOffWindow(t *testing.T) {
 	services.AppMessageService.Clear()
@@ -133,12 +133,12 @@ func TestContinuousDropOffValidation_ValidInputWithDropOffWindow(t *testing.T) {
 		},
 	}
 	severity := types.SEVERITY_ERROR
-	validations.ContinuousDropOffValidation(&severity, route, 4, gtfs)
+	validations.ContinuousDropOffValidation(route, 4, gtfs, &types.RoutesRules{ContinuousDropOff: types.RuleConfig{Severity: severity}})
 
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid continuous_pickup with pickup window should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid continuous_pickup with pickup window should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)

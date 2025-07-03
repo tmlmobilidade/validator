@@ -1,18 +1,20 @@
 package stop_times
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
 # Attributes
 
- - File: [stop_times.txt]
- - Field: continuous_drop_off
- - Presence: Conditionally Forbidden
- - Type: Enum
+  - File: [stop_times.txt]
+  - Field: continuous_drop_off
+  - Presence: Conditionally Forbidden
+  - Type: Enum
 
 # Description
 
@@ -34,10 +36,10 @@ Conditionally Forbidden:
 
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
-func ContinuousDropOffValidation(severity *types.Severity, stopTime *types.StopTime, row int) {
+func ContinuousDropOffValidation(stopTime *types.StopTime, row int, rules *types.StopTimesRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.ContinuousDropOff.Severity != "" {
+		s = rules.ContinuousDropOff.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -72,4 +74,16 @@ func ContinuousDropOffValidation(severity *types.Severity, stopTime *types.StopT
 		addMessage("continuous_drop_off must be 1 or empty if start_pickup_drop_off_window or end_pickup_drop_off_window are defined.", types.SEVERITY_ERROR)
 		return
 	}
-} 
+
+	// Validate Rule Options
+	if rules != nil && rules.ContinuousDropOff.Options != nil {
+		if slices.Contains(*rules.ContinuousDropOff.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.ContinuousDropOff.Options, fmt.Sprintf("%d", cd)) {
+			addMessage(fmt.Sprintf("continuous_drop_off is not allowed: %d", cd), s)
+			return
+		}
+	}
+}

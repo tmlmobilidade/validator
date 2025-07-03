@@ -1,18 +1,20 @@
 package agency
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
 # Attributes
 
-	- File: [agency.txt]
-	- Field: agency_timezone
-	- Presence: Required
-	- Type: Timezone
+  - File: [agency.txt]
+  - Field: agency_timezone
+  - Presence: Required
+  - Type: Timezone
 
 # Description
 
@@ -21,14 +23,14 @@ If multiple agencies are specified in the dataset, each must have the same 'agen
 
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
-func AgencyTimezoneValidation(agency *types.Agency, row int) {
+func AgencyTimezoneValidation(agency *types.Agency, row int, rules *types.AgencyRules) {
 	addMessage := func(message string) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field: "agency_timezone",
-			FileName: "agency.txt",
-			Message: message,
-			Rows: []int{row},
-			Severity: types.SEVERITY_ERROR,
+			Field:        "agency_timezone",
+			FileName:     "agency.txt",
+			Message:      message,
+			Rows:         []int{row},
+			Severity:     types.SEVERITY_ERROR,
 			ValidationID: "agency_timezone_validation",
 		})
 	}
@@ -42,5 +44,17 @@ func AgencyTimezoneValidation(agency *types.Agency, row int) {
 	if err != "" {
 		addMessage(err)
 		return
+	}
+
+	// Validate rules
+	if rules != nil && rules.AgencyTimezone.Options != nil {
+		if slices.Contains(*rules.AgencyTimezone.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.AgencyTimezone.Options, *agency.AgencyTimezone) {
+			addMessage(fmt.Sprintf("Agency timezone is not allowed: %s", *agency.AgencyTimezone))
+			return
+		}
 	}
 }

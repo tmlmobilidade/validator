@@ -20,10 +20,10 @@ Orders the routes in a way which is ideal for presentation to customers. Routes 
 
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
-func RouteSortOrderValidation(severity *types.Severity, route *types.Route, row int) {
+func RouteSortOrderValidation(route *types.Route, row int, rules *types.RoutesRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.RouteSortOrder.Severity != "" {
+		s = rules.RouteSortOrder.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -51,4 +51,4 @@ func RouteSortOrderValidation(severity *types.Severity, route *types.Route, row 
 		addMessage("route_sort_order must be a non-negative integer.", types.SEVERITY_ERROR)
 		return
 	}
-} 
+}

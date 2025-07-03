@@ -9,10 +9,10 @@ import (
 )
 
 func TestAgencyIdValidation_Required(t *testing.T) {
-	severity := types.SEVERITY_ERROR
+	rules := &types.GtfsRules{Agency: types.AgencyRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_ERROR}}}
 	agency := &types.Agency{AgencyId: nil}
 	gtfs := types.Gtfs{Agency: []types.AgencyRaw{{}, {}}}
-	validations.AgencyIdValidation(&severity, agency, 1, gtfs)
+	validations.AgencyIdValidation(agency, 1, gtfs, &rules.Agency)
 
 	// Assert
 	assertion := lib.AssertionMessage{
@@ -28,10 +28,10 @@ func TestAgencyIdValidation_Required(t *testing.T) {
 }
 
 func TestAgencyIdValidation_Recommended(t *testing.T) {
-	severity := types.SEVERITY_WARNING
+	rules := &types.GtfsRules{Agency: types.AgencyRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_WARNING}}}
 	agency := &types.Agency{AgencyId: nil}
 	gtfs := types.Gtfs{Agency: []types.AgencyRaw{{}}}
-	validations.AgencyIdValidation(&severity, agency, 2, gtfs)
+	validations.AgencyIdValidation(agency, 2, gtfs, &rules.Agency)
 
 	// Assert
 	assertion := lib.AssertionMessage{
@@ -50,7 +50,7 @@ func TestAgencyIdValidation_Unique(t *testing.T) {
 	id := "unique"
 	agency := &types.Agency{AgencyId: &id}
 	gtfs := types.Gtfs{IdMap: map[string]map[string][]int{"agency": {"unique": {1}}}}
-	validations.AgencyIdValidation(nil, agency, 3, gtfs)
+	validations.AgencyIdValidation(agency, 3, gtfs, nil)
 
 	// Assert
 	assertion := lib.AssertionMessage{
@@ -69,7 +69,7 @@ func TestAgencyIdValidation_Duplicate(t *testing.T) {
 	id := "duplicate"
 	agency := &types.Agency{AgencyId: &id}
 	gtfs := types.Gtfs{IdMap: map[string]map[string][]int{"agency": {"duplicate": {1, 2}}}}
-	validations.AgencyIdValidation(nil, agency, 4, gtfs)
+	validations.AgencyIdValidation(agency, 4, gtfs, nil)
 
 	// Assert
 	assertion := lib.AssertionMessage{

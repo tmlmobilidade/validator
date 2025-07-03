@@ -1,18 +1,20 @@
 package stops
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
 # Attributes
 
- - File: [stops.txt]
- - Field: stop_code
- - Presence: Optional
- - Type: String
+  - File: [stops.txt]
+  - Field: stop_code
+  - Presence: Optional
+  - Type: String
 
 # Description
 
@@ -26,11 +28,11 @@ This field should be left empty for locations without a code presented to riders
 
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
-func StopCodeValidation(severity *types.Severity, stop *types.Stop, row int, gtfs *types.Gtfs) {
+func StopCodeValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.StopsRules) {
 
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.StopCode.Severity != "" {
+		s = rules.StopCode.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -59,9 +61,21 @@ func StopCodeValidation(severity *types.Severity, stop *types.Stop, row int, gtf
 		count := len(lib.RemoveDuplicates(gtfs.IdMap["stops"][*stop.StopCode]))
 
 		if count > 1 {
-			addMessage("Duplicate stop_code found: " + *stop.StopCode, types.SEVERITY_WARNING)
+			addMessage("Duplicate stop_code found: "+*stop.StopCode, types.SEVERITY_WARNING)
 			return
 		}
 	}
-	
-} 
+
+	// Validate rules
+	if rules != nil && rules.StopCode.Options != nil {
+		if slices.Contains(*rules.StopCode.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.StopCode.Options, *stop.StopCode) {
+			addMessage(fmt.Sprintf("stop_code is not allowed: %s", *stop.StopCode), s)
+			return
+		}
+	}
+
+}

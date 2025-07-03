@@ -1,18 +1,20 @@
 package stop_times
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
 # Attributes
 
- - File: [stop_times.txt]
- - Field: drop_off_type
- - Presence: Conditionally Forbidden
- - Type: Enum
+  - File: [stop_times.txt]
+  - Field: drop_off_type
+  - Presence: Conditionally Forbidden
+  - Type: Enum
 
 # Description
 
@@ -27,15 +29,15 @@ Valid options are:
 
 Conditionally Forbidden:
 
- - drop_off_type=0 forbidden if start_pickup_drop_off_window or end_pickup_drop_off_window are defined.
- - Optional otherwise.
+  - drop_off_type=0 forbidden if start_pickup_drop_off_window or end_pickup_drop_off_window are defined.
+  - Optional otherwise.
 
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
-func DropOffTypeValidation(severity *types.Severity, stopTime *types.StopTime, row int) {
+func DropOffTypeValidation(stopTime *types.StopTime, row int, rules *types.StopTimesRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.DropOffType.Severity != "" {
+		s = rules.DropOffType.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -70,4 +72,16 @@ func DropOffTypeValidation(severity *types.Severity, stopTime *types.StopTime, r
 		addMessage("drop_off_type=0 is forbidden if start_pickup_drop_off_window or end_pickup_drop_off_window are defined.", types.SEVERITY_ERROR)
 		return
 	}
-} 
+
+	// Validate Rule Options
+	if rules != nil && rules.DropOffType.Options != nil {
+		if slices.Contains(*rules.DropOffType.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.DropOffType.Options, fmt.Sprintf("%d", dt)) {
+			addMessage(fmt.Sprintf("drop_off_type is not allowed: %d", dt), s)
+			return
+		}
+	}
+}
