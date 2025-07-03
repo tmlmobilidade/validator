@@ -8,40 +8,40 @@ import (
 
 /*
 # Attributes
-	- File: [trips.txt]
-	- Field: shape_id
-	- Presence: Conditionally Required
-	- Type: Foreign Key referencing shapes.shape_id
+  - File: [trips.txt]
+  - Field: shape_id
+  - Presence: Conditionally Required
+  - Type: Foreign Key referencing shapes.shape_id
 
 # Description
 
 Identifies a geospatial shape describing the vehicle travel path for a trip.
 
 Conditionally Required:
-	- Required if the trip has a continuous pickup or drop-off behavior defined either in routes.txt or in stop_times.txt.
-	- Optional otherwise.
+  - Required if the trip has a continuous pickup or drop-off behavior defined either in routes.txt or in stop_times.txt.
+  - Optional otherwise.
 
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 */
-func ShapeIdValidation(severity *types.Severity, trip *types.Trip, row int, gtfs *types.Gtfs) {
+func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.ShapeId.Severity != "" {
+		s = rules.ShapeId.Severity
 	}
 
 	addMessage := func(message string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field: "shape_id",
-			FileName: "trips.txt",
-			Rows: []int{row},
-			Severity: severity,
-			Message: message,
+			Field:        "shape_id",
+			FileName:     "trips.txt",
+			Rows:         []int{row},
+			Severity:     severity,
+			Message:      message,
 			ValidationID: "shape_id_validation",
 		})
 	}
 
 	hasContinuousPickupDropoff := false
-	
+
 	// Check if the route has continuous pickup/dropoff behavior
 	routeRow := gtfs.IdMap["routes"][*trip.RouteId]
 	if gtfs.IdMap["routes"] != nil && gtfs.Route[routeRow[0]].ContinuousPickup != "" {
@@ -72,11 +72,11 @@ func ShapeIdValidation(severity *types.Severity, trip *types.Trip, row int, gtfs
 		message := lib.IfThenElse(s == types.SEVERITY_ERROR, "shape_id is required", "shape_id is recommended")
 		addMessage(message, s)
 		return
-	}	
+	}
 
 	// Check Foreign Key
 	if !lib.GtfsIdMapKeyExists(gtfs, "shapes", *trip.ShapeId) {
-		addMessage("shape_id '"+ *trip.ShapeId + "' does not exist in shapes.txt", types.SEVERITY_ERROR)
+		addMessage("shape_id '"+*trip.ShapeId+"' does not exist in shapes.txt", types.SEVERITY_ERROR)
 		return
 	}
 }

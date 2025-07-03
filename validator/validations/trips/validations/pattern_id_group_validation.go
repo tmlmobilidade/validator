@@ -9,10 +9,10 @@ import (
 /*
 # Attributes
 
-	- File: trips.txt
-	- Field: pattern_id
-	- Presence: Optional (Required for "Transportes Metropolitanos de Lisboa")
-	- Type: ID
+  - File: trips.txt
+  - Field: pattern_id
+  - Presence: Optional (Required for "Transportes Metropolitanos de Lisboa")
+  - Type: ID
 
 # Description
 
@@ -21,11 +21,11 @@ Validates if trips with the same pattern_id have the same route_id, trip_headsig
 func PatternIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, gtfs *types.Gtfs) {
 	addMessage := func(msg string, row int, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field: "pattern_id",
-			FileName: "trips.txt",
-			Message: msg,
-			Rows: []int{row},
-			Severity: severity,
+			Field:        "pattern_id",
+			FileName:     "trips.txt",
+			Message:      msg,
+			Rows:         []int{row},
+			Severity:     severity,
 			ValidationID: "pattern_id_validation",
 		})
 	}
@@ -63,5 +63,5 @@ func PatternIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, 
 			addMessage(fmt.Sprintf("For pattern_id %s, there are trips with multiple stop sequence variations", patternId), group.Trips[0].Row, types.SEVERITY_ERROR)
 		}
 	}
-	
+
 }

@@ -9,10 +9,10 @@ import (
 /*
 # Attributes
 
-	- File: trips.txt
-	- Field: pattern_id
-	- Presence: Optional (Required for "Transportes Metropolitanos de Lisboa")
-	- Type: ID
+  - File: trips.txt
+  - Field: pattern_id
+  - Presence: Optional (Required for "Transportes Metropolitanos de Lisboa")
+  - Type: ID
 
 # Description
 
@@ -21,32 +21,32 @@ Patterns correspond to the unfolding of the routes by the directions, if more th
 
 Trips with the same pattern_id must have the same route_id, trip_headsign, direction_id, shape_id and the same stop sequence.
 */
-func PatternIdValidation(severity *types.Severity, trip *types.Trip, row int, gtfs *types.Gtfs) bool {
+func PatternIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) bool {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.PatternId.Severity != "" {
+		s = rules.PatternId.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field: "pattern_id",
-			FileName: "trips.txt",
-			Message: msg,
-			Rows: []int{row},
-			Severity: severity,
+			Field:        "pattern_id",
+			FileName:     "trips.txt",
+			Message:      msg,
+			Rows:         []int{row},
+			Severity:     severity,
 			ValidationID: "pattern_id_validation",
 		})
 	}
-	
+
 	if trip.PatternId == nil {
 		if s == types.SEVERITY_IGNORE {
 			return false
 		}
-		
+
 		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "pattern_id is recommended", "pattern_id is required")
 		addMessage(warn, s)
 		return false
-	}	
+	}
 
 	return true
 }

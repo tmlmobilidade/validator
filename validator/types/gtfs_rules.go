@@ -89,6 +89,7 @@ type TripsRules struct {
 	ShapeId              RuleConfig `json:"shape_id"`
 	WheelchairAccessible RuleConfig `json:"wheelchair_accessible"`
 	BikesAllowed         RuleConfig `json:"bikes_allowed"`
+	StopSequence         RuleConfig `json:"stop_sequence"`
 }
 
 type StopTimesRules struct {

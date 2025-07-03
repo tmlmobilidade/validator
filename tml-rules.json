@@ -224,6 +224,9 @@
         },
         "bikes_allowed": {
             "severity": "error"
+        },
+        "stop_sequence": {
+            "severity": "error"
         }
     },
     "stop_times": {

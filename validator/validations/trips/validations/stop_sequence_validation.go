@@ -12,10 +12,10 @@ import (
 /*
 # Attributes
 
- - File: [stop_times.txt]
- - Field: stop_sequence
- - Presence: Required
- - Type: Non-negative Integer
+  - File: [stop_times.txt]
+  - Field: stop_sequence
+  - Presence: Required
+  - Type: Non-negative Integer
 
 # Description
 
@@ -29,7 +29,16 @@ Travel within the same location group or GeoJSON location requires two records i
 
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
-func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs) (stopSequenceHash string){
+func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) (stopSequenceHash string) {
+	s := types.SEVERITY_IGNORE
+	if rules != nil && rules.StopSequence.Severity != "" {
+		s = rules.StopSequence.Severity
+	}
+
+	if s == types.SEVERITY_IGNORE {
+		return
+	}
+
 	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
 			Field:        "stop_sequence",
@@ -52,7 +61,7 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs) (stopSe
 
 	stopTimes := gtfs.IdMap["stop_times"][*trip.TripId]
 	for _, row := range stopTimes {
-		
+
 		stopSequence, err := strconv.Atoi(gtfs.StopTime[row].StopSequence)
 		if err != nil {
 			addMessage("stop_sequence must be a non-negative integer.", types.SEVERITY_ERROR)
@@ -71,9 +80,9 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs) (stopSe
 		stopId := gtfs.StopTime[row].StopId
 
 		stopSequences = append(stopSequences, types.StopTime{
-			StopSequence: &stopSequence,
+			StopSequence:      &stopSequence,
 			ShapeDistTraveled: &shapeDistTraveled,
-			StopId: &stopId,
+			StopId:            &stopId,
 		})
 
 		hash += fmt.Sprintf("%s-%v-%v", stopId, shapeDistTraveled, stopSequence)
@@ -83,17 +92,17 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs) (stopSe
 	sort.Slice(stopSequences, func(i, j int) bool {
 		return *stopSequences[i].StopSequence < *stopSequences[j].StopSequence
 	})
-	
+
 	for i, stopSequence := range stopSequences {
 		if i > 0 {
 			if *stopSequence.StopSequence <= *stopSequences[i-1].StopSequence {
-				addMessage("stop_sequence values must increase along the trip ('"+ *trip.TripId + "')", types.SEVERITY_ERROR)
+				addMessage("stop_sequence values must increase along the trip ('"+*trip.TripId+"')", types.SEVERITY_ERROR)
 				return
 			}
-			
+
 			if *stopSequence.ShapeDistTraveled >= 0 && *stopSequences[i-1].ShapeDistTraveled >= 0 {
 				if *stopSequence.ShapeDistTraveled < *stopSequences[i-1].ShapeDistTraveled {
-					addMessage("shape_dist_traveled values must increase along the trip ('"+ *trip.TripId + "')", types.SEVERITY_ERROR)
+					addMessage("shape_dist_traveled values must increase along the trip ('"+*trip.TripId+"')", types.SEVERITY_ERROR)
 					return
 				}
 			}
@@ -102,4 +111,4 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs) (stopSe
 
 	stopSequenceHash = lib.Hash(hash)
 	return
-} 
+}
