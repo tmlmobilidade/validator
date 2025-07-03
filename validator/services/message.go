@@ -1,6 +1,7 @@
 package services
 
 import (
+	"encoding/json"
 	"fmt"
 	"main/lib"
 	"main/types"
@@ -32,11 +33,11 @@ func (ms *MessageService) AddMessages(messages []types.Message) {
 }
 
 func (ms *MessageService) AddMessage(message types.Message) {
-	
+
 	// Add +2 to each row in the message.Rows
 	// 1 for the header and 1 for the 0 based index
 	for i, row := range message.Rows {
-		message.Rows[i] = row + 2 
+		message.Rows[i] = row + 2
 	}
 
 	for i, m := range ms.messages {
@@ -52,7 +53,7 @@ func (ms *MessageService) AddMessage(message types.Message) {
 			return
 		}
 	}
-	
+
 	ms.messages = append(ms.messages, message)
 
 	switch message.Severity {
@@ -82,7 +83,7 @@ func (ms *MessageService) PrintTable() {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Validation ID", "Message", "Severity", "Field", "File Name", "Row"})
 	table.SetRowSeparator("-")
-	table.SetFooter([]string{"", "", "Errors: " + strconv.Itoa(ms.errorCount), "Warnings: " + strconv.Itoa(ms.warningCount), "Total: " + strconv.Itoa(ms.errorCount+ms.warningCount)})
+	table.SetFooter([]string{"", "", "Errors: " + strconv.Itoa(ms.errorCount), "Warnings: " + strconv.Itoa(ms.warningCount), "Total: " + strconv.Itoa(ms.errorCount+ms.warningCount), ""})
 	for _, message := range ms.messages {
 		rows := make([]string, len(message.Rows))
 		for i, row := range message.Rows {
@@ -105,6 +106,16 @@ func (ms *MessageService) PrintSummary() {
 
 func (ms *MessageService) PrintJSON() {
 	lib.PrintMap(ms.GetSummary(), true)
+}
+
+func (ms *MessageService) WriteToFile(filename string) {
+	json, err := json.Marshal(ms.GetSummary())
+	if err != nil {
+		lib.AppLogger.Error("Error marshalling summary to JSON: " + err.Error())
+		return
+	}
+
+	os.WriteFile(filename, json, 0644)
 }
 
 func (ms *MessageService) Clear() {

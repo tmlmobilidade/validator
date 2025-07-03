@@ -81,9 +81,11 @@ func main() {
 	// Run Validations for each file
 	runValidations(gtfs, tracker, rules)
 
-	// Print Table
-	services.AppMessageService.PrintTable()
-
-	// Print JSON
-	services.AppMessageService.PrintJSON()
+	// Output Summary
+	if services.AppCLI.Options.OutputPath != "" {
+		services.AppMessageService.WriteToFile(services.AppCLI.Options.OutputPath)
+		lib.AppLogger.Info("Summary written to: " + services.AppCLI.Options.OutputPath)
+	} else {
+		services.AppMessageService.PrintJSON()
+	}
 }
