@@ -85,6 +85,7 @@ type GtfsRules = {
         shape_id: RuleConfig;
         wheelchair_accessible: RuleConfig;
         bikes_allowed: RuleConfig;
+        stop_sequence: RuleConfig;
     }
     stop_times: {
         _file: boolean;
@@ -482,6 +483,9 @@ const rules: GtfsRules = {
             severity: "error",
         },
         bikes_allowed: {
+            severity: "error",
+        },
+        stop_sequence: {
             severity: "error",
         }
     },
