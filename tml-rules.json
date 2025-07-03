@@ -7,7 +7,7 @@
         },
         "agency_name": {
             "severity": "error",
-            "options": ["Área Metropolitana de Lisboa","Carris","Metropolitano Olissipo","Comboios de Portugal","Transtejo / Soflusa","Transportes Sul do Tejo","Rodoviária de Lisboa","Soflusa","Transportes Coletivos do Barreiro","Vimeca Transportes","Scotturb","ID/JJ/HLM","Isidoro Duarte","Barraqueiro Transportes","Joaquim Jerónimo","Fertagus","Metro Transportes do Sul","Henrique Leonardo da Mota","Cascais Próxima","Portal VIVA","Rodoviária do Tejo","Câmara Municipal de Lisboa","Carris Metropolitana A1","Carris Metropolitana A2","Carris Metropolitana A3","Carris Metropolitana A4","Município de Oeiras","Municipio de Setúbal"]
+            "options": ["Área Metropolitana de Lisboa","Carris","Metropolitano Olissipo","Comboios de Portugal","Transtejo / Soflusa","Transportes Sul do Tejo","Rodoviária de Lisboa","Soflusa","Transportes Coletivos do Barreiro","Vimeca Transportes","Scotturb","ID/JJ/HLM","Isidoro Duarte","Barraqueiro Transportes","Joaquim Jerónimo","Fertagus","Metro Transportes do Sul","Henrique Leonardo da Mota","Cascais Próxima","Portal VIVA","Rodoviária do Tejo","Câmara Municipal de Lisboa","Viação Alvorada","Alsa Todi","Município de Oeiras","Municipio de Setúbal"]
         },
         "agency_name_id_match": {
             "severity": "error",
@@ -34,10 +34,10 @@
                 {"key": "23","value": "Portal VIVA"},
                 {"key": "24","value": "Rodoviária do Tejo"},
                 {"key": "34","value": "Câmara Municipal de Lisboa"},
-                {"key": "41","value": "Carris Metropolitana A1"},
-                {"key": "42","value": "Carris Metropolitana A2"},
-                {"key": "43","value": "Carris Metropolitana A3"},
-                {"key": "44","value": "Carris Metropolitana A4"},
+                {"key": "41","value": "Viação Alvorada"},
+                {"key": "42","value": "Rodoviária de Lisboa"},
+                {"key": "43","value": "Transportes Sul do Tejo"},
+                {"key": "44","value": "Alsa Todi"},
                 {"key": "49","value": "Município de Oeiras"},
                 {"key": "54","value": "Municipio de Setúbal"}
             ]
