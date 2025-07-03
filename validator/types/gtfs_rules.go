@@ -93,22 +93,26 @@ type TripsRules struct {
 }
 
 type StopTimesRules struct {
-	File              bool       `json:"_file"`
-	TripId            RuleConfig `json:"trip_id"`
-	ArrivalTime       RuleConfig `json:"arrival_time"`
-	DepartureTime     RuleConfig `json:"departure_time"`
-	StopId            RuleConfig `json:"stop_id"`
-	StopSequence      RuleConfig `json:"stop_sequence"`
-	StopHeadsign      RuleConfig `json:"stop_headsign"`
-	PickupType        RuleConfig `json:"pickup_type"`
-	DropOffType       RuleConfig `json:"drop_off_type"`
-	ContinuousPickup  RuleConfig `json:"continuous_pickup"`
-	ContinuousDropOff RuleConfig `json:"continuous_drop_off"`
-	ShapeDistTraveled RuleConfig `json:"shape_dist_traveled"`
-	Timepoint         RuleConfig `json:"timepoint"`
-	Zone1             RuleConfig `json:"zone_1"`
-	Zone2             RuleConfig `json:"zone_2"`
-	Zone3             RuleConfig `json:"zone_3"`
+	File                     bool       `json:"_file"`
+	TripId                   RuleConfig `json:"trip_id"`
+	ArrivalTime              RuleConfig `json:"arrival_time"`
+	DepartureTime            RuleConfig `json:"departure_time"`
+	StopId                   RuleConfig `json:"stop_id"`
+	StopSequence             RuleConfig `json:"stop_sequence"`
+	StopHeadsign             RuleConfig `json:"stop_headsign"`
+	PickupType               RuleConfig `json:"pickup_type"`
+	DropOffType              RuleConfig `json:"drop_off_type"`
+	ContinuousPickup         RuleConfig `json:"continuous_pickup"`
+	ContinuousDropOff        RuleConfig `json:"continuous_drop_off"`
+	ShapeDistTraveled        RuleConfig `json:"shape_dist_traveled"`
+	StartPickupDropOffWindow RuleConfig `json:"start_pickup_drop_off_window"`
+	EndPickupDropOffWindow   RuleConfig `json:"end_pickup_drop_off_window"`
+	Timepoint                RuleConfig `json:"timepoint"`
+	Zone1                    RuleConfig `json:"zone_1"`
+	Zone2                    RuleConfig `json:"zone_2"`
+	Zone3                    RuleConfig `json:"zone_3"`
+	PickupBookingRuleId      RuleConfig `json:"pickup_booking_rule_id"`
+	DropOffBookingRuleId     RuleConfig `json:"drop_off_booking_rule_id"`
 }
 
 type CalendarRules struct {

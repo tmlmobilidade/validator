@@ -46,50 +46,50 @@ type Agency struct {
 	AgencyFareUrl  *string `json:"agency_fare_url"`
 	AgencyId       *string `json:"agency_id"`
 	AgencyLang     *string `json:"agency_lang"`
-	AgencyName     *string  `json:"agency_name"`
+	AgencyName     *string `json:"agency_name"`
 	AgencyPhone    *string `json:"agency_phone"`
-	AgencyTimezone *string  `json:"agency_timezone"`
-	AgencyUrl      *string  `json:"agency_url"`
+	AgencyTimezone *string `json:"agency_timezone"`
+	AgencyUrl      *string `json:"agency_url"`
 }
 
 /* STOP */
 type Stop struct {
-	HasBench           *bool    `json:"has_bench,omitempty"`
-	HasNetworkMap      *bool    `json:"has_network_map,omitempty"`
-	HasPipRealTime     *bool    `json:"has_pip_real_time,omitempty"`
-	HasSchedules       *bool    `json:"has_schedules,omitempty"`
-	HasShelter         *bool    `json:"has_shelter,omitempty"`
-	HasStopSign        *bool    `json:"has_stop_sign,omitempty"`
-	HasTariffsInformation *bool    `json:"has_tariffs_information,omitempty"`
-	LevelId            *string  `json:"level_id,omitempty"`
-	LocationType       *int     `json:"location_type,omitempty"`
-	MunicipalityId     *string  `json:"municipality_id,omitempty"`
-	ParentStation      *string  `json:"parent_station,omitempty"`
-	ParishId           *string  `json:"parish_id,omitempty"`
-	PlatformCode       *string  `json:"platform_code,omitempty"`
-	PublicVisible      *bool    `json:"public_visible,omitempty"`
-	RegionId           *string  `json:"region_id,omitempty"`
-	ShelterCode        *string  `json:"shelter_code,omitempty"`
-	ShelterMaintainer  *string  `json:"shelter_maintainer,omitempty"`
-	StopCode           *string  `json:"stop_code,omitempty"`
-	StopDesc           *string  `json:"stop_desc,omitempty"`
-	StopId             *string   `json:"stop_id"`
-	StopLat            *float32 `json:"stop_lat,omitempty"`
-	StopLon            *float32 `json:"stop_lon,omitempty"`
-	StopName           *string  `json:"stop_name,omitempty"`
-	StopShortName      *string  `json:"stop_short_name,omitempty"`
-	StopTimezone       *string  `json:"stop_timezone,omitempty"`
-	StopUrl            *string  `json:"stop_url,omitempty"`
-	TtsStopName        *string  `json:"tts_stop_name,omitempty"`
-	WheelchairBoarding *int     `json:"wheelchair_boarding,omitempty"`
-	ZoneId             *string  `json:"zone_id,omitempty"`
+	HasBench              *int     `json:"has_bench,omitempty"`
+	HasNetworkMap         *int     `json:"has_network_map,omitempty"`
+	HasPipRealTime        *int     `json:"has_pip_real_time,omitempty"`
+	HasSchedules          *int     `json:"has_schedules,omitempty"`
+	HasShelter            *int     `json:"has_shelter,omitempty"`
+	HasStopSign           *int     `json:"has_stop_sign,omitempty"`
+	HasTariffsInformation *int     `json:"has_tariffs_information,omitempty"`
+	LevelId               *string  `json:"level_id,omitempty"`
+	LocationType          *int     `json:"location_type,omitempty"`
+	MunicipalityId        *string  `json:"municipality_id,omitempty"`
+	ParentStation         *string  `json:"parent_station,omitempty"`
+	ParishId              *string  `json:"parish_id,omitempty"`
+	PlatformCode          *string  `json:"platform_code,omitempty"`
+	PublicVisible         *int     `json:"public_visible,omitempty"`
+	RegionId              *string  `json:"region_id,omitempty"`
+	ShelterCode           *string  `json:"shelter_code,omitempty"`
+	ShelterMaintainer     *string  `json:"shelter_maintainer,omitempty"`
+	StopCode              *string  `json:"stop_code,omitempty"`
+	StopDesc              *string  `json:"stop_desc,omitempty"`
+	StopId                *string  `json:"stop_id"`
+	StopLat               *float32 `json:"stop_lat,omitempty"`
+	StopLon               *float32 `json:"stop_lon,omitempty"`
+	StopName              *string  `json:"stop_name,omitempty"`
+	StopShortName         *string  `json:"stop_short_name,omitempty"`
+	StopTimezone          *string  `json:"stop_timezone,omitempty"`
+	StopUrl               *string  `json:"stop_url,omitempty"`
+	TtsStopName           *string  `json:"tts_stop_name,omitempty"`
+	WheelchairBoarding    *int     `json:"wheelchair_boarding,omitempty"`
+	ZoneId                *string  `json:"zone_id,omitempty"`
 }
 
 /* ROUTE */
 type Route struct {
 	// Required fields
-	RouteId           *string  `json:"route_id"`
-	RouteType         *int     `json:"route_type"`
+	RouteId   *string `json:"route_id"`
+	RouteType *int    `json:"route_type"`
 
 	// Optional fields
 	AgencyId          *string `json:"agency_id"`
@@ -110,44 +110,44 @@ type Route struct {
 type Trip struct {
 	BikesAllowed         *int    `json:"bikes_allowed"`
 	BlockId              *string `json:"block_id"`
-	CalendarDesc         *string  `json:"calendar_desc"`
-	DirectionId          *int   `json:"direction_id"`
+	CalendarDesc         *string `json:"calendar_desc"`
+	DirectionId          *int    `json:"direction_id"`
 	PatternId            *string `json:"pattern_id"`
-	RouteId              *string  `json:"route_id"`
-	ServiceId            *string  `json:"service_id"`
+	RouteId              *string `json:"route_id"`
+	ServiceId            *string `json:"service_id"`
 	ShapeId              *string `json:"shape_id"`
 	TripHeadsign         *string `json:"trip_headsign"`
-	TripId               *string  `json:"trip_id"`
+	TripId               *string `json:"trip_id"`
 	TripShortName        *string `json:"trip_short_name"`
-	WheelchairAccessible *int `json:"wheelchair_accessible"`
-	Row int
+	WheelchairAccessible *int    `json:"wheelchair_accessible"`
+	Row                  int
 }
 
 type TripGroupedByPattern map[string]struct {
 	Trips []Trip
-	Hash []string
+	Hash  []string
 }
 
 /* STOP TIME */
 type StopTime struct {
-	TripId 					 *string  `json:"trip_id"`
-	ArrivalTime 			 *string  `json:"arrival_time"`
-	DepartureTime 			 *string  `json:"departure_time"`
-	StopId 					 *string  `json:"stop_id"`
-	LocationGroupId 		 *string  `json:"location_group_id"`
-	LocationId 				 *string  `json:"location_id"`
-	StopSequence 			 *int     `json:"stop_sequence"`
-	StopHeadsign 			 *string  `json:"stop_headsign"`
+	TripId                   *string  `json:"trip_id"`
+	ArrivalTime              *string  `json:"arrival_time"`
+	DepartureTime            *string  `json:"departure_time"`
+	StopId                   *string  `json:"stop_id"`
+	LocationGroupId          *string  `json:"location_group_id"`
+	LocationId               *string  `json:"location_id"`
+	StopSequence             *int     `json:"stop_sequence"`
+	StopHeadsign             *string  `json:"stop_headsign"`
 	StartPickupDropOffWindow *string  `json:"start_pickup_drop_off_window"`
-	EndPickupDropOffWindow 	 *string  `json:"end_pickup_drop_off_window"`
-	PickupType 				 *int 	  `json:"pickup_type"`
-	DropOffType 			 *int 	  `json:"drop_off_type"`
-	ContinuousPickup 		 *int 	  `json:"continuous_pickup"`
-	ContinuousDropOff 		 *int 	  `json:"continuous_drop_off"`
-	ShapeDistTraveled 		 *float64 `json:"shape_dist_traveled"`
-	Timepoint 				 *int 	  `json:"timepoint"`
-	PickupBookingRuleId 	 *string  `json:"pickup_booking_rule_id"`
-	DropOffBookingRuleId 	 *string  `json:"drop_off_booking_rule_id"`
+	EndPickupDropOffWindow   *string  `json:"end_pickup_drop_off_window"`
+	PickupType               *int     `json:"pickup_type"`
+	DropOffType              *int     `json:"drop_off_type"`
+	ContinuousPickup         *int     `json:"continuous_pickup"`
+	ContinuousDropOff        *int     `json:"continuous_drop_off"`
+	ShapeDistTraveled        *float64 `json:"shape_dist_traveled"`
+	Timepoint                *int     `json:"timepoint"`
+	PickupBookingRuleId      *string  `json:"pickup_booking_rule_id"`
+	DropOffBookingRuleId     *string  `json:"drop_off_booking_rule_id"`
 }
 
 /* CALENDAR */
@@ -167,7 +167,7 @@ type Calendar struct {
 /* CALENDAR DATES */
 type CalendarDates struct {
 	Date          string `json:"date"`
-	ExceptionType *int    `json:"exception_type"`
+	ExceptionType *int   `json:"exception_type"`
 	ServiceId     string `json:"service_id"`
 }
 
@@ -184,7 +184,7 @@ type FareAttribute struct {
 
 /* FARE RULES */
 type FareRule struct {
-	FareId 		  *string `json:"fare_id"` // Identifies a fare class
+	FareId        *string `json:"fare_id"`        // Identifies a fare class
 	RouteId       *string `json:"route_id"`       // Identifies a route associated with the fare class
 	OriginId      *string `json:"origin_id"`      // Identifies an origin zone
 	DestinationId *string `json:"destination_id"` // Identifies a destination zone
@@ -446,7 +446,6 @@ type Period struct {
 	PeriodId   string `json:"period_id"`
 	PeriodName string `json:"period_name"`
 }
-
 
 /* WEEKDAY */
 type Weekday string
