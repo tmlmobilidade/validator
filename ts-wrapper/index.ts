@@ -21,12 +21,18 @@ function getCurrentPlatform() {
 	return `${platform}-${arch}`;
 }
 
-export async function GTFSValidator(input: string) {
+interface GTFSValidatorOptions {
+	out_file?: string
+}
+
+export async function GTFSValidator(input: string, options: GTFSValidatorOptions) {
+	const args = ['-input', input];
+	if (options.out_file) {
+		args.push('-o', options.out_file);
+	}
+
 	try {
-		const result = await runGoBinary<GTFSValidatorSummary>(`${__dirname}/bin/${BINARY_DISTRIBUTIONS_FILES[getCurrentPlatform()]}`, [
-			'-input',
-			input,
-		]);
+		const result = await runGoBinary<GTFSValidatorSummary>(`${__dirname}/bin/${BINARY_DISTRIBUTIONS_FILES[getCurrentPlatform()]}`, args);
 		return result;
 	}
 	catch (err) {
