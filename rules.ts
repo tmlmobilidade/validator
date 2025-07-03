@@ -4,14 +4,22 @@ const ALL_OPTIONS = "all_options";
 
 type RuleConfig = {
     severity: Severity;
-    options?: string[];
+}
+
+type WithOptions<T> = T & {
+    options: string[];
+}
+
+type WithCompare<T> = T & {
+    compare: {key: string; value: string}[];
 }
 
 type GtfsRules = {
     agency: {
         _file: boolean;
-        agency_id: RuleConfig;
-        agency_name: RuleConfig;
+        agency_id: WithOptions<RuleConfig>;
+        agency_name: WithOptions<RuleConfig>;
+        agency_name_id_match: WithCompare<RuleConfig>;
         agency_url: RuleConfig;
         agency_timezone: RuleConfig;
         agency_lang: RuleConfig;
@@ -34,21 +42,21 @@ type GtfsRules = {
         location_type: RuleConfig;
         parent_station: RuleConfig;
         stop_timezone: RuleConfig;
-        wheelchair_boarding: RuleConfig;
+        wheelchair_boarding: WithOptions<RuleConfig>;
         level_id: RuleConfig;
         platform_code: RuleConfig;
-        public_visible: RuleConfig;
-        has_stop_sign: RuleConfig;
-        has_shelter: RuleConfig;
+        public_visible: WithOptions<RuleConfig>;
+        has_stop_sign: WithOptions<RuleConfig>;
+        has_shelter: WithOptions<RuleConfig>;
         shelter_code: RuleConfig;
         shelter_maintainer: RuleConfig;
-        has_bench: RuleConfig;
-        has_network_map: RuleConfig;
-        has_schedules: RuleConfig;
-        has_pip_real_time: RuleConfig;
-        has_tariffs_information: RuleConfig;
-        region_id: RuleConfig;
-        municipality_id: RuleConfig;
+        has_bench: WithOptions<RuleConfig>;
+        has_network_map: WithOptions<RuleConfig>;
+        has_schedules: WithOptions<RuleConfig>;
+        has_pip_real_time: WithOptions<RuleConfig>;
+        has_tariffs_information: WithOptions<RuleConfig>;
+        region_id: WithOptions<RuleConfig>;
+        municipality_id: WithOptions<RuleConfig>;
         parish_id: RuleConfig;
     }
     routes:{
@@ -62,15 +70,15 @@ type GtfsRules = {
         route_long_name:RuleConfig;
         route_desc:RuleConfig;
         route_remarks:RuleConfig;
-        route_type:RuleConfig;
-        path_type:RuleConfig;
-        circular:RuleConfig;
-        school:RuleConfig;
+        route_type:WithOptions<RuleConfig>;
+        path_type:WithOptions<RuleConfig>;
+        circular:WithOptions<RuleConfig>;
+        school:WithOptions<RuleConfig>;
         route_url:RuleConfig;
         route_color:RuleConfig;
         route_text_color:RuleConfig;
-        continuous_pickup:RuleConfig;
-        continuous_drop_off:RuleConfig;
+        continuous_pickup:WithOptions<RuleConfig>;
+        continuous_drop_off:WithOptions<RuleConfig>;
     }
     trips: {
         _file: boolean;
@@ -100,6 +108,10 @@ type GtfsRules = {
         continuous_pickup: RuleConfig;
         continuous_drop_off: RuleConfig;
         shape_dist_traveled: RuleConfig;
+        start_pickup_drop_off_window: RuleConfig;
+        end_pickup_drop_off_window: RuleConfig;
+        pickup_booking_rule_id: RuleConfig;
+        drop_off_booking_rule_id: RuleConfig;
         timepoint: RuleConfig;
         zone_1: RuleConfig;
         zone_2: RuleConfig;
@@ -136,32 +148,32 @@ type GtfsRules = {
         available_seats: RuleConfig;
         available_standing: RuleConfig;
         typology: RuleConfig;
-        propulsion: RuleConfig;
-        emission: RuleConfig;
-        climatization: RuleConfig;
-        wheelchair: RuleConfig;
-        lowered_floor: RuleConfig;
-        ramp: RuleConfig;
-        kneeling: RuleConfig;
-        static_information: RuleConfig;
-        onboard_monitor: RuleConfig;
-        front_display: RuleConfig;
-        rear_display: RuleConfig;
-        side_display: RuleConfig;
-        internal_sound: RuleConfig;
-        external_sound: RuleConfig;
-        consumption_meter: RuleConfig;
-        bicycles: RuleConfig;
-        passenger_counting: RuleConfig;
-        video_surveillance: RuleConfig;
+        propulsion: WithOptions<RuleConfig>;
+        emission: WithOptions<RuleConfig>;
+        climatization: WithOptions<RuleConfig>;
+        wheelchair: WithOptions<RuleConfig>;
+        lowered_floor: WithOptions<RuleConfig>;
+        ramp: WithOptions<RuleConfig>;
+        kneeling: WithOptions<RuleConfig>;
+        static_information: WithOptions<RuleConfig>;
+        onboard_monitor: WithOptions<RuleConfig>;
+        front_display: WithOptions<RuleConfig>;
+        rear_display: WithOptions<RuleConfig>;
+        side_display: WithOptions<RuleConfig>;
+        internal_sound: WithOptions<RuleConfig>;
+        external_sound: WithOptions<RuleConfig>;
+        consumption_meter: WithOptions<RuleConfig>;
+        bicycles: WithOptions<RuleConfig>;
+        passenger_counting: WithOptions<RuleConfig>;
+        video_surveillance: WithOptions<RuleConfig>;
     }
     fare_attributes: {
         _file: boolean;
         fare_id: RuleConfig;
         price: RuleConfig;
         currency_type: RuleConfig;
-        payment_method: RuleConfig;
-        transfers: RuleConfig;
+        payment_method: WithOptions<RuleConfig>;
+        transfers: WithOptions<RuleConfig>;
         agency_id: RuleConfig;
         transfer_duration: RuleConfig;
     }
@@ -219,10 +231,10 @@ type GtfsRules = {
     }
     feed_info: {
         _file: boolean;
-        feed_type: RuleConfig;
+        feed_type: WithOptions<RuleConfig>;
         feed_publisher_name: RuleConfig;
         feed_publisher_url: RuleConfig;
-        feed_lang: RuleConfig;
+        feed_lang: WithOptions<RuleConfig>;
         default_lang: RuleConfig;
         feed_start_date: RuleConfig;
         feed_end_date: RuleConfig;
@@ -262,11 +274,44 @@ const rules: GtfsRules = {
         _file: true,
         agency_id: {
             severity: "error",
-            options: ["1", "2", "3", "4", "8", "13", "15", "16", "21", "24"]
+            options: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "18", "21", "23", "24", "34", "41", "42", "43", "44", "49", "54"]
         },
         agency_name: {
             severity: "error",
-            options: ["Carris", "Metropolitano de Lisboa, E.P.E.", "CP", "Transtejo", "Transportes Colectivos do Barreiro", "Barraqueiro Transportes", "Fertagus", "Metro Transportes do Sul", "Cascais Próxima", "Rodoviária do Tejo"]
+            options: ["Área Metropolitana de Lisboa","Carris","Metropolitano Olissipo","Comboios de Portugal","Transtejo / Soflusa","Transportes Sul do Tejo","Rodoviária de Lisboa","Soflusa","Transportes Coletivos do Barreiro","Vimeca Transportes","Scotturb","ID/JJ/HLM","Isidoro Duarte","Barraqueiro Transportes","Joaquim Jerónimo","Fertagus","Metro Transportes do Sul","Henrique Leonardo da Mota","Cascais Próxima","Portal VIVA","Rodoviária do Tejo","Câmara Municipal de Lisboa","Carris Metropolitana A1","Carris Metropolitana A2","Carris Metropolitana A3","Carris Metropolitana A4","Município de Oeiras","Municipio de Setúbal"]
+        },
+        agency_name_id_match: {
+            severity: "error",
+            compare: [
+                {key: "0", value: "Área Metropolitana de Lisboa"},
+                {key: "1", value: "Carris"},
+                {key: "2", value: "Metropolitano Olissipo"},
+                {key: "3", value: "Comboios de Portugal"},
+                {key: "4", value: "Transtejo / Soflusa"},
+                {key: "5", value: "Transportes Sul do Tejo"},
+                {key: "6", value: "Rodoviária de Lisboa"},
+                {key: "7", value: "Soflusa"},
+                {key: "8", value: "Transportes Coletivos do Barreiro"},
+                {key: "9", value: "Vimeca Transportes"},
+                {key: "10", value: "Scotturb"},
+                {key: "11", value: "ID/JJ/HLM"},
+                {key: "12", value: "Isidoro Duarte"},
+                {key: "13", value: "Barraqueiro Transportes"},
+                {key: "14", value: "Joaquim Jerónimo"},
+                {key: "15", value: "Fertagus"},
+                {key: "16", value: "Metro Transportes do Sul"},
+                {key: "18", value: "Henrique Leonardo da Mota"},
+                {key: "21", value: "Cascais Próxima"},
+                {key: "23", value: "Portal VIVA"},
+                {key: "24", value: "Rodoviária do Tejo"},
+                {key: "34", value: "Câmara Municipal de Lisboa"},
+                {key: "41", value: "Carris Metropolitana A1"},
+                {key: "42", value: "Carris Metropolitana A2"},
+                {key: "43", value: "Carris Metropolitana A3"},
+                {key: "44", value: "Carris Metropolitana A4"},
+                {key: "49", value: "Município de Oeiras"},
+                {key: "54", value: "Municipio de Setúbal"}
+            ]
         },
         agency_url: {
             severity: "error",
@@ -374,6 +419,7 @@ const rules: GtfsRules = {
         },
         has_tariffs_information: {
             severity: "ignore",
+            options: ["0", "1", "3", "4"]
         },
         region_id: {
             severity: "error",
@@ -523,6 +569,18 @@ const rules: GtfsRules = {
         },
         shape_dist_traveled: {
             severity: "error",
+        },
+        start_pickup_drop_off_window: {
+            severity: "ignore",
+        },
+        end_pickup_drop_off_window: {
+            severity: "ignore",
+        },
+        pickup_booking_rule_id: {
+            severity: "ignore",
+        },
+        drop_off_booking_rule_id: {
+            severity: "ignore",
         },
         timepoint: {
             severity: "error",
@@ -694,7 +752,6 @@ const rules: GtfsRules = {
         },
         price: {
             severity: "error",
-            options: ["EUR"]
         },
         currency_type: {
             severity: "error",
