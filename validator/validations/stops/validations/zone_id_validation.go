@@ -57,11 +57,9 @@ func ZoneIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		if slices.Contains(*rules.ZoneId.Options, *stop.ZoneId) {
+		if !slices.Contains(*rules.ZoneId.Options, *stop.ZoneId) {
+			addMessage(fmt.Sprintf("zone_id is not allowed: %s", *stop.ZoneId), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("zone_id is not allowed: %s", *stop.ZoneId), s)
-		return
 	}
 }

@@ -83,11 +83,9 @@ func PickupTypeValidation(stopTime *types.StopTime, row int, rules *types.StopTi
 			return
 		}
 
-		if slices.Contains(*rules.PickupType.Options, fmt.Sprintf("%d", pt)) {
+		if !slices.Contains(*rules.PickupType.Options, fmt.Sprintf("%d", pt)) {
+			addMessage(fmt.Sprintf("pickup_type is not allowed: %d", pt), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("pickup_type is not allowed: %d", pt), s)
-		return
 	}
 }

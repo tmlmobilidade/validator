@@ -1,9 +1,12 @@
 package stops
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
+	"strconv"
 )
 
 /*
@@ -45,5 +48,24 @@ func HasSchedulesValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "has_schedules is required", "has_schedules is recommended")
 		addMessage(warn, s)
 		return
+	}
+
+	// Validate value
+	validValues := []int{0, 1, 2}
+	if !slices.Contains(validValues, *stop.HasSchedules) {
+		addMessage("has_schedules must be 0, 1, or 2", types.SEVERITY_ERROR)
+		return
+	}
+
+	// Validate Rule options
+	if rules != nil && rules.HasSchedules.Options != nil {
+		if slices.Contains(*rules.HasSchedules.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.HasSchedules.Options, strconv.Itoa(*stop.HasSchedules)) {
+			addMessage(fmt.Sprintf("has_schedules is not allowed: %d", *stop.HasSchedules), s)
+			return
+		}
 	}
 }

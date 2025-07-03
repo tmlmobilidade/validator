@@ -47,11 +47,9 @@ func AgencyNameValidation(agency *types.Agency, row int, rules *types.AgencyRule
 			return
 		}
 
-		if slices.Contains(*rules.AgencyName.Options, *agency.AgencyName) {
+		if !slices.Contains(*rules.AgencyName.Options, *agency.AgencyName) {
+			addMessage(fmt.Sprintf("Agency name is not allowed: %s", *agency.AgencyName), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("Agency name is not allowed: %s", *agency.AgencyName), s)
-		return
 	}
 }

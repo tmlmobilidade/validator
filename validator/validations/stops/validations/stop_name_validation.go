@@ -78,11 +78,9 @@ func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		if slices.Contains(*rules.StopName.Options, *stop.StopName) {
+		if !slices.Contains(*rules.StopName.Options, *stop.StopName) {
+			addMessage(fmt.Sprintf("stop_name is not allowed: %s", *stop.StopName), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("stop_name is not allowed: %s", *stop.StopName), s)
-		return
 	}
 }

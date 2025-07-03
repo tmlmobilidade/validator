@@ -69,11 +69,9 @@ func RouteShortNameValidation(route *types.Route, row int, rules *types.RoutesRu
 			return
 		}
 
-		if slices.Contains(*rules.RouteShortName.Options, *route.RouteShortName) {
+		if !slices.Contains(*rules.RouteShortName.Options, *route.RouteShortName) {
+			addMessage(fmt.Sprintf("route_short_name is not allowed: %s", *route.RouteShortName), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("route_short_name is not allowed: %s", *route.RouteShortName), s)
-		return
 	}
 }

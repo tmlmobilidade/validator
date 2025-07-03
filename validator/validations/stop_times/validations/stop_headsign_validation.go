@@ -64,11 +64,9 @@ func StopHeadsignValidation(stopTime *types.StopTime, row int, rules *types.Stop
 			return
 		}
 
-		if slices.Contains(*rules.StopHeadsign.Options, *stopTime.StopHeadsign) {
+		if !slices.Contains(*rules.StopHeadsign.Options, *stopTime.StopHeadsign) {
+			addMessage(fmt.Sprintf("stop_headsign is not allowed: %s", *stopTime.StopHeadsign), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("stop_headsign is not allowed: %s", *stopTime.StopHeadsign), s)
-		return
 	}
 }

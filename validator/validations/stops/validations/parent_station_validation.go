@@ -97,11 +97,9 @@ func ParentStationValidation(stop *types.Stop, row int, gtfs types.Gtfs, rules *
 			return
 		}
 
-		if slices.Contains(*rules.ParentStation.Options, *stop.ParentStation) {
+		if !slices.Contains(*rules.ParentStation.Options, *stop.ParentStation) {
+			addMessage(fmt.Sprintf("parent_station is not allowed: %s", *stop.ParentStation), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("parent_station is not allowed: %s", *stop.ParentStation), s)
-		return
 	}
 }

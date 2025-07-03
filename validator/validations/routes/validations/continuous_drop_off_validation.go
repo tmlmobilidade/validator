@@ -99,11 +99,9 @@ func ContinuousDropOffValidation(route *types.Route, row int, gtfs *types.Gtfs, 
 			return
 		}
 
-		if slices.Contains(*rules.ContinuousDropOff.Options, *route.ContinuousDropOff) {
+		if !slices.Contains(*rules.ContinuousDropOff.Options, *route.ContinuousDropOff) {
+			addMessage(fmt.Sprintf("continuous_drop_off is not allowed: %s", *route.ContinuousDropOff), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("continuous_drop_off is not allowed: %s", *route.ContinuousDropOff), s)
-		return
 	}
 }

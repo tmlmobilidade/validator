@@ -79,11 +79,9 @@ func DropOffTypeValidation(stopTime *types.StopTime, row int, rules *types.StopT
 			return
 		}
 
-		if slices.Contains(*rules.DropOffType.Options, fmt.Sprintf("%d", dt)) {
+		if !slices.Contains(*rules.DropOffType.Options, fmt.Sprintf("%d", dt)) {
+			addMessage(fmt.Sprintf("drop_off_type is not allowed: %d", dt), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("drop_off_type is not allowed: %d", dt), s)
-		return
 	}
 }

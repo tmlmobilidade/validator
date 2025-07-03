@@ -46,7 +46,7 @@ func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.
 	// Check if stop_id is unique
 	if stop.StopId != nil {
 		count := len(lib.RemoveDuplicates(gtfs.IdMap["stops"][*stop.StopId]))
-		
+
 		if count > 1 {
 			addMessage("Duplicate stop_id found: " + *stop.StopId)
 			return
@@ -59,11 +59,9 @@ func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.
 			return
 		}
 
-		if slices.Contains(*rules.StopId.Options, *stop.StopId) {
+		if !slices.Contains(*rules.StopId.Options, *stop.StopId) {
+			addMessage(fmt.Sprintf("stop_id is not allowed: %s", *stop.StopId))
 			return
 		}
-
-		addMessage(fmt.Sprintf("Stop ID is not allowed: %s", *stop.StopId))
-		return
 	}
-} 
+}

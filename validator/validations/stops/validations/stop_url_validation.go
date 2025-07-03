@@ -52,11 +52,9 @@ func StopUrlValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		if slices.Contains(*rules.StopUrl.Options, *stop.StopUrl) {
+		if !slices.Contains(*rules.StopUrl.Options, *stop.StopUrl) {
+			addMessage(fmt.Sprintf("stop_url is not allowed: %s", *stop.StopUrl))
 			return
 		}
-
-		addMessage(fmt.Sprintf("Stop URL is not allowed: %s", *stop.StopUrl))
-		return
 	}
 }

@@ -65,11 +65,9 @@ func RouteTextColorValidation(route *types.Route, row int, rules *types.RoutesRu
 			return
 		}
 
-		if slices.Contains(*rules.RouteTextColor.Options, *route.RouteTextColor) {
+		if !slices.Contains(*rules.RouteTextColor.Options, *route.RouteTextColor) {
+			addMessage(fmt.Sprintf("route_text_color is not allowed: %s", *route.RouteTextColor), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("route_text_color is not allowed: %s", *route.RouteTextColor), s)
-		return
 	}
 }

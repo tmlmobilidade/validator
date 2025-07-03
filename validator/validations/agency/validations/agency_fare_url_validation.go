@@ -66,11 +66,9 @@ func AgencyFareUrlValidation(agency *types.Agency, row int, rules *types.AgencyR
 			return
 		}
 
-		if slices.Contains(*rules.AgencyFare.Options, *agency.AgencyFareUrl) {
+		if !slices.Contains(*rules.AgencyFare.Options, *agency.AgencyFareUrl) {
+			addMessage(fmt.Sprintf("Agency fare URL is not allowed: %s", *agency.AgencyFareUrl), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("Agency fare URL is not allowed: %s", *agency.AgencyFareUrl), s)
-		return
 	}
 }

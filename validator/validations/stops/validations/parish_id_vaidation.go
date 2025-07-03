@@ -55,11 +55,9 @@ func ParishIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		if slices.Contains(*rules.ParishId.Options, *stop.ParishId) {
+		if !slices.Contains(*rules.ParishId.Options, *stop.ParishId) {
+			addMessage(fmt.Sprintf("parish_id is not allowed: %s", *stop.ParishId), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("This parish_id is not allowed: %s", *stop.ParishId), s)
-		return
 	}
 }

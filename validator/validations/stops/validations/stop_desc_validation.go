@@ -60,12 +60,10 @@ func StopDescValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		if slices.Contains(*rules.StopDesc.Options, *stop.StopDesc) {
+		if !slices.Contains(*rules.StopDesc.Options, *stop.StopDesc) {
+			addMessage(fmt.Sprintf("stop_desc is not allowed: %s", *stop.StopDesc), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("stop_desc is not allowed: %s", *stop.StopDesc), s)
-		return
 	}
 
 }

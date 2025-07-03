@@ -58,11 +58,9 @@ func PlatformCodeValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 			return
 		}
 
-		if slices.Contains(*rules.PlatformCode.Options, *stop.PlatformCode) {
+		if !slices.Contains(*rules.PlatformCode.Options, *stop.PlatformCode) {
+			addMessage(fmt.Sprintf("platform_code is not allowed: %s", *stop.PlatformCode), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("platform_code is not allowed: %s", *stop.PlatformCode), s)
-		return
 	}
 }

@@ -67,11 +67,9 @@ func TimepointValidation(stopTime *types.StopTime, row int, rules *types.StopTim
 			return
 		}
 
-		if slices.Contains(*rules.Timepoint.Options, fmt.Sprintf("%d", tp)) {
+		if !slices.Contains(*rules.Timepoint.Options, fmt.Sprintf("%d", tp)) {
+			addMessage(fmt.Sprintf("timepoint is not allowed: %d", tp), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("timepoint is not allowed: %d", tp), s)
-		return
 	}
 }

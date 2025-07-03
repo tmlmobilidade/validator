@@ -72,12 +72,10 @@ func StopCodeValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *type
 			return
 		}
 
-		if slices.Contains(*rules.StopCode.Options, *stop.StopCode) {
+		if !slices.Contains(*rules.StopCode.Options, *stop.StopCode) {
+			addMessage(fmt.Sprintf("stop_code is not allowed: %s", *stop.StopCode), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("Stop code is not allowed: %s", *stop.StopCode), s)
-		return
 	}
 
 }

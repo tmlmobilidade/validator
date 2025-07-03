@@ -55,11 +55,9 @@ func ShelterMaintainerValidation(stop *types.Stop, row int, rules *types.StopsRu
 			return
 		}
 
-		if slices.Contains(*rules.ShelterMaintainer.Options, *stop.ShelterMaintainer) {
+		if !slices.Contains(*rules.ShelterMaintainer.Options, *stop.ShelterMaintainer) {
+			addMessage(fmt.Sprintf("shelter_maintainer is not allowed: %s", *stop.ShelterMaintainer), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("This shelter_maintainer is not allowed: %s", *stop.ShelterMaintainer), s)
-		return
 	}
 }

@@ -56,11 +56,9 @@ func TtsStopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		if slices.Contains(*rules.TtsStopName.Options, *stop.TtsStopName) {
+		if !slices.Contains(*rules.TtsStopName.Options, *stop.TtsStopName) {
+			addMessage(fmt.Sprintf("tts_stop_name is not allowed: %s", *stop.TtsStopName), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("tts_stop_name is not allowed: %s", *stop.TtsStopName), s)
-		return
 	}
 }

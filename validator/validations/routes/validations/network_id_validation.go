@@ -61,11 +61,9 @@ func NetworkIdValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *t
 			return
 		}
 
-		if slices.Contains(*rules.NetworkId.Options, *route.NetworkId) {
+		if !slices.Contains(*rules.NetworkId.Options, *route.NetworkId) {
+			addMessage(fmt.Sprintf("network_id is not allowed: %s", *route.NetworkId), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("network_id is not allowed: %s", *route.NetworkId), s)
-		return
 	}
 }

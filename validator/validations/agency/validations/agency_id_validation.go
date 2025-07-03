@@ -74,12 +74,10 @@ func AgencyIdValidation(agency *types.Agency, row int, gtfs types.Gtfs, rules *t
 				return
 			}
 
-			if slices.Contains(*rules.AgencyId.Options, *agency.AgencyId) {
+			if !slices.Contains(*rules.AgencyId.Options, *agency.AgencyId) {
+				addMessage(fmt.Sprintf("Agency ID is not allowed: %s", *agency.AgencyId), s)
 				return
 			}
-
-			addMessage(fmt.Sprintf("Agency ID is not allowed: %s", *agency.AgencyId), s)
-			return
 		}
 	}
 }

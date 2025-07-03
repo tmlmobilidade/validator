@@ -1,9 +1,12 @@
 package stops
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
+	"strconv"
 )
 
 /*
@@ -45,5 +48,24 @@ func HasStopSignValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "has_stop_sign is required", "has_stop_sign is recommended")
 		addMessage(warn, s)
 		return
+	}
+
+	// Validate value
+	validValues := []int{0, 1, 2, 3}
+	if !slices.Contains(validValues, *stop.HasStopSign) {
+		addMessage("has_stop_sign must be 0, 1, 2, or 3", types.SEVERITY_ERROR)
+		return
+	}
+
+	// Validate Rule options
+	if rules != nil && rules.HasStopSign.Options != nil {
+		if slices.Contains(*rules.HasStopSign.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.HasStopSign.Options, strconv.Itoa(*stop.HasStopSign)) {
+			addMessage(fmt.Sprintf("has_stop_sign is not allowed: %d", *stop.HasStopSign), s)
+			return
+		}
 	}
 }

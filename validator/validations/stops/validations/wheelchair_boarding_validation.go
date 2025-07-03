@@ -83,11 +83,9 @@ func WheelchairBoardingValidation(stop *types.Stop, row int, rules *types.StopsR
 			return
 		}
 
-		if slices.Contains(*rules.WheelchairBoarding.Options, fmt.Sprintf("%d", *stop.WheelchairBoarding)) {
+		if !slices.Contains(*rules.WheelchairBoarding.Options, fmt.Sprintf("%d", *stop.WheelchairBoarding)) {
+			addMessage(fmt.Sprintf("wheelchair_boarding is not allowed: %d", *stop.WheelchairBoarding), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("wheelchair_boarding is not allowed: %d", *stop.WheelchairBoarding), s)
-		return
 	}
 }

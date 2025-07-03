@@ -55,11 +55,9 @@ func RegionIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		if slices.Contains(*rules.RegionId.Options, *stop.RegionId) {
+		if !slices.Contains(*rules.RegionId.Options, *stop.RegionId) {
+			addMessage(fmt.Sprintf("region_id is not allowed: %s", *stop.RegionId), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("This region_id is not allowed: %s", *stop.RegionId), s)
-		return
 	}
 }

@@ -58,11 +58,9 @@ func AgencyLangValidation(agency *types.Agency, row int, rules *types.AgencyRule
 			return
 		}
 
-		if slices.Contains(*rules.AgencyTimezone.Options, *agency.AgencyTimezone) {
+		if !slices.Contains(*rules.AgencyLang.Options, *agency.AgencyLang) {
+			addMessage(fmt.Sprintf("Agency language is not allowed: %s", *agency.AgencyLang), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("Agency language is not allowed: %s", *agency.AgencyLang), s)
-		return
 	}
 }

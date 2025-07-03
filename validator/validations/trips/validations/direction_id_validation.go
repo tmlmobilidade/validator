@@ -78,10 +78,9 @@ func DirectionIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *t
 			return
 		}
 
-		if slices.Contains(*rules.DirectionId.Options, fmt.Sprintf("%d", *trip.DirectionId)) {
+		if !slices.Contains(*rules.DirectionId.Options, fmt.Sprintf("%d", *trip.DirectionId)) {
+			addMessage(fmt.Sprintf("direction_id is not allowed: %d", *trip.DirectionId), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("direction_id is not allowed: %d", *trip.DirectionId), s)
 	}
 }

@@ -11,9 +11,8 @@ func ParseStop(rawStop types.StopRaw, row int) types.Stop {
 	var (
 		stop                                                                                                                                                                                                      types.Stop = types.Stop{}
 		stopId, stopCode, stopName, stopDesc, zoneId, stopUrl, parentStation, stopTimezone, levelId, platformCode, ttsStopName, shelterCode, shelterMaintainer, stopShortName, municipalityId, parishId, regionId string
-		locationType, wheelchairBoarding                                                                                                                                                                          int
+		locationType, wheelchairBoarding, hasBench, hasNetworkMap, hasPipRealTime, hasSchedules, hasShelter, hasStopSign, hasTariffsInformation, publicVisible                                                    int
 		stopLat, stopLon                                                                                                                                                                                          float32
-		hasBench, hasNetworkMap, hasPipRealTime, hasSchedules, hasShelter, hasStopSign, hasTariffsInformation, publicVisible                                                                                      bool
 		messages                                                                                                                                                                                                  []types.Message
 	)
 
@@ -38,16 +37,8 @@ func ParseStop(rawStop types.StopRaw, row int) types.Stop {
 	}
 
 	intFields := map[string]*int{
-		"location_type":       &locationType,
-		"wheelchair_boarding": &wheelchairBoarding,
-	}
-
-	float32Fields := map[string]*float32{
-		"stop_lat": &stopLat,
-		"stop_lon": &stopLon,
-	}
-
-	boolFields := map[string]*bool{
+		"location_type":           &locationType,
+		"wheelchair_boarding":     &wheelchairBoarding,
 		"has_bench":               &hasBench,
 		"has_network_map":         &hasNetworkMap,
 		"has_pip_real_time":       &hasPipRealTime,
@@ -56,6 +47,11 @@ func ParseStop(rawStop types.StopRaw, row int) types.Stop {
 		"has_stop_sign":           &hasStopSign,
 		"has_tariffs_information": &hasTariffsInformation,
 		"public_visible":          &publicVisible,
+	}
+
+	float32Fields := map[string]*float32{
+		"stop_lat": &stopLat,
+		"stop_lon": &stopLon,
 	}
 
 	addMessage := func(field, msg string) {
@@ -83,13 +79,6 @@ func ParseStop(rawStop types.StopRaw, row int) types.Stop {
 	}
 	// Parse float32 fields
 	for field, target := range float32Fields {
-		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawStop, "gtfs", field), target); errMsg != "" {
-			addMessage(field, errMsg)
-		}
-	}
-
-	// Parse bool fields
-	for field, target := range boolFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawStop, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}

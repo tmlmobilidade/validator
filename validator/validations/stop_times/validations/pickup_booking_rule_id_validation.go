@@ -62,11 +62,9 @@ func PickupBookingRuleIdValidation(stopTime *types.StopTime, row int, gtfs *type
 			return
 		}
 
-		if slices.Contains(*rules.PickupBookingRuleId.Options, *stopTime.PickupBookingRuleId) {
+		if !slices.Contains(*rules.PickupBookingRuleId.Options, *stopTime.PickupBookingRuleId) {
+			addMessage(fmt.Sprintf("pickup_booking_rule_id is not allowed: %s", *stopTime.PickupBookingRuleId), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("pickup_booking_rule_id is not allowed: %s", *stopTime.PickupBookingRuleId), s)
-		return
 	}
 }

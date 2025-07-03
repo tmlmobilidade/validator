@@ -69,11 +69,9 @@ func LocationTypeValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 			return
 		}
 
-		if slices.Contains(*rules.LocationType.Options, fmt.Sprintf("%d", *stop.LocationType)) {
+		if !slices.Contains(*rules.LocationType.Options, fmt.Sprintf("%d", *stop.LocationType)) {
+			addMessage(fmt.Sprintf("location_type is not allowed: %d", *stop.LocationType), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("location_type is not allowed: %d", *stop.LocationType), s)
-		return
 	}
 }

@@ -55,11 +55,9 @@ func MunicipalityIdValidation(stop *types.Stop, row int, rules *types.StopsRules
 			return
 		}
 
-		if slices.Contains(*rules.MunicipalityId.Options, *stop.MunicipalityId) {
+		if !slices.Contains(*rules.MunicipalityId.Options, *stop.MunicipalityId) {
+			addMessage(fmt.Sprintf("municipality_id is not allowed: %s", *stop.MunicipalityId), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("This municipality_id is not allowed: %s", *stop.MunicipalityId), s)
-		return
 	}
 }

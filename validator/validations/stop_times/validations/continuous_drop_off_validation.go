@@ -81,11 +81,9 @@ func ContinuousDropOffValidation(stopTime *types.StopTime, row int, rules *types
 			return
 		}
 
-		if slices.Contains(*rules.ContinuousDropOff.Options, fmt.Sprintf("%d", cd)) {
+		if !slices.Contains(*rules.ContinuousDropOff.Options, fmt.Sprintf("%d", cd)) {
+			addMessage(fmt.Sprintf("continuous_drop_off is not allowed: %d", cd), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("continuous_drop_off is not allowed: %d", cd), s)
-		return
 	}
 }

@@ -52,11 +52,9 @@ func AgencyTimezoneValidation(agency *types.Agency, row int, rules *types.Agency
 			return
 		}
 
-		if slices.Contains(*rules.AgencyTimezone.Options, *agency.AgencyTimezone) {
+		if !slices.Contains(*rules.AgencyTimezone.Options, *agency.AgencyTimezone) {
+			addMessage(fmt.Sprintf("Agency timezone is not allowed: %s", *agency.AgencyTimezone))
 			return
 		}
-
-		addMessage(fmt.Sprintf("Agency timezone is not allowed: %s", *agency.AgencyTimezone))
-		return
 	}
 }

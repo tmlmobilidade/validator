@@ -99,11 +99,9 @@ func ContinuousPickupValidation(route *types.Route, row int, gtfs *types.Gtfs, r
 			return
 		}
 
-		if slices.Contains(*rules.ContinuousPickup.Options, *route.ContinuousPickup) {
+		if !slices.Contains(*rules.ContinuousPickup.Options, *route.ContinuousPickup) {
+			addMessage(fmt.Sprintf("continuous_pickup is not allowed: %s", *route.ContinuousPickup), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("continuous_pickup is not allowed: %s", *route.ContinuousPickup), s)
-		return
 	}
 }

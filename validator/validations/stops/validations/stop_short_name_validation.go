@@ -78,11 +78,9 @@ func StopShortNameValidation(stop *types.Stop, row int, rules *types.StopsRules)
 			return
 		}
 
-		if slices.Contains(*rules.StopShortName.Options, *stop.StopShortName) {
+		if !slices.Contains(*rules.StopShortName.Options, *stop.StopShortName) {
+			addMessage(fmt.Sprintf("stop_short_name is not allowed: %s", *stop.StopShortName), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("stop_short_name is not allowed: %s", *stop.StopShortName), s)
-		return
 	}
 }

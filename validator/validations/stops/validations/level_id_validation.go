@@ -61,11 +61,9 @@ func LevelIdValidation(stop *types.Stop, row int, gtfs types.Gtfs, rules *types.
 			return
 		}
 
-		if slices.Contains(*rules.LevelId.Options, *stop.LevelId) {
+		if !slices.Contains(*rules.LevelId.Options, *stop.LevelId) {
+			addMessage(fmt.Sprintf("level_id is not allowed: %s", *stop.LevelId), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("level_id is not allowed: %s", *stop.LevelId), s)
-		return
 	}
 }

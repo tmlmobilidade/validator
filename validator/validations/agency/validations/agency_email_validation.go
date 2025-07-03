@@ -71,11 +71,9 @@ func AgencyEmailValidation(agency *types.Agency, row int, rules *types.AgencyRul
 			return
 		}
 
-		if slices.Contains(*rules.AgencyEmail.Options, *agency.AgencyEmail) {
+		if !slices.Contains(*rules.AgencyEmail.Options, *agency.AgencyEmail) {
+			addMessage(fmt.Sprintf("Agency email is not allowed: %s", *agency.AgencyEmail), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("Agency email is not allowed: %s", *agency.AgencyEmail), s)
-		return
 	}
 }

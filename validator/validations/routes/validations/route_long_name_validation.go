@@ -66,11 +66,9 @@ func RouteLongNameValidation(route *types.Route, row int, rules *types.RoutesRul
 			return
 		}
 
-		if slices.Contains(*rules.RouteLongName.Options, *route.RouteLongName) {
+		if !slices.Contains(*rules.RouteLongName.Options, *route.RouteLongName) {
+			addMessage(fmt.Sprintf("route_long_name is not allowed: %s", *route.RouteLongName), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("route_long_name is not allowed: %s", *route.RouteLongName), s)
-		return
 	}
 }

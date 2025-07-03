@@ -66,11 +66,9 @@ func RouteTypeValidation(route *types.Route, row int, rules *types.RoutesRules) 
 			return
 		}
 
-		if slices.Contains(*rules.RouteType.Options, strconv.Itoa(*route.RouteType)) {
+		if !slices.Contains(*rules.RouteType.Options, strconv.Itoa(*route.RouteType)) {
+			addMessage(fmt.Sprintf("route_type is not allowed: %d", *route.RouteType))
 			return
 		}
-
-		addMessage(fmt.Sprintf("route_type is not allowed: %d", *route.RouteType))
-		return
 	}
 }

@@ -71,11 +71,9 @@ func RouteUrlValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *ty
 			return
 		}
 
-		if slices.Contains(*rules.RouteUrl.Options, *route.RouteUrl) {
+		if !slices.Contains(*rules.RouteUrl.Options, *route.RouteUrl) {
+			addMessage(fmt.Sprintf("route_url is not allowed: %s", *route.RouteUrl), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("route_url is not allowed: %s", *route.RouteUrl), s)
-		return
 	}
 }

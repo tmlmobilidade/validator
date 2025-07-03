@@ -70,11 +70,9 @@ func RouteDescValidation(route *types.Route, row int, rules *types.RoutesRules) 
 			return
 		}
 
-		if slices.Contains(*rules.RouteDesc.Options, *route.RouteDesc) {
+		if !slices.Contains(*rules.RouteDesc.Options, *route.RouteDesc) {
+			addMessage(fmt.Sprintf("route_desc is not allowed: %s", *route.RouteDesc), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("route_desc is not allowed: %s", *route.RouteDesc), s)
-		return
 	}
 }

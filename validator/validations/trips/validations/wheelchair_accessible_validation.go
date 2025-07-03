@@ -68,10 +68,9 @@ func WheelchairAccessibleValidation(trip *types.Trip, row int, gtfs *types.Gtfs,
 			return
 		}
 
-		if slices.Contains(*rules.WheelchairAccessible.Options, fmt.Sprintf("%d", *trip.WheelchairAccessible)) {
+		if !slices.Contains(*rules.WheelchairAccessible.Options, fmt.Sprintf("%d", *trip.WheelchairAccessible)) {
+			addMessage(fmt.Sprintf("wheelchair_accessible is not allowed: %d", *trip.WheelchairAccessible), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("wheelchair_accessible is not allowed: %d", *trip.WheelchairAccessible), s)
 	}
 }

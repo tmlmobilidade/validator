@@ -53,11 +53,9 @@ func AgencyPhoneValidation(agency *types.Agency, row int, rules *types.AgencyRul
 			return
 		}
 
-		if slices.Contains(*rules.AgencyPhone.Options, *agency.AgencyPhone) {
+		if !slices.Contains(*rules.AgencyPhone.Options, *agency.AgencyPhone) {
+			addMessage(fmt.Sprintf("Agency phone is not allowed: %s", *agency.AgencyPhone), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("Agency phone is not allowed: %s", *agency.AgencyPhone), s)
-		return
 	}
 }

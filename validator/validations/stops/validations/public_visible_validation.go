@@ -1,9 +1,12 @@
 package stops
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
+	"strconv"
 )
 
 /*
@@ -45,5 +48,24 @@ func PublicVisibleValidation(stop *types.Stop, row int, rules *types.StopsRules)
 		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "public_visible is required", "public_visible is recommended")
 		addMessage(warn, s)
 		return
+	}
+
+	// Validate value
+	validValues := []int{0, 1}
+	if !slices.Contains(validValues, *stop.PublicVisible) {
+		addMessage("public_visible must be 0 or 1", types.SEVERITY_ERROR)
+		return
+	}
+
+	// Validate Rule options
+	if rules != nil && rules.PublicVisible.Options != nil {
+		if slices.Contains(*rules.PublicVisible.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.PublicVisible.Options, strconv.Itoa(*stop.PublicVisible)) {
+			addMessage(fmt.Sprintf("public_visible is not allowed: %d", *stop.PublicVisible), s)
+			return
+		}
 	}
 }

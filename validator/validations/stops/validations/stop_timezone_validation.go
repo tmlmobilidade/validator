@@ -68,11 +68,9 @@ func StopTimezoneValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 			return
 		}
 
-		if slices.Contains(*rules.StopTimezone.Options, *stop.StopTimezone) {
+		if !slices.Contains(*rules.StopTimezone.Options, *stop.StopTimezone) {
+			addMessage(fmt.Sprintf("stop_timezone is not allowed: %s", *stop.StopTimezone), s)
 			return
 		}
-
-		addMessage(fmt.Sprintf("stop_timezone is not allowed: %s", *stop.StopTimezone), s)
-		return
 	}
 }

@@ -27,14 +27,14 @@ func TestParseStop_ValidInput(t *testing.T) {
 		StopLat:               "40.1234",
 		StopLon:               "-8.5678",
 		TtsStopName:           "Main St",
-		HasTariffsInformation: "true",
-		HasShelter:            "true",
-		HasStopSign:           "true",
-		HasNetworkMap:         "true",
-		HasPipRealTime:        "true",
-		HasSchedules:          "true",
-		HasBench:              "true",
-		PublicVisible:         "true",
+		HasTariffsInformation: "1",
+		HasShelter:            "1",
+		HasStopSign:           "1",
+		HasNetworkMap:         "1",
+		HasPipRealTime:        "1",
+		HasSchedules:          "1",
+		HasBench:              "1",
+		PublicVisible:         "1",
 	}
 
 	stop := validations.ParseStop(raw, row)
