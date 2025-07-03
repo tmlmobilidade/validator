@@ -12,12 +12,12 @@ func TestTimepointValidation_ValidValues(t *testing.T) {
 	services.AppMessageService.Clear()
 	for _, val := range []int{0, 1} {
 		stopTime := &types.StopTime{Timepoint: &val}
-		validations.TimepointValidation(nil, stopTime, 1)
+		validations.TimepointValidation(stopTime, 1, nil)
 	}
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid enum values should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid enum values should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -28,11 +28,11 @@ func TestTimepointValidation_InvalidEnum(t *testing.T) {
 	services.AppMessageService.Clear()
 	val := 2
 	stopTime := &types.StopTime{Timepoint: &val}
-	validations.TimepointValidation(nil, stopTime, 2)
+	validations.TimepointValidation(stopTime, 2, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Invalid enum value should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Invalid enum value should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -42,11 +42,11 @@ func TestTimepointValidation_InvalidEnum(t *testing.T) {
 func TestTimepointValidation_OptionalNotPresent(t *testing.T) {
 	services.AppMessageService.Clear()
 	stopTime := &types.StopTime{}
-	validations.TimepointValidation(nil, stopTime, 3)
+	validations.TimepointValidation(stopTime, 3, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Optional timepoint not present should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Optional timepoint not present should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -57,11 +57,11 @@ func TestTimepointValidation_SeverityError(t *testing.T) {
 	services.AppMessageService.Clear()
 	stopTime := &types.StopTime{}
 	severity := types.SEVERITY_ERROR
-	validations.TimepointValidation(&severity, stopTime, 4)
+	validations.TimepointValidation(stopTime, 4, &types.StopTimesRules{Timepoint: types.RuleConfig{Severity: severity}})
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "timepoint missing with severity error should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "timepoint missing with severity error should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -72,13 +72,13 @@ func TestTimepointValidation_SeverityWarning(t *testing.T) {
 	services.AppMessageService.Clear()
 	stopTime := &types.StopTime{}
 	severity := types.SEVERITY_WARNING
-	validations.TimepointValidation(&severity, stopTime, 5)
+	validations.TimepointValidation(stopTime, 5, &types.StopTimesRules{Timepoint: types.RuleConfig{Severity: severity}})
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalWarnings,
-		Message: "timepoint missing with severity warning should warn",
+		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
+		Message:  "timepoint missing with severity warning should warn",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
-} 
+}

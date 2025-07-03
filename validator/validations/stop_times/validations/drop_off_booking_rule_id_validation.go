@@ -9,10 +9,10 @@ import (
 /*
 # Attributes
 
- - File: [stop_times.txt]
- - Field: drop_off_booking_rule_id
- - Presence: Optional
- - Type: Foreign ID referencing booking_rules.booking_rule_id
+  - File: [stop_times.txt]
+  - Field: drop_off_booking_rule_id
+  - Presence: Optional
+  - Type: Foreign ID referencing booking_rules.booking_rule_id
 
 # Description
 
@@ -22,10 +22,10 @@ Recommended when drop_off_type=2.
 
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
-func DropOffBookingRuleIdValidation(severity *types.Severity, stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
+func DropOffBookingRuleIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs, rules *types.StopTimesRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.DropOffBookingRuleId.Severity != "" {
+		s = rules.DropOffBookingRuleId.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -50,7 +50,7 @@ func DropOffBookingRuleIdValidation(severity *types.Severity, stopTime *types.St
 
 	// Foreign key check: must reference a valid booking_rule_id from booking_rules.txt
 	if !lib.GtfsIdMapKeyExists(gtfs, "booking_rules", *stopTime.DropOffBookingRuleId) {
-		addMessage("drop_off_booking_rule_id '"+ *stopTime.DropOffBookingRuleId + "' does not exist in booking_rules.txt", types.SEVERITY_ERROR)
+		addMessage("drop_off_booking_rule_id '"+*stopTime.DropOffBookingRuleId+"' does not exist in booking_rules.txt", types.SEVERITY_ERROR)
 		return
 	}
-} 
+}
