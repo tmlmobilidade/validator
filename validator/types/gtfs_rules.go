@@ -2,21 +2,28 @@ package types
 
 const ALL_OPTIONS = "all_options"
 
+type Compare struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
 type RuleConfig struct {
-	Severity Severity  `json:"severity"`
-	Options  *[]string `json:"options,omitempty"`
+	Severity Severity   `json:"severity"`
+	Options  *[]string  `json:"options,omitempty"`
+	Compare  *[]Compare `json:"compare,omitempty"`
 }
 
 type AgencyRules struct {
-	File           bool       `json:"_file"`
-	AgencyId       RuleConfig `json:"agency_id"`
-	AgencyName     RuleConfig `json:"agency_name"`
-	AgencyUrl      RuleConfig `json:"agency_url"`
-	AgencyTimezone RuleConfig `json:"agency_timezone"`
-	AgencyLang     RuleConfig `json:"agency_lang"`
-	AgencyPhone    RuleConfig `json:"agency_phone"`
-	AgencyFare     RuleConfig `json:"agency_fare_url"`
-	AgencyEmail    RuleConfig `json:"agency_email"`
+	File              bool       `json:"_file"`
+	AgencyId          RuleConfig `json:"agency_id"`
+	AgencyNameIdMatch RuleConfig `json:"agency_name_id_match"`
+	AgencyName        RuleConfig `json:"agency_name"`
+	AgencyUrl         RuleConfig `json:"agency_url"`
+	AgencyTimezone    RuleConfig `json:"agency_timezone"`
+	AgencyLang        RuleConfig `json:"agency_lang"`
+	AgencyPhone       RuleConfig `json:"agency_phone"`
+	AgencyFare        RuleConfig `json:"agency_fare_url"`
+	AgencyEmail       RuleConfig `json:"agency_email"`
 }
 
 type StopsRules struct {

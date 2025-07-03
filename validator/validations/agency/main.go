@@ -23,6 +23,9 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// Validate Agency Name
 		validations.AgencyNameValidation(&agency, i, &rules.Agency)
 
+		// [CUSTOM VALIDATION] Check if agency_id matches agency_name
+		validations.AgencyNameIdMatchValidation(&agency, i, &rules.Agency)
+
 		// Validate Agency URL
 		validations.AgencyUrlValidation(&agency, i, &rules.Agency)
 
