@@ -23,12 +23,23 @@ function getCurrentPlatform() {
 
 interface GTFSValidatorOptions {
 	out_file?: string
+	rules_path?: string
 }
 
 export async function GTFSValidator(input: string, options?: GTFSValidatorOptions) {
 	const args = ['-input', input];
-	if (options?.out_file) {
-		args.push('-o', options.out_file);
+
+	if (options) {
+		const { out_file, rules_path } = options;
+
+		if (out_file) {
+			args.push('-o', out_file);
+		}
+
+		// Prefer rules_path over deprecated rules
+		if (rules_path) {
+			args.push('-rules', rules_path);
+		}
 	}
 
 	try {
