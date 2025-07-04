@@ -25,9 +25,9 @@ interface GTFSValidatorOptions {
 	out_file?: string
 }
 
-export async function GTFSValidator(input: string, options: GTFSValidatorOptions) {
+export async function GTFSValidator(input: string, options?: GTFSValidatorOptions) {
 	const args = ['-input', input];
-	if (options.out_file) {
+	if (options?.out_file) {
 		args.push('-o', options.out_file);
 	}
 
