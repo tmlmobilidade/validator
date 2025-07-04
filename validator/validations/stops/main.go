@@ -16,91 +16,96 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 			continue
 		}
 
+		var stopRules *types.StopsRules
+		if rules != nil {
+			stopRules = &rules.Stops
+		}
+
 		// Validate stop_id
-		validations.StopIdValidation(&stop, row, &gtfs, &rules.Stops)
+		validations.StopIdValidation(&stop, row, &gtfs, stopRules)
 
 		// Validate stop_code
-		validations.StopCodeValidation(&stop, row, &gtfs, &rules.Stops)
+		validations.StopCodeValidation(&stop, row, &gtfs, stopRules)
 
 		// Validate stop_name
-		validations.StopNameValidation(&stop, row, &rules.Stops)
+		validations.StopNameValidation(&stop, row, stopRules)
 
 		// Validate tts_stop_name
-		validations.TtsStopNameValidation(&stop, row, &rules.Stops)
+		validations.TtsStopNameValidation(&stop, row, stopRules)
 
 		// Validate stop_desc
-		validations.StopDescValidation(&stop, row, &rules.Stops)
+		validations.StopDescValidation(&stop, row, stopRules)
 
 		// Validate stop_lat
-		validations.StopLatValidation(&stop, row, &rules.Stops)
+		validations.StopLatValidation(&stop, row, stopRules)
 
 		// Validate stop_lon
-		validations.StopLonValidation(&stop, row, &rules.Stops)
+		validations.StopLonValidation(&stop, row, stopRules)
 
 		// Validate zone_id
-		validations.ZoneIdValidation(&stop, row, &rules.Stops)
+		validations.ZoneIdValidation(&stop, row, stopRules)
 
 		// Validate location_type
-		validations.LocationTypeValidation(&stop, row, &rules.Stops)
+		validations.LocationTypeValidation(&stop, row, stopRules)
 
 		// Validate parent_station
-		validations.ParentStationValidation(&stop, row, gtfs, &rules.Stops)
+		validations.ParentStationValidation(&stop, row, gtfs, stopRules)
 
 		// Validate stop_timezone
-		validations.StopTimezoneValidation(&stop, row, &rules.Stops)
+		validations.StopTimezoneValidation(&stop, row, stopRules)
 
 		// Validate wheelchair_boarding
-		validations.WheelchairBoardingValidation(&stop, row, &rules.Stops)
+		validations.WheelchairBoardingValidation(&stop, row, stopRules)
 
 		// Validate level_id
-		validations.LevelIdValidation(&stop, row, gtfs, &rules.Stops)
+		validations.LevelIdValidation(&stop, row, gtfs, stopRules)
 
 		// Validate platform_code
-		validations.PlatformCodeValidation(&stop, row, &rules.Stops)
+		validations.PlatformCodeValidation(&stop, row, stopRules)
 
 		// Validate region_id
-		validations.RegionIdValidation(&stop, row, &rules.Stops)
+		validations.RegionIdValidation(&stop, row, stopRules)
 
 		// Validate public_visible
-		validations.PublicVisibleValidation(&stop, row, &rules.Stops)
+		validations.PublicVisibleValidation(&stop, row, stopRules)
 
 		// Validate shelter_code
-		validations.ShelterCodeValidation(&stop, row, &rules.Stops)
+		validations.ShelterCodeValidation(&stop, row, stopRules)
 
 		// Validate shelter_maintainer
-		validations.ShelterMaintainerValidation(&stop, row, &rules.Stops)
+		validations.ShelterMaintainerValidation(&stop, row, stopRules)
 
 		// Validate stop_short_name
-		validations.StopShortNameValidation(&stop, row, &rules.Stops)
+		validations.StopShortNameValidation(&stop, row, stopRules)
 
 		// Validate stop_url
-		validations.StopUrlValidation(&stop, row, &rules.Stops)
+		validations.StopUrlValidation(&stop, row, stopRules)
 
 		// Validate municipality_id
-		validations.MunicipalityIdValidation(&stop, row, &rules.Stops)
+		validations.MunicipalityIdValidation(&stop, row, stopRules)
 
 		// Validate parish_id
-		validations.ParishIdValidation(&stop, row, &rules.Stops)
+		validations.ParishIdValidation(&stop, row, stopRules)
 
 		// Validate has_bench
-		validations.HasBenchValidation(&stop, row, &rules.Stops)
+		validations.HasBenchValidation(&stop, row, stopRules)
 
 		// Validate has_network_map
-		validations.HasNetworkMapValidation(&stop, row, &rules.Stops)
+		validations.HasNetworkMapValidation(&stop, row, stopRules)
 
 		// Validate has_pip_real_time
-		validations.HasPipRealTimeValidation(&stop, row, &rules.Stops)
+		validations.HasPipRealTimeValidation(&stop, row, stopRules)
 
 		// Validate has_schedules
-		validations.HasSchedulesValidation(&stop, row, &rules.Stops)
+		validations.HasSchedulesValidation(&stop, row, stopRules)
 
 		// Validate has_shelter
-		validations.HasShelterValidation(&stop, row, &rules.Stops)
+		validations.HasShelterValidation(&stop, row, stopRules)
 
 		// Validate has_stop_sign
-		validations.HasStopSignValidation(&stop, row, &rules.Stops)
+		validations.HasStopSignValidation(&stop, row, stopRules)
 
 		// Validate has_tariffs_information
-		validations.HasTariffsInformationValidation(&stop, row, &rules.Stops)
+		validations.HasTariffsInformationValidation(&stop, row, stopRules)
 	}
 }

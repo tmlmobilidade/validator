@@ -23,6 +23,10 @@ func NewRulesParser(rulesPath string) *RulesParser {
 
 // ParseRules reads and parses the rules JSON file into a GtfsRules structure
 func (rp *RulesParser) ParseRules() (*types.GtfsRules, error) {
+	if rp.rulesPath == "" {
+		return nil, nil
+	}
+
 	// Check if file exists
 	if _, err := os.Stat(rp.rulesPath); os.IsNotExist(err) {
 		return nil, fmt.Errorf("rules file does not exist: %s", rp.rulesPath)
@@ -63,7 +67,7 @@ func (rp *RulesParser) validateRules(rules *types.GtfsRules) error {
 	// Helper function to validate a single rule config
 	validateRuleConfig := func(config types.RuleConfig, fieldName string) {
 		if !isValidSeverity(config.Severity) {
-			validationErrors = append(validationErrors, 
+			validationErrors = append(validationErrors,
 				fmt.Sprintf("invalid severity '%s' for field '%s'", config.Severity, fieldName))
 		}
 	}
@@ -207,11 +211,19 @@ func isValidSeverity(severity types.Severity) bool {
 
 // ParseRulesFromFile is a convenience function to parse rules from a file path
 func ParseRulesFromFile(rulesPath string) (*types.GtfsRules, error) {
+	if rulesPath == "" {
+		return nil, nil
+	}
+
 	parser := NewRulesParser(rulesPath)
 	return parser.ParseRules()
 }
 
 func (rp *RulesParser) GetRequiredFiles(rules *types.GtfsRules) []string {
+	if rules == nil {
+		return []string{}
+	}
+
 	allFiles := lib.GetAllStructTagValues(types.GtfsRules{}, "json")
 	requiredFiles := make([]string, 0)
 

@@ -19,11 +19,16 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 			continue
 		}
 
+		var tripRules *types.TripsRules
+		if rules != nil {
+			tripRules = &rules.Trips
+		}
+
 		// Validate trip_id
 		validations.TripIdValidation(&trip, i, &gtfs)
 
 		// Validate shape_id
-		validations.ShapeIdValidation(&trip, i, &gtfs, &rules.Trips)
+		validations.ShapeIdValidation(&trip, i, &gtfs, tripRules)
 
 		// Validate route_id
 		validations.RouteIdValidation(&trip, i, &gtfs)
@@ -32,28 +37,28 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		validations.ServiceIdValidation(&trip, i, &gtfs)
 
 		// Validate trip_headsign
-		validations.TripHeadsignValidation(&trip, i, &gtfs, &rules.Trips)
+		validations.TripHeadsignValidation(&trip, i, &gtfs, tripRules)
 
 		// Validate trip_short_name
-		validations.TripShortNameValidation(&trip, i, &gtfs, &rules.Trips)
+		validations.TripShortNameValidation(&trip, i, &gtfs, tripRules)
 
 		// Validate direction_id
-		validations.DirectionIdValidation(&trip, i, &gtfs, &rules.Trips)
+		validations.DirectionIdValidation(&trip, i, &gtfs, tripRules)
 
 		// Validate block_id
-		validations.BlockIdValidation(&trip, i, &gtfs, &rules.Trips)
+		validations.BlockIdValidation(&trip, i, &gtfs, tripRules)
 
 		// Validate wheelchair_accessible
-		validations.WheelchairAccessibleValidation(&trip, i, &gtfs, &rules.Trips)
+		validations.WheelchairAccessibleValidation(&trip, i, &gtfs, tripRules)
 
 		// Validate bikes_allowed
-		validations.BikesAllowedValidation(&trip, i, &gtfs, &rules.Trips)
+		validations.BikesAllowedValidation(&trip, i, &gtfs, tripRules)
 
 		// Validate stop_times.stop_sequence
-		groupHash := validations.StopSequenceValidation(&trip, i, &gtfs, &rules.Trips)
+		groupHash := validations.StopSequenceValidation(&trip, i, &gtfs, tripRules)
 
 		// CMET SPECIFIC VALIDATIONS
-		hasPatternId := validations.PatternIdValidation(&trip, i, &gtfs, &rules.Trips)
+		hasPatternId := validations.PatternIdValidation(&trip, i, &gtfs, tripRules)
 		if hasPatternId {
 			group := tripsGroupedByPattern[*trip.PatternId]
 			group.Trips = append(group.Trips, trip)

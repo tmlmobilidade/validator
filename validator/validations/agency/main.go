@@ -17,31 +17,36 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 			continue
 		}
 
+		var agencyRules types.AgencyRules
+		if rules != nil {
+			agencyRules = rules.Agency
+		}
+
 		// Duplicate Agencies Validation
-		validations.AgencyIdValidation(&agency, i, gtfs, &rules.Agency)
+		validations.AgencyIdValidation(&agency, i, gtfs, &agencyRules)
 
 		// Validate Agency Name
-		validations.AgencyNameValidation(&agency, i, &rules.Agency)
+		validations.AgencyNameValidation(&agency, i, &agencyRules)
 
 		// [CUSTOM VALIDATION] Check if agency_id matches agency_name
-		validations.AgencyNameIdMatchValidation(&agency, i, &rules.Agency)
+		validations.AgencyNameIdMatchValidation(&agency, i, &agencyRules)
 
 		// Validate Agency URL
-		validations.AgencyUrlValidation(&agency, i, &rules.Agency)
+		validations.AgencyUrlValidation(&agency, i, &agencyRules)
 
 		// Validate Agency Timezone
-		validations.AgencyTimezoneValidation(&agency, i, &rules.Agency)
+		validations.AgencyTimezoneValidation(&agency, i, &agencyRules)
 
 		// Validate Agency Lang
-		validations.AgencyLangValidation(&agency, i, &rules.Agency)
+		validations.AgencyLangValidation(&agency, i, &agencyRules)
 
 		// Validate Agency Phone
-		validations.AgencyPhoneValidation(&agency, i, &rules.Agency)
+		validations.AgencyPhoneValidation(&agency, i, &agencyRules)
 
 		// Validate Agency Fare URL
-		validations.AgencyFareUrlValidation(&agency, i, &rules.Agency)
+		validations.AgencyFareUrlValidation(&agency, i, &agencyRules)
 
 		// Validate Agency Email
-		validations.AgencyEmailValidation(&agency, i, &rules.Agency)
+		validations.AgencyEmailValidation(&agency, i, &agencyRules)
 	}
 }
