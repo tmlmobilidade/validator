@@ -42,19 +42,22 @@ func PatternIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, 
 		for _, trip := range group.Trips {
 			//check if route_id is the same
 			if *trip.RouteId != *routeId {
-				addMessage(fmt.Sprintf("For pattern_id %s, route_id %s is not the same as %s found in row %d", patternId, *trip.RouteId, *routeId, trip.Row), trip.Row, types.SEVERITY_ERROR)
+				// addMessage(fmt.Sprintf("For pattern_id %s, route_id %s is not the same as %s found in row %d", patternId, *trip.RouteId, *routeId, trip.Row), trip.Row, types.SEVERITY_ERROR)
+				addMessage(fmt.Sprintf("Different route_id's found for the same pattern_id: %s", patternId), trip.Row, types.SEVERITY_ERROR)
 				continue
 			}
 
 			//check if direction_id is the same
 			if *trip.DirectionId != *directionId {
-				addMessage(fmt.Sprintf("For pattern_id %s, direction_id %v is not the same as %v found in row %d", patternId, *trip.DirectionId, *directionId, trip.Row), trip.Row, types.SEVERITY_ERROR)
+				// addMessage(fmt.Sprintf("For pattern_id %s, direction_id %v is not the same as %v found in row %d", patternId, *trip.DirectionId, *directionId, trip.Row), trip.Row, types.SEVERITY_ERROR)
+				addMessage(fmt.Sprintf("Different direction_id's found for the same pattern_id: %s", patternId), trip.Row, types.SEVERITY_ERROR)
 				continue
 			}
 
 			//check if shape_id is the same
 			if *trip.ShapeId != *shapeId {
-				addMessage(fmt.Sprintf("For pattern_id %s, shape_id %v is not the same as %v found in row %d", patternId, *trip.ShapeId, *shapeId, trip.Row), trip.Row, types.SEVERITY_ERROR)
+				// addMessage(fmt.Sprintf("For pattern_id %s, shape_id %v is not the same as %v found in row %d", patternId, *trip.ShapeId, *shapeId, trip.Row), trip.Row, types.SEVERITY_ERROR)
+				addMessage(fmt.Sprintf("Different shape_id's found for the same pattern_id: %s", patternId), trip.Row, types.SEVERITY_ERROR)
 				continue
 			}
 		}
