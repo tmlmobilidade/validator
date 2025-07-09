@@ -15,8 +15,8 @@ func TestTripIdValidation_Required(t *testing.T) {
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Trip ID is required when there is more than one trip",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Trip ID is required when there is more than one trip",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
@@ -26,7 +26,7 @@ func TestTripIdValidation_Required(t *testing.T) {
 }
 
 func TestTripIdValidation_Unique(t *testing.T) {
-	
+
 	trip := &types.Trip{TripId: lib.Ptr("unique")}
 	gtfs := &types.Gtfs{IdMap: map[string]map[string][]int{"trips": {"unique": {1}}}}
 
@@ -34,8 +34,8 @@ func TestTripIdValidation_Unique(t *testing.T) {
 
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Trip ID should be unique, no error for unique trip_id",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Trip ID should be unique, no error for unique trip_id",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
@@ -51,12 +51,12 @@ func TestTripIdValidation_Duplicate(t *testing.T) {
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Duplicate trip_id found. Trip IDs must be unique.",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Duplicate trip_id \"duplicate\" found. Trip IDs must be unique.",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
 	services.AppMessageService.Clear()
-} 
+}
