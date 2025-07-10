@@ -12,18 +12,17 @@ func TestDateValidation_Valid(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
 	calendarDate := &types.CalendarDates{
-		Date: "20240101",
+		Date:          "20240101",
 		ExceptionType: nil,
-		ServiceId: "S1",
+		ServiceId:     "S1",
 	}
-	
-	gtfs := &types.Gtfs{}
-	validations.DateValidation(calendarDate, row, gtfs)
-	
+
+	validations.DateValidation(calendarDate, row)
+
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid date should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid date should not error",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
@@ -35,16 +34,15 @@ func TestDateValidation_Empty(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
 	calendarDate := &types.CalendarDates{
-		Date: "",
+		Date:          "",
 		ExceptionType: nil,
-		ServiceId: "S1",
+		ServiceId:     "S1",
 	}
-	gtfs := &types.Gtfs{}
-	validations.DateValidation(calendarDate, row, gtfs)
+	validations.DateValidation(calendarDate, row)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Empty date should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Empty date should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -55,18 +53,17 @@ func TestDateValidation_InvalidFormat(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
 	calendarDate := &types.CalendarDates{
-		Date: "2024-01-01",
+		Date:          "2024-01-01",
 		ExceptionType: nil,
-		ServiceId: "S1",
+		ServiceId:     "S1",
 	}
-	gtfs := &types.Gtfs{}
-	validations.DateValidation(calendarDate, row, gtfs)
+	validations.DateValidation(calendarDate, row)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Invalid date format should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Invalid date format should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
-} 
+}

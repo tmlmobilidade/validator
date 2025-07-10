@@ -16,15 +16,20 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		if calendarDate == (types.CalendarDates{}) {
 			continue
 		}
-		
+
+		var calendarDatesRules types.CalendarDatesRules
+		if rules != nil {
+			calendarDatesRules = rules.CalendarDates
+		}
+
 		// Validate service_id
-		validations.ServiceIdValidation(&calendarDate, i, &gtfs)
+		validations.ServiceIdValidation(&calendarDate, i)
 
 		// Validate date
-		validations.DateValidation(&calendarDate, i, &gtfs)
+		validations.DateValidation(&calendarDate, i)
 
 		// Validate exception_type
-		validations.ExceptionTypeValidation(&calendarDate, i, &gtfs)
-		
+		validations.ExceptionTypeValidation(&calendarDate, i, &calendarDatesRules)
+
 	}
 }

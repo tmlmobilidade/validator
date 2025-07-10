@@ -7,10 +7,10 @@ import (
 
 /*
 # Attributes
-	- File: [calendar_dates.txt]
-	- Field: service_id
-	- Presence: Required
-	- Type: Foreign ID referencing calendar.service_id or ID
+  - File: [calendar_dates.txt]
+  - Field: service_id
+  - Presence: Required
+  - Type: Foreign ID referencing calendar.service_id or ID
 
 # Description
 
@@ -21,12 +21,12 @@ If a service_id value appears in both [calendar.txt] and [calendar_dates.txt], t
 [calendar_dates.txt]: https://gtfs.org/schedule/reference/#calendar_datestxt
 [calendar.txt]: https://gtfs.org/schedule/reference/#calendartxt
 */
-func ServiceIdValidation(calendarDate *types.CalendarDates, row int, gtfs *types.Gtfs) {
+func ServiceIdValidation(calendarDate *types.CalendarDates, row int) {
 	message := types.Message{
-		Field: "service_id",
-		FileName: "calendar_dates.txt",
-		Rows: []int{row},
-		Severity: types.SEVERITY_ERROR,
+		Field:        "service_id",
+		FileName:     "calendar_dates.txt",
+		Rows:         []int{row},
+		Severity:     types.SEVERITY_ERROR,
 		ValidationID: "service_id_validation",
 	}
 
@@ -35,5 +35,5 @@ func ServiceIdValidation(calendarDate *types.CalendarDates, row int, gtfs *types
 	if serviceId == "" {
 		message.Message = "service_id is required"
 		services.AppMessageService.AddMessage(message)
-	}	
+	}
 }

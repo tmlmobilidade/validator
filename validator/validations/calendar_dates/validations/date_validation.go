@@ -8,10 +8,10 @@ import (
 
 /*
 # Attributes
-	- File: [calendar_dates.txt]
-	- Field: date
-	- Presence: Required
-	- Type: Date
+  - File: [calendar_dates.txt]
+  - Field: date
+  - Presence: Required
+  - Type: Date
 
 # Description
 
@@ -19,20 +19,19 @@ Date when service exception occurs.
 
 [calendar_dates.txt]: https://gtfs.org/schedule/reference/#calendar_datestxt
 */
-func DateValidation(calendarDate *types.CalendarDates, row int, gtfs *types.Gtfs) {	
-	
+func DateValidation(calendarDate *types.CalendarDates, row int) {
+
 	addMessage := func(message string) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field: "date",
-			FileName: "calendar_dates.txt",
-			Rows: []int{row},
-			Severity: types.SEVERITY_ERROR,
+			Field:        "date",
+			FileName:     "calendar_dates.txt",
+			Rows:         []int{row},
+			Severity:     types.SEVERITY_ERROR,
 			ValidationID: "date_validation",
-			Message: message,
+			Message:      message,
 		})
 	}
-	
-	
+
 	date := calendarDate.Date
 
 	if date == "" {
