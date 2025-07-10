@@ -2,6 +2,7 @@ package agency
 
 import (
 	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -42,7 +43,7 @@ func AgencyLangValidation(agency *types.Agency, row int, rules *types.AgencyRule
 
 	// Check if agency_lang is required
 	if agency.AgencyLang == nil && s != types.SEVERITY_IGNORE {
-		addMessage(lib.IfThenElse(s == types.SEVERITY_ERROR, "Agency language is required", "Agency language is recommended"), s)
+		addMessage(lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("agency_lang_validation.required"), i18n.AppTranslator.Get("agency_lang_validation.recommended")), s)
 	}
 
 	// Check if agency_lang is valid

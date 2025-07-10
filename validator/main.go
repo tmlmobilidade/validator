@@ -92,6 +92,6 @@ func main() {
 		services.AppMessageService.WriteToFile(services.AppCLI.Options.OutputPath)
 		lib.AppLogger.Info("Summary written to: " + services.AppCLI.Options.OutputPath)
 	} else {
-		services.AppMessageService.PrintJSON()
+		services.AppMessageService.PrintTable()
 	}
 }

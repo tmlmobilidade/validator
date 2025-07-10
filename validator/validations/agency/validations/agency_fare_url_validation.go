@@ -1,7 +1,7 @@
 package agency
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -41,7 +41,7 @@ func AgencyFareUrlValidation(agency *types.Agency, row int, rules *types.AgencyR
 
 	// Check if agency_fare_url is required
 	if agency.AgencyFareUrl == nil && s != types.SEVERITY_IGNORE {
-		message := lib.IfThenElse(s == types.SEVERITY_ERROR, "Agency fare URL is required", "Agency fare URL is recommended")
+		message := lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("agency_fare_url_validation.required"), i18n.AppTranslator.Get("agency_fare_url_validation.recommended"))
 		addMessage(message, s)
 	}
 
@@ -59,7 +59,7 @@ func AgencyFareUrlValidation(agency *types.Agency, row int, rules *types.AgencyR
 		}
 
 		if !slices.Contains(*rules.AgencyFare.Options, *agency.AgencyFareUrl) {
-			addMessage(fmt.Sprintf("Agency fare URL is not allowed: %s", *agency.AgencyFareUrl), s)
+			addMessage(i18n.AppTranslator.Get("agency_fare_url_validation.not_allowed", *agency.AgencyFareUrl), s)
 			return
 		}
 	}

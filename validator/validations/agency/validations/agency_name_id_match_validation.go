@@ -1,7 +1,7 @@
 package agency
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/services"
 	"main/types"
 )
@@ -43,7 +43,7 @@ func AgencyNameIdMatchValidation(agency *types.Agency, row int, rules *types.Age
 
 	// Check if agency_id matches agency_name
 	if agency.AgencyId == nil || agency.AgencyName == nil {
-		addMessage("Agency ID and name are required", s)
+		addMessage(i18n.AppTranslator.Get("agency_name_id_match_validation.required"), s)
 		return
 	}
 
@@ -56,7 +56,7 @@ func AgencyNameIdMatchValidation(agency *types.Agency, row int, rules *types.Age
 			}
 		}
 
-		addMessage(fmt.Sprintf("Agency ID %s does not match agency name %s", *agency.AgencyId, *agency.AgencyName), s)
+		addMessage(i18n.AppTranslator.Get("agency_name_id_match_validation.no_match", *agency.AgencyId, *agency.AgencyName), s)
 		return
 	}
 }
