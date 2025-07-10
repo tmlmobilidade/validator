@@ -40,34 +40,34 @@ func StopShortNameValidation(stop *types.Stop, row int, rules *types.StopsRules)
 
 	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field:        "stop_name",
+			Field:        "stop_short_name",
 			FileName:     "stops.txt",
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     severity,
-			ValidationID: "stop_name_validation",
+			ValidationID: "stop_short_name_validation",
 		})
 	}
 
-	// If stop_name is present, return
-	if stop.StopName != nil && *stop.StopName != "" {
+	// If stop_short_name is present, return
+	if stop.StopShortName != nil && *stop.StopShortName != "" {
 		return
 	}
 
-	// Check presence of stop_name based on location_type
+	// Check presence of stop_short_name based on location_type
 	locationType := -1
 	if stop.LocationType != nil {
 		locationType = *stop.LocationType
 	}
 
 	if locationType == 0 || locationType == 1 || locationType == 2 {
-		addMessage("stop_name is required when location_type is 0, 1, or 2", s)
+		addMessage("stop_short_name is required when location_type is 0, 1, or 2", s)
 		return
 	}
 
-	// Check presence of stop_name based on severity
+	// Check presence of stop_short_name based on severity
 	if s != types.SEVERITY_IGNORE {
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "stop_name is required", "stop_name is recommended")
+		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "stop_short_name is required", "stop_short_name is recommended")
 		addMessage(warn, s)
 		return
 	}

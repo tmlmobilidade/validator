@@ -9,14 +9,6 @@ import (
 )
 
 /*
-$validation-settings
-id: agency.agency_fare_url_validation
-severity_options: [error, warning, ignore]
-description: Validates if the agency fare URL is present and valid.
-name: Agency Fare URL Validation
-*/
-
-/*
 # Attributes
 
   - File: [agency.txt]

@@ -9,10 +9,10 @@ import (
 /*
 # Attributes
 
-	- File: [calendar.txt]
-	- Field: [start_date, end_date]
-	- Presence: Required
-	- Type: Date
+  - File: [calendar.txt]
+  - Field: [start_date, end_date]
+  - Presence: Required
+  - Type: Date
 
 # Description
 
@@ -22,16 +22,16 @@ End service day for the service interval. This service day is included in the in
 
 [calendar.txt]: https://gtfs.org/schedule/reference/#calendartxt
 */
-func DateValidation(date string, dateType string,row int) {
+func DateValidation(date string, dateType string, row int) {
 
 	addMessage := func(message string) {
 		services.AppMessageService.AddMessage(types.Message{
-		Field: dateType,
-		FileName: "calendar.txt",
-		Message: "Service date is required",
-		Rows: []int{row},
-		Severity: types.SEVERITY_ERROR,
-		ValidationID: "date_validation",
+			Field:        dateType,
+			FileName:     "calendar.txt",
+			Message:      message,
+			Rows:         []int{row},
+			Severity:     types.SEVERITY_ERROR,
+			ValidationID: "date_validation",
 		})
 	}
 

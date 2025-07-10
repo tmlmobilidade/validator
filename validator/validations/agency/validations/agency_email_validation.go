@@ -9,14 +9,6 @@ import (
 )
 
 /*
-$validation
-id: agency.agency_email_validation
-severity_options: [error, warning, ignore]
-description: Validates if the agency email is present and valid.
-name: Agency Email Validation
-*/
-
-/*
 # Attributes
 
   - File: [agency.txt]
@@ -44,7 +36,7 @@ func AgencyEmailValidation(agency *types.Agency, row int, rules *types.AgencyRul
 			Message:      msg,
 			Rows:         []int{row},
 			Severity:     severity,
-			ValidationID: "agency.agency_email_validation",
+			ValidationID: "agency_email_validation",
 		})
 	}
 

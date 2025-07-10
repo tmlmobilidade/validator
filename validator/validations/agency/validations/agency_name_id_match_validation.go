@@ -37,7 +37,7 @@ func AgencyNameIdMatchValidation(agency *types.Agency, row int, rules *types.Age
 			Message:      msg,
 			Rows:         []int{row},
 			Severity:     severity,
-			ValidationID: "agency.agency_name_id_match_validation",
+			ValidationID: "agency_name_id_match_validation",
 		})
 	}
 

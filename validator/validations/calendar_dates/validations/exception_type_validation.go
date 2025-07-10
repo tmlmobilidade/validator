@@ -5,14 +5,15 @@ import (
 	"main/services"
 	"main/types"
 	"slices"
+	"strconv"
 )
 
 /*
 # Attributes
-	- File: [calendar_dates.txt]
-	- Field: exception_type
-	- Presence: Required
-	- Type: Enum
+  - File: [calendar_dates.txt]
+  - Field: exception_type
+  - Presence: Required
+  - Type: Enum
 
 # Description
 
@@ -20,9 +21,8 @@ Indicates whether service is available on the date specified in the date field.
 
 Valid options are:
 
-	- 1 - Service has been added for the specified date.
-	- 2 - Service has been removed for the specified date.
-
+  - 1 - Service has been added for the specified date.
+  - 2 - Service has been removed for the specified date.
 
 # Example
 
@@ -34,12 +34,13 @@ For a particular holiday, the [calendar_dates.txt] file could be used to add the
 
 [calendar_dates.txt]: https://gtfs.org/schedule/reference/#calendar_datestxt
 */
-func ExceptionTypeValidation(calendarDate *types.CalendarDates, row int, gtfs *types.Gtfs) {
+func ExceptionTypeValidation(calendarDate *types.CalendarDates, row int, rules *types.CalendarDatesRules) {
+
 	message := types.Message{
-		Field: "exception_type",
-		FileName: "calendar_dates.txt",
-		Rows: []int{row},
-		Severity: types.SEVERITY_ERROR,
+		Field:        "exception_type",
+		FileName:     "calendar_dates.txt",
+		Rows:         []int{row},
+		Severity:     types.SEVERITY_ERROR,
 		ValidationID: "exception_type_validation",
 	}
 
@@ -48,5 +49,21 @@ func ExceptionTypeValidation(calendarDate *types.CalendarDates, row int, gtfs *t
 	if !slices.Contains(validExceptionTypes, *calendarDate.ExceptionType) {
 		message.Message = fmt.Sprintf("Wrong exception_type value, must be 1 or 2, got %d", *calendarDate.ExceptionType)
 		services.AppMessageService.AddMessage(message)
+	}
+
+	// Validate Rule Options
+	if rules != nil && rules.ExceptionType.Options != nil {
+		if slices.Contains(*rules.ExceptionType.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.ExceptionType.Options, strconv.Itoa(*calendarDate.ExceptionType)) {
+			message.Message = fmt.Sprintf("Exception type \"%d\" is not allowed", *calendarDate.ExceptionType)
+			services.AppMessageService.AddMessage(message)
+		}
+
+		message.Message = fmt.Sprintf("Exception type \"%d\" is not allowed", *calendarDate.ExceptionType)
+		services.AppMessageService.AddMessage(message)
+		return
 	}
 }
