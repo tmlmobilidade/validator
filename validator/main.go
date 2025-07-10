@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -45,6 +46,11 @@ func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *typ
 func main() {
 	services.AppCLI.Run()
 	lib.AppLogger.SetLogLevel(services.AppCLI.Options.LogLevel)
+
+	// Set Translator Language
+	if services.AppCLI.Options.RulesLang != "" {
+		i18n.AppTranslator.SetLanguage(services.AppCLI.Options.RulesLang)
+	}
 
 	// Parse Rules
 	rules, err := services.NewRulesParser(services.AppCLI.Options.RulesPath).ParseRules()

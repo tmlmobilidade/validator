@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"slices"
 )
 
 type CliOptions struct {
@@ -11,6 +12,7 @@ type CliOptions struct {
 	OutputPath string // Path to the output file
 	LogLevel   string // Log level (debug, info, error)
 	RulesPath  string // Path to the rules file
+	RulesLang  string // Rules language (en, pt)
 	Version    bool   // Show version
 }
 
@@ -35,6 +37,7 @@ func (c *CLI) Parse() {
 	flag.StringVar(&c.Options.OutputPath, "o", "", "Path to the output file")
 	flag.StringVar(&c.Options.LogLevel, "log", "info", "Log level (debug, info, error)")
 	flag.StringVar(&c.Options.RulesPath, "rules", "", "Path to the rules file")
+	flag.StringVar(&c.Options.RulesLang, "lang", "en", "Rules language (en, pt)")
 	flag.BoolVar(&c.Options.Version, "v", false, "Show version")
 	flag.BoolVar(&c.Options.Version, "version", false, "Show help")
 
@@ -49,6 +52,11 @@ func (c *CLI) Parse() {
 func (c *CLI) Validate() error {
 	if c.Options.InputPath == "" {
 		return fmt.Errorf("input path is required")
+	}
+
+	validLangs := []string{"en", "pt"}
+	if !slices.Contains(validLangs, c.Options.RulesLang) {
+		return fmt.Errorf("invalid rules language: %q (supported: en, pt)", c.Options.RulesLang)
 	}
 
 	return nil
