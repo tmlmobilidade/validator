@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -45,15 +45,25 @@ func HasNetworkMapValidation(stop *types.Stop, row int, rules *types.StopsRules)
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "has_network_map is required", "has_network_map is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"has_network_map_validation.required",
+				"has_network_map_validation.recommended",
+			),
+		)
+		addMessage(message, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("has_network_map_validation.forbidden"), s)
 		return
 	}
 
 	// Validate value
 	validValues := []int{0, 1, 2, 3}
 	if !slices.Contains(validValues, *stop.HasNetworkMap) {
-		addMessage("has_network_map must be 0, 1, 2, or 3", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("has_network_map_validation.invalid", *stop.HasNetworkMap), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -64,7 +74,7 @@ func HasNetworkMapValidation(stop *types.Stop, row int, rules *types.StopsRules)
 		}
 
 		if !slices.Contains(*rules.HasNetworkMap.Options, strconv.Itoa(*stop.HasNetworkMap)) {
-			addMessage(fmt.Sprintf("has_network_map is not allowed: %d", *stop.HasNetworkMap), s)
+			addMessage(i18n.AppTranslator.Get("has_network_map_validation.not_allowed", *stop.HasNetworkMap), s)
 			return
 		}
 	}

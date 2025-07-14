@@ -8,17 +8,17 @@ import (
 
 func ParseFareRule(rawFareRule types.FareRuleRaw, row int) types.FareRule {
 	var (
-		fareRule types.FareRule = types.FareRule{}
+		fareRule                                             types.FareRule = types.FareRule{}
 		fareId, routeId, originId, destinationId, containsId string
-		messages []types.Message
+		messages                                             []types.Message
 	)
 
 	stringFields := map[string]*string{
-		"fare_id": &fareId,
-		"route_id": &routeId,
-		"origin_id": &originId,
+		"fare_id":        &fareId,
+		"route_id":       &routeId,
+		"origin_id":      &originId,
 		"destination_id": &destinationId,
-		"contains_id": &containsId,
+		"contains_id":    &containsId,
 	}
 
 	// Helper to collect error messages
@@ -44,12 +44,12 @@ func ParseFareRule(rawFareRule types.FareRuleRaw, row int) types.FareRule {
 		services.AppMessageService.AddMessages(messages)
 		return fareRule
 	}
-	
+
 	fareRule.FareId = lib.IfThenElse(rawFareRule.FareId != "", &fareId, nil)
 	fareRule.RouteId = lib.IfThenElse(rawFareRule.RouteId != "", &routeId, nil)
 	fareRule.OriginId = lib.IfThenElse(rawFareRule.OriginId != "", &originId, nil)
 	fareRule.DestinationId = lib.IfThenElse(rawFareRule.DestinationId != "", &destinationId, nil)
 	fareRule.ContainsId = lib.IfThenElse(rawFareRule.ContainsId != "", &containsId, nil)
-	
+
 	return fareRule
 }

@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -29,10 +29,6 @@ func HasTariffsInformationValidation(stop *types.Stop, row int, rules *types.Sto
 		s = rules.HasTariffsInformation.Severity
 	}
 
-	if s == types.SEVERITY_IGNORE {
-		return
-	}
-
 	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
 			Field:        "has_tariffs_information",
@@ -49,15 +45,25 @@ func HasTariffsInformationValidation(stop *types.Stop, row int, rules *types.Sto
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "has_tariffs_information is required", "has_tariffs_information is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"has_tariffs_information_validation.required",
+				"has_tariffs_information_validation.recommended",
+			),
+		)
+		addMessage(message, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("has_tariffs_information_validation.forbidden"), s)
 		return
 	}
 
 	// Validate value
 	validValues := []int{0, 1, 2, 3}
 	if !slices.Contains(validValues, *stop.HasTariffsInformation) {
-		addMessage("has_tariffs_information must be 0, 1, 2, or 3", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("has_tariffs_information_validation.invalid", *stop.HasTariffsInformation), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -68,7 +74,7 @@ func HasTariffsInformationValidation(stop *types.Stop, row int, rules *types.Sto
 		}
 
 		if !slices.Contains(*rules.HasTariffsInformation.Options, strconv.Itoa(*stop.HasTariffsInformation)) {
-			addMessage(fmt.Sprintf("has_tariffs_information is not allowed: %d", *stop.HasTariffsInformation), types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("has_tariffs_information_validation.not_allowed", *stop.HasTariffsInformation), s)
 			return
 		}
 	}

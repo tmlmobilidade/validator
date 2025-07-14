@@ -16,6 +16,11 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 			continue
 		}
 
+		var fareAttributesRules *types.FareAttributesRules
+		if rules != nil {
+			fareAttributesRules = &rules.FareAttributes
+		}
+
 		// Validate fare_id
 		validations.FareIdValidation(&fareAttribute, i, &gtfs)
 
@@ -32,9 +37,9 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		validations.TransfersValidation(&fareAttribute, i, &gtfs)
 
 		// Validate agency_id
-		validations.AgencyIdValidation(nil, &fareAttribute, i, &gtfs)
+		validations.AgencyIdValidation(&fareAttribute, i, &gtfs, fareAttributesRules)
 
 		// Validate transfer_duration
-		validations.TransferDurationValidation(nil, &fareAttribute, i, &gtfs)
+		validations.TransferDurationValidation(&fareAttribute, i, &gtfs, fareAttributesRules)
 	}
 }

@@ -1,3 +1,13 @@
+package stops
+
+import (
+	"main/i18n"
+	"main/lib"
+	"main/services"
+	"main/types"
+	"slices"
+)
+
 /*
 # Attributes
 
@@ -12,16 +22,6 @@ Identifies the fare zone for a stop. If this record represents a station or stat
 
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
-
-package stops
-
-import (
-	"fmt"
-	"main/lib"
-	"main/services"
-	"main/types"
-	"slices"
-)
 
 // ZoneIdValidation validates the zone_id field in stops.txt
 func ZoneIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
@@ -46,8 +46,18 @@ func ZoneIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "zone_id is required", "zone_id is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"zone_id_validation.required",
+				"zone_id_validation.recommended",
+			),
+		)
+		addMessage(message, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("zone_id_validation.forbidden"), s)
 		return
 	}
 
@@ -58,7 +68,7 @@ func ZoneIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if !slices.Contains(*rules.ZoneId.Options, *stop.ZoneId) {
-			addMessage(fmt.Sprintf("zone_id is not allowed: %s", *stop.ZoneId), s)
+			addMessage(i18n.AppTranslator.Get("zone_id_validation.not_allowed", *stop.ZoneId), s)
 			return
 		}
 	}

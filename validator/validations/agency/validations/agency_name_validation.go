@@ -1,7 +1,7 @@
 package agency
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/services"
 	"main/types"
 	"slices"
@@ -37,7 +37,7 @@ func AgencyNameValidation(agency *types.Agency, row int, rules *types.AgencyRule
 
 	// Check if agency_email is required
 	if agency.AgencyName == nil {
-		addMessage("Agency name is required", s)
+		addMessage(i18n.AppTranslator.Get("agency_name_validation.required"), s)
 		return
 	}
 
@@ -48,7 +48,7 @@ func AgencyNameValidation(agency *types.Agency, row int, rules *types.AgencyRule
 		}
 
 		if !slices.Contains(*rules.AgencyName.Options, *agency.AgencyName) {
-			addMessage(fmt.Sprintf("Agency name is not allowed: %s", *agency.AgencyName), s)
+			addMessage(i18n.AppTranslator.Get("agency_name_validation.not_allowed", *agency.AgencyName), s)
 			return
 		}
 	}

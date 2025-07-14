@@ -19,8 +19,8 @@ func TestDestinationIdValidation_MissingDestinationId(t *testing.T) {
 	validations.DestinationIdValidation(fareRule, 1, gtfs, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing destination_id (optional) should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing destination_id (optional) should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -29,7 +29,7 @@ func TestDestinationIdValidation_MissingDestinationId(t *testing.T) {
 
 func TestDestinationIdValidation_InvalidDestinationId(t *testing.T) {
 	services.AppMessageService.Clear()
-	
+
 	invalidDestinationId := "INVALID"
 	fareRule := &types.FareRule{DestinationId: &invalidDestinationId}
 	gtfs := &types.Gtfs{
@@ -37,15 +37,15 @@ func TestDestinationIdValidation_InvalidDestinationId(t *testing.T) {
 			"stops": {},
 		},
 	}
-	
+
 	validations.DestinationIdValidation(fareRule, 2, gtfs, nil)
-	
+
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Invalid destination_id should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Invalid destination_id should error",
 	}
-	
+
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
@@ -53,7 +53,7 @@ func TestDestinationIdValidation_InvalidDestinationId(t *testing.T) {
 
 func TestDestinationIdValidation_ValidDestinationId(t *testing.T) {
 	services.AppMessageService.Clear()
-	
+
 	validDestinationId := "DEST1"
 	fareRule := &types.FareRule{DestinationId: &validDestinationId}
 	gtfs := &types.Gtfs{
@@ -61,34 +61,34 @@ func TestDestinationIdValidation_ValidDestinationId(t *testing.T) {
 			"stops": {"DEST1": {1}},
 		},
 	}
-	
+
 	validations.DestinationIdValidation(fareRule, 3, gtfs, nil)
-	
+
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid destination_id should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid destination_id should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
-} 
+}
 
 func TestDestinationIdValidation_SeverityError(t *testing.T) {
 	services.AppMessageService.Clear()
-	
+
 	fareRule := &types.FareRule{}
 	gtfs := &types.Gtfs{}
 
 	severity := types.SEVERITY_ERROR
-	validations.DestinationIdValidation(fareRule, 3, gtfs, &severity)
-	
+	validations.DestinationIdValidation(fareRule, 3, gtfs, &types.FareRulesRules{DestinationId: types.RuleConfig{Severity: severity}})
+
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid destination_id should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid destination_id should error",
 	}
-	
+
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
@@ -96,19 +96,19 @@ func TestDestinationIdValidation_SeverityError(t *testing.T) {
 
 func TestDestinationIdValidation_SeverityWarning(t *testing.T) {
 	services.AppMessageService.Clear()
-	
+
 	fareRule := &types.FareRule{}
 	gtfs := &types.Gtfs{}
-	
+
 	severity := types.SEVERITY_WARNING
-	validations.DestinationIdValidation(fareRule, 3, gtfs, &severity)
-	
+	validations.DestinationIdValidation(fareRule, 3, gtfs, &types.FareRulesRules{DestinationId: types.RuleConfig{Severity: severity}})
+
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalWarnings,
-		Message: "Valid destination_id should error",
+		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
+		Message:  "Valid destination_id should error",
 	}
-	
+
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}

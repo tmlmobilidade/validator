@@ -1,7 +1,7 @@
 package agency
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -41,15 +41,24 @@ func AgencyFareUrlValidation(agency *types.Agency, row int, rules *types.AgencyR
 
 	// Check if agency_fare_url is required
 	if agency.AgencyFareUrl == nil && s != types.SEVERITY_IGNORE {
-		message := lib.IfThenElse(s == types.SEVERITY_ERROR, "Agency fare URL is required", "Agency fare URL is recommended")
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"agency_fare_url_validation.required",
+				"agency_fare_url_validation.recommended",
+			),
+		)
 		addMessage(message, s)
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("agency_fare_url_validation.forbidden"), s)
+		return
+	}
+
 	// Check if agency_fare_url is valid
-	if agency.AgencyFareUrl != nil {
-		if urlErrors := lib.ValidateUrl(*agency.AgencyFareUrl); urlErrors != "" {
-			addMessage(urlErrors, types.SEVERITY_ERROR)
-		}
+	if agency.AgencyFareUrl != nil && !lib.ValidateUrl(*agency.AgencyFareUrl) {
+		addMessage(i18n.AppTranslator.Get("agency_fare_url_validation.invalid"), types.SEVERITY_ERROR)
+		return
 	}
 
 	// Validate rules
@@ -59,7 +68,7 @@ func AgencyFareUrlValidation(agency *types.Agency, row int, rules *types.AgencyR
 		}
 
 		if !slices.Contains(*rules.AgencyFare.Options, *agency.AgencyFareUrl) {
-			addMessage(fmt.Sprintf("Agency fare URL is not allowed: %s", *agency.AgencyFareUrl), s)
+			addMessage(i18n.AppTranslator.Get("agency_fare_url_validation.not_allowed", *agency.AgencyFareUrl), s)
 			return
 		}
 	}

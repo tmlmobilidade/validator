@@ -14,7 +14,7 @@ type RuleConfig struct {
 }
 
 type AgencyRules struct {
-	File              bool       `json:"_file"`
+	File              Severity   `json:"_file"`
 	AgencyId          RuleConfig `json:"agency_id"`
 	AgencyNameIdMatch RuleConfig `json:"agency_name_id_match"`
 	AgencyName        RuleConfig `json:"agency_name"`
@@ -27,7 +27,7 @@ type AgencyRules struct {
 }
 
 type StopsRules struct {
-	File                  bool       `json:"_file"`
+	File                  Severity   `json:"_file"`
 	StopId                RuleConfig `json:"stop_id"`
 	StopCode              RuleConfig `json:"stop_code"`
 	StopName              RuleConfig `json:"stop_name"`
@@ -60,7 +60,7 @@ type StopsRules struct {
 }
 
 type RoutesRules struct {
-	File              bool       `json:"_file"`
+	File              Severity   `json:"_file"`
 	LineId            RuleConfig `json:"line_id"`
 	LineShortName     RuleConfig `json:"line_short_name"`
 	LineLongName      RuleConfig `json:"line_long_name"`
@@ -84,7 +84,7 @@ type RoutesRules struct {
 }
 
 type TripsRules struct {
-	File                 bool       `json:"_file"`
+	File                 Severity   `json:"_file"`
 	RouteId              RuleConfig `json:"route_id"`
 	PatternId            RuleConfig `json:"pattern_id"`
 	ServiceId            RuleConfig `json:"service_id"`
@@ -100,7 +100,7 @@ type TripsRules struct {
 }
 
 type StopTimesRules struct {
-	File                     bool       `json:"_file"`
+	File                     Severity   `json:"_file"`
 	TripId                   RuleConfig `json:"trip_id"`
 	ArrivalTime              RuleConfig `json:"arrival_time"`
 	DepartureTime            RuleConfig `json:"departure_time"`
@@ -115,15 +115,12 @@ type StopTimesRules struct {
 	StartPickupDropOffWindow RuleConfig `json:"start_pickup_drop_off_window"`
 	EndPickupDropOffWindow   RuleConfig `json:"end_pickup_drop_off_window"`
 	Timepoint                RuleConfig `json:"timepoint"`
-	Zone1                    RuleConfig `json:"zone_1"`
-	Zone2                    RuleConfig `json:"zone_2"`
-	Zone3                    RuleConfig `json:"zone_3"`
 	PickupBookingRuleId      RuleConfig `json:"pickup_booking_rule_id"`
 	DropOffBookingRuleId     RuleConfig `json:"drop_off_booking_rule_id"`
 }
 
 type CalendarRules struct {
-	File      bool       `json:"_file"`
+	File      Severity   `json:"_file"`
 	ServiceId RuleConfig `json:"service_id"`
 	Monday    RuleConfig `json:"monday"`
 	Tuesday   RuleConfig `json:"tuesday"`
@@ -137,14 +134,14 @@ type CalendarRules struct {
 }
 
 type CalendarDatesRules struct {
-	File          bool       `json:"_file"`
+	File          Severity   `json:"_file"`
 	ServiceId     RuleConfig `json:"service_id"`
 	Date          RuleConfig `json:"date"`
 	ExceptionType RuleConfig `json:"exception_type"`
 }
 
 type VehiclesRules struct {
-	File              bool       `json:"_file"`
+	File              Severity   `json:"_file"`
 	VehicleId         RuleConfig `json:"vehicle_id"`
 	AgencyId          RuleConfig `json:"agency_id"`
 	LicensePlate      RuleConfig `json:"license_plate"`
@@ -176,7 +173,7 @@ type VehiclesRules struct {
 }
 
 type FareAttributesRules struct {
-	File             bool       `json:"_file"`
+	File             Severity   `json:"_file"`
 	FareId           RuleConfig `json:"fare_id"`
 	Price            RuleConfig `json:"price"`
 	CurrencyType     RuleConfig `json:"currency_type"`
@@ -187,7 +184,7 @@ type FareAttributesRules struct {
 }
 
 type FareRulesRules struct {
-	File          bool       `json:"_file"`
+	File          Severity   `json:"_file"`
 	FareId        RuleConfig `json:"fare_id"`
 	RouteId       RuleConfig `json:"route_id"`
 	OriginId      RuleConfig `json:"origin_id"`
@@ -196,7 +193,7 @@ type FareRulesRules struct {
 }
 
 type ShapesRules struct {
-	File              bool       `json:"_file"`
+	File              Severity   `json:"_file"`
 	ShapeId           RuleConfig `json:"shape_id"`
 	ShapePtLat        RuleConfig `json:"shape_pt_lat"`
 	ShapePtLon        RuleConfig `json:"shape_pt_lon"`
@@ -205,7 +202,7 @@ type ShapesRules struct {
 }
 
 type FrequenciesRules struct {
-	File        bool       `json:"_file"`
+	File        Severity   `json:"_file"`
 	TripId      RuleConfig `json:"trip_id"`
 	StartTime   RuleConfig `json:"start_time"`
 	EndTime     RuleConfig `json:"end_time"`
@@ -214,7 +211,7 @@ type FrequenciesRules struct {
 }
 
 type TransfersRules struct {
-	File            bool       `json:"_file"`
+	File            Severity   `json:"_file"`
 	FromStopId      RuleConfig `json:"from_stop_id"`
 	ToStopId        RuleConfig `json:"to_stop_id"`
 	TransferType    RuleConfig `json:"transfer_type"`
@@ -222,7 +219,7 @@ type TransfersRules struct {
 }
 
 type PathwaysRules struct {
-	File                 bool       `json:"_file"`
+	File                 Severity   `json:"_file"`
 	PathwayId            RuleConfig `json:"pathway_id"`
 	FromStopId           RuleConfig `json:"from_stop_id"`
 	ToStopId             RuleConfig `json:"to_stop_id"`
@@ -238,14 +235,14 @@ type PathwaysRules struct {
 }
 
 type LevelsRules struct {
-	File       bool       `json:"_file"`
+	File       Severity   `json:"_file"`
 	LevelId    RuleConfig `json:"level_id"`
 	LevelIndex RuleConfig `json:"level_index"`
 	LevelName  RuleConfig `json:"level_name"`
 }
 
 type FeedInfoRules struct {
-	File              bool       `json:"_file"`
+	File              Severity   `json:"_file"`
 	FeedType          RuleConfig `json:"feed_type"`
 	FeedPublisherName RuleConfig `json:"feed_publisher_name"`
 	FeedPublisherUrl  RuleConfig `json:"feed_publisher_url"`
@@ -260,7 +257,7 @@ type FeedInfoRules struct {
 }
 
 type TranslationsRules struct {
-	File        bool       `json:"_file"`
+	File        Severity   `json:"_file"`
 	TableName   RuleConfig `json:"table_name"`
 	FieldName   RuleConfig `json:"field_name"`
 	Language    RuleConfig `json:"language"`
@@ -271,7 +268,7 @@ type TranslationsRules struct {
 }
 
 type AttributionsRules struct {
-	File             bool       `json:"_file"`
+	File             Severity   `json:"_file"`
 	AttributionId    RuleConfig `json:"attribution_id"`
 	AgencyId         RuleConfig `json:"agency_id"`
 	RouteId          RuleConfig `json:"route_id"`

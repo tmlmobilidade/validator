@@ -1,7 +1,7 @@
 package agency
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -49,7 +49,7 @@ func AgencyIdValidation(agency *types.Agency, row int, gtfs types.Gtfs, rules *t
 	//  Check if agency_id is required
 	if agency.AgencyId == nil {
 		if len(gtfs.Agency) > 1 {
-			addMessage("Agency ID is required when there is more than one agency", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("agency_id_validation.required"), types.SEVERITY_ERROR)
 			return
 		}
 
@@ -57,7 +57,12 @@ func AgencyIdValidation(agency *types.Agency, row int, gtfs types.Gtfs, rules *t
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "Agency ID is required", "Agency ID is recommended")
+		warn := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"agency_id_validation.required",
+				"agency_id_validation.recommended",
+			),
+		)
 		addMessage(warn, s)
 		return
 	}
@@ -65,7 +70,7 @@ func AgencyIdValidation(agency *types.Agency, row int, gtfs types.Gtfs, rules *t
 	if agency.AgencyId != nil {
 		// Check if agency_id is Unique ID
 		if _, ok := gtfs.IdMap["agency"][*agency.AgencyId]; ok && len(gtfs.IdMap["agency"][*agency.AgencyId]) > 1 {
-			addMessage("Duplicate agency_id found. Agency IDs must be unique.", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("agency_id_validation.duplicate"), types.SEVERITY_ERROR)
 		}
 
 		// Validate rules
@@ -75,7 +80,7 @@ func AgencyIdValidation(agency *types.Agency, row int, gtfs types.Gtfs, rules *t
 			}
 
 			if !slices.Contains(*rules.AgencyId.Options, *agency.AgencyId) {
-				addMessage(fmt.Sprintf("Agency ID is not allowed: %s", *agency.AgencyId), s)
+				addMessage(i18n.AppTranslator.Get("agency_id_validation.not_allowed", *agency.AgencyId), s)
 				return
 			}
 		}

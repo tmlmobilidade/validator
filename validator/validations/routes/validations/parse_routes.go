@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -8,29 +9,29 @@ import (
 
 func ParseRoutes(rawRoute types.RouteRaw, row int) types.Route {
 	var (
-		route types.Route = types.Route{}
-		routeId string
-		routeType int
+		route                                                                                                                         types.Route = types.Route{}
+		routeId                                                                                                                       string
+		routeType                                                                                                                     int
 		agencyId, continuousDropOff, continuousPickup, routeColor, routeDesc, routeLongName, routeShortName, routeTextColor, routeUrl string
-		routeSortOrder int
-		messages []types.Message
+		routeSortOrder                                                                                                                int
+		messages                                                                                                                      []types.Message
 	)
 
 	stringFields := map[string]*string{
-		"route_id": &routeId,
-		"agency_id": &agencyId,
+		"route_id":            &routeId,
+		"agency_id":           &agencyId,
 		"continuous_drop_off": &continuousDropOff,
-		"continuous_pickup": &continuousPickup,
-		"route_color": &routeColor,
-		"route_desc": &routeDesc,
-		"route_long_name": &routeLongName,
-		"route_short_name": &routeShortName,
-		"route_text_color": &routeTextColor,
-		"route_url": &routeUrl,
+		"continuous_pickup":   &continuousPickup,
+		"route_color":         &routeColor,
+		"route_desc":          &routeDesc,
+		"route_long_name":     &routeLongName,
+		"route_short_name":    &routeShortName,
+		"route_text_color":    &routeTextColor,
+		"route_url":           &routeUrl,
 	}
 
 	intFields := map[string]*int{
-		"route_type": &routeType,
+		"route_type":       &routeType,
 		"route_sort_order": &routeSortOrder,
 	}
 
@@ -47,13 +48,13 @@ func ParseRoutes(rawRoute types.RouteRaw, row int) types.Route {
 
 	for field, target := range stringFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawRoute, "gtfs", field), target); errMsg != "" {
-			addMessage(field, errMsg)
+			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]interface{}{"field": field, "error": errMsg}))
 		}
 	}
 
 	for field, target := range intFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawRoute, "gtfs", field), target); errMsg != "" {
-			addMessage(field, errMsg)
+			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]interface{}{"field": field, "error": errMsg}))
 		}
 	}
 

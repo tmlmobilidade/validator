@@ -12,12 +12,12 @@ func TestAgencyIdValidation_Required(t *testing.T) {
 	severity := types.SEVERITY_ERROR
 	fareAttribute := &types.FareAttribute{AgencyId: nil}
 	gtfs := &types.Gtfs{}
-	validations.AgencyIdValidation(&severity, fareAttribute, 1, gtfs)
+	validations.AgencyIdValidation(fareAttribute, 1, gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: severity}})
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "AgencyId is required",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "AgencyId is required",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
@@ -30,12 +30,12 @@ func TestAgencyIdValidation_Recommended(t *testing.T) {
 	severity := types.SEVERITY_WARNING
 	fareAttribute := &types.FareAttribute{AgencyId: nil}
 	gtfs := &types.Gtfs{}
-	validations.AgencyIdValidation(&severity, fareAttribute, 2, gtfs)
+	validations.AgencyIdValidation(fareAttribute, 2, gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: severity}})
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalWarnings,
-		Message: "AgencyId is recommended",
+		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
+		Message:  "AgencyId is recommended",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
@@ -48,12 +48,12 @@ func TestAgencyIdValidation_Ignore(t *testing.T) {
 	severity := types.SEVERITY_IGNORE
 	fareAttribute := &types.FareAttribute{AgencyId: nil}
 	gtfs := &types.Gtfs{}
-	validations.AgencyIdValidation(&severity, fareAttribute, 3, gtfs)
+	validations.AgencyIdValidation(fareAttribute, 3, gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: severity}})
 
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "AgencyId is ignored",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "AgencyId is ignored",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
@@ -73,12 +73,12 @@ func TestAgencyIdValidation_ValidAgencyId(t *testing.T) {
 			},
 		},
 	}
-	validations.AgencyIdValidation(&severity, fareAttribute, 4, gtfs)
+	validations.AgencyIdValidation(fareAttribute, 4, gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: severity}})
 
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "AgencyId is valid",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "AgencyId is valid",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
@@ -92,12 +92,12 @@ func TestAgencyIdValidation_InvalidAgencyId(t *testing.T) {
 	agencyId := "INVALID_AGENCY_ID"
 	fareAttribute := &types.FareAttribute{AgencyId: &agencyId}
 	gtfs := &types.Gtfs{}
-	validations.AgencyIdValidation(&severity, fareAttribute, 5, gtfs)
+	validations.AgencyIdValidation(fareAttribute, 5, gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: severity}})
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "AgencyId is invalid",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "AgencyId is invalid",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
@@ -105,7 +105,3 @@ func TestAgencyIdValidation_InvalidAgencyId(t *testing.T) {
 	}
 	services.AppMessageService.Clear()
 }
-
-
-
-

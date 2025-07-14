@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -62,7 +62,7 @@ func ContinuousDropOffValidation(route *types.Route, row int, gtfs *types.Gtfs, 
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "continuous_drop_off is recommended", "continuous_drop_off is required")
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("continuous_drop_off_validation.recommended"), i18n.AppTranslator.Get("continuous_drop_off_validation.required"))
 		addMessage(warn, s)
 		return
 	}
@@ -86,7 +86,7 @@ func ContinuousDropOffValidation(route *types.Route, row int, gtfs *types.Gtfs, 
 
 				if startWindow != "" || endWindow != "" {
 					lib.AppLogger.Accent("route.ContinuousDropOff", *route.ContinuousDropOff)
-					addMessage("continuous_drop_off must be 1 or empty if start_pickup_drop_off_window or end_pickup_drop_off_window is defined", types.SEVERITY_ERROR)
+					addMessage(i18n.AppTranslator.Get("continuous_drop_off_validation.forbidden_with_window"), types.SEVERITY_ERROR)
 					return
 				}
 			}
@@ -100,7 +100,7 @@ func ContinuousDropOffValidation(route *types.Route, row int, gtfs *types.Gtfs, 
 		}
 
 		if !slices.Contains(*rules.ContinuousDropOff.Options, *route.ContinuousDropOff) {
-			addMessage(fmt.Sprintf("continuous_drop_off is not allowed: %s", *route.ContinuousDropOff), s)
+			addMessage(i18n.AppTranslator.Get("continuous_drop_off_validation.not_allowed", map[string]interface{}{"value": *route.ContinuousDropOff}), s)
 			return
 		}
 	}

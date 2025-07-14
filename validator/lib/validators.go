@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"fmt"
 	"main/types"
 	"net/mail"
 	"net/url"
@@ -12,34 +11,33 @@ import (
 	"time"
 )
 
-func ValidateTimezone(timezone string) string {
+func ValidateTimezone(timezone string) bool {
 	_, err := time.LoadLocation(timezone)
-	if err != nil {
-		return fmt.Sprintf("Invalid timezone, expected format: Europe/Lisbon, got: %s", timezone)
-	}
-	return ""
+	return err == nil
 }
 
-func ValidateUrl(u string) string {
+func ValidateUrl(u string) bool {
+	u = strings.TrimSpace(u)
+	if u == "" {
+		return false
+	}
 	_, err := url.ParseRequestURI(u)
-	if err != nil {
-		return fmt.Sprintf("Invalid URL, expected format: https://example.com, got: %s", u)
-	}
-	return ""
+	return err == nil
 }
 
-func ValidateEmail(e string) string {
+func ValidateEmail(e string) bool {
+	e = strings.TrimSpace(e)
+	if e == "" {
+		return false
+	}
 	_, err := mail.ParseAddress(e)
-	if err != nil {
-		return fmt.Sprintf("Invalid email, expected format: name@domain.com, got: %s", e)
-	}
-	return ""
+	return err == nil
 }
 
-func ValidatePhone(p string) string {
+func ValidatePhone(p string) bool {
 	input := strings.TrimSpace(p)
 	if input == "" {
-		return fmt.Sprintf("Invalid phone number, expected format: [+1]234567890 (optional country code), got: %s", p)
+		return false
 	}
 
 	// This regex allows:
@@ -51,46 +49,34 @@ func ValidatePhone(p string) string {
 
 	// Check if input matches allowed characters
 	if !validPhonePattern.MatchString(input) {
-		return fmt.Sprintf("Invalid phone number, expected format: [+1]234567890 (optional country code), got: %s", p)
+		return false
 	}
 
 	// (Optional) You could also add rules to ensure at least some digits exist
 	digits := regexp.MustCompile(`[0-9]`)
 	digitMatches := digits.FindAllString(input, -1)
-	if len(digitMatches) < 7 {
-		return fmt.Sprintf("Invalid phone number, must contain at least 7 digits, got: %s", p)
-	}
 
-	return ""
+	return len(digitMatches) >= 7
 }
 
-func ValidateLongitude(lon float32) string {
-	if lon < -180 || lon > 180 {
-		return fmt.Sprintf("Invalid longitude, expected range: -180 to 180, got: %f", lon)
-	}
-	return ""
+func ValidateLongitude(lon float32) bool {
+	return lon >= -180 && lon <= 180
 }
 
-func ValidateLatitude(lat float32) string {
-	if lat < -90 || lat > 90 {
-		return fmt.Sprintf("Invalid latitude, expected range: -90 to 90, got: %f", lat)
-	}
-	return ""
+func ValidateLatitude(lat float32) bool {
+	return lat >= -90 && lat <= 90
 }
 
-func ValidateLanguage(lang string) string {
+func ValidateLanguage(lang string) bool {
 	validISO6391 := []string{"ab", "aa", "af", "ak", "sq", "am", "ar", "an", "hy", "as", "av", "ae", "ay", "az", "bm", "ba", "eu", "be", "bn", "bh", "bi", "bs", "br", "bg", "my", "ca", "ch", "ce", "ny", "zh", "cv", "kw", "co", "cr", "hr", "cs", "da", "dv", "nl", "dz", "en", "eo", "et", "ee", "fo", "fj", "fi", "fr", "ff", "gl", "ka", "de", "el", "gn", "gu", "ht", "ha", "he", "hz", "hi", "ho", "hu", "ia", "id", "ie", "ga", "ig", "ik", "io", "is", "it", "iu", "ja", "jv", "kl", "kn", "kr", "ks", "kk", "km", "ki", "rw", "ky", "kv", "kg", "ko", "ku", "kj", "la", "lb", "lg", "li", "ln", "lo", "lt", "lu", "lv", "gv", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mh", "mn", "na", "nv", "nd", "ne", "ng", "nb", "nn", "no", "ii", "nr", "oc", "oj", "cu", "om", "or", "os", "pa", "pi", "fa", "pl", "ps", "pt", "qu", "rm", "rn", "ro", "ru", "sa", "sc", "sd", "se", "sm", "sg", "sr", "gd", "sn", "si", "sk", "sl", "so", "st", "es", "su", "sw", "ss", "sv", "ta", "te", "tg", "th", "ti", "bo", "tk", "tl", "tn", "to", "tr", "ts", "tt", "tw", "ty", "ug", "uk", "ur", "uz", "ve", "vi", "vo", "wa", "cy", "wo", "fy", "xh", "yi", "yo", "za", "zu"}
-	if !slices.Contains(validISO6391, strings.ToLower(lang)) {
-		return fmt.Sprintf("'%s' is not a valid ISO 639-1 code, see https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes", lang)
-	}
-	return ""
+	return slices.Contains(validISO6391, strings.ToLower(lang))
 }
 
 func IsValidServiceDate(date string) bool {
 	if len(date) != 8 {
 		return false
 	}
-	
+
 	// Convert the date to the format YYYY-MM-DD for the time.Parse function validation
 	newDate := date[:4] + "-" + date[4:6] + "-" + date[6:]
 
@@ -98,34 +84,31 @@ func IsValidServiceDate(date string) bool {
 	return err == nil
 }
 
-func ValidateCurrencyType(currencyType string) string {
+func ValidateCurrencyType(currencyType string) bool {
 	validCurrencyTypes := []string{
-		"AED","AFN","ALL","AMD","ANG","AOA","ARS","AUD","AWG","AZN","BAM","BBD","BDT","BGN","BHD","BIF","BMD","BND","BOB","BRL","BSD","BTN","BWP","BYN","BZD","CAD","CDF","CHF","CKD","CLP","CNY","COP","CRC","CUC","CUP","CVE","CZK","DJF","DKK","DOP","DZD","EGP","EHP","ERN","ETB","EUR","FJD","FKP","FOK","GBP","GEL","GGP","GHS","GIP","GMD","GNF","GTQ","GYD","HKD","HNL","HRK","HTG","HUF","IDR","ILS","IMP","INR","IQD","IRR","ISK","JEP","JMD","JOD","JPY","KES","KGS","KHR","KID","KMF","KPW","KRW","KWD","KYD","KZT","LAK","LBP","LKR","LRD","LSL","LYD","MAD","MDL","MGA","MKD","MMK","MNT","MOP","MRU","MUR","MVR","MWK","MXN","MYR","MZN","NAD","NGN","NIO","NOK","NPR","NZD","OMR","PAB","PEN","PGK","PHP","PKR","PLN","PND","PRB","PYG","QAR","RON","RSD","RUB","RWF","SAR","SBD","SCR","SDG","SEK","SGD","SHP","SLL","SLS","SOS","SRD","SSP","STN","SVC","SYP","SZL","THB","TJS","TMT","TND","TOP","TRY","TTD","TVD","TWD","TZS","UAH","UGX","USD","UYU","UZS","VED","VES","VND","VUV","WST","XAF","XCD","XOF","XPF","YER","ZAR","ZMW","ZWB","ZWL"}
+		"AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD", "AWG", "AZN", "BAM", "BBD", "BDT", "BGN", "BHD", "BIF", "BMD", "BND", "BOB", "BRL", "BSD", "BTN", "BWP", "BYN", "BZD", "CAD", "CDF", "CHF", "CKD", "CLP", "CNY", "COP", "CRC", "CUC", "CUP", "CVE", "CZK", "DJF", "DKK", "DOP", "DZD", "EGP", "EHP", "ERN", "ETB", "EUR", "FJD", "FKP", "FOK", "GBP", "GEL", "GGP", "GHS", "GIP", "GMD", "GNF", "GTQ", "GYD", "HKD", "HNL", "HRK", "HTG", "HUF", "IDR", "ILS", "IMP", "INR", "IQD", "IRR", "ISK", "JEP", "JMD", "JOD", "JPY", "KES", "KGS", "KHR", "KID", "KMF", "KPW", "KRW", "KWD", "KYD", "KZT", "LAK", "LBP", "LKR", "LRD", "LSL", "LYD", "MAD", "MDL", "MGA", "MKD", "MMK", "MNT", "MOP", "MRU", "MUR", "MVR", "MWK", "MXN", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB", "PEN", "PGK", "PHP", "PKR", "PLN", "PND", "PRB", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR", "SBD", "SCR", "SDG", "SEK", "SGD", "SHP", "SLL", "SLS", "SOS", "SRD", "SSP", "STN", "SVC", "SYP", "SZL", "THB", "TJS", "TMT", "TND", "TOP", "TRY", "TTD", "TVD", "TWD", "TZS", "UAH", "UGX", "USD", "UYU", "UZS", "VED", "VES", "VND", "VUV", "WST", "XAF", "XCD", "XOF", "XPF", "YER", "ZAR", "ZMW", "ZWB", "ZWL"}
 
-	if !slices.Contains(validCurrencyTypes, strings.ToUpper(currencyType)) {
-		return fmt.Sprintf("'%s' is not a valid ISO 4217 currency code, see https://en.wikipedia.org/wiki/ISO_4217", currencyType)
-	}
-	return ""
+	return slices.Contains(validCurrencyTypes, strings.ToUpper(currencyType))
 }
 
-func ValidateTime(t string) string {
+func ValidateTime(t string) bool {
 	if len(t) != 8 {
-		return fmt.Sprintf("Invalid time, expected format: HH:MM:SS, got: %s", t)
+		return false
 	}
 
 	splits := strings.Split(t, ":")
 	if len(splits) != 3 {
-		return fmt.Sprintf("Invalid time, expected format: HH:MM:SS, got: %s", t)
+		return false
 	}
 
 	// Check if all splits are numbers
 	for _, split := range splits {
 		if _, err := strconv.Atoi(split); err != nil {
-			return fmt.Sprintf("Invalid time, expected format: HH:MM:SS, got: %s", t)
+			return false
 		}
 	}
 
-	return ""
+	return true
 }
 
 // KeyExists checks if a given key exists in a map.

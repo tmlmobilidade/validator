@@ -1,7 +1,7 @@
 package fare_rules
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -10,10 +10,10 @@ import (
 /*
 # Attributes
 
-	- File: [fare_rules.txt]
-	- Field: destination_id
-	- Presence: Optional
-	- Type: Foreign ID referencing [stops.zone_id]
+  - File: [fare_rules.txt]
+  - Field: destination_id
+  - Presence: Optional
+  - Type: Foreign ID referencing [stops.zone_id]
 
 # Description
 
@@ -30,10 +30,10 @@ The destination_id and destination_id fields could be used together to specify t
 [fare_rules.txt]: https://gtfs.org/schedule/reference/#fare_rulestxt
 [stops.zone_id]: https://gtfs.org/schedule/reference/#stopstxt
 */
-func DestinationIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, severity *types.Severity) {
+func DestinationIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, rules *types.FareRulesRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.DestinationId.Severity != "" {
+		s = rules.DestinationId.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -43,24 +43,29 @@ func DestinationIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     severity,
-			ValidationID: "fare_rules_parse",
+			ValidationID: "destination_id_validation",
 		})
 	}
 
 	if fareRule.DestinationId == nil {
-		
+
 		if s == types.SEVERITY_IGNORE {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "required", "recommended")
-		addMessage(fmt.Sprintf("Destination ID is %s", warn), s)
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("destination_id_validation.recommended"), i18n.AppTranslator.Get("destination_id_validation.required"))
+		addMessage(warn, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("destination_id_validation.forbidden"), s)
 		return
 	}
 
 	// Check Foreign Key
 	if !lib.GtfsIdMapKeyExists(gtfs, "stops", *fareRule.DestinationId) {
-		addMessage("destination_id '"+ *fareRule.DestinationId + "' does not exist in stops.txt", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("destination_id_validation.invalid"), types.SEVERITY_ERROR)
 		return
 	}
-} 
+}

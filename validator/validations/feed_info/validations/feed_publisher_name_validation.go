@@ -1,6 +1,7 @@
 package feed_info
 
 import (
+	"main/i18n"
 	"main/services"
 	"main/types"
 )
@@ -32,7 +33,7 @@ func FeedPublisherNameValidation(feedInfo *types.FeedInfo, row int) {
 	}
 
 	if feedInfo.FeedPublisherName == nil || *feedInfo.FeedPublisherName == "" {
-		addMessage("feed_publisher_name is required")
+		addMessage(i18n.AppTranslator.Get("feed_publisher_name_validation.required"))
 		return
 	}
-} 
+}

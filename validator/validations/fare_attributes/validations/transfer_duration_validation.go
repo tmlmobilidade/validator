@@ -1,17 +1,17 @@
 package fare_attributes
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/services"
 	"main/types"
 )
 
 /*
 # Attributes
-	- File: [fare_attributes.txt]
-	- Field: transfer_duration
-	- Presence: Optional
-	- Type: Non-negative integer
+  - File: [fare_attributes.txt]
+  - Field: transfer_duration
+  - Presence: Optional
+  - Type: Non-negative integer
 
 # Description
 
@@ -19,31 +19,36 @@ Length of time in seconds before a transfer expires. When transfers=0 this field
 
 [fare_attributes.txt]: https://gtfs.org/schedule/reference/#fare_attributestxt
 */
-func TransferDurationValidation(severity *types.Severity, fareAttribute *types.FareAttribute, row int, gtfs *types.Gtfs) {
+func TransferDurationValidation(fareAttribute *types.FareAttribute, row int, gtfs *types.Gtfs, rules *types.FareAttributesRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.TransferDuration.Severity != "" {
+		s = rules.TransferDuration.Severity
 	}
 
-	addMessage := func(msg string) {
+	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field:        "transfers",
+			Field:        "transfer_duration",
 			FileName:     "fare_attributes.txt",
 			Rows:         []int{row},
 			Message:      msg,
-			Severity:     s,
-			ValidationID: "transfers_validation",
+			Severity:     severity,
+			ValidationID: "transfer_duration_validation",
 		})
 	}
-	
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("transfer_duration_validation.forbidden"), s)
+		return
+	}
+
 	if fareAttribute.TransferDuration == nil {
 		if s != types.SEVERITY_IGNORE {
-			addMessage("transfer_duration is required")
+			addMessage(i18n.AppTranslator.Get("transfers_validation.required"), s)
 		}
 		return
 	}
 
 	if *fareAttribute.TransferDuration < 0 {
-		addMessage(fmt.Sprintf("transfer_duration must be greater than 0, got %d", *fareAttribute.TransferDuration))
+		addMessage(i18n.AppTranslator.Get("transfers_validation.invalid", *fareAttribute.TransferDuration), types.SEVERITY_ERROR)
 	}
 }

@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -20,7 +20,7 @@ import (
 
 Platform identifier for a platform stop (a stop belonging to a station).
 This should be just the platform identifier (eg. "G" or "3").
-Words like “platform” or "track" (or the feed’s language-specific equivalent) should not be included.
+Words like "platform" or "track" (or the feed's language-specific equivalent) should not be included.
 This allows feed consumers to more easily internationalize and localize the platform identifier into other languages.
 
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
@@ -47,8 +47,18 @@ func PlatformCodeValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "platform_code is required", "platform_code is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"platform_code_validation.required",
+				"platform_code_validation.recommended",
+			),
+		)
+		addMessage(message, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("platform_code_validation.forbidden"), s)
 		return
 	}
 
@@ -59,7 +69,7 @@ func PlatformCodeValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 		}
 
 		if !slices.Contains(*rules.PlatformCode.Options, *stop.PlatformCode) {
-			addMessage(fmt.Sprintf("platform_code is not allowed: %s", *stop.PlatformCode), s)
+			addMessage(i18n.AppTranslator.Get("platform_code_validation.not_allowed", *stop.PlatformCode), s)
 			return
 		}
 	}

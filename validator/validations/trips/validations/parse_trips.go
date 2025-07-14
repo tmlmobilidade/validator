@@ -1,6 +1,7 @@
 package trips
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -8,11 +9,11 @@ import (
 
 func ParseTrips(rawTrips types.TripRaw, row int) types.Trip {
 	var (
-		trip                                           types.Trip = types.Trip{}
-		tripId, routeId, serviceId, patternId          string
-		tripHeadsign, tripShortName, blockId, shapeId  string
+		trip                                            types.Trip = types.Trip{}
+		tripId, routeId, serviceId, patternId           string
+		tripHeadsign, tripShortName, blockId, shapeId   string
 		directionId, wheelchairAccessible, bikesAllowed int
-		messages                                       []types.Message
+		messages                                        []types.Message
 	)
 
 	stringFields := map[string]*string{
@@ -47,14 +48,14 @@ func ParseTrips(rawTrips types.TripRaw, row int) types.Trip {
 	// Parse string fields
 	for field, target := range stringFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawTrips, "gtfs", field), target); errMsg != "" {
-			addMessage(field, errMsg)
+			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]interface{}{"field": field, "error": errMsg}))
 		}
 	}
 
 	// Parse int fields
 	for field, target := range intFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawTrips, "gtfs", field), target); errMsg != "" {
-			addMessage(field, errMsg)
+			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]interface{}{"field": field, "error": errMsg}))
 		}
 	}
 

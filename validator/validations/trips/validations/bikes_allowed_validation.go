@@ -1,9 +1,12 @@
 package trips
 
 import (
+	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
@@ -32,38 +35,57 @@ func BikesAllowedValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *
 		s = rules.BikesAllowed.Severity
 	}
 
-	// 1. Validate bikes_allowed is 0 or 1 if it exists
+	addMessage := func(msg string, severity types.Severity) {
+		services.AppMessageService.AddMessage(types.Message{
+			Field:        "bikes_allowed",
+			FileName:     "trips.txt",
+			Rows:         []int{row},
+			Message:      msg,
+			Severity:     severity,
+			ValidationID: "bikes_allowed_validation",
+		})
+	}
+
+	// 1. Validate bikes_allowed is required
+	if trip.BikesAllowed == nil {
+		if s == types.SEVERITY_IGNORE {
+			return
+		}
+
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"bikes_allowed_validation.required",
+				"bikes_allowed_validation.recommended",
+			),
+		)
+
+		addMessage(message, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("bikes_allowed_validation.forbidden"), s)
+		return
+	}
+
+	// 2. Validate bikes_allowed is 0 or 1 if it exists
 	if trip.BikesAllowed != nil {
 		validBikesAllowed := map[int]bool{0: true, 1: true, 2: true}
 		if !validBikesAllowed[*trip.BikesAllowed] {
-			message := types.Message{
-				Field:        "bikes_allowed",
-				FileName:     "trips.txt",
-				Message:      "Invalid bikes_allowed value. Valid values are 0, 1, and 2.",
-				Rows:         []int{row},
-				Severity:     s,
-				ValidationID: "bikes_allowed_validation",
-			}
-			services.AppMessageService.AddMessage(message)
+			addMessage(i18n.AppTranslator.Get("bikes_allowed_validation.invalid"), s)
 			return
 		}
 	}
 
-	// 2. Validate bikes_allowed is required
-	if s == types.SEVERITY_IGNORE {
-		return
-	}
-
-	if trip.BikesAllowed == nil {
-		message := types.Message{
-			Field:        "bikes_allowed",
-			FileName:     "trips.txt",
-			Message:      lib.IfThenElse(s == types.SEVERITY_ERROR, "bikes_allowed is required", "bikes_allowed is recommended"),
-			Rows:         []int{row},
-			Severity:     s,
-			ValidationID: "bikes_allowed_validation",
+	// 3. Validate Rule Options
+	if rules != nil && rules.BikesAllowed.Options != nil {
+		if slices.Contains(*rules.BikesAllowed.Options, types.ALL_OPTIONS) {
+			return
 		}
-		services.AppMessageService.AddMessage(message)
-		return
+
+		if !slices.Contains(*rules.BikesAllowed.Options, fmt.Sprintf("%d", *trip.BikesAllowed)) {
+			addMessage(i18n.AppTranslator.Get("bikes_allowed_validation.not_allowed", map[string]interface{}{"value": *trip.BikesAllowed}), s)
+			return
+		}
 	}
 }

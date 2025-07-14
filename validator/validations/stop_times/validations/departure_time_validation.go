@@ -1,6 +1,7 @@
 package stop_times
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -52,27 +53,27 @@ func DepartureTimeValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs
 
 	// Required for timepoint=1
 	if stopTime.Timepoint != nil && *stopTime.Timepoint == 1 && stopTime.DepartureTime == nil {
-		addMessage("departure_time is required for timepoint=1.", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("departure_time_validation.required_timepoint"), types.SEVERITY_ERROR)
 		return
 	}
 
 	// Forbidden when start_pickup_drop_off_window or end_pickup_drop_off_window are defined
 	if (stopTime.StartPickupDropOffWindow != nil || stopTime.EndPickupDropOffWindow != nil) && stopTime.DepartureTime != nil {
-		addMessage("departure_time is forbidden when start_pickup_drop_off_window or end_pickup_drop_off_window are defined.", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("departure_time_validation.forbidden_with_window"), types.SEVERITY_ERROR)
 		return
 	}
 
 	// Validate time
 	if stopTime.DepartureTime != nil {
-		if err := lib.ValidateTime(*stopTime.DepartureTime); err != "" {
-			addMessage(err, types.SEVERITY_ERROR)
+		if !lib.ValidateTime(*stopTime.DepartureTime) {
+			addMessage(i18n.AppTranslator.Get("departure_time_validation.invalid_time"), types.SEVERITY_ERROR)
 			return
 		}
 	}
 
 	// Optional
 	if stopTime.DepartureTime == nil && s != types.SEVERITY_IGNORE {
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "departure_time is required.", "departure_time is recommended.")
+		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("departure_time_validation.required"), i18n.AppTranslator.Get("departure_time_validation.recommended"))
 		addMessage(warn, s)
 		return
 	}

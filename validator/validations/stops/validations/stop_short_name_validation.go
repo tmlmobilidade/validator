@@ -2,7 +2,7 @@
 # Attributes
 
  - File: [stops.txt]
- - Field: stop_name
+ - Field: stop_short_name
  - Presence: Conditionally Required
  - Type: String
 
@@ -24,14 +24,14 @@ Conditionally Required:
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
 	"slices"
 )
 
-// StopNameValidation validates the presence of stop_name in stops.txt according to location_type
+// StopShortNameValidation validates the presence of stop_short_name in stops.txt according to location_type
 func StopShortNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	s := types.SEVERITY_IGNORE
 	if rules != nil && rules.StopShortName.Severity != "" {
@@ -61,14 +61,19 @@ func StopShortNameValidation(stop *types.Stop, row int, rules *types.StopsRules)
 	}
 
 	if locationType == 0 || locationType == 1 || locationType == 2 {
-		addMessage("stop_short_name is required when location_type is 0, 1, or 2", s)
+		addMessage(i18n.AppTranslator.Get("stop_short_name_validation.required_location_type"), s)
 		return
 	}
 
 	// Check presence of stop_short_name based on severity
 	if s != types.SEVERITY_IGNORE {
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "stop_short_name is required", "stop_short_name is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"stop_short_name_validation.required",
+				"stop_short_name_validation.recommended",
+			),
+		)
+		addMessage(message, s)
 		return
 	}
 
@@ -79,7 +84,7 @@ func StopShortNameValidation(stop *types.Stop, row int, rules *types.StopsRules)
 		}
 
 		if !slices.Contains(*rules.StopShortName.Options, *stop.StopShortName) {
-			addMessage(fmt.Sprintf("stop_short_name is not allowed: %s", *stop.StopShortName), s)
+			addMessage(i18n.AppTranslator.Get("stop_short_name_validation.not_allowed", *stop.StopShortName), s)
 			return
 		}
 	}

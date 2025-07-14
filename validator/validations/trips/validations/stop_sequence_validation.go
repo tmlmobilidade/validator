@@ -2,6 +2,7 @@ package trips
 
 import (
 	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -64,7 +65,7 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *
 
 		stopSequence, err := strconv.Atoi(gtfs.StopTime[row].StopSequence)
 		if err != nil {
-			addMessage("stop_sequence must be a non-negative integer.", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("stop_sequence_validation.invalid_sequence"), types.SEVERITY_ERROR)
 			return
 		}
 
@@ -72,7 +73,7 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *
 		if gtfs.StopTime[row].ShapeDistTraveled != "" {
 			shapeDistTraveled, err = strconv.ParseFloat(gtfs.StopTime[row].ShapeDistTraveled, 64)
 			if err != nil {
-				addMessage("shape_dist_traveled must be a float.", types.SEVERITY_ERROR)
+				addMessage(i18n.AppTranslator.Get("stop_sequence_validation.invalid_shape_dist"), types.SEVERITY_ERROR)
 				return
 			}
 		}
@@ -96,13 +97,13 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *
 	for i, stopSequence := range stopSequences {
 		if i > 0 {
 			if *stopSequence.StopSequence <= *stopSequences[i-1].StopSequence {
-				addMessage("stop_sequence values must increase along the trip ('"+*trip.TripId+"')", types.SEVERITY_ERROR)
+				addMessage(i18n.AppTranslator.Get("stop_sequence_validation.non_increasing_sequence", map[string]interface{}{"trip_id": *trip.TripId}), types.SEVERITY_ERROR)
 				return
 			}
 
 			if *stopSequence.ShapeDistTraveled >= 0 && *stopSequences[i-1].ShapeDistTraveled >= 0 {
 				if *stopSequence.ShapeDistTraveled < *stopSequences[i-1].ShapeDistTraveled {
-					addMessage("shape_dist_traveled values must increase along the trip ('"+*trip.TripId+"')", types.SEVERITY_ERROR)
+					addMessage(i18n.AppTranslator.Get("stop_sequence_validation.non_increasing_shape_dist", map[string]interface{}{"trip_id": *trip.TripId}), types.SEVERITY_ERROR)
 					return
 				}
 			}

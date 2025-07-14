@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -45,15 +45,25 @@ func HasShelterValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "has_shelter is required", "has_shelter is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"has_shelter_validation.required",
+				"has_shelter_validation.recommended",
+			),
+		)
+		addMessage(message, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("has_shelter_validation.forbidden"), s)
 		return
 	}
 
 	// Validate value
-	validValues := []int{0, 1, 2, 3}
+	validValues := []int{0, 1}
 	if !slices.Contains(validValues, *stop.HasShelter) {
-		addMessage("has_shelter must be 0, 1, 2, or 3", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("has_shelter_validation.invalid", *stop.HasShelter), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -64,7 +74,7 @@ func HasShelterValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if !slices.Contains(*rules.HasShelter.Options, strconv.Itoa(*stop.HasShelter)) {
-			addMessage(fmt.Sprintf("has_shelter is not allowed: %d", *stop.HasShelter), types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("has_shelter_validation.not_allowed", *stop.HasShelter), s)
 			return
 		}
 	}

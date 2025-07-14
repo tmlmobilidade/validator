@@ -1,7 +1,7 @@
 package fare_rules
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -10,10 +10,10 @@ import (
 /*
 # Attributes
 
-	- File: [fare_rules.txt]
-	- Field: contains_id
-	- Presence: Optional
-	- Type: Foreign ID referencing [stops.zone_id]
+  - File: [fare_rules.txt]
+  - Field: contains_id
+  - Presence: Optional
+  - Type: Foreign ID referencing [stops.zone_id]
 
 # Description
 
@@ -28,16 +28,15 @@ If fare class "c" is associated with all travel on the GRT route that passes thr
 	c,GRT,...,6
 	c,GRT,...,7
 
-
 Because all contains_id zones must be matched for the fare to apply, an itinerary that passes through zones 5 and 6 but not zone 7 would not have fare class "c". For more detail, see https://code.google.com/p/googletransitdatafeed/wiki/FareExamples in the GoogleTransitDataFeed project wiki.
 
 [fare_rules.txt]: https://gtfs.org/schedule/reference/#fare_rulestxt
 [stops.zone_id]: https://gtfs.org/schedule/reference/#stopstxt
 */
-func ContainsIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, severity *types.Severity) {
+func ContainsIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, rules *types.FareRulesRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.ContainsId.Severity != "" {
+		s = rules.ContainsId.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -47,8 +46,13 @@ func ContainsIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, s
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     severity,
-			ValidationID: "fare_rules_parse",
+			ValidationID: "contains_id_validation",
 		})
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("contains_id_validation.forbidden"), s)
+		return
 	}
 
 	if fareRule.ContainsId == nil {
@@ -56,14 +60,14 @@ func ContainsIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, s
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "required", "recommended")
-		addMessage(fmt.Sprintf("Contains ID is %s", warn), s)
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("contains_id_validation.recommended"), i18n.AppTranslator.Get("contains_id_validation.required"))
+		addMessage(warn, s)
 		return
 	}
 
 	// Check Foreign Key
 	if !lib.GtfsIdMapKeyExists(gtfs, "stops", *fareRule.ContainsId) {
-		addMessage("contains_id '"+ *fareRule.ContainsId + "' does not exist in stops.txt", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("contains_id_validation.invalid"), types.SEVERITY_ERROR)
 		return
 	}
-} 
+}

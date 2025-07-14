@@ -67,13 +67,12 @@ func (rp *RulesParser) validateRules(rules *types.GtfsRules) error {
 	// Helper function to validate a single rule config
 	validateRuleConfig := func(config types.RuleConfig, fieldName string) {
 		if !isValidSeverity(config.Severity) {
-			validationErrors = append(validationErrors,
-				fmt.Sprintf("invalid severity '%s' for field '%s'", config.Severity, fieldName))
+			validationErrors = append(validationErrors, fmt.Sprintf("Invalid severity '%s' for field '%s'", config.Severity, fieldName))
 		}
 	}
 
 	// Validate agency rules
-	if rules.Agency.File {
+	if rules.Agency.File != types.SEVERITY_FORBIDDEN {
 		validateRuleConfig(rules.Agency.AgencyId, "agency.agency_id")
 		validateRuleConfig(rules.Agency.AgencyName, "agency.agency_name")
 		validateRuleConfig(rules.Agency.AgencyUrl, "agency.agency_url")
@@ -85,7 +84,7 @@ func (rp *RulesParser) validateRules(rules *types.GtfsRules) error {
 	}
 
 	// Validate stops rules
-	if rules.Stops.File {
+	if rules.Stops.File != types.SEVERITY_FORBIDDEN {
 		validateRuleConfig(rules.Stops.StopId, "stops.stop_id")
 		validateRuleConfig(rules.Stops.StopCode, "stops.stop_code")
 		validateRuleConfig(rules.Stops.StopName, "stops.stop_name")
@@ -118,7 +117,7 @@ func (rp *RulesParser) validateRules(rules *types.GtfsRules) error {
 	}
 
 	// Validate routes rules
-	if rules.Routes.File {
+	if rules.Routes.File != types.SEVERITY_FORBIDDEN {
 		validateRuleConfig(rules.Routes.LineId, "routes.line_id")
 		validateRuleConfig(rules.Routes.LineShortName, "routes.line_short_name")
 		validateRuleConfig(rules.Routes.LineLongName, "routes.line_long_name")
@@ -140,7 +139,7 @@ func (rp *RulesParser) validateRules(rules *types.GtfsRules) error {
 	}
 
 	// Add validation for other rule types (trips, stop_times, calendar, etc.)
-	if rules.Trips.File {
+	if rules.Trips.File != types.SEVERITY_FORBIDDEN {
 		validateRuleConfig(rules.Trips.RouteId, "trips.route_id")
 		validateRuleConfig(rules.Trips.PatternId, "trips.pattern_id")
 		validateRuleConfig(rules.Trips.ServiceId, "trips.service_id")
@@ -154,7 +153,7 @@ func (rp *RulesParser) validateRules(rules *types.GtfsRules) error {
 		validateRuleConfig(rules.Trips.BikesAllowed, "trips.bikes_allowed")
 	}
 
-	if rules.StopTimes.File {
+	if rules.StopTimes.File != types.SEVERITY_FORBIDDEN {
 		validateRuleConfig(rules.StopTimes.TripId, "stop_times.trip_id")
 		validateRuleConfig(rules.StopTimes.ArrivalTime, "stop_times.arrival_time")
 		validateRuleConfig(rules.StopTimes.DepartureTime, "stop_times.departure_time")
@@ -167,12 +166,9 @@ func (rp *RulesParser) validateRules(rules *types.GtfsRules) error {
 		validateRuleConfig(rules.StopTimes.ContinuousDropOff, "stop_times.continuous_drop_off")
 		validateRuleConfig(rules.StopTimes.ShapeDistTraveled, "stop_times.shape_dist_traveled")
 		validateRuleConfig(rules.StopTimes.Timepoint, "stop_times.timepoint")
-		validateRuleConfig(rules.StopTimes.Zone1, "stop_times.zone_1")
-		validateRuleConfig(rules.StopTimes.Zone2, "stop_times.zone_2")
-		validateRuleConfig(rules.StopTimes.Zone3, "stop_times.zone_3")
 	}
 
-	if rules.Calendar.File {
+	if rules.Calendar.File != types.SEVERITY_FORBIDDEN {
 		validateRuleConfig(rules.Calendar.ServiceId, "calendar.service_id")
 		validateRuleConfig(rules.Calendar.Monday, "calendar.monday")
 		validateRuleConfig(rules.Calendar.Tuesday, "calendar.tuesday")
@@ -185,7 +181,7 @@ func (rp *RulesParser) validateRules(rules *types.GtfsRules) error {
 		validateRuleConfig(rules.Calendar.EndDate, "calendar.end_date")
 	}
 
-	if rules.CalendarDates.File {
+	if rules.CalendarDates.File != types.SEVERITY_FORBIDDEN {
 		validateRuleConfig(rules.CalendarDates.ServiceId, "calendar_dates.service_id")
 		validateRuleConfig(rules.CalendarDates.Date, "calendar_dates.date")
 		validateRuleConfig(rules.CalendarDates.ExceptionType, "calendar_dates.exception_type")
@@ -202,7 +198,7 @@ func (rp *RulesParser) validateRules(rules *types.GtfsRules) error {
 // isValidSeverity checks if the given severity is valid
 func isValidSeverity(severity types.Severity) bool {
 	switch severity {
-	case types.SEVERITY_IGNORE, types.SEVERITY_ERROR, types.SEVERITY_WARNING:
+	case types.SEVERITY_IGNORE, types.SEVERITY_ERROR, types.SEVERITY_WARNING, types.SEVERITY_FORBIDDEN:
 		return true
 	default:
 		return false
@@ -228,7 +224,24 @@ func (rp *RulesParser) GetRequiredFiles(rules *types.GtfsRules) []string {
 	requiredFiles := make([]string, 0)
 
 	for _, file := range allFiles {
-		if lib.GetFieldByTag(rules, file, "_file") == "true" {
+		if lib.GetFieldByTag(rules, file, "_file") == "error" {
+			requiredFiles = append(requiredFiles, file)
+		}
+	}
+
+	return requiredFiles
+}
+
+func (rp *RulesParser) GetForbiddenFiles(rules *types.GtfsRules) []string {
+	if rules == nil {
+		return []string{}
+	}
+
+	allFiles := lib.GetAllStructTagValues(types.GtfsRules{}, "json")
+	requiredFiles := make([]string, 0)
+
+	for _, file := range allFiles {
+		if lib.GetFieldByTag(rules, file, "_file") == "forbidden" {
 			requiredFiles = append(requiredFiles, file)
 		}
 	}

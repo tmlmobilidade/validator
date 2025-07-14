@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -45,15 +45,25 @@ func PublicVisibleValidation(stop *types.Stop, row int, rules *types.StopsRules)
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "public_visible is required", "public_visible is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"public_visible_validation.required",
+				"public_visible_validation.recommended",
+			),
+		)
+		addMessage(message, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("public_visible_validation.forbidden"), s)
 		return
 	}
 
 	// Validate value
 	validValues := []int{0, 1}
 	if !slices.Contains(validValues, *stop.PublicVisible) {
-		addMessage("public_visible must be 0 or 1", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("public_visible_validation.invalid", *stop.PublicVisible), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -64,7 +74,7 @@ func PublicVisibleValidation(stop *types.Stop, row int, rules *types.StopsRules)
 		}
 
 		if !slices.Contains(*rules.PublicVisible.Options, strconv.Itoa(*stop.PublicVisible)) {
-			addMessage(fmt.Sprintf("public_visible is not allowed: %d", *stop.PublicVisible), s)
+			addMessage(i18n.AppTranslator.Get("public_visible_validation.not_allowed", *stop.PublicVisible), s)
 			return
 		}
 	}

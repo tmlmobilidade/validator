@@ -1,6 +1,7 @@
 package trips
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -29,22 +30,34 @@ func TripHeadsignValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *
 		s = rules.TripHeadsign.Severity
 	}
 
-	if s == types.SEVERITY_IGNORE {
+	addMessage := func(msg string, severity types.Severity) {
+		services.AppMessageService.AddMessage(types.Message{
+			Field:        "trip_headsign",
+			FileName:     "trips.txt",
+			Rows:         []int{row},
+			Message:      msg,
+			Severity:     severity,
+			ValidationID: "trip_headsign_validation",
+		})
+	}
+
+	if trip.TripHeadsign == nil {
+		if s == types.SEVERITY_IGNORE {
+			return
+		}
+
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"trip_headsign_validation.required",
+				"trip_headsign_validation.recommended",
+			),
+		)
+		addMessage(message, s)
 		return
 	}
 
-	if trip.TripHeadsign != nil {
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("trip_headsign_validation.forbidden"), s)
 		return
 	}
-
-	message := types.Message{
-		Field:        "trip_headsign",
-		FileName:     "trips.txt",
-		Message:      lib.IfThenElse(s == types.SEVERITY_ERROR, "Trip headsign is required", "Trip headsign is recommended"),
-		Rows:         []int{row},
-		Severity:     s,
-		ValidationID: "trip_headsign_validation",
-	}
-
-	services.AppMessageService.AddMessage(message)
 }

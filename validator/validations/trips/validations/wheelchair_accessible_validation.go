@@ -2,6 +2,7 @@ package trips
 
 import (
 	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -43,23 +44,35 @@ func WheelchairAccessibleValidation(trip *types.Trip, row int, gtfs *types.Gtfs,
 		})
 	}
 
-	// 1. Validate wheelchair_accessible is 0 or 1 if it exists
+	// 1. Validate wheelchair_accessible is required
+	if trip.WheelchairAccessible == nil {
+		if s == types.SEVERITY_IGNORE {
+			return
+		}
+
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"wheelchair_accessible_validation.required",
+				"wheelchair_accessible_validation.recommended",
+			),
+		)
+		addMessage(message, s)
+		return
+	}
+
+	// 2. Validate wheelchair_accessible is forbidden
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("wheelchair_accessible_validation.forbidden"), s)
+		return
+	}
+
+	// 3. Validate wheelchair_accessible is 0 or 1 if it exists
 	if trip.WheelchairAccessible != nil {
 		validWheelchairAccessible := map[int]bool{0: true, 1: true, 2: true}
 		if !validWheelchairAccessible[*trip.WheelchairAccessible] {
-			addMessage("Invalid wheelchair_accessible value. Valid values are 0, 1, and 2.", s)
+			addMessage(i18n.AppTranslator.Get("wheelchair_accessible_validation.invalid"), s)
 			return
 		}
-	}
-
-	// 2. Validate wheelchair_accessible is required
-	if s == types.SEVERITY_IGNORE {
-		return
-	}
-
-	if trip.WheelchairAccessible == nil {
-		addMessage(lib.IfThenElse(s == types.SEVERITY_ERROR, "wheelchair_accessible is required", "wheelchair_accessible is recommended"), s)
-		return
 	}
 
 	// Validate Rule Options
@@ -69,7 +82,7 @@ func WheelchairAccessibleValidation(trip *types.Trip, row int, gtfs *types.Gtfs,
 		}
 
 		if !slices.Contains(*rules.WheelchairAccessible.Options, fmt.Sprintf("%d", *trip.WheelchairAccessible)) {
-			addMessage(fmt.Sprintf("wheelchair_accessible is not allowed: %d", *trip.WheelchairAccessible), s)
+			addMessage(i18n.AppTranslator.Get("wheelchair_accessible_validation.not_allowed", map[string]interface{}{"value": *trip.WheelchairAccessible}), s)
 			return
 		}
 	}

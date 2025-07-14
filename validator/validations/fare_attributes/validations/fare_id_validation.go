@@ -1,6 +1,7 @@
 package fare_attributes
 
 import (
+	"main/i18n"
 	"main/services"
 	"main/types"
 )
@@ -8,10 +9,10 @@ import (
 /*
 # Attributes
 
-	- File: [fare_attributes.txt]
-	- Field: fare_id
-	- Presence: Required
-	- Type: Unique ID
+  - File: [fare_attributes.txt]
+  - Field: fare_id
+  - Presence: Required
+  - Type: Unique ID
 
 # Description
 
@@ -31,14 +32,14 @@ func FareIdValidation(fareAttribute *types.FareAttribute, row int, gtfs *types.G
 			ValidationID: "fare_id_validation",
 		})
 	}
-	
+
 	if fareAttribute.FareId == nil {
-		addMessage("Fare ID is required")
+		addMessage(i18n.AppTranslator.Get("fare_id_validation.required"))
 		return
 	}
-	
+
 	if gtfs.IdMap["fare_rules"] != nil && len(gtfs.IdMap["fare_rules"][*fareAttribute.FareId]) > 1 {
-		addMessage("Duplicate fare_id found. Fare IDs must be unique.")
+		addMessage(i18n.AppTranslator.Get("fare_id_validation.duplicate", *fareAttribute.FareId))
 		return
 	}
 }

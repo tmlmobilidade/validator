@@ -19,8 +19,8 @@ func TestOriginIdValidation_MissingOriginId(t *testing.T) {
 	validations.OriginIdValidation(fareRule, 1, gtfs, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing origin_id (optional) should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing origin_id (optional) should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -29,7 +29,7 @@ func TestOriginIdValidation_MissingOriginId(t *testing.T) {
 
 func TestOriginIdValidation_InvalidOriginId(t *testing.T) {
 	services.AppMessageService.Clear()
-	
+
 	invalidOriginId := "INVALID"
 	fareRule := &types.FareRule{OriginId: &invalidOriginId}
 	gtfs := &types.Gtfs{
@@ -37,15 +37,15 @@ func TestOriginIdValidation_InvalidOriginId(t *testing.T) {
 			"stops": {},
 		},
 	}
-	
+
 	validations.OriginIdValidation(fareRule, 2, gtfs, nil)
-	
+
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Invalid origin_id should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Invalid origin_id should error",
 	}
-	
+
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
@@ -53,7 +53,7 @@ func TestOriginIdValidation_InvalidOriginId(t *testing.T) {
 
 func TestOriginIdValidation_ValidOriginId(t *testing.T) {
 	services.AppMessageService.Clear()
-	
+
 	validOriginId := "ORIGIN1"
 	fareRule := &types.FareRule{OriginId: &validOriginId}
 	gtfs := &types.Gtfs{
@@ -61,34 +61,34 @@ func TestOriginIdValidation_ValidOriginId(t *testing.T) {
 			"stops": {"ORIGIN1": {1}},
 		},
 	}
-	
+
 	validations.OriginIdValidation(fareRule, 3, gtfs, nil)
-	
+
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid origin_id should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid origin_id should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
-} 
+}
 
 func TestOriginIdValidation_SeverityError(t *testing.T) {
 	services.AppMessageService.Clear()
-	
+
 	fareRule := &types.FareRule{}
 	gtfs := &types.Gtfs{}
 
 	severity := types.SEVERITY_ERROR
-	validations.OriginIdValidation(fareRule, 3, gtfs, &severity)
-	
+	validations.OriginIdValidation(fareRule, 3, gtfs, &types.FareRulesRules{OriginId: types.RuleConfig{Severity: severity}})
+
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid origin_id should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid origin_id should error",
 	}
-	
+
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
@@ -96,19 +96,19 @@ func TestOriginIdValidation_SeverityError(t *testing.T) {
 
 func TestOriginIdValidation_SeverityWarning(t *testing.T) {
 	services.AppMessageService.Clear()
-	
+
 	fareRule := &types.FareRule{}
 	gtfs := &types.Gtfs{}
-	
+
 	severity := types.SEVERITY_WARNING
-	validations.OriginIdValidation(fareRule, 3, gtfs, &severity)
-	
+	validations.OriginIdValidation(fareRule, 3, gtfs, &types.FareRulesRules{OriginId: types.RuleConfig{Severity: severity}})
+
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalWarnings,
-		Message: "Valid origin_id should error",
+		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
+		Message:  "Valid origin_id should error",
 	}
-	
+
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}

@@ -1,7 +1,7 @@
 package agency
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -42,9 +42,19 @@ func AgencyPhoneValidation(agency *types.Agency, row int, rules *types.AgencyRul
 		})
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("agency_phone_validation.forbidden"), s)
+		return
+	}
+
 	// Check if agency_phone is required
 	if agency.AgencyPhone == nil && s != types.SEVERITY_IGNORE {
-		addMessage(lib.IfThenElse(s == types.SEVERITY_ERROR, "Agency phone is required", "Agency phone is recommended"), s)
+		addMessage(i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"agency_phone_validation.required",
+				"agency_phone_validation.recommended",
+			),
+		), s)
 	}
 
 	// Validate rules
@@ -54,7 +64,7 @@ func AgencyPhoneValidation(agency *types.Agency, row int, rules *types.AgencyRul
 		}
 
 		if !slices.Contains(*rules.AgencyPhone.Options, *agency.AgencyPhone) {
-			addMessage(fmt.Sprintf("Agency phone is not allowed: %s", *agency.AgencyPhone), s)
+			addMessage(i18n.AppTranslator.Get("agency_phone_validation.not_allowed", *agency.AgencyPhone), s)
 			return
 		}
 	}

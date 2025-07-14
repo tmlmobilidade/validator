@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -45,15 +45,25 @@ func HasPipRealTimeValidation(stop *types.Stop, row int, rules *types.StopsRules
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "has_pip_real_time is required", "has_pip_real_time is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"has_pip_real_time_validation.required",
+				"has_pip_real_time_validation.recommended",
+			),
+		)
+		addMessage(message, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("has_pip_real_time_validation.forbidden"), s)
 		return
 	}
 
 	// Validate value
 	validValues := []int{0, 1, 2}
 	if !slices.Contains(validValues, *stop.HasPipRealTime) {
-		addMessage("has_pip_real_time must be 0, 1, or 2", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("has_pip_real_time_validation.invalid", *stop.HasPipRealTime), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -64,7 +74,7 @@ func HasPipRealTimeValidation(stop *types.Stop, row int, rules *types.StopsRules
 		}
 
 		if !slices.Contains(*rules.HasPipRealTime.Options, strconv.Itoa(*stop.HasPipRealTime)) {
-			addMessage(fmt.Sprintf("has_pip_real_time is not allowed: %d", *stop.HasPipRealTime), s)
+			addMessage(i18n.AppTranslator.Get("has_pip_real_time_validation.not_allowed", *stop.HasPipRealTime), s)
 			return
 		}
 	}

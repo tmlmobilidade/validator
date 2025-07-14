@@ -1,6 +1,7 @@
 package trips
 
 import (
+	"main/i18n"
 	"main/services"
 	"main/types"
 )
@@ -33,12 +34,12 @@ func TripIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 	}
 
 	if trip.TripId == nil {
-		addMessage("trip_id is required")
+		addMessage(i18n.AppTranslator.Get("trip_id_validation.required"))
 		return
 	}
 
 	if gtfs.IdMap["trips"] != nil && len(gtfs.IdMap["trips"][*trip.TripId]) > 1 {
-		addMessage("Duplicate trip_id \"" + *trip.TripId + "\" found. Trip IDs must be unique.")
+		addMessage(i18n.AppTranslator.Get("trip_id_validation.duplicate", map[string]interface{}{"trip_id": *trip.TripId}))
 		return
 	}
 }

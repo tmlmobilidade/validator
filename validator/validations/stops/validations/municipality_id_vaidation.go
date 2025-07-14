@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -44,8 +44,18 @@ func MunicipalityIdValidation(stop *types.Stop, row int, rules *types.StopsRules
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "municipality_id is required", "municipality_id is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"municipality_id_validation.required",
+				"municipality_id_validation.recommended",
+			),
+		)
+		addMessage(message, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("municipality_id_validation.forbidden"), s)
 		return
 	}
 
@@ -56,7 +66,7 @@ func MunicipalityIdValidation(stop *types.Stop, row int, rules *types.StopsRules
 		}
 
 		if !slices.Contains(*rules.MunicipalityId.Options, *stop.MunicipalityId) {
-			addMessage(fmt.Sprintf("municipality_id is not allowed: %s", *stop.MunicipalityId), s)
+			addMessage(i18n.AppTranslator.Get("municipality_id_validation.not_allowed", *stop.MunicipalityId), s)
 			return
 		}
 	}

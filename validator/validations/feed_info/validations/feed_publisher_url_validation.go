@@ -1,6 +1,7 @@
 package feed_info
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -33,12 +34,12 @@ func FeedPublisherUrlValidation(feedInfo *types.FeedInfo, row int) {
 	}
 
 	if feedInfo.FeedPublisherUrl == nil || *feedInfo.FeedPublisherUrl == "" {
-		addMessage("feed_publisher_url is required")
+		addMessage(i18n.AppTranslator.Get("feed_publisher_url_validation.required"))
 		return
 	}
 
-	if err := lib.ValidateUrl(*feedInfo.FeedPublisherUrl); err != "" {
-		addMessage(err)
+	if valid := lib.ValidateUrl(*feedInfo.FeedPublisherUrl); !valid {
+		addMessage(i18n.AppTranslator.Get("feed_publisher_url_validation.invalid"))
 		return
 	}
-} 
+}

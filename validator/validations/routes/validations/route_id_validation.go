@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"main/i18n"
 	"main/services"
 	"main/types"
 )
@@ -33,13 +34,13 @@ func RouteIdValidation(route *types.Route, row int, gtfs *types.Gtfs) {
 	}
 
 	if route.RouteId == nil || *route.RouteId == "" {
-		addMessage("route_id is required.")
+		addMessage(i18n.AppTranslator.Get("route_id_validation.required"))
 		return
 	}
 
 	// Check if route_id is Unique ID
 	if _, ok := gtfs.IdMap["routes"][*route.RouteId]; ok && len(gtfs.IdMap["routes"][*route.RouteId]) > 1 {
-		addMessage("Duplicate route_id found. Route IDs must be unique.")
+		addMessage(i18n.AppTranslator.Get("route_id_validation.duplicate"))
 		return
 	}
 }

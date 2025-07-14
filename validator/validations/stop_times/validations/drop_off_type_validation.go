@@ -2,6 +2,7 @@ package stop_times
 
 import (
 	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -55,7 +56,7 @@ func DropOffTypeValidation(stopTime *types.StopTime, row int, rules *types.StopT
 		if s == types.SEVERITY_IGNORE {
 			return
 		}
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "drop_off_type is recommended", "drop_off_type is required")
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("drop_off_type_validation.recommended"), i18n.AppTranslator.Get("drop_off_type_validation.required"))
 		addMessage(warn, s)
 		return
 	}
@@ -63,13 +64,13 @@ func DropOffTypeValidation(stopTime *types.StopTime, row int, rules *types.StopT
 	// Validate values
 	dt := *stopTime.DropOffType
 	if dt < 0 || dt > 3 {
-		addMessage("drop_off_type must be 0, 1, 2, or 3.", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("drop_off_type_validation.invalid"), types.SEVERITY_ERROR)
 		return
 	}
 
 	// drop_off_type=0 forbidden if start_pickup_drop_off_window or end_pickup_drop_off_window are defined
 	if dt == 0 && ((stopTime.StartPickupDropOffWindow != nil && *stopTime.StartPickupDropOffWindow != "") || (stopTime.EndPickupDropOffWindow != nil && *stopTime.EndPickupDropOffWindow != "")) {
-		addMessage("drop_off_type=0 is forbidden if start_pickup_drop_off_window or end_pickup_drop_off_window are defined.", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("drop_off_type_validation.forbidden_zero_with_window"), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -80,7 +81,7 @@ func DropOffTypeValidation(stopTime *types.StopTime, row int, rules *types.StopT
 		}
 
 		if !slices.Contains(*rules.DropOffType.Options, fmt.Sprintf("%d", dt)) {
-			addMessage(fmt.Sprintf("drop_off_type is not allowed: %d", dt), s)
+			addMessage(i18n.AppTranslator.Get("drop_off_type_validation.not_allowed", fmt.Sprintf("%d", dt)), s)
 			return
 		}
 	}

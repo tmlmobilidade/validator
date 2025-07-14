@@ -1,6 +1,7 @@
 package stop_times
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -43,14 +44,19 @@ func DropOffBookingRuleIdValidation(stopTime *types.StopTime, row int, gtfs *typ
 		if s == types.SEVERITY_IGNORE {
 			return
 		}
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "drop_off_booking_rule_id is recommended", "drop_off_booking_rule_id is required")
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("drop_off_booking_rule_id_validation.recommended"), i18n.AppTranslator.Get("drop_off_booking_rule_id_validation.required"))
 		addMessage(warn, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("drop_off_booking_rule_id_validation.forbidden"), s)
 		return
 	}
 
 	// Foreign key check: must reference a valid booking_rule_id from booking_rules.txt
 	if !lib.GtfsIdMapKeyExists(gtfs, "booking_rules", *stopTime.DropOffBookingRuleId) {
-		addMessage("drop_off_booking_rule_id '"+*stopTime.DropOffBookingRuleId+"' does not exist in booking_rules.txt", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("drop_off_booking_rule_id_validation.not_found", *stopTime.DropOffBookingRuleId), types.SEVERITY_ERROR)
 		return
 	}
 }

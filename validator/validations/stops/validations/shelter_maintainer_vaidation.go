@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -44,8 +44,18 @@ func ShelterMaintainerValidation(stop *types.Stop, row int, rules *types.StopsRu
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "shelter_maintainer is required", "shelter_maintainer is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"shelter_maintainer_validation.required",
+				"shelter_maintainer_validation.recommended",
+			),
+		)
+		addMessage(message, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("shelter_maintainer_validation.forbidden"), s)
 		return
 	}
 
@@ -56,7 +66,7 @@ func ShelterMaintainerValidation(stop *types.Stop, row int, rules *types.StopsRu
 		}
 
 		if !slices.Contains(*rules.ShelterMaintainer.Options, *stop.ShelterMaintainer) {
-			addMessage(fmt.Sprintf("shelter_maintainer is not allowed: %s", *stop.ShelterMaintainer), s)
+			addMessage(i18n.AppTranslator.Get("shelter_maintainer_validation.not_allowed", *stop.ShelterMaintainer), s)
 			return
 		}
 	}

@@ -1,6 +1,7 @@
 package stop_times
 
 import (
+	"main/i18n"
 	"main/services"
 	"main/types"
 )
@@ -32,12 +33,12 @@ func TripIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
 	}
 
 	if stopTime.TripId == nil || *stopTime.TripId == "" {
-		addMessage("trip_id is required.", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("trip_id_validation.required"), types.SEVERITY_ERROR)
 		return
 	}
 
 	if _, ok := gtfs.IdMap["trips"][*stopTime.TripId]; !ok {
-		addMessage("trip_id must reference a valid trip_id from trips.txt.", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("trip_id_validation.not_found", *stopTime.TripId), types.SEVERITY_ERROR)
 		return
 	}
-} 
+}

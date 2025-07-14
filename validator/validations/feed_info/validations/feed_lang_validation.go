@@ -1,6 +1,7 @@
 package feed_info
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -39,14 +40,14 @@ func FeedLangValidation(feedInfo *types.FeedInfo, row int) {
 	}
 
 	if feedInfo.FeedLang == nil || *feedInfo.FeedLang == "" {
-		addMessage("feed_lang is required")
+		addMessage(i18n.AppTranslator.Get("feed_lang_validation.required"))
 		return
 	}
 
 	if *feedInfo.FeedLang != "mul" {
-		if err := lib.ValidateLanguage(*feedInfo.FeedLang); err != "" {
-			addMessage(err)
+		if valid := lib.ValidateLanguage(*feedInfo.FeedLang); !valid {
+			addMessage(i18n.AppTranslator.Get("feed_lang_validation.invalid"))
 			return
 		}
 	}
-} 
+}

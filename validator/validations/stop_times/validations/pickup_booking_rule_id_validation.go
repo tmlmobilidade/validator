@@ -1,7 +1,7 @@
 package stop_times
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -45,14 +45,19 @@ func PickupBookingRuleIdValidation(stopTime *types.StopTime, row int, gtfs *type
 		if s == types.SEVERITY_IGNORE {
 			return
 		}
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "pickup_booking_rule_id is recommended", "pickup_booking_rule_id is required")
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("pickup_booking_rule_id_validation.recommended"), i18n.AppTranslator.Get("pickup_booking_rule_id_validation.required"))
 		addMessage(warn, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("pickup_booking_rule_id_validation.forbidden"), s)
 		return
 	}
 
 	// Foreign key check: must reference a valid booking_rule_id from booking_rules.txt
 	if !lib.GtfsIdMapKeyExists(gtfs, "booking_rules", *stopTime.PickupBookingRuleId) {
-		addMessage("pickup_booking_rule_id '"+*stopTime.PickupBookingRuleId+"' does not exist in booking_rules.txt", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("pickup_booking_rule_id_validation.not_found", *stopTime.PickupBookingRuleId), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -63,7 +68,7 @@ func PickupBookingRuleIdValidation(stopTime *types.StopTime, row int, gtfs *type
 		}
 
 		if !slices.Contains(*rules.PickupBookingRuleId.Options, *stopTime.PickupBookingRuleId) {
-			addMessage(fmt.Sprintf("pickup_booking_rule_id is not allowed: %s", *stopTime.PickupBookingRuleId), s)
+			addMessage(i18n.AppTranslator.Get("pickup_booking_rule_id_validation.not_allowed", *stopTime.PickupBookingRuleId), s)
 			return
 		}
 	}

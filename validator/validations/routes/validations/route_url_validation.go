@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -44,13 +44,18 @@ func RouteUrlValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *ty
 			return
 		}
 
-		message := lib.IfThenElse(s == types.SEVERITY_WARNING, "route_url is recommended.", "route_url is required.")
+		message := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("route_url_validation.recommended"), i18n.AppTranslator.Get("route_url_validation.required"))
 		addMessage(message, s)
 		return
 	}
 
-	if err := lib.ValidateUrl(*route.RouteUrl); err != "" {
-		addMessage(err, types.SEVERITY_ERROR)
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("route_url_validation.forbidden"), s)
+		return
+	}
+
+	if valid := lib.ValidateUrl(*route.RouteUrl); !valid {
+		addMessage(i18n.AppTranslator.Get("route_url_validation.invalid"), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -61,7 +66,7 @@ func RouteUrlValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *ty
 		agencyUrl := gtfs.Agency[agencyRow[0]].AgencyUrl
 
 		if agencyUrl != "" && *route.RouteUrl == agencyUrl {
-			addMessage("route_url should be different from agency_url", types.SEVERITY_WARNING)
+			addMessage(i18n.AppTranslator.Get("route_url_validation.same_as_agency_url"), types.SEVERITY_WARNING)
 		}
 	}
 
@@ -72,7 +77,7 @@ func RouteUrlValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *ty
 		}
 
 		if !slices.Contains(*rules.RouteUrl.Options, *route.RouteUrl) {
-			addMessage(fmt.Sprintf("route_url is not allowed: %s", *route.RouteUrl), s)
+			addMessage(i18n.AppTranslator.Get("route_url_validation.not_allowed", map[string]interface{}{"value": *route.RouteUrl}), s)
 			return
 		}
 	}

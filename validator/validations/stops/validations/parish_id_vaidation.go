@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -44,8 +44,18 @@ func ParishIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "parish_id is required", "parish_id is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"parish_id_validation.required",
+				"parish_id_validation.recommended",
+			),
+		)
+		addMessage(message, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("parish_id_validation.forbidden"), s)
 		return
 	}
 
@@ -56,7 +66,7 @@ func ParishIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if !slices.Contains(*rules.ParishId.Options, *stop.ParishId) {
-			addMessage(fmt.Sprintf("parish_id is not allowed: %s", *stop.ParishId), s)
+			addMessage(i18n.AppTranslator.Get("parish_id_validation.not_allowed", *stop.ParishId), s)
 			return
 		}
 	}

@@ -1,11 +1,12 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
 	"slices"
+	"strconv"
 )
 
 /*
@@ -52,14 +53,24 @@ func LocationTypeValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 		if s == types.SEVERITY_IGNORE {
 			return
 		}
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "location_type is required", "location_type is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"location_type_validation.required",
+				"location_type_validation.recommended",
+			),
+		)
+		addMessage(message, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("location_type_validation.forbidden"), s)
 		return
 	}
 
 	validValues := map[int]bool{0: true, 1: true, 2: true, 3: true, 4: true}
 	if !validValues[*stop.LocationType] {
-		addMessage("Invalid location_type: must be one of 0, 1, 2, 3, 4", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("location_type_validation.invalid", *stop.LocationType), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -69,8 +80,8 @@ func LocationTypeValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 			return
 		}
 
-		if !slices.Contains(*rules.LocationType.Options, fmt.Sprintf("%d", *stop.LocationType)) {
-			addMessage(fmt.Sprintf("location_type is not allowed: %d", *stop.LocationType), s)
+		if !slices.Contains(*rules.LocationType.Options, strconv.Itoa(*stop.LocationType)) {
+			addMessage(i18n.AppTranslator.Get("location_type_validation.not_allowed", *stop.LocationType), s)
 			return
 		}
 	}

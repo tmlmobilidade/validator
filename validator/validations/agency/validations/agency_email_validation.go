@@ -1,7 +1,7 @@
 package agency
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -46,14 +46,25 @@ func AgencyEmailValidation(agency *types.Agency, row int, rules *types.AgencyRul
 			return
 		}
 
-		message := lib.IfThenElse(s == types.SEVERITY_ERROR, "Agency email is required", "Agency email is recommended")
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"agency_email_validation.required",
+				"agency_email_validation.recommended",
+			),
+		)
+
 		addMessage(message, s)
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("agency_email_validation.forbidden"), s)
+		return
+	}
+
 	// Check if agency_email is valid
-	if emailErrors := lib.ValidateEmail(*agency.AgencyEmail); emailErrors != "" {
-		addMessage(emailErrors, types.SEVERITY_ERROR)
+	if !lib.ValidateEmail(*agency.AgencyEmail) {
+		addMessage(i18n.AppTranslator.Get("agency_email_validation.invalid"), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -64,7 +75,7 @@ func AgencyEmailValidation(agency *types.Agency, row int, rules *types.AgencyRul
 		}
 
 		if !slices.Contains(*rules.AgencyEmail.Options, *agency.AgencyEmail) {
-			addMessage(fmt.Sprintf("Agency email is not allowed: %s", *agency.AgencyEmail), s)
+			addMessage(i18n.AppTranslator.Get("agency_email_validation.not_allowed", *agency.AgencyEmail), s)
 			return
 		}
 	}

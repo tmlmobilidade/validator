@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -23,7 +24,7 @@ func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *typ
 				Rows:         []int{},
 				Field:        "N/A",
 				FileName:     fileName,
-				Message:      fmt.Sprintf("The file \"%s\" is is not supported by the validator.", fileName),
+				Message:      fmt.Sprintf(i18n.AppTranslator.Get("file_validations.not_supported"), fileName),
 				ValidationID: "file_not_found_in_rules",
 				Severity:     types.SEVERITY_WARNING,
 			})
@@ -45,6 +46,11 @@ func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *typ
 func main() {
 	services.AppCLI.Run()
 	lib.AppLogger.SetLogLevel(services.AppCLI.Options.LogLevel)
+
+	// Set Translator Language
+	if services.AppCLI.Options.RulesLang != "" {
+		i18n.AppTranslator.SetLanguage(services.AppCLI.Options.RulesLang)
+	}
 
 	// Parse Rules
 	rules, err := services.NewRulesParser(services.AppCLI.Options.RulesPath).ParseRules()
@@ -86,6 +92,6 @@ func main() {
 		services.AppMessageService.WriteToFile(services.AppCLI.Options.OutputPath)
 		lib.AppLogger.Info("Summary written to: " + services.AppCLI.Options.OutputPath)
 	} else {
-		services.AppMessageService.PrintJSON()
+		services.AppMessageService.PrintTable()
 	}
 }

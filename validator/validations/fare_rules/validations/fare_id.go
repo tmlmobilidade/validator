@@ -1,6 +1,7 @@
 package fare_rules
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -9,10 +10,10 @@ import (
 /*
 # Attributes
 
-	- File: [fare_rules.txt]
-	- Field: fare_id
-	- Presence: Required
-	- Type: Foreign ID referencing [fare_attributes.fare_id]
+  - File: [fare_rules.txt]
+  - Field: fare_id
+  - Presence: Required
+  - Type: Foreign ID referencing [fare_attributes.fare_id]
 
 # Description
 
@@ -21,7 +22,7 @@ Identifies a fare class.
 [fare_rules.txt]: https://gtfs.org/schedule/reference/#fare_rulestxt
 [fare_attributes.fare_id]: https://gtfs.org/schedule/reference/#fare_attributestxt
 */
-func FareIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs) {
+func FareIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, rules *types.FareRulesRules) {
 
 	addMessage := func(msg string) {
 		services.AppMessageService.AddMessage(types.Message{
@@ -30,18 +31,18 @@ func FareIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs) {
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "fare_rules_parse",
+			ValidationID: "fare_id_validation",
 		})
 	}
-	
+
 	if fareRule.FareId == nil {
-		addMessage("Fare ID is required")
+		addMessage(i18n.AppTranslator.Get("fare_id_validation.required"))
 		return
 	}
 
 	// Check Foreign Key
 	if !lib.GtfsIdMapKeyExists(gtfs, "fare_attributes", *fareRule.FareId) {
-		addMessage("fare_id '"+ *fareRule.FareId + "' does not exist in fare_attributes.txt")
+		addMessage(i18n.AppTranslator.Get("fare_id_validation.invalid"))
 		return
 	}
 }

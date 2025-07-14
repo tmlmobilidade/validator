@@ -1,7 +1,7 @@
 package feed_info
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -50,16 +50,16 @@ func FeedStartDateValidation(severity *types.Severity, feedInfo *types.FeedInfo,
 		if s == types.SEVERITY_IGNORE {
 			return
 		}
-		
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "required", "recommended")
-		addMessage(fmt.Sprintf("Feed start date is %s", warn), s)
+
+		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("feed_start_date_validation.required"), i18n.AppTranslator.Get("feed_start_date_validation.recommended"))
+		addMessage(warn, s)
 		return
 	}
 
 	if feedInfo.FeedStartDate != nil && *feedInfo.FeedStartDate != "" {
 		if !lib.IsValidServiceDate(*feedInfo.FeedStartDate) {
-			addMessage("feed_start_date must be in YYYYMMDD format", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("feed_start_date_validation.invalid"), types.SEVERITY_ERROR)
 			return
 		}
 	}
-} 
+}

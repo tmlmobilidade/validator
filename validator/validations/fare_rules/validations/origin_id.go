@@ -1,7 +1,7 @@
 package fare_rules
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -10,10 +10,10 @@ import (
 /*
 # Attributes
 
-	- File: [fare_rules.txt]
-	- Field: origin_id
-	- Presence: Optional
-	- Type: Foreign ID referencing [stops.zone_id]
+  - File: [fare_rules.txt]
+  - Field: origin_id
+  - Presence: Optional
+  - Type: Foreign ID referencing [stops.zone_id]
 
 # Description
 
@@ -30,10 +30,10 @@ If fare class "b" is valid for all travel originating from either zone "2" or zo
 [fare_rules.txt]: https://gtfs.org/schedule/reference/#fare_rulestxt
 [stops.zone_id]: https://gtfs.org/schedule/reference/#stopstxt
 */
-func OriginIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, severity *types.Severity) {
+func OriginIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, rules *types.FareRulesRules) {
 	s := types.SEVERITY_IGNORE
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.OriginId.Severity != "" {
+		s = rules.OriginId.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {
@@ -43,24 +43,29 @@ func OriginIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, sev
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     severity,
-			ValidationID: "fare_rules_parse",
+			ValidationID: "origin_id_validation",
 		})
 	}
 
 	if fareRule.OriginId == nil {
-		
+
 		if s == types.SEVERITY_IGNORE {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "required", "recommended")
-		addMessage(fmt.Sprintf("Origin ID is %s", warn), s)
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("origin_id_validation.recommended"), i18n.AppTranslator.Get("origin_id_validation.required"))
+		addMessage(warn, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("origin_id_validation.forbidden"), s)
 		return
 	}
 
 	// Check Foreign Key
 	if !lib.GtfsIdMapKeyExists(gtfs, "stops", *fareRule.OriginId) {
-		addMessage("origin_id '"+ *fareRule.OriginId + "' does not exist in stops.txt", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("origin_id_validation.invalid"), types.SEVERITY_ERROR)
 		return
 	}
-} 
+}

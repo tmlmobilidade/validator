@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -62,7 +62,7 @@ func ContinuousPickupValidation(route *types.Route, row int, gtfs *types.Gtfs, r
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "continuous_pickup is recommended", "continuous_pickup is required")
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("continuous_pickup_validation.recommended"), i18n.AppTranslator.Get("continuous_pickup_validation.required"))
 		addMessage(warn, s)
 		return
 	}
@@ -86,7 +86,7 @@ func ContinuousPickupValidation(route *types.Route, row int, gtfs *types.Gtfs, r
 
 				if startWindow != "" || endWindow != "" {
 					lib.AppLogger.Accent("route.ContinuousPickup", *route.ContinuousPickup)
-					addMessage("continuous_pickup must be 1 or empty if start_pickup_drop_off_window or end_pickup_drop_off_window is defined", types.SEVERITY_ERROR)
+					addMessage(i18n.AppTranslator.Get("continuous_pickup_validation.forbidden_with_window"), types.SEVERITY_ERROR)
 					return
 				}
 			}
@@ -100,7 +100,7 @@ func ContinuousPickupValidation(route *types.Route, row int, gtfs *types.Gtfs, r
 		}
 
 		if !slices.Contains(*rules.ContinuousPickup.Options, *route.ContinuousPickup) {
-			addMessage(fmt.Sprintf("continuous_pickup is not allowed: %s", *route.ContinuousPickup), s)
+			addMessage(i18n.AppTranslator.Get("continuous_pickup_validation.not_allowed", map[string]interface{}{"value": *route.ContinuousPickup}), s)
 			return
 		}
 	}

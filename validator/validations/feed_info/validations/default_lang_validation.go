@@ -1,7 +1,7 @@
 package feed_info
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -27,7 +27,6 @@ func DefaultLangValidation(severity *types.Severity, feedInfo *types.FeedInfo, r
 		s = *severity
 	}
 
-
 	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
 			Field:        "default_lang",
@@ -44,15 +43,20 @@ func DefaultLangValidation(severity *types.Severity, feedInfo *types.FeedInfo, r
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "required", "recommended")
-		addMessage(fmt.Sprintf("Default language is %s", warn), s)
+		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("default_lang_validation.required"), i18n.AppTranslator.Get("default_lang_validation.recommended"))
+		addMessage(warn, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("default_lang_validation.forbidden"), s)
 		return
 	}
 
 	if feedInfo.DefaultLang != nil && *feedInfo.DefaultLang != "" {
-		if err := lib.ValidateLanguage(*feedInfo.DefaultLang); err != "" {
-			addMessage(err, types.SEVERITY_ERROR)
+		if valid := lib.ValidateLanguage(*feedInfo.DefaultLang); !valid {
+			addMessage(i18n.AppTranslator.Get("default_lang_validation.invalid"), types.SEVERITY_ERROR)
 			return
 		}
 	}
-} 
+}

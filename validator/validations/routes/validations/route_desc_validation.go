@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -52,16 +52,21 @@ func RouteDescValidation(route *types.Route, row int, rules *types.RoutesRules) 
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "route_desc is recommended.", "route_desc is required.")
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("route_desc_validation.recommended"), i18n.AppTranslator.Get("route_desc_validation.required"))
 		addMessage(warn, s)
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("route_desc_validation.forbidden"), s)
+		return
+	}
+
 	if route.RouteShortName != nil && *route.RouteDesc == *route.RouteShortName {
-		addMessage("route_desc should not duplicate route_short_name.", types.SEVERITY_WARNING)
+		addMessage(i18n.AppTranslator.Get("route_desc_validation.duplicate_short_name"), types.SEVERITY_WARNING)
 	}
 	if route.RouteLongName != nil && *route.RouteDesc == *route.RouteLongName {
-		addMessage("route_desc should not duplicate route_long_name.", types.SEVERITY_WARNING)
+		addMessage(i18n.AppTranslator.Get("route_desc_validation.duplicate_long_name"), types.SEVERITY_WARNING)
 	}
 
 	// Validate rules
@@ -71,7 +76,7 @@ func RouteDescValidation(route *types.Route, row int, rules *types.RoutesRules) 
 		}
 
 		if !slices.Contains(*rules.RouteDesc.Options, *route.RouteDesc) {
-			addMessage(fmt.Sprintf("route_desc is not allowed: %s", *route.RouteDesc), s)
+			addMessage(i18n.AppTranslator.Get("route_desc_validation.not_allowed", map[string]interface{}{"value": *route.RouteDesc}), s)
 			return
 		}
 	}
