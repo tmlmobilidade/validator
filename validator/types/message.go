@@ -3,18 +3,19 @@ package types
 type Severity string
 
 const (
-	SEVERITY_IGNORE  Severity = "ignore"
-	SEVERITY_ERROR   Severity = "error"
-	SEVERITY_WARNING Severity = "warning"
+	SEVERITY_IGNORE    Severity = "ignore"
+	SEVERITY_ERROR     Severity = "error"
+	SEVERITY_WARNING   Severity = "warning"
+	SEVERITY_FORBIDDEN Severity = "forbidden"
 )
 
 type Message struct {
-	Rows         []int      `json:"rows"`
-	Field        string     `json:"field"`
-	FileName     string     `json:"file_name"`
-	Message      string     `json:"message"`
-	ValidationID string     `json:"validation_id"`
-	Severity     Severity   `json:"severity"`
+	Rows         []int    `json:"rows"`
+	Field        string   `json:"field"`
+	FileName     string   `json:"file_name"`
+	Message      string   `json:"message"`
+	ValidationID string   `json:"validation_id"`
+	Severity     Severity `json:"severity"`
 }
 
 type Summary struct {
