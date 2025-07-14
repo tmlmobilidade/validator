@@ -57,6 +57,11 @@ func AgencyEmailValidation(agency *types.Agency, row int, rules *types.AgencyRul
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("agency_email_validation.forbidden"), s)
+		return
+	}
+
 	// Check if agency_email is valid
 	if !lib.ValidateEmail(*agency.AgencyEmail) {
 		addMessage(i18n.AppTranslator.Get("agency_email_validation.invalid"), types.SEVERITY_ERROR)

@@ -50,6 +50,11 @@ func AgencyLangValidation(agency *types.Agency, row int, rules *types.AgencyRule
 		), s)
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("agency_lang_validation.forbidden"), s)
+		return
+	}
+
 	// Check if agency_lang is valid
 	if agency.AgencyLang != nil && !lib.ValidateLanguage(*agency.AgencyLang) {
 		addMessage(i18n.AppTranslator.Get("agency_lang_validation.invalid"), types.SEVERITY_ERROR)

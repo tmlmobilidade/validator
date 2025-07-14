@@ -16,11 +16,11 @@ func TestRouteIdValidation_MissingRouteId(t *testing.T) {
 			"routes": {},
 		},
 	}
-	validations.RouteIdValidation(fareRule, 1, gtfs)
+	validations.RouteIdValidation(fareRule, 1, gtfs, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing route_id (optional) should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing route_id (optional) should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -36,11 +36,11 @@ func TestRouteIdValidation_InvalidRouteId(t *testing.T) {
 			"routes": {},
 		},
 	}
-	validations.RouteIdValidation(fareRule, 2, gtfs)
+	validations.RouteIdValidation(fareRule, 2, gtfs, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Invalid route_id should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Invalid route_id should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -56,13 +56,13 @@ func TestRouteIdValidation_ValidRouteId(t *testing.T) {
 			"routes": {"ROUTE1": {1}},
 		},
 	}
-	validations.RouteIdValidation(fareRule, 3, gtfs)
+	validations.RouteIdValidation(fareRule, 3, gtfs, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid route_id should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid route_id should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
-} 
+}

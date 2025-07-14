@@ -12,11 +12,11 @@ func TestFareIdValidation_MissingFareId(t *testing.T) {
 	services.AppMessageService.Clear()
 	fareRule := &types.FareRule{FareId: nil}
 	gtfs := &types.Gtfs{}
-	validations.FareIdValidation(fareRule, 1, gtfs)
+	validations.FareIdValidation(fareRule, 1, gtfs, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing fare_id should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing fare_id should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -32,11 +32,11 @@ func TestFareIdValidation_InvalidFareId(t *testing.T) {
 			"fare_attributes": {},
 		},
 	}
-	validations.FareIdValidation(fareRule, 2, gtfs)
+	validations.FareIdValidation(fareRule, 2, gtfs, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Invalid fare_id should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Invalid fare_id should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -54,11 +54,11 @@ func TestFareIdValidation_ValidFareId(t *testing.T) {
 			},
 		},
 	}
-	validations.FareIdValidation(fareRule, 3, gtfs)
+	validations.FareIdValidation(fareRule, 3, gtfs, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid fare_id should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid fare_id should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)

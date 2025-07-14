@@ -623,5 +623,26 @@
         "recommended": "Field \"wheelchair_accessible\" is recommended",
         "invalid": "Field \"wheelchair_accessible\" must be 0, 1, or 2",
         "not_allowed": "Field \"wheelchair_accessible\" \"%s\" is not allowed"
+    },
+    "contains_id_validation": {
+        "forbidden": "Field \"contains_id\" is forbidden",
+        "required": "Field \"contains_id\" is required",
+        "recommended": "Field \"contains_id\" is recommended",
+        "invalid": "Field \"contains_id\" must be a valid ID from stops.txt",
+        "not_allowed": "Field \"contains_id\" \"%s\" is not allowed"
+    },
+    "destination_id_validation": {
+        "forbidden": "Field \"destination_id\" is forbidden",
+        "required": "Field \"destination_id\" is required",
+        "recommended": "Field \"destination_id\" is recommended",
+        "invalid": "Field \"destination_id\" must be a valid ID from stops.txt",
+        "not_allowed": "Field \"destination_id\" \"%s\" is not allowed"
+    },
+    "origin_id_validation": {
+        "forbidden": "Field \"origin_id\" is forbidden",
+        "required": "Field \"origin_id\" is required",
+        "recommended": "Field \"origin_id\" is recommended",
+        "invalid": "Field \"origin_id\" must be a valid ID from stops.txt",
+        "not_allowed": "Field \"origin_id\" \"%s\" is not allowed"
     }
 }

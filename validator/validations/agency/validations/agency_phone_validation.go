@@ -42,6 +42,11 @@ func AgencyPhoneValidation(agency *types.Agency, row int, rules *types.AgencyRul
 		})
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("agency_phone_validation.forbidden"), s)
+		return
+	}
+
 	// Check if agency_phone is required
 	if agency.AgencyPhone == nil && s != types.SEVERITY_IGNORE {
 		addMessage(i18n.AppTranslator.Get(

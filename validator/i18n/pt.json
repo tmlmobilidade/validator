@@ -624,5 +624,26 @@
         "recommended": "O campo \"wheelchair_accessible\" é recomendado",
         "invalid": "O campo \"wheelchair_accessible\" deve ser 0, 1 ou 2",
         "not_allowed": "O campo \"wheelchair_accessible\" \"%s\" não é permitido"
+    },
+    "contains_id_validation": {
+        "forbidden": "O campo \"contains_id\" é probido",
+        "required": "O campo \"contains_id\" é obrigatório",
+        "recommended": "O campo \"contains_id\" é recomendado",
+        "invalid": "O campo \"contains_id\" deve ser um ID válido de stops.txt",
+        "not_allowed": "O campo \"contains_id\" \"%s\" não é permitido"
+    },
+    "destination_id_validation": {
+        "forbidden": "O campo \"destination_id\" é probido",
+        "required": "O campo \"destination_id\" é obrigatório",
+        "recommended": "O campo \"destination_id\" é recomendado",
+        "invalid": "O campo \"destination_id\" deve ser um ID válido de stops.txt",
+        "not_allowed": "O campo \"destination_id\" \"%s\" não é permitido"
+    },
+    "origin_id_validation": {
+        "forbidden": "O campo \"origin_id\" é probido",
+        "required": "O campo \"origin_id\" é obrigatório",
+        "recommended": "O campo \"origin_id\" é recomendado",
+        "invalid": "O campo \"origin_id\" deve ser um ID válido de stops.txt",
+        "not_allowed": "O campo \"origin_id\" \"%s\" não é permitido"
     }
 }

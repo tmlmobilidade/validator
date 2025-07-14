@@ -26,10 +26,10 @@ Conditionally Required:
 [agencies.txt]: https://gtfs.org/schedule/reference/#agencytxt
 [calendar_dates.txt]: https://gtfs.org/schedule/reference/#calendar_datestxt
 */
-func AgencyIdValidation(severity *types.Severity, fareAttribute *types.FareAttribute, row int, gtfs *types.Gtfs) {
+func AgencyIdValidation(fareAttribute *types.FareAttribute, row int, gtfs *types.Gtfs, rules *types.FareAttributesRules) {
 	s := types.SEVERITY_WARNING
-	if severity != nil {
-		s = *severity
+	if rules != nil && rules.AgencyId.Severity != "" {
+		s = rules.AgencyId.Severity
 	}
 
 	addMessage := func(msg string, severity types.Severity) {

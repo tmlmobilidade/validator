@@ -51,7 +51,7 @@ func NetworkIdValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *t
 	}
 
 	if len(gtfs.RouteNetwork) > 0 && route.NetworkId != nil {
-		addMessage(i18n.AppTranslator.Get("network_id_validation.forbidden_with_route_networks"), types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("network_id_validation.forbidden_when_route_networks_exists"), types.SEVERITY_ERROR)
 		return
 	}
 

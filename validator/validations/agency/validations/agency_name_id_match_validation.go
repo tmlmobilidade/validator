@@ -54,6 +54,11 @@ func AgencyNameIdMatchValidation(agency *types.Agency, row int, rules *types.Age
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("agency_name_id_match_validation.forbidden"), s)
+		return
+	}
+
 	// Validate rules
 	if rules != nil && rules.AgencyNameIdMatch.Compare != nil {
 		// Find the matching key and value
