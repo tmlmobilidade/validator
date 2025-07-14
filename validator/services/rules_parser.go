@@ -198,7 +198,7 @@ func (rp *RulesParser) validateRules(rules *types.GtfsRules) error {
 // isValidSeverity checks if the given severity is valid
 func isValidSeverity(severity types.Severity) bool {
 	switch severity {
-	case types.SEVERITY_IGNORE, types.SEVERITY_ERROR, types.SEVERITY_WARNING:
+	case types.SEVERITY_IGNORE, types.SEVERITY_ERROR, types.SEVERITY_WARNING, types.SEVERITY_FORBIDDEN:
 		return true
 	default:
 		return false
