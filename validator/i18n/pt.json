@@ -1,6 +1,16 @@
 {
-    "file_not_found_in_rules": {
-        "not_supported": "O arquivo \"%s\" não é suportado pelo validador"
+    "file_validations": {
+        "forbidden": "O ficheiro \"%s\" é proibido",
+        "required": "O ficheiro \"%s\" é obrigatório",
+        "not_supported": "O ficheiro \"%s\" não é suportado pelo validador",
+        "not_found": "O ficheiro \"%s\" não existe",
+        "not_allowed": "O ficheiro \"%s\" não é permitido",
+        "stops_required_when_locations_missing": "stops.txt é obrigatório quando locations.geojson não está presente",
+        "calendar_files_required": "calendar.txt ou calendar_dates.txt devem ser presentes",
+        "levels_required_when_elevator": "levels.txt é obrigatório quando pathways.txt contém elevadores (pathway_mode=5)",
+        "feed_info_required_when_translations": "feed_info.txt é obrigatório quando translations.txt está presente",
+        "networks_forbidden_when_network_id": "networks.txt é proibido quando network_id existe em routes.txt",
+        "route_networks_forbidden_when_network_id": "route_networks.txt é proibido quando network_id existe em routes.txt"
     },
     "agency_id_validation": {
         "required": "O campo \"agency_id\" é obrigatório quando existe mais do que uma agência",

@@ -1,6 +1,16 @@
 {
-    "file_not_found_in_rules": {
-        "not_supported": "The file \"%s\" is is not supported by the validator"
+    "file_validations": {
+        "forbidden": "Forbidden file \"%s\" is present",
+        "required": "Required file \"%s\" is missing",
+        "not_supported": "The file \"%s\" is not supported by the validator",
+        "not_found": "The file \"%s\" is missing",
+        "not_allowed": "The file \"%s\" is not allowed",
+        "stops_required_when_locations_missing": "stops.txt is required when locations.geojson is not present",
+        "calendar_files_required": "Either calendar.txt or calendar_dates.txt must be present",
+        "levels_required_when_elevator": "levels.txt is required when pathways.txt contains elevators (pathway_mode=5)",
+        "feed_info_required_when_translations": "feed_info.txt is required when translations.txt is present",
+        "networks_forbidden_when_network_id": "networks.txt is forbidden when network_id exists in routes.txt",
+        "route_networks_forbidden_when_network_id": "route_networks.txt is forbidden when network_id exists in routes.txt"
     },
     "agency_id_validation": {
         "required": "Field \"agency_id\" is required when there is more than one agency",
@@ -115,11 +125,6 @@
         "required": "Field \"feed_contact_url\" is required",
         "recommended": "Field \"feed_contact_url\" is recommended",
         "invalid": "Field \"feed_contact_url\" \"%s\" is not a valid URL"
-    },
-    "feed_start_date_validation": {
-        "required": "Field \"feed_start_date\" is required",
-        "recommended": "Field \"feed_start_date\" is recommended",
-        "invalid": "Field \"feed_start_date\" \"%s\" is not a valid date, must be in format YYYYMMDD"
     },
     "feed_lang_validation": {
         "required": "Field \"feed_lang\" is required",
@@ -431,11 +436,6 @@
         "required": "Field \"stop_code\" is required",
         "recommended": "Field \"stop_code\" is recommended",
         "not_allowed": "Field \"stop_code\" \"%s\" is not allowed"
-    },
-    "tts_stop_name_validation": {
-        "required": "Field \"tts_stop_name\" is required",
-        "recommended": "Field \"tts_stop_name\" is recommended",
-        "not_allowed": "Field \"tts_stop_name\" \"%s\" is not allowed"
     },
     "stop_lat_validation": {
         "required": "Field \"stop_lat\" is required",
