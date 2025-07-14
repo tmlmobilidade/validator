@@ -16,7 +16,7 @@ type WithCompare<T> = T & {
 
 type GtfsRules = {
     agency: {
-        _file: boolean;
+        _file: Severity;
         agency_id: WithOptions<RuleConfig>;
         agency_name: WithOptions<RuleConfig>;
         agency_name_id_match: WithCompare<RuleConfig>;
@@ -28,7 +28,7 @@ type GtfsRules = {
         agency_email: RuleConfig;
     }
     stops: {
-        _file: boolean;
+        _file: Severity;
         stop_id: RuleConfig;
         stop_code: RuleConfig;
         stop_name: RuleConfig;
@@ -60,7 +60,7 @@ type GtfsRules = {
         parish_id: RuleConfig;
     }
     routes:{
-        _file: boolean;
+        _file: Severity;
         line_id:RuleConfig;
         line_short_name:RuleConfig;
         line_long_name:RuleConfig;
@@ -81,7 +81,7 @@ type GtfsRules = {
         continuous_drop_off:WithOptions<RuleConfig>;
     }
     trips: {
-        _file: boolean;
+        _file: Severity;
         route_id: RuleConfig;
         pattern_id: RuleConfig;
         service_id: RuleConfig;
@@ -96,7 +96,7 @@ type GtfsRules = {
         stop_sequence: RuleConfig;
     }
     stop_times: {
-        _file: boolean;
+        _file: Severity;
         trip_id: RuleConfig;
         arrival_time: RuleConfig;
         departure_time: RuleConfig;
@@ -118,7 +118,7 @@ type GtfsRules = {
         zone_3: RuleConfig;
     }
     calendar: {
-        _file: boolean;
+        _file: Severity;
         service_id: RuleConfig;
         monday: RuleConfig;
         tuesday: RuleConfig;
@@ -131,13 +131,13 @@ type GtfsRules = {
         end_date: RuleConfig;
     }
     calendar_dates: {
-        _file: boolean;
+        _file: Severity;
         service_id: RuleConfig;
         date: RuleConfig;
         exception_type: RuleConfig;
     }
     vehicles: {
-        _file: boolean;
+        _file: Severity;
         vehicle_id: RuleConfig;
         agency_id: RuleConfig;
         license_plate: RuleConfig;
@@ -168,7 +168,7 @@ type GtfsRules = {
         video_surveillance: WithOptions<RuleConfig>;
     }
     fare_attributes: {
-        _file: boolean;
+        _file: Severity;
         fare_id: RuleConfig;
         price: RuleConfig;
         currency_type: RuleConfig;
@@ -178,7 +178,7 @@ type GtfsRules = {
         transfer_duration: RuleConfig;
     }
     fare_rules: {
-        _file: boolean;
+        _file: Severity;
         fare_id: RuleConfig;
         route_id: RuleConfig;
         origin_id: RuleConfig;
@@ -186,7 +186,7 @@ type GtfsRules = {
         contains_id: RuleConfig;
     }
     shapes: {
-        _file: boolean;
+        _file: Severity;
         shape_id: RuleConfig;
         shape_pt_lat: RuleConfig;
         shape_pt_lon: RuleConfig;
@@ -194,7 +194,7 @@ type GtfsRules = {
         shape_dist_traveled: RuleConfig;
     }
     frequencies: {
-        _file: boolean;
+        _file: Severity;
         trip_id: RuleConfig;
         start_time: RuleConfig;
         end_time: RuleConfig;
@@ -202,14 +202,14 @@ type GtfsRules = {
         exact_times: RuleConfig;
     }
     transfers: {
-        _file: boolean;
+        _file: Severity;
         from_stop_id: RuleConfig;
         to_stop_id: RuleConfig;
         transfer_type: RuleConfig;
         min_transfer_time: RuleConfig;
     }
     pathways: {
-        _file: boolean;
+        _file: Severity;
         pathway_id: RuleConfig;
         from_stop_id: RuleConfig;
         to_stop_id: RuleConfig;
@@ -224,13 +224,13 @@ type GtfsRules = {
         reversed_signposted_as: RuleConfig;
     }
     levels: {
-        _file: boolean;
+        _file: Severity;
         level_id: RuleConfig;
         level_index: RuleConfig;
         level_name: RuleConfig;
     }
     feed_info: {
-        _file: boolean;
+        _file: Severity;
         feed_type: WithOptions<RuleConfig>;
         feed_publisher_name: RuleConfig;
         feed_publisher_url: RuleConfig;
@@ -244,7 +244,7 @@ type GtfsRules = {
         feed_contact_url: RuleConfig;
     }
     translations: {
-        _file: boolean;
+        _file: Severity;
         table_name: RuleConfig;
         field_name: RuleConfig;
         language: RuleConfig;
@@ -254,7 +254,7 @@ type GtfsRules = {
         field_value: RuleConfig;
     }
     attributions: {
-        _file: boolean;
+        _file: Severity;
         attribution_id: RuleConfig;
         agency_id: RuleConfig;
         route_id: RuleConfig;
@@ -271,7 +271,7 @@ type GtfsRules = {
 
 const rules: GtfsRules = {
     agency: {
-        _file: true,
+        _file: "error",
         agency_id: {
             severity: "error",
             options: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "18", "21", "23", "24", "34", "41", "42", "43", "44", "49", "54"]
@@ -333,7 +333,7 @@ const rules: GtfsRules = {
         }
     },
     stops: {
-        _file: true,
+        _file: "error",
         stop_id: {
             severity: "error",
         },
@@ -434,7 +434,7 @@ const rules: GtfsRules = {
         }
     },
     routes: {
-        _file: true,
+        _file: "error",
         line_id: {
             severity: "error",
         },
@@ -497,7 +497,7 @@ const rules: GtfsRules = {
         }
     },
     trips: {
-        _file: true,
+        _file: "error",
         route_id: {
             severity: "error",
         },
@@ -536,7 +536,7 @@ const rules: GtfsRules = {
         }
     },
     stop_times: {
-        _file: true,
+        _file: "error",
         trip_id: {
             severity: "error",
         },
@@ -553,7 +553,7 @@ const rules: GtfsRules = {
             severity: "error",
         },
         stop_headsign: {
-            severity: "ignore",
+            severity: "forbidden",
         },
         pickup_type: {
             severity: "error",
@@ -596,7 +596,7 @@ const rules: GtfsRules = {
         }
     },
     calendar: {
-        _file: true,
+        _file: "error",
         service_id: {
             severity: "error",
         },
@@ -629,7 +629,7 @@ const rules: GtfsRules = {
         }
     },
     calendar_dates: {
-        _file: true,
+        _file: "error",
         service_id: {
             severity: "error",
         },
@@ -641,7 +641,7 @@ const rules: GtfsRules = {
         }
     },
     vehicles: {
-        _file: true,
+        _file: "error",
         vehicle_id: {
             severity: "error",
         },
@@ -746,7 +746,7 @@ const rules: GtfsRules = {
         }
     },
     fare_attributes: {
-        _file: true,
+        _file: "error",
         fare_id: {
             severity: "error",
         },
@@ -772,7 +772,7 @@ const rules: GtfsRules = {
         }
     },
     fare_rules: {
-        _file: true,
+        _file: "error",
         fare_id: {
             severity: "error",
         },
@@ -780,17 +780,17 @@ const rules: GtfsRules = {
             severity: "error",
         },
         origin_id: {
-            severity: "ignore",
+            severity: "forbidden",
         },
         destination_id: {
-            severity: "ignore",
+            severity: "forbidden",
         },
         contains_id: {
-            severity: "ignore",
+            severity: "forbidden",
         }
     },
     shapes: {
-        _file: true,
+        _file: "error",
         shape_id: {
             severity: "error",
         },
@@ -808,7 +808,7 @@ const rules: GtfsRules = {
         }
     },
     frequencies: {
-        _file: true,
+        _file: "forbidden",
         trip_id: {
             severity: "error",
         },
@@ -826,7 +826,7 @@ const rules: GtfsRules = {
         }
     },
     transfers: {
-        _file: false,
+        _file: "ignore",
         from_stop_id: {
             severity: "ignore",
         },
@@ -841,7 +841,7 @@ const rules: GtfsRules = {
         }
     },
     pathways: {
-        _file: false,
+        _file: "ignore",
         pathway_id: {
             severity: "ignore",
         },
@@ -880,7 +880,7 @@ const rules: GtfsRules = {
         }
     },
     levels: {
-        _file: false,
+        _file: "ignore",
         level_id: {
             severity: "ignore",
         },
@@ -892,7 +892,7 @@ const rules: GtfsRules = {
         }
     },
     feed_info: {
-        _file: true,
+        _file: "error",
         feed_type: {
             severity: "error",
             options: ["0"]
@@ -930,7 +930,7 @@ const rules: GtfsRules = {
         }
     },
     translations: {
-        _file: false,
+        _file: "ignore",
         table_name: {
             severity: "ignore",
         },
@@ -954,7 +954,7 @@ const rules: GtfsRules = {
         }
     },
     attributions: {
-        _file: false,
+        _file: "ignore",
         attribution_id: {
             severity: "ignore",
         },
