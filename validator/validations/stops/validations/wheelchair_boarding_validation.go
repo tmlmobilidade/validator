@@ -76,6 +76,11 @@ func WheelchairBoardingValidation(stop *types.Stop, row int, rules *types.StopsR
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("wheelchair_boarding_validation.forbidden"), s)
+		return
+	}
+
 	// Validate value
 	validValues := []int{0, 1, 2}
 	if !slices.Contains(validValues, *stop.WheelchairBoarding) {

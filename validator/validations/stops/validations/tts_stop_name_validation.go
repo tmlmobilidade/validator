@@ -55,6 +55,11 @@ func TtsStopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("tts_stop_name_validation.forbidden"), s)
+		return
+	}
+
 	// Validate rules
 	if rules != nil && rules.TtsStopName.Options != nil {
 		if slices.Contains(*rules.TtsStopName.Options, types.ALL_OPTIONS) {

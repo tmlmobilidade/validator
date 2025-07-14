@@ -48,6 +48,11 @@ func DefaultLangValidation(severity *types.Severity, feedInfo *types.FeedInfo, r
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("default_lang_validation.forbidden"), s)
+		return
+	}
+
 	if feedInfo.DefaultLang != nil && *feedInfo.DefaultLang != "" {
 		if valid := lib.ValidateLanguage(*feedInfo.DefaultLang); !valid {
 			addMessage(i18n.AppTranslator.Get("default_lang_validation.invalid"), types.SEVERITY_ERROR)

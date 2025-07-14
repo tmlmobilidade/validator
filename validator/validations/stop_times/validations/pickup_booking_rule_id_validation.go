@@ -50,6 +50,11 @@ func PickupBookingRuleIdValidation(stopTime *types.StopTime, row int, gtfs *type
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("pickup_booking_rule_id_validation.forbidden"), s)
+		return
+	}
+
 	// Foreign key check: must reference a valid booking_rule_id from booking_rules.txt
 	if !lib.GtfsIdMapKeyExists(gtfs, "booking_rules", *stopTime.PickupBookingRuleId) {
 		addMessage(i18n.AppTranslator.Get("pickup_booking_rule_id_validation.not_found", *stopTime.PickupBookingRuleId), types.SEVERITY_ERROR)

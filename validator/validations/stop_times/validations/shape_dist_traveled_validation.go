@@ -62,6 +62,11 @@ func ShapeDistTraveledValidation(stopTime *types.StopTime, row int, rules *types
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("shape_dist_traveled_validation.forbidden"), s)
+		return
+	}
+
 	if *stopTime.ShapeDistTraveled < 0 {
 		addMessage(i18n.AppTranslator.Get("shape_dist_traveled_validation.negative"), types.SEVERITY_ERROR)
 		return

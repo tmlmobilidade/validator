@@ -49,6 +49,11 @@ func DropOffBookingRuleIdValidation(stopTime *types.StopTime, row int, gtfs *typ
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("drop_off_booking_rule_id_validation.forbidden"), s)
+		return
+	}
+
 	// Foreign key check: must reference a valid booking_rule_id from booking_rules.txt
 	if !lib.GtfsIdMapKeyExists(gtfs, "booking_rules", *stopTime.DropOffBookingRuleId) {
 		addMessage(i18n.AppTranslator.Get("drop_off_booking_rule_id_validation.not_found", *stopTime.DropOffBookingRuleId), types.SEVERITY_ERROR)

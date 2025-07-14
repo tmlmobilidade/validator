@@ -61,6 +61,11 @@ func StopTimezoneValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("stop_timezone_validation.forbidden"), s)
+		return
+	}
+
 	if !lib.ValidateTimezone(*stop.StopTimezone) {
 		addMessage(i18n.AppTranslator.Get("stop_timezone_validation.invalid", *stop.StopTimezone), types.SEVERITY_ERROR)
 		return

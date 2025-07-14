@@ -48,20 +48,34 @@ func BlockIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 		s = rules.BlockId.Severity
 	}
 
-	if s == types.SEVERITY_IGNORE {
-		return
+	addMessage := func(msg string, severity types.Severity) {
+		services.AppMessageService.AddMessage(types.Message{
+			Field:        "block_id",
+			FileName:     "trips.txt",
+			Rows:         []int{row},
+			Message:      msg,
+			Severity:     severity,
+			ValidationID: "block_id_validation",
+		})
 	}
 
 	if trip.BlockId == nil {
-		message := types.Message{
-			Field:        "block_id",
-			FileName:     "trips.txt",
-			Message:      lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("block_id_validation.required"), i18n.AppTranslator.Get("block_id_validation.recommended")),
-			Rows:         []int{row},
-			Severity:     s,
-			ValidationID: "block_id_validation",
+		if s == types.SEVERITY_IGNORE {
+			return
 		}
-		services.AppMessageService.AddMessage(message)
+
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"block_id_validation.required",
+				"block_id_validation.recommended",
+			),
+		)
+		addMessage(message, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("block_id_validation.forbidden"), s)
 		return
 	}
 }

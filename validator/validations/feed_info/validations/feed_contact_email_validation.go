@@ -49,6 +49,11 @@ func FeedContactEmailValidation(severity *types.Severity, feedInfo *types.FeedIn
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("feed_contact_email_validation.forbidden"), s)
+		return
+	}
+
 	if feedInfo.FeedContactEmail != nil && *feedInfo.FeedContactEmail != "" {
 		if valid := lib.ValidateEmail(*feedInfo.FeedContactEmail); !valid {
 			addMessage(i18n.AppTranslator.Get("feed_contact_email_validation.invalid"), types.SEVERITY_ERROR)

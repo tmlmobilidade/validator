@@ -55,6 +55,11 @@ func HasStopSignValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("has_stop_sign_validation.forbidden"), s)
+		return
+	}
+
 	// Validate value
 	validValues := []int{0, 1, 2, 3}
 	if !slices.Contains(validValues, *stop.HasStopSign) {

@@ -54,6 +54,11 @@ func StopDescValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("stop_desc_validation.forbidden"), s)
+		return
+	}
+
 	if stop.StopName != nil && *stop.StopName == *stop.StopDesc {
 		addMessage(i18n.AppTranslator.Get("stop_desc_validation.duplicate"), types.SEVERITY_WARNING)
 		return

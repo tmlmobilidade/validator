@@ -49,6 +49,11 @@ func FeedContactUrlValidation(severity *types.Severity, feedInfo *types.FeedInfo
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("feed_contact_url_validation.forbidden"), s)
+		return
+	}
+
 	if feedInfo.FeedContactUrl != nil && *feedInfo.FeedContactUrl != "" {
 		if valid := lib.ValidateUrl(*feedInfo.FeedContactUrl); !valid {
 			addMessage(i18n.AppTranslator.Get("feed_contact_url_validation.invalid"), types.SEVERITY_ERROR)

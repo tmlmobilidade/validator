@@ -54,6 +54,11 @@ func MunicipalityIdValidation(stop *types.Stop, row int, rules *types.StopsRules
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("municipality_id_validation.forbidden"), s)
+		return
+	}
+
 	// Validate rules
 	if rules != nil && rules.MunicipalityId.Options != nil {
 		if slices.Contains(*rules.MunicipalityId.Options, types.ALL_OPTIONS) {

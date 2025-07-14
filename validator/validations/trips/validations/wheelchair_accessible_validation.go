@@ -44,23 +44,35 @@ func WheelchairAccessibleValidation(trip *types.Trip, row int, gtfs *types.Gtfs,
 		})
 	}
 
-	// 1. Validate wheelchair_accessible is 0 or 1 if it exists
+	// 1. Validate wheelchair_accessible is required
+	if trip.WheelchairAccessible == nil {
+		if s == types.SEVERITY_IGNORE {
+			return
+		}
+
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"wheelchair_accessible_validation.required",
+				"wheelchair_accessible_validation.recommended",
+			),
+		)
+		addMessage(message, s)
+		return
+	}
+
+	// 2. Validate wheelchair_accessible is forbidden
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("wheelchair_accessible_validation.forbidden"), s)
+		return
+	}
+
+	// 3. Validate wheelchair_accessible is 0 or 1 if it exists
 	if trip.WheelchairAccessible != nil {
 		validWheelchairAccessible := map[int]bool{0: true, 1: true, 2: true}
 		if !validWheelchairAccessible[*trip.WheelchairAccessible] {
 			addMessage(i18n.AppTranslator.Get("wheelchair_accessible_validation.invalid"), s)
 			return
 		}
-	}
-
-	// 2. Validate wheelchair_accessible is required
-	if s == types.SEVERITY_IGNORE {
-		return
-	}
-
-	if trip.WheelchairAccessible == nil {
-		addMessage(lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("wheelchair_accessible_validation.required"), i18n.AppTranslator.Get("wheelchair_accessible_validation.recommended")), s)
-		return
 	}
 
 	// Validate Rule Options

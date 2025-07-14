@@ -56,6 +56,11 @@ func TimepointValidation(stopTime *types.StopTime, row int, rules *types.StopTim
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("timepoint_validation.forbidden"), s)
+		return
+	}
+
 	tp := *stopTime.Timepoint
 	if tp != 0 && tp != 1 {
 		addMessage(i18n.AppTranslator.Get("timepoint_validation.invalid"), types.SEVERITY_ERROR)

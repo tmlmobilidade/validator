@@ -58,6 +58,11 @@ func StopHeadsignValidation(stopTime *types.StopTime, row int, rules *types.Stop
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("stop_headsign_validation.forbidden"), s)
+		return
+	}
+
 	// Validate Rule Options
 	if rules != nil && rules.StopHeadsign.Options != nil {
 		if slices.Contains(*rules.StopHeadsign.Options, types.ALL_OPTIONS) {

@@ -63,6 +63,11 @@ func LocationTypeValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("location_type_validation.forbidden"), s)
+		return
+	}
+
 	validValues := map[int]bool{0: true, 1: true, 2: true, 3: true, 4: true}
 	if !validValues[*stop.LocationType] {
 		addMessage(i18n.AppTranslator.Get("location_type_validation.invalid", *stop.LocationType), types.SEVERITY_ERROR)

@@ -49,6 +49,11 @@ func RouteUrlValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *ty
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("route_url_validation.forbidden"), s)
+		return
+	}
+
 	if valid := lib.ValidateUrl(*route.RouteUrl); !valid {
 		addMessage(i18n.AppTranslator.Get("route_url_validation.invalid"), types.SEVERITY_ERROR)
 		return

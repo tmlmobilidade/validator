@@ -29,22 +29,37 @@ func TripShortNameValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules 
 		s = rules.TripShortName.Severity
 	}
 
-	if s == types.SEVERITY_IGNORE {
+	addMessage := func(msg string, severity types.Severity) {
+		services.AppMessageService.AddMessage(types.Message{
+			Field:        "trip_short_name",
+			FileName:     "trips.txt",
+			Rows:         []int{row},
+			Message:      msg,
+			Severity:     severity,
+			ValidationID: "trip_short_name_validation",
+		})
+	}
+
+	// 1. Validate trip_short_name is required
+	if trip.TripShortName == nil {
+		if s == types.SEVERITY_IGNORE {
+			return
+		}
+
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"trip_short_name_validation.required",
+				"trip_short_name_validation.recommended",
+			),
+		)
+		addMessage(message, s)
 		return
 	}
 
-	if trip.TripShortName != nil {
+	// 2. Validate trip_short_name is forbidden
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("trip_short_name_validation.forbidden"), s)
 		return
 	}
 
-	message := types.Message{
-		Field:        "trip_short_name",
-		FileName:     "trips.txt",
-		Message:      lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("trip_short_name_validation.required"), i18n.AppTranslator.Get("trip_short_name_validation.recommended")),
-		Rows:         []int{row},
-		Severity:     s,
-		ValidationID: "trip_short_name_validation",
-	}
-
-	services.AppMessageService.AddMessage(message)
 }

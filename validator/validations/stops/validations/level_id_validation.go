@@ -54,6 +54,11 @@ func LevelIdValidation(stop *types.Stop, row int, gtfs types.Gtfs, rules *types.
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("level_id_validation.forbidden"), s)
+		return
+	}
+
 	// Check Foreign Key
 	if !lib.GtfsIdMapKeyExists(&gtfs, "levels", *stop.LevelId) {
 		addMessage(i18n.AppTranslator.Get("level_id_validation.not_found", *stop.LevelId), types.SEVERITY_ERROR)

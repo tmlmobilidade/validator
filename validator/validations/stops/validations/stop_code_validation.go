@@ -61,6 +61,11 @@ func StopCodeValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *type
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("stop_code_validation.forbidden"), s)
+		return
+	}
+
 	// Check if stop_code is unique
 	if stop.StopCode != nil {
 		count := len(lib.RemoveDuplicates(gtfs.IdMap["stops"][*stop.StopCode]))

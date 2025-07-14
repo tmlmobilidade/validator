@@ -52,6 +52,11 @@ func RouteColorValidation(route *types.Route, row int, rules *types.RoutesRules)
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("route_color_validation.forbidden"), s)
+		return
+	}
+
 	color := strings.ToUpper(*route.RouteColor)
 	matched, _ := regexp.MatchString(`^[0-9A-F]{6}$`, color)
 	if !matched {

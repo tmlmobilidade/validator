@@ -54,6 +54,11 @@ func RegionIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("region_id_validation.forbidden"), s)
+		return
+	}
+
 	// Validate rules
 	if rules != nil && rules.RegionId.Options != nil {
 		if slices.Contains(*rules.RegionId.Options, types.ALL_OPTIONS) {

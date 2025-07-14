@@ -56,6 +56,11 @@ func ZoneIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("zone_id_validation.forbidden"), s)
+		return
+	}
+
 	// Validate rules
 	if rules != nil && rules.ZoneId.Options != nil {
 		if slices.Contains(*rules.ZoneId.Options, types.ALL_OPTIONS) {

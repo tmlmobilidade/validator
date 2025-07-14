@@ -55,6 +55,11 @@ func HasNetworkMapValidation(stop *types.Stop, row int, rules *types.StopsRules)
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("has_network_map_validation.forbidden"), s)
+		return
+	}
+
 	// Validate value
 	validValues := []int{0, 1, 2, 3}
 	if !slices.Contains(validValues, *stop.HasNetworkMap) {

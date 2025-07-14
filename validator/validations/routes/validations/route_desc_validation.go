@@ -57,6 +57,11 @@ func RouteDescValidation(route *types.Route, row int, rules *types.RoutesRules) 
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("route_desc_validation.forbidden"), s)
+		return
+	}
+
 	if route.RouteShortName != nil && *route.RouteDesc == *route.RouteShortName {
 		addMessage(i18n.AppTranslator.Get("route_desc_validation.duplicate_short_name"), types.SEVERITY_WARNING)
 	}

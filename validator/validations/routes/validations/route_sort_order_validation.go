@@ -48,6 +48,11 @@ func RouteSortOrderValidation(route *types.Route, row int, rules *types.RoutesRu
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("route_sort_order_validation.forbidden"), s)
+		return
+	}
+
 	if *route.RouteSortOrder < 0 {
 		addMessage(i18n.AppTranslator.Get("route_sort_order_validation.invalid"), types.SEVERITY_ERROR)
 		return

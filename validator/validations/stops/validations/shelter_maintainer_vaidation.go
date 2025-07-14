@@ -54,6 +54,11 @@ func ShelterMaintainerValidation(stop *types.Stop, row int, rules *types.StopsRu
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("shelter_maintainer_validation.forbidden"), s)
+		return
+	}
+
 	// Validate rules
 	if rules != nil && rules.ShelterMaintainer.Options != nil {
 		if slices.Contains(*rules.ShelterMaintainer.Options, types.ALL_OPTIONS) {

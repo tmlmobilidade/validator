@@ -55,6 +55,11 @@ func StopUrlValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		return
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("stop_url_validation.forbidden"), s)
+		return
+	}
+
 	if !lib.ValidateUrl(*stop.StopUrl) {
 		addMessage(i18n.AppTranslator.Get("stop_url_validation.invalid", *stop.StopUrl), types.SEVERITY_ERROR)
 		return

@@ -78,6 +78,11 @@ func ParentStationValidation(stop *types.Stop, row int, gtfs types.Gtfs, rules *
 		}
 	}
 
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("parent_station_validation.forbidden"), s)
+		return
+	}
+
 	// Validate Parent Station for Location Type 1 (Station)
 	if locationType == 1 && stop.ParentStation != nil {
 		addMessage(i18n.AppTranslator.Get("parent_station_validation.forbidden"), types.SEVERITY_ERROR)
