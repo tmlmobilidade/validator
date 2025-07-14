@@ -67,8 +67,7 @@ func (rp *RulesParser) validateRules(rules *types.GtfsRules) error {
 	// Helper function to validate a single rule config
 	validateRuleConfig := func(config types.RuleConfig, fieldName string) {
 		if !isValidSeverity(config.Severity) {
-			validationErrors = append(validationErrors,
-				fmt.Sprintf("invalid severity '%s' for field '%s'", config.Severity, fieldName))
+			validationErrors = append(validationErrors, fmt.Sprintf("Invalid severity '%s' for field '%s'", config.Severity, fieldName))
 		}
 	}
 
@@ -167,9 +166,6 @@ func (rp *RulesParser) validateRules(rules *types.GtfsRules) error {
 		validateRuleConfig(rules.StopTimes.ContinuousDropOff, "stop_times.continuous_drop_off")
 		validateRuleConfig(rules.StopTimes.ShapeDistTraveled, "stop_times.shape_dist_traveled")
 		validateRuleConfig(rules.StopTimes.Timepoint, "stop_times.timepoint")
-		validateRuleConfig(rules.StopTimes.Zone1, "stop_times.zone_1")
-		validateRuleConfig(rules.StopTimes.Zone2, "stop_times.zone_2")
-		validateRuleConfig(rules.StopTimes.Zone3, "stop_times.zone_3")
 	}
 
 	if rules.Calendar.File != types.SEVERITY_FORBIDDEN {

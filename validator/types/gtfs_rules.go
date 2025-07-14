@@ -115,9 +115,6 @@ type StopTimesRules struct {
 	StartPickupDropOffWindow RuleConfig `json:"start_pickup_drop_off_window"`
 	EndPickupDropOffWindow   RuleConfig `json:"end_pickup_drop_off_window"`
 	Timepoint                RuleConfig `json:"timepoint"`
-	Zone1                    RuleConfig `json:"zone_1"`
-	Zone2                    RuleConfig `json:"zone_2"`
-	Zone3                    RuleConfig `json:"zone_3"`
 	PickupBookingRuleId      RuleConfig `json:"pickup_booking_rule_id"`
 	DropOffBookingRuleId     RuleConfig `json:"drop_off_booking_rule_id"`
 }
