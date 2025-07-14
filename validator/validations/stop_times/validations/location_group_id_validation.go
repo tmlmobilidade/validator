@@ -1,6 +1,7 @@
 package stop_times
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -9,10 +10,10 @@ import (
 /*
 # Attributes
 
- - File: [stop_times.txt]
- - Field: location_group_id
- - Presence: Conditionally Forbidden
- - Type: Foreign ID referencing location_groups.location_group_id
+  - File: [stop_times.txt]
+  - Field: location_group_id
+  - Presence: Conditionally Forbidden
+  - Type: Foreign ID referencing location_groups.location_group_id
 
 # Description
 
@@ -41,7 +42,7 @@ func LocationGroupIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gt
 	// Forbidden if stop_id or location_id are defined
 	if (stopTime.StopId != nil && *stopTime.StopId != "") || (stopTime.LocationId != nil && *stopTime.LocationId != "") {
 		if stopTime.LocationGroupId != nil && *stopTime.LocationGroupId != "" {
-			addMessage("location_group_id is forbidden if stop_id or location_id are defined.", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("location_group_id_validation.forbidden_with_other_ids"), types.SEVERITY_ERROR)
 		}
 		return
 	}
@@ -50,8 +51,8 @@ func LocationGroupIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gt
 	if stopTime.LocationGroupId != nil && *stopTime.LocationGroupId != "" {
 		// Check Foreign Key
 		if !lib.GtfsIdMapKeyExists(gtfs, "location_groups", *stopTime.LocationGroupId) {
-			addMessage("location_group_id '"+ *stopTime.LocationGroupId + "' does not exist in location_groups.txt", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("location_group_id_validation.not_found", *stopTime.LocationGroupId), types.SEVERITY_ERROR)
 			return
 		}
 	}
-} 
+}

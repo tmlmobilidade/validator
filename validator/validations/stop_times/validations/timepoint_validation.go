@@ -2,6 +2,7 @@ package stop_times
 
 import (
 	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -50,14 +51,14 @@ func TimepointValidation(stopTime *types.StopTime, row int, rules *types.StopTim
 		if s == types.SEVERITY_IGNORE {
 			return
 		}
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "timepoint is recommended", "timepoint is required")
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("timepoint_validation.recommended"), i18n.AppTranslator.Get("timepoint_validation.required"))
 		addMessage(warn, s)
 		return
 	}
 
 	tp := *stopTime.Timepoint
 	if tp != 0 && tp != 1 {
-		addMessage("timepoint must be 0 or 1.", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("timepoint_validation.invalid"), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -68,7 +69,7 @@ func TimepointValidation(stopTime *types.StopTime, row int, rules *types.StopTim
 		}
 
 		if !slices.Contains(*rules.Timepoint.Options, fmt.Sprintf("%d", tp)) {
-			addMessage(fmt.Sprintf("timepoint is not allowed: %d", tp), s)
+			addMessage(i18n.AppTranslator.Get("timepoint_validation.not_allowed", fmt.Sprintf("%d", tp)), s)
 			return
 		}
 	}

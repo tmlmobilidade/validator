@@ -1,7 +1,7 @@
 package feed_info
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -42,9 +42,9 @@ func FeedVersionValidation(severity *types.Severity, feedInfo *types.FeedInfo, r
 		if s == types.SEVERITY_IGNORE {
 			return
 		}
-		
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "required", "recommended")
-		addMessage(fmt.Sprintf("Feed version is %s", warn), s)
+
+		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("feed_version_validation.required"), i18n.AppTranslator.Get("feed_version_validation.recommended"))
+		addMessage(warn, s)
 		return
 	}
-} 
+}

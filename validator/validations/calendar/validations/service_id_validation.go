@@ -1,6 +1,7 @@
 package trips
 
 import (
+	"main/i18n"
 	"main/services"
 	"main/types"
 )
@@ -8,10 +9,10 @@ import (
 /*
 # Attributes
 
-	- File: [calendar.txt]
-	- Field: service_id
-	- Presence: Required
-	- Type: Unique ID
+  - File: [calendar.txt]
+  - Field: service_id
+  - Presence: Required
+  - Type: Unique ID
 
 # Description
 
@@ -22,24 +23,24 @@ Identifies a set of dates when service is available for one or more routes.
 func ServiceIdValidation(calendar *types.Calendar, row int, gtfs *types.Gtfs) {
 
 	message := types.Message{
-		Field: "service_id",
-		FileName: "calendar.txt",
-		Message: "Service ID is required",
-		Rows: []int{row},
-		Severity: types.SEVERITY_ERROR,
+		Field:        "service_id",
+		FileName:     "calendar.txt",
+		Message:      "Service ID is required",
+		Rows:         []int{row},
+		Severity:     types.SEVERITY_ERROR,
 		ValidationID: "service_id_validation",
 	}
 
 	if calendar.ServiceId != "" {
 		// Check if service_id is Unique ID
 		if gtfs.IdMap["calendar"] != nil && len(gtfs.IdMap["calendar"][calendar.ServiceId]) > 1 {
-			message.Message = "Duplicate service_id found. Service IDs must be unique."
+			message.Message = i18n.AppTranslator.Get("service_id_validation.duplicate", calendar.ServiceId)
 			message.Severity = types.SEVERITY_ERROR
 			services.AppMessageService.AddMessage(message)
 		}
-		
-		return;
+
+		return
 	}
-	
+
 	services.AppMessageService.AddMessage(message)
 }

@@ -1,4 +1,4 @@
-type Severity = "error" | "warning" | "ignore";
+type Severity = "error" | "warning" | "ignore" | "forbidden";
 
 const ALL_OPTIONS = "all_options";
 

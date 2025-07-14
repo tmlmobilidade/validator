@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -45,15 +45,20 @@ func HasSchedulesValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "has_schedules is required", "has_schedules is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"has_schedules_validation.required",
+				"has_schedules_validation.recommended",
+			),
+		)
+		addMessage(message, s)
 		return
 	}
 
 	// Validate value
-	validValues := []int{0, 1, 2}
+	validValues := []int{0, 1}
 	if !slices.Contains(validValues, *stop.HasSchedules) {
-		addMessage("has_schedules must be 0, 1, or 2", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("has_schedules_validation.invalid", *stop.HasSchedules), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -64,7 +69,7 @@ func HasSchedulesValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 		}
 
 		if !slices.Contains(*rules.HasSchedules.Options, strconv.Itoa(*stop.HasSchedules)) {
-			addMessage(fmt.Sprintf("has_schedules is not allowed: %d", *stop.HasSchedules), s)
+			addMessage(i18n.AppTranslator.Get("has_schedules_validation.not_allowed", *stop.HasSchedules), s)
 			return
 		}
 	}

@@ -1,6 +1,7 @@
 package trips
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -36,12 +37,12 @@ func DateValidation(date string, dateType string, row int) {
 	}
 
 	if date == "" {
-		addMessage("Service date is required")
+		addMessage(i18n.AppTranslator.Get("date_validation.required"))
 		return
 	}
 
 	if !lib.IsValidServiceDate(date) {
-		addMessage("Invalid service date, must be in format YYYYMMDD")
+		addMessage(i18n.AppTranslator.Get("date_validation.invalid", date))
 		return
 	}
 }

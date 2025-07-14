@@ -1,6 +1,7 @@
 package stop_times
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -54,13 +55,13 @@ func ArrivalTimeValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs, 
 
 	// Required for timepoint=1
 	if stopTime.Timepoint != nil && *stopTime.Timepoint == 1 && stopTime.ArrivalTime == nil {
-		addMessage("arrival_time is required for timepoint=1.", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("arrival_time_validation.required_timepoint"), types.SEVERITY_ERROR)
 		return
 	}
 
 	// Forbidden when start_pickup_drop_off_window or end_pickup_drop_off_window are defined
 	if (stopTime.StartPickupDropOffWindow != nil || stopTime.EndPickupDropOffWindow != nil) && stopTime.ArrivalTime != nil {
-		addMessage("arrival_time is forbidden when start_pickup_drop_off_window or end_pickup_drop_off_window are defined.", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("arrival_time_validation.forbidden_with_window"), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -68,7 +69,7 @@ func ArrivalTimeValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs, 
 	if stopTime.StopSequence != nil {
 		stopTimes, exists := gtfs.IdMap["stop_times"][*stopTime.TripId]
 		if !exists {
-			addMessage("trip_id must reference a valid trip_id from trips.txt.", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("arrival_time_validation.invalid_trip_id"), types.SEVERITY_ERROR)
 			return
 		}
 
@@ -78,7 +79,7 @@ func ArrivalTimeValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs, 
 		for _, row := range stopTimes {
 			stopSequence, err := strconv.Atoi(gtfs.StopTime[row].StopSequence)
 			if err != nil {
-				addMessage("stop_sequence must be an integer.", types.SEVERITY_ERROR)
+				addMessage(i18n.AppTranslator.Get("arrival_time_validation.invalid_stop_sequence"), types.SEVERITY_ERROR)
 				return
 			}
 
@@ -91,27 +92,27 @@ func ArrivalTimeValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs, 
 		}
 
 		if *stopTime.StopSequence == minStopSequence && stopTime.ArrivalTime == nil {
-			addMessage("arrival_time is required for the first stop in a trip.", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("arrival_time_validation.required_first_stop"), types.SEVERITY_ERROR)
 			return
 		}
 
 		if *stopTime.StopSequence == maxStopSequence && stopTime.ArrivalTime == nil {
-			addMessage("arrival_time is required for the last stop in a trip.", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("arrival_time_validation.required_last_stop"), types.SEVERITY_ERROR)
 			return
 		}
 	}
 
 	// Validate time
 	if stopTime.ArrivalTime != nil {
-		if err := lib.ValidateTime(*stopTime.ArrivalTime); err != "" {
-			addMessage(err, types.SEVERITY_ERROR)
+		if !lib.ValidateTime(*stopTime.ArrivalTime) {
+			addMessage(i18n.AppTranslator.Get("arrival_time_validation.invalid_time"), types.SEVERITY_ERROR)
 			return
 		}
 	}
 
 	// Optional
 	if stopTime.ArrivalTime == nil && s != types.SEVERITY_IGNORE {
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "arrival_time is required.", "arrival_time is recommended.")
+		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("arrival_time_validation.required"), i18n.AppTranslator.Get("arrival_time_validation.recommended"))
 		addMessage(warn, s)
 		return
 	}

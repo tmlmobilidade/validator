@@ -1,11 +1,12 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
 	"slices"
+	"strconv"
 )
 
 /*
@@ -65,15 +66,20 @@ func WheelchairBoardingValidation(stop *types.Stop, row int, rules *types.StopsR
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "wheelchair_boarding is required", "wheelchair_boarding is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"wheelchair_boarding_validation.required",
+				"wheelchair_boarding_validation.recommended",
+			),
+		)
+		addMessage(message, s)
 		return
 	}
 
 	// Validate value
 	validValues := []int{0, 1, 2}
 	if !slices.Contains(validValues, *stop.WheelchairBoarding) {
-		addMessage("wheelchair_boarding must be 0, 1, or 2", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("wheelchair_boarding_validation.invalid", *stop.WheelchairBoarding), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -83,8 +89,8 @@ func WheelchairBoardingValidation(stop *types.Stop, row int, rules *types.StopsR
 			return
 		}
 
-		if !slices.Contains(*rules.WheelchairBoarding.Options, fmt.Sprintf("%d", *stop.WheelchairBoarding)) {
-			addMessage(fmt.Sprintf("wheelchair_boarding is not allowed: %d", *stop.WheelchairBoarding), s)
+		if !slices.Contains(*rules.WheelchairBoarding.Options, strconv.Itoa(*stop.WheelchairBoarding)) {
+			addMessage(i18n.AppTranslator.Get("wheelchair_boarding_validation.not_allowed", *stop.WheelchairBoarding), s)
 			return
 		}
 	}

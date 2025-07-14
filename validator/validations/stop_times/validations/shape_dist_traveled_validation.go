@@ -1,6 +1,7 @@
 package stop_times
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -56,13 +57,13 @@ func ShapeDistTraveledValidation(stopTime *types.StopTime, row int, rules *types
 		if s == types.SEVERITY_IGNORE {
 			return
 		}
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "shape_dist_traveled is recommended", "shape_dist_traveled is required")
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("shape_dist_traveled_validation.recommended"), i18n.AppTranslator.Get("shape_dist_traveled_validation.required"))
 		addMessage(warn, s)
 		return
 	}
 
 	if *stopTime.ShapeDistTraveled < 0 {
-		addMessage("shape_dist_traveled must be a non-negative float.", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("shape_dist_traveled_validation.negative"), types.SEVERITY_ERROR)
 		return
 	}
 }

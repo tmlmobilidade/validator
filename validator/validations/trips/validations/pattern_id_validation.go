@@ -1,6 +1,7 @@
 package trips
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -43,7 +44,7 @@ func PatternIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *typ
 			return false
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "pattern_id is recommended", "pattern_id is required")
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("pattern_id_validation.recommended"), i18n.AppTranslator.Get("pattern_id_validation.required"))
 		addMessage(warn, s)
 		return false
 	}

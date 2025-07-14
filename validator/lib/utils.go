@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"main/i18n"
 	"maps"
 	"reflect"
 	"strconv"
@@ -38,97 +39,97 @@ func ParseStringToPrimitive[T any](str string, t *T) (msg string) {
 	case int8:
 		f, err := strconv.ParseInt(str, 10, 8)
 		if err != nil {
-			return fmt.Sprintf("Failed to parse \"%s\" to int8", str)
+			return i18n.AppTranslator.Get("parser.int8", str)
 		}
 		*t = any(int8(f)).(T)
 		return
 	case int16:
 		f, err := strconv.ParseInt(str, 10, 16)
 		if err != nil {
-			return fmt.Sprintf("Failed to parse \"%s\" to int16", str)
+			return i18n.AppTranslator.Get("parser.int16", str)
 		}
 		*t = any(int16(f)).(T)
 		return
 	case int32:
 		f, err := strconv.ParseInt(str, 10, 32)
 		if err != nil {
-			return fmt.Sprintf("Failed to parse \"%s\" to int32", str)
+			return i18n.AppTranslator.Get("parser.int32", str)
 		}
 		*t = any(int32(f)).(T)
 		return
 	case int64:
 		f, err := strconv.ParseInt(str, 10, 64)
 		if err != nil {
-			return fmt.Sprintf("Failed to parse \"%s\" to int64", str)
+			return i18n.AppTranslator.Get("parser.int64", str)
 		}
 		*t = any(int64(f)).(T)
 		return
 	case int:
 		f, err := strconv.ParseInt(str, 10, 64)
 		if err != nil {
-			return fmt.Sprintf("Failed to parse \"%s\" to int", str)
+			return i18n.AppTranslator.Get("parser.int", str)
 		}
 		*t = any(int(f)).(T)
 		return
 	case uint8:
 		f, err := strconv.ParseUint(str, 10, 8)
 		if err != nil {
-			return fmt.Sprintf("Failed to parse \"%s\" to uint8", str)
+			return i18n.AppTranslator.Get("parser.uint8", str)
 		}
 		*t = any(uint8(f)).(T)
 		return
 	case uint16:
 		f, err := strconv.ParseUint(str, 10, 16)
 		if err != nil {
-			return fmt.Sprintf("Failed to parse \"%s\" to uint16", str)
+			return i18n.AppTranslator.Get("parser.uint16", str)
 		}
 		*t = any(uint16(f)).(T)
 		return
 	case uint32:
 		f, err := strconv.ParseUint(str, 10, 32)
 		if err != nil {
-			return fmt.Sprintf("Failed to parse \"%s\" to uint32", str)
+			return i18n.AppTranslator.Get("parser.uint32", str)
 		}
 		*t = any(uint32(f)).(T)
 		return
 	case uint64:
 		f, err := strconv.ParseUint(str, 10, 64)
 		if err != nil {
-			return fmt.Sprintf("Failed to parse \"%s\" to uint64", str)
+			return i18n.AppTranslator.Get("parser.uint64", str)
 		}
 		*t = any(uint64(f)).(T)
 		return
 	case uint:
 		f, err := strconv.ParseUint(str, 10, 64)
 		if err != nil {
-			return fmt.Sprintf("Failed to parse \"%s\" to uint", str)
+			return i18n.AppTranslator.Get("parser.uint", str)
 		}
 		*t = any(uint(f)).(T)
 		return
 	case float32:
 		f, err := strconv.ParseFloat(str, 32)
 		if err != nil {
-			return fmt.Sprintf("Failed to parse \"%s\" to float32", str)
+			return i18n.AppTranslator.Get("parser.float32", str)
 		}
 		*t = any(float32(f)).(T)
 		return
 	case float64:
 		f, err := strconv.ParseFloat(str, 64)
 		if err != nil {
-			return fmt.Sprintf("Failed to parse \"%s\" to float64", str)
+			return i18n.AppTranslator.Get("parser.float64", str)
 		}
 		*t = any(f).(T)
 		return
 	case bool:
 		f, err := strconv.ParseBool(str)
 		if err != nil {
-			return fmt.Sprintf("Failed to parse \"%s\" to bool", str)
+			return i18n.AppTranslator.Get("parser.bool", str)
 		}
 		*t = any(f).(T)
 		return
 	default:
 		//Panic with error
-		panic(fmt.Sprintf("variable \"%s\" is of type \"%s\" and cannot be parsed to primitive type", str, reflect.TypeOf(*t)))
+		panic(i18n.AppTranslator.Get("parser.invalid_type", str, reflect.TypeOf(*t)))
 	}
 }
 
@@ -143,7 +144,7 @@ func PrintMap(a any, minify ...bool) {
 	if len(minify) > 0 {
 		shouldMinify = minify[0]
 	}
-	
+
 	if shouldMinify {
 		b, err := json.Marshal(a)
 		if err != nil {
@@ -186,7 +187,7 @@ func MergeMaps[T any](a, b map[string]T) map[string]T {
 	return result
 }
 
-//Removes duplicates from a slice
+// Removes duplicates from a slice
 //
 //	@param slice []T - The slice to remove duplicates from
 //	@return []T - The slice with duplicates removed
@@ -242,16 +243,16 @@ func GetFieldByTag[T any](obj *T, tagKey string, tagValue string) string {
 
 	v := reflect.ValueOf(obj).Elem()
 	t := v.Type()
-	
+
 	for i := range v.NumField() {
 		field := v.Field(i)
 		fieldType := t.Field(i)
 		tag := fieldType.Tag.Get(tagKey)
-		
+
 		if tag == tagValue {
 			return field.String()
 		}
 	}
-	
+
 	return ""
 }

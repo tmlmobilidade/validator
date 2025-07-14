@@ -1,7 +1,7 @@
 package agency
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -36,13 +36,12 @@ func AgencyTimezoneValidation(agency *types.Agency, row int, rules *types.Agency
 	}
 
 	if agency.AgencyTimezone == nil {
-		addMessage("Agency timezone is required")
+		addMessage(i18n.AppTranslator.Get("agency_timezone_validation.required"))
 		return
 	}
 
-	err := lib.ValidateTimezone(*agency.AgencyTimezone)
-	if err != "" {
-		addMessage(err)
+	if !lib.ValidateTimezone(*agency.AgencyTimezone) {
+		addMessage(i18n.AppTranslator.Get("agency_timezone_validation.invalid"))
 		return
 	}
 
@@ -53,7 +52,7 @@ func AgencyTimezoneValidation(agency *types.Agency, row int, rules *types.Agency
 		}
 
 		if !slices.Contains(*rules.AgencyTimezone.Options, *agency.AgencyTimezone) {
-			addMessage(fmt.Sprintf("Agency timezone is not allowed: %s", *agency.AgencyTimezone))
+			addMessage(i18n.AppTranslator.Get("agency_timezone_validation.not_allowed", *agency.AgencyTimezone))
 			return
 		}
 	}

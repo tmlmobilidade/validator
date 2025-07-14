@@ -1,6 +1,7 @@
 package trips
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -60,7 +61,7 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 	}
 
 	if hasContinuousPickupDropoff && trip.ShapeId == nil {
-		addMessage("shape_id is required when a continuous pickup or drop-off behavior is defined either in routes.txt or in stop_times.txt.", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("shape_id_validation.required_with_continuous"), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -69,14 +70,14 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 			return
 		}
 
-		message := lib.IfThenElse(s == types.SEVERITY_ERROR, "shape_id is required", "shape_id is recommended")
+		message := lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("shape_id_validation.required"), i18n.AppTranslator.Get("shape_id_validation.recommended"))
 		addMessage(message, s)
 		return
 	}
 
 	// Check Foreign Key
 	if !lib.GtfsIdMapKeyExists(gtfs, "shapes", *trip.ShapeId) {
-		addMessage("shape_id '"+*trip.ShapeId+"' does not exist in shapes.txt", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("shape_id_validation.not_found", map[string]interface{}{"shape_id": *trip.ShapeId}), types.SEVERITY_ERROR)
 		return
 	}
 }

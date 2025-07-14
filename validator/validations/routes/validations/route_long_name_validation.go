@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -47,7 +47,7 @@ func RouteLongNameValidation(route *types.Route, row int, rules *types.RoutesRul
 	}
 
 	if (route.RouteLongName == nil || *route.RouteLongName == "") && (route.RouteShortName == nil || *route.RouteShortName == "") {
-		addMessage("route_long_name is required if route_short_name is empty.", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("route_long_name_validation.required_if_short_name_empty"), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -56,7 +56,7 @@ func RouteLongNameValidation(route *types.Route, row int, rules *types.RoutesRul
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "route_long_name is recommended.", "route_long_name is required.")
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("route_long_name_validation.recommended"), i18n.AppTranslator.Get("route_long_name_validation.required"))
 		addMessage(warn, s)
 	}
 
@@ -67,7 +67,7 @@ func RouteLongNameValidation(route *types.Route, row int, rules *types.RoutesRul
 		}
 
 		if !slices.Contains(*rules.RouteLongName.Options, *route.RouteLongName) {
-			addMessage(fmt.Sprintf("route_long_name is not allowed: %s", *route.RouteLongName), s)
+			addMessage(i18n.AppTranslator.Get("route_long_name_validation.not_allowed", map[string]interface{}{"value": *route.RouteLongName}), s)
 			return
 		}
 	}

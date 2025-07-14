@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -46,13 +46,13 @@ func RouteShortNameValidation(route *types.Route, row int, rules *types.RoutesRu
 
 	// Extract values with nil checks
 	if route.RouteShortName == nil && route.RouteLongName == nil {
-		addMessage("route_short_name is required if route_long_name is empty.", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("route_short_name_validation.required_if_long_name_empty"), types.SEVERITY_ERROR)
 		return
 	}
 
 	if route.RouteShortName == nil {
 		if s != types.SEVERITY_IGNORE {
-			warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "route_short_name is recommended.", "route_short_name is required.")
+			warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("route_short_name_validation.recommended"), i18n.AppTranslator.Get("route_short_name_validation.required"))
 			addMessage(warn, s)
 		}
 		return
@@ -60,7 +60,7 @@ func RouteShortNameValidation(route *types.Route, row int, rules *types.RoutesRu
 
 	// Validate length
 	if len(*route.RouteShortName) > 12 {
-		addMessage("route_short_name should be no longer than 12 characters.", types.SEVERITY_WARNING)
+		addMessage(i18n.AppTranslator.Get("route_short_name_validation.too_long"), types.SEVERITY_WARNING)
 	}
 
 	// Validate rules
@@ -70,7 +70,7 @@ func RouteShortNameValidation(route *types.Route, row int, rules *types.RoutesRu
 		}
 
 		if !slices.Contains(*rules.RouteShortName.Options, *route.RouteShortName) {
-			addMessage(fmt.Sprintf("route_short_name is not allowed: %s", *route.RouteShortName), s)
+			addMessage(i18n.AppTranslator.Get("route_short_name_validation.not_allowed", map[string]interface{}{"value": *route.RouteShortName}), s)
 			return
 		}
 	}

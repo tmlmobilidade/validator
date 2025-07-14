@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -44,8 +44,13 @@ func RegionIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "region_id is required", "region_id is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"region_id_validation.required",
+				"region_id_validation.recommended",
+			),
+		)
+		addMessage(message, s)
 		return
 	}
 
@@ -56,7 +61,7 @@ func RegionIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if !slices.Contains(*rules.RegionId.Options, *stop.RegionId) {
-			addMessage(fmt.Sprintf("region_id is not allowed: %s", *stop.RegionId), s)
+			addMessage(i18n.AppTranslator.Get("region_id_validation.not_allowed", *stop.RegionId), s)
 			return
 		}
 	}

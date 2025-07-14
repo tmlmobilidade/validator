@@ -1,6 +1,7 @@
 package trips
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -39,7 +40,7 @@ func TripShortNameValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules 
 	message := types.Message{
 		Field:        "trip_short_name",
 		FileName:     "trips.txt",
-		Message:      lib.IfThenElse(s == types.SEVERITY_ERROR, "Trip short name is required", "Trip short name is recommended"),
+		Message:      lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("trip_short_name_validation.required"), i18n.AppTranslator.Get("trip_short_name_validation.recommended")),
 		Rows:         []int{row},
 		Severity:     s,
 		ValidationID: "trip_short_name_validation",

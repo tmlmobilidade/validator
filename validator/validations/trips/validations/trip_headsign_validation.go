@@ -1,6 +1,7 @@
 package trips
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -40,7 +41,7 @@ func TripHeadsignValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *
 	message := types.Message{
 		Field:        "trip_headsign",
 		FileName:     "trips.txt",
-		Message:      lib.IfThenElse(s == types.SEVERITY_ERROR, "Trip headsign is required", "Trip headsign is recommended"),
+		Message:      lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("trip_headsign_validation.required"), i18n.AppTranslator.Get("trip_headsign_validation.recommended")),
 		Rows:         []int{row},
 		Severity:     s,
 		ValidationID: "trip_headsign_validation",

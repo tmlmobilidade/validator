@@ -2,6 +2,7 @@ package stop_times
 
 import (
 	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -59,7 +60,7 @@ func PickupTypeValidation(stopTime *types.StopTime, row int, rules *types.StopTi
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "pickup_type is recommended", "pickup_type is required")
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("pickup_type_validation.recommended"), i18n.AppTranslator.Get("pickup_type_validation.required"))
 		addMessage(warn, s)
 		return
 	}
@@ -67,13 +68,13 @@ func PickupTypeValidation(stopTime *types.StopTime, row int, rules *types.StopTi
 	// Validate values
 	pt := *stopTime.PickupType
 	if pt < 0 || pt > 3 {
-		addMessage("pickup_type must be 0, 1, 2, or 3.", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("pickup_type_validation.invalid"), types.SEVERITY_ERROR)
 		return
 	}
 
 	// pickup_type=0 or 3 forbidden if start_pickup_drop_off_window or end_pickup_drop_off_window are defined
 	if (pt == 0 || pt == 3) && ((stopTime.StartPickupDropOffWindow != nil && *stopTime.StartPickupDropOffWindow != "") || (stopTime.EndPickupDropOffWindow != nil && *stopTime.EndPickupDropOffWindow != "")) {
-		addMessage("pickup_type 0 or 3 is forbidden if start_pickup_drop_off_window or end_pickup_drop_off_window are defined.", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("pickup_type_validation.forbidden_with_window"), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -84,7 +85,7 @@ func PickupTypeValidation(stopTime *types.StopTime, row int, rules *types.StopTi
 		}
 
 		if !slices.Contains(*rules.PickupType.Options, fmt.Sprintf("%d", pt)) {
-			addMessage(fmt.Sprintf("pickup_type is not allowed: %d", pt), s)
+			addMessage(i18n.AppTranslator.Get("pickup_type_validation.not_allowed", fmt.Sprintf("%d", pt)), s)
 			return
 		}
 	}

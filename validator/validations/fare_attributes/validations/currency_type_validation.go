@@ -1,6 +1,7 @@
 package fare_attributes
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -9,10 +10,10 @@ import (
 /*
 # Attributes
 
-	- File: [fare_attributes.txt]
-	- Field: currency_type
-	- Presence: Required
-	- Type: Currency code
+  - File: [fare_attributes.txt]
+  - Field: currency_type
+  - Presence: Required
+  - Type: Currency code
 
 # Description
 
@@ -32,14 +33,14 @@ func CurrencyTypeValidation(fareAttribute *types.FareAttribute, row int) {
 			ValidationID: "currency_type_validation",
 		})
 	}
-	
+
 	if fareAttribute.CurrencyType == nil {
-		addMessage("Currency type is required")
+		addMessage(i18n.AppTranslator.Get("currency_type_validation.required"))
 		return
 	}
-	
-	if errMsg := lib.ValidateCurrencyType(*fareAttribute.CurrencyType); errMsg != "" {
-		addMessage(errMsg)
+
+	if !lib.ValidateCurrencyType(*fareAttribute.CurrencyType) {
+		addMessage(i18n.AppTranslator.Get("currency_type_validation.invalid", *fareAttribute.CurrencyType))
 		return
 	}
 }

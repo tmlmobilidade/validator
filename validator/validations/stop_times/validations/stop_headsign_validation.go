@@ -1,7 +1,7 @@
 package stop_times
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -53,7 +53,7 @@ func StopHeadsignValidation(stopTime *types.StopTime, row int, rules *types.Stop
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "stop_headsign is recommended", "stop_headsign is required")
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("stop_headsign_validation.recommended"), i18n.AppTranslator.Get("stop_headsign_validation.required"))
 		addMessage(warn, s)
 		return
 	}
@@ -65,7 +65,7 @@ func StopHeadsignValidation(stopTime *types.StopTime, row int, rules *types.Stop
 		}
 
 		if !slices.Contains(*rules.StopHeadsign.Options, *stopTime.StopHeadsign) {
-			addMessage(fmt.Sprintf("stop_headsign is not allowed: %s", *stopTime.StopHeadsign), s)
+			addMessage(i18n.AppTranslator.Get("stop_headsign_validation.not_allowed", *stopTime.StopHeadsign), s)
 			return
 		}
 	}

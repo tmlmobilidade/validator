@@ -22,7 +22,7 @@ The times provided in stop_times.txt are in the timezone specified by `agency.ag
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -51,14 +51,18 @@ func StopTimezoneValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 		if s == types.SEVERITY_IGNORE {
 			return
 		}
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "stop_timezone is required", "stop_timezone is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"stop_timezone_validation.required",
+				"stop_timezone_validation.recommended",
+			),
+		)
+		addMessage(message, s)
 		return
 	}
 
-	err := lib.ValidateTimezone(*stop.StopTimezone)
-	if err != "" {
-		addMessage(err, types.SEVERITY_ERROR)
+	if !lib.ValidateTimezone(*stop.StopTimezone) {
+		addMessage(i18n.AppTranslator.Get("stop_timezone_validation.invalid", *stop.StopTimezone), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -69,7 +73,7 @@ func StopTimezoneValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 		}
 
 		if !slices.Contains(*rules.StopTimezone.Options, *stop.StopTimezone) {
-			addMessage(fmt.Sprintf("stop_timezone is not allowed: %s", *stop.StopTimezone), s)
+			addMessage(i18n.AppTranslator.Get("stop_timezone_validation.not_allowed", *stop.StopTimezone), s)
 			return
 		}
 	}

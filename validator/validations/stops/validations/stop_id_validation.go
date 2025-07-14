@@ -1,3 +1,13 @@
+package stops
+
+import (
+	"main/i18n"
+	"main/lib"
+	"main/services"
+	"main/types"
+	"slices"
+)
+
 /*
 # Attributes
 
@@ -15,16 +25,6 @@ ID must be unique across all stops.stop_id, locations.geojson id, and location_g
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 
-package stops
-
-import (
-	"fmt"
-	"main/lib"
-	"main/services"
-	"main/types"
-	"slices"
-)
-
 // StopIdValidation validates the presence and uniqueness of stop_id in stops.txt
 func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.StopsRules) {
 	addMessage := func(msg string) {
@@ -40,7 +40,7 @@ func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.
 
 	// Check if stop_id is missing
 	if stop.StopId == nil || *stop.StopId == "" {
-		addMessage("Missing required stop_id.")
+		addMessage(i18n.AppTranslator.Get("stop_id_validation.required"))
 	}
 
 	// Check if stop_id is unique
@@ -48,7 +48,7 @@ func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.
 		count := len(lib.RemoveDuplicates(gtfs.IdMap["stops"][*stop.StopId]))
 
 		if count > 1 {
-			addMessage("Duplicate stop_id found: " + *stop.StopId)
+			addMessage(i18n.AppTranslator.Get("stop_id_validation.duplicate", *stop.StopId))
 			return
 		}
 	}
@@ -60,7 +60,7 @@ func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.
 		}
 
 		if !slices.Contains(*rules.StopId.Options, *stop.StopId) {
-			addMessage(fmt.Sprintf("stop_id is not allowed: %s", *stop.StopId))
+			addMessage(i18n.AppTranslator.Get("stop_id_validation.not_allowed", *stop.StopId))
 			return
 		}
 	}

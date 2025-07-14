@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -45,15 +45,20 @@ func HasStopSignValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "has_stop_sign is required", "has_stop_sign is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"has_stop_sign_validation.required",
+				"has_stop_sign_validation.recommended",
+			),
+		)
+		addMessage(message, s)
 		return
 	}
 
 	// Validate value
 	validValues := []int{0, 1, 2, 3}
 	if !slices.Contains(validValues, *stop.HasStopSign) {
-		addMessage("has_stop_sign must be 0, 1, 2, or 3", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("has_stop_sign_validation.invalid", *stop.HasStopSign), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -64,7 +69,7 @@ func HasStopSignValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if !slices.Contains(*rules.HasStopSign.Options, strconv.Itoa(*stop.HasStopSign)) {
-			addMessage(fmt.Sprintf("has_stop_sign is not allowed: %d", *stop.HasStopSign), s)
+			addMessage(i18n.AppTranslator.Get("has_stop_sign_validation.not_allowed", *stop.HasStopSign), s)
 			return
 		}
 	}

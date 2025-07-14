@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -44,14 +44,19 @@ func LevelIdValidation(stop *types.Stop, row int, gtfs types.Gtfs, rules *types.
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "level_id is required", "level_id is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"level_id_validation.required",
+				"level_id_validation.recommended",
+			),
+		)
+		addMessage(message, s)
 		return
 	}
 
 	// Check Foreign Key
 	if !lib.GtfsIdMapKeyExists(&gtfs, "levels", *stop.LevelId) {
-		addMessage("level_id '"+*stop.LevelId+"' does not exist in levels.txt", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("level_id_validation.not_found", *stop.LevelId), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -62,7 +67,7 @@ func LevelIdValidation(stop *types.Stop, row int, gtfs types.Gtfs, rules *types.
 		}
 
 		if !slices.Contains(*rules.LevelId.Options, *stop.LevelId) {
-			addMessage(fmt.Sprintf("level_id is not allowed: %s", *stop.LevelId), s)
+			addMessage(i18n.AppTranslator.Get("level_id_validation.not_allowed", *stop.LevelId), s)
 			return
 		}
 	}

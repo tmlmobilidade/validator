@@ -1,7 +1,7 @@
 package agency
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -36,13 +36,12 @@ func AgencyUrlValidation(agency *types.Agency, row int, rules *types.AgencyRules
 	}
 
 	if agency.AgencyUrl == nil {
-		addMessage("Agency URL is required")
+		addMessage(i18n.AppTranslator.Get("agency_url_validation.required"))
 		return
 	}
 
-	err := lib.ValidateUrl(*agency.AgencyUrl)
-	if err != "" {
-		addMessage(err)
+	if !lib.ValidateUrl(*agency.AgencyUrl) {
+		addMessage(i18n.AppTranslator.Get("agency_url_validation.invalid"))
 		return
 	}
 
@@ -53,7 +52,7 @@ func AgencyUrlValidation(agency *types.Agency, row int, rules *types.AgencyRules
 		}
 
 		if !slices.Contains(*rules.AgencyUrl.Options, *agency.AgencyUrl) {
-			addMessage(fmt.Sprintf("Agency URL is not allowed: %s", *agency.AgencyUrl))
+			addMessage(i18n.AppTranslator.Get("agency_url_validation.not_allowed", *agency.AgencyUrl))
 			return
 		}
 	}

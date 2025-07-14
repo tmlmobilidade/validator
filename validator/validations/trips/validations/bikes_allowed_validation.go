@@ -1,6 +1,7 @@
 package trips
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -39,7 +40,7 @@ func BikesAllowedValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *
 			message := types.Message{
 				Field:        "bikes_allowed",
 				FileName:     "trips.txt",
-				Message:      "Invalid bikes_allowed value. Valid values are 0, 1, and 2.",
+				Message:      i18n.AppTranslator.Get("bikes_allowed_validation.invalid"),
 				Rows:         []int{row},
 				Severity:     s,
 				ValidationID: "bikes_allowed_validation",
@@ -58,7 +59,7 @@ func BikesAllowedValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *
 		message := types.Message{
 			Field:        "bikes_allowed",
 			FileName:     "trips.txt",
-			Message:      lib.IfThenElse(s == types.SEVERITY_ERROR, "bikes_allowed is required", "bikes_allowed is recommended"),
+			Message:      lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("bikes_allowed_validation.required"), i18n.AppTranslator.Get("bikes_allowed_validation.recommended")),
 			Rows:         []int{row},
 			Severity:     s,
 			ValidationID: "bikes_allowed_validation",

@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -11,7 +11,7 @@ import (
 /*
 # Attributes
 
-  - File: [stop.txt]
+  - File: [stops.txt]
   - Field: stop_url
   - Presence: Optional
   - Type: URL
@@ -20,7 +20,7 @@ import (
 
 URL of the transit stop.
 
-[stop.txt]: https://gtfs.org/schedule/reference/#stoptxt
+[stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func StopUrlValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 
@@ -32,7 +32,7 @@ func StopUrlValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	addMessage := func(message string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
 			Field:        "stop_url",
-			FileName:     "stop.txt",
+			FileName:     "stops.txt",
 			Message:      message,
 			Rows:         []int{row},
 			Severity:     severity,
@@ -45,14 +45,18 @@ func StopUrlValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "stop_url is required", "stop_url is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"stop_url_validation.required",
+				"stop_url_validation.recommended",
+			),
+		)
+		addMessage(message, s)
 		return
 	}
 
-	err := lib.ValidateUrl(*stop.StopUrl)
-	if err != "" {
-		addMessage(err, types.SEVERITY_ERROR)
+	if !lib.ValidateUrl(*stop.StopUrl) {
+		addMessage(i18n.AppTranslator.Get("stop_url_validation.invalid", *stop.StopUrl), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -63,7 +67,7 @@ func StopUrlValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if !slices.Contains(*rules.StopUrl.Options, *stop.StopUrl) {
-			addMessage(fmt.Sprintf("stop_url is not allowed: %s", *stop.StopUrl), s)
+			addMessage(i18n.AppTranslator.Get("stop_url_validation.not_allowed", *stop.StopUrl), s)
 			return
 		}
 	}

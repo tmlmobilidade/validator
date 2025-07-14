@@ -1,6 +1,7 @@
 package shapes
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -9,12 +10,12 @@ import (
 // ParseShape parses a row from shapes.txt into a Shape struct, following gtfs-parser-validation best practices
 func ParseShape(rawShape types.ShapeRaw, row int) types.Shape {
 	var (
-		shape types.Shape = types.Shape{}
-		shapeId string
+		shape                  types.Shape = types.Shape{}
+		shapeId                string
 		shapePtLat, shapePtLon float32
-		shapePtSequence int
-		shapeDistTraveled float64
-		messages []types.Message
+		shapePtSequence        int
+		shapeDistTraveled      float64
+		messages               []types.Message
 	)
 
 	stringFields := map[string]*string{
@@ -36,7 +37,7 @@ func ParseShape(rawShape types.ShapeRaw, row int) types.Shape {
 			Field:        field,
 			FileName:     "shapes.txt",
 			Rows:         []int{row},
-			Message:      msg,
+			Message:      i18n.AppTranslator.Get("parse_shapes.parsing_error", msg),
 			Severity:     types.SEVERITY_ERROR,
 			ValidationID: "shapes_parse",
 		})

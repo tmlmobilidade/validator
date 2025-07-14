@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -47,7 +47,7 @@ func RouteColorValidation(route *types.Route, row int, rules *types.RoutesRules)
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "route_color is recommended", "route_color is required")
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("route_color_validation.recommended"), i18n.AppTranslator.Get("route_color_validation.required"))
 		addMessage(warn, s)
 		return
 	}
@@ -55,7 +55,7 @@ func RouteColorValidation(route *types.Route, row int, rules *types.RoutesRules)
 	color := strings.ToUpper(*route.RouteColor)
 	matched, _ := regexp.MatchString(`^[0-9A-F]{6}$`, color)
 	if !matched {
-		addMessage("route_color must be a valid 6-character hexadecimal color (e.g., FFFFFF)", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("route_color_validation.invalid"), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -66,7 +66,7 @@ func RouteColorValidation(route *types.Route, row int, rules *types.RoutesRules)
 		}
 
 		if !slices.Contains(*rules.RouteColor.Options, *route.RouteColor) {
-			addMessage(fmt.Sprintf("route_color is not allowed: %s", *route.RouteColor), s)
+			addMessage(i18n.AppTranslator.Get("route_color_validation.not_allowed", map[string]interface{}{"value": *route.RouteColor}), s)
 			return
 		}
 	}

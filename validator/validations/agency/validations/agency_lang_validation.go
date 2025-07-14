@@ -1,7 +1,6 @@
 package agency
 
 import (
-	"fmt"
 	"main/i18n"
 	"main/lib"
 	"main/services"
@@ -43,14 +42,18 @@ func AgencyLangValidation(agency *types.Agency, row int, rules *types.AgencyRule
 
 	// Check if agency_lang is required
 	if agency.AgencyLang == nil && s != types.SEVERITY_IGNORE {
-		addMessage(lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("agency_lang_validation.required"), i18n.AppTranslator.Get("agency_lang_validation.recommended")), s)
+		addMessage(i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"agency_lang_validation.required",
+				"agency_lang_validation.recommended",
+			),
+		), s)
 	}
 
 	// Check if agency_lang is valid
-	if agency.AgencyLang != nil {
-		if langErrors := lib.ValidateLanguage(*agency.AgencyLang); langErrors != "" {
-			addMessage(langErrors, types.SEVERITY_ERROR)
-		}
+	if agency.AgencyLang != nil && !lib.ValidateLanguage(*agency.AgencyLang) {
+		addMessage(i18n.AppTranslator.Get("agency_lang_validation.invalid"), types.SEVERITY_ERROR)
+		return
 	}
 
 	// Validate rules
@@ -60,7 +63,7 @@ func AgencyLangValidation(agency *types.Agency, row int, rules *types.AgencyRule
 		}
 
 		if !slices.Contains(*rules.AgencyLang.Options, *agency.AgencyLang) {
-			addMessage(fmt.Sprintf("Agency language is not allowed: %s", *agency.AgencyLang), s)
+			addMessage(i18n.AppTranslator.Get("agency_lang_validation.not_allowed", *agency.AgencyLang), s)
 			return
 		}
 	}

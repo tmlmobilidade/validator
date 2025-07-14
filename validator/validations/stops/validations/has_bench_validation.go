@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -45,15 +45,20 @@ func HasBenchValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "has_bench is required", "has_bench is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"has_bench_validation.required",
+				"has_bench_validation.recommended",
+			),
+		)
+		addMessage(message, s)
 		return
 	}
 
 	// Validate value
 	validValues := []int{0, 1, 2, 3}
 	if !slices.Contains(validValues, *stop.HasBench) {
-		addMessage("has_bench must be 0, 1, 2, or 3", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("has_bench_validation.invalid", *stop.HasBench), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -64,7 +69,7 @@ func HasBenchValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if !slices.Contains(*rules.HasBench.Options, strconv.Itoa(*stop.HasBench)) {
-			addMessage(fmt.Sprintf("has_bench is not allowed: %d", *stop.HasBench), s)
+			addMessage(i18n.AppTranslator.Get("has_bench_validation.not_allowed", *stop.HasBench), s)
 		}
 
 		return

@@ -54,19 +54,20 @@
         "not_allowed": "O campo \"agency_url\" \"%s\" não é permitido"
     },
     "parser": {
-        "int8": "Falha ao analisar \"%s\" para int8",
-        "int16": "Falha ao analisar \"%s\" para int16",
-        "int32": "Falha ao analisar \"%s\" para int32",
-        "int64": "Falha ao analisar \"%s\" para int64",
-        "int": "Falha ao analisar \"%s\" para int",
-        "uint8": "Falha ao analisar \"%s\" para uint8",
-        "uint16": "Falha ao analisar \"%s\" para uint16",
-        "uint32": "Falha ao analisar \"%s\" para uint32",
-        "uint64": "Falha ao analisar \"%s\" para uint64",
-        "uint": "Falha ao analisar \"%s\" para uint",
-        "float32": "Falha ao analisar \"%s\" para float32",
-        "float64": "Falha ao analisar \"%s\" para float64",
-        "bool": "Falha ao analisar \"%s\" para bool"
+        "int8": "Falha ao transformar \"%s\" para int8",
+        "int16": "Falha ao transformar \"%s\" para int16",
+        "int32": "Falha ao transformar \"%s\" para int32",
+        "int64": "Falha ao transformar \"%s\" para int64",
+        "int": "Falha ao transformar \"%s\" para int",
+        "uint8": "Falha ao transformar \"%s\" para uint8",
+        "uint16": "Falha ao transformar \"%s\" para uint16",
+        "uint32": "Falha ao transformar \"%s\" para uint32",
+        "uint64": "Falha ao transformar \"%s\" para uint64",
+        "uint": "Falha ao transformar \"%s\" para uint",
+        "float32": "Falha ao transformar \"%s\" para float32",
+        "float64": "Falha ao transformar \"%s\" para float64",
+        "bool": "Falha ao transformar \"%s\" para bool",
+        "invalid_type": "A variável \"%s\" é do tipo \"%s\" e não pode ser transformada para um tipo primitivo"
     },
     "date_validation": {
         "required": "O campo \"service_date\" é obrigatório",

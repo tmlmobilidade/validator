@@ -2,6 +2,7 @@ package agency
 
 import (
 	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -10,8 +11,8 @@ import (
 # Attributes
 
   - File: [agency.txt]
-  - Field: agency_name
-  - Presence: Required
+  - Field: agency_name_id_match
+  - Presence: Optional
   - Type: String
 
 # Description
@@ -21,6 +22,7 @@ Full name of the transit agency.
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
 func AgencyNameIdMatchValidation(agency *types.Agency, row int, rules *types.AgencyRules) {
+
 	s := types.SEVERITY_IGNORE
 	if rules != nil && rules.AgencyNameIdMatch.Severity != types.SEVERITY_IGNORE {
 		s = rules.AgencyNameIdMatch.Severity
@@ -43,7 +45,12 @@ func AgencyNameIdMatchValidation(agency *types.Agency, row int, rules *types.Age
 
 	// Check if agency_id matches agency_name
 	if agency.AgencyId == nil || agency.AgencyName == nil {
-		addMessage(i18n.AppTranslator.Get("agency_name_id_match_validation.required"), s)
+		addMessage(i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"agency_name_id_match_validation.required",
+				"agency_name_id_match_validation.recommended",
+			),
+		), s)
 		return
 	}
 

@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -51,8 +51,13 @@ func StopCodeValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *type
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "stop_code is required", "stop_code is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"stop_code_validation.required",
+				"stop_code_validation.recommended",
+			),
+		)
+		addMessage(message, s)
 		return
 	}
 
@@ -61,7 +66,7 @@ func StopCodeValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *type
 		count := len(lib.RemoveDuplicates(gtfs.IdMap["stops"][*stop.StopCode]))
 
 		if count > 1 {
-			addMessage("Duplicate stop_code found: "+*stop.StopCode, types.SEVERITY_WARNING)
+			addMessage(i18n.AppTranslator.Get("stop_code_validation.duplicate", *stop.StopCode), types.SEVERITY_WARNING)
 			return
 		}
 	}
@@ -73,7 +78,7 @@ func StopCodeValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *type
 		}
 
 		if !slices.Contains(*rules.StopCode.Options, *stop.StopCode) {
-			addMessage(fmt.Sprintf("stop_code is not allowed: %s", *stop.StopCode), s)
+			addMessage(i18n.AppTranslator.Get("stop_code_validation.not_allowed", *stop.StopCode), s)
 			return
 		}
 	}

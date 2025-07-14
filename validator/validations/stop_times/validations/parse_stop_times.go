@@ -1,6 +1,7 @@
 package stop_times
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -9,35 +10,35 @@ import (
 func ParseStopTimes(rawStopTimes types.StopTimeRaw, row int) types.StopTime {
 	var (
 		stopTime types.StopTime = types.StopTime{}
-		
-		tripId,arrivalTime,departureTime,stopId,locationGroupId,locationId,stopHeadsign,startPickupDropOffWindow,endPickupDropOffWindow,pickupBookingRuleId,dropOffBookingRuleId string
+
+		tripId, arrivalTime, departureTime, stopId, locationGroupId, locationId, stopHeadsign, startPickupDropOffWindow, endPickupDropOffWindow, pickupBookingRuleId, dropOffBookingRuleId string
 
 		stopSequence, timepoint, pickupType, dropOffType, continuousPickup, continuousDropOff int
-		shapeDistTraveled float64
-		messages []types.Message
+		shapeDistTraveled                                                                     float64
+		messages                                                                              []types.Message
 	)
 
 	stringFields := map[string]*string{
-		"stop_id": &stopId,
-		"trip_id": &tripId,
-		"arrival_time": &arrivalTime,
-		"departure_time": &departureTime,
-		"stop_headsign": &stopHeadsign,
+		"stop_id":                      &stopId,
+		"trip_id":                      &tripId,
+		"arrival_time":                 &arrivalTime,
+		"departure_time":               &departureTime,
+		"stop_headsign":                &stopHeadsign,
 		"start_pickup_drop_off_window": &startPickupDropOffWindow,
-		"end_pickup_drop_off_window": &endPickupDropOffWindow,
-		"pickup_booking_rule_id": &pickupBookingRuleId,
-		"drop_off_booking_rule_id": &dropOffBookingRuleId,
-		"location_group_id": &locationGroupId,
-		"location_id": &locationId,
+		"end_pickup_drop_off_window":   &endPickupDropOffWindow,
+		"pickup_booking_rule_id":       &pickupBookingRuleId,
+		"drop_off_booking_rule_id":     &dropOffBookingRuleId,
+		"location_group_id":            &locationGroupId,
+		"location_id":                  &locationId,
 	}
 
 	intFields := map[string]*int{
-		"stop_sequence": &stopSequence,
-		"pickup_type": &pickupType,
-		"drop_off_type": &dropOffType,
-		"continuous_pickup": &continuousPickup,
+		"stop_sequence":       &stopSequence,
+		"pickup_type":         &pickupType,
+		"drop_off_type":       &dropOffType,
+		"continuous_pickup":   &continuousPickup,
 		"continuous_drop_off": &continuousDropOff,
-		"timepoint": &timepoint,
+		"timepoint":           &timepoint,
 	}
 
 	floatFields := map[string]*float64{
@@ -59,21 +60,21 @@ func ParseStopTimes(rawStopTimes types.StopTimeRaw, row int) types.StopTime {
 	// Parse string fields
 	for field, target := range stringFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawStopTimes, "gtfs", field), target); errMsg != "" {
-			addMessage(field, errMsg)
+			addMessage(field, i18n.AppTranslator.Get("stop_times_parse."+field+"_error", errMsg))
 		}
 	}
 
 	// Parse int fields
 	for field, target := range intFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawStopTimes, "gtfs", field), target); errMsg != "" {
-			addMessage(field, errMsg)
+			addMessage(field, i18n.AppTranslator.Get("stop_times_parse."+field+"_error", errMsg))
 		}
 	}
 
 	// Parse float fields
 	for field, target := range floatFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawStopTimes, "gtfs", field), target); errMsg != "" {
-			addMessage(field, errMsg)
+			addMessage(field, i18n.AppTranslator.Get("stop_times_parse."+field+"_error", errMsg))
 		}
 	}
 
@@ -100,6 +101,6 @@ func ParseStopTimes(rawStopTimes types.StopTimeRaw, row int) types.StopTime {
 	stopTime.Timepoint = lib.IfThenElse(rawStopTimes.Timepoint != "", &timepoint, nil)
 	stopTime.PickupBookingRuleId = lib.IfThenElse(rawStopTimes.PickupBookingRuleId != "", &pickupBookingRuleId, nil)
 	stopTime.DropOffBookingRuleId = lib.IfThenElse(rawStopTimes.DropOffBookingRuleId != "", &dropOffBookingRuleId, nil)
-	
+
 	return stopTime
 }

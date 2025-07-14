@@ -1,6 +1,7 @@
 package shapes
 
 import (
+	"main/i18n"
 	"main/services"
 	"main/types"
 	"sort"
@@ -30,14 +31,13 @@ func ShapeSequenceValidation(shapes []types.Shape) {
 			ValidationID: "shape_pt_sequence_validation",
 		})
 	}
-	
 
 	// Group shapes by shape_id
 	shapeGroups := make(map[string][]ShapePtSequenceGroup)
 
 	for i, shape := range shapes {
 		if shape.ShapeId == nil || shape.ShapePtSequence == nil {
-			addMessage("shape_id and shape_pt_sequence are required and must not be empty.", i)
+			addMessage(i18n.AppTranslator.Get("shape_pt_sequence_validation.required"), i)
 			return
 		}
 
@@ -65,15 +65,15 @@ func ShapeSequenceValidation(shapes []types.Shape) {
 		for i, shape := range shapeGroup {
 			if i > 0 {
 				if shape.sequence <= shapeGroup[i-1].sequence {
-					addMessage("shape_pt_sequence for shape_id '"+shape.shapeId+"' must increase along the trip", shape.row)
+					addMessage(i18n.AppTranslator.Get("shape_pt_sequence_validation.not_increasing", shape.shapeId), shape.row)
 				}
 				// Only check dist if both current and previous are present
 				if shape.dist >= 0 && shapeGroup[i-1].dist >= 0 {
 					if shape.dist < shapeGroup[i-1].dist {
-						addMessage("shape_dist_traveled for shape_id '"+shape.shapeId+"' must increase along the trip", shape.row)
+						addMessage(i18n.AppTranslator.Get("shape_dist_traveled_validation.not_increasing", shape.shapeId), shape.row)
 					}
 				}
 			}
 		}
 	}
-} 
+}

@@ -1,6 +1,7 @@
 package trips
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -55,7 +56,7 @@ func BlockIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 		message := types.Message{
 			Field:        "block_id",
 			FileName:     "trips.txt",
-			Message:      lib.IfThenElse(s == types.SEVERITY_ERROR, "block_id is required", "block_id is recommended"),
+			Message:      lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("block_id_validation.required"), i18n.AppTranslator.Get("block_id_validation.recommended")),
 			Rows:         []int{row},
 			Severity:     s,
 			ValidationID: "block_id_validation",

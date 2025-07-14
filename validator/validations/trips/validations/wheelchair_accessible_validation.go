@@ -2,6 +2,7 @@ package trips
 
 import (
 	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -47,7 +48,7 @@ func WheelchairAccessibleValidation(trip *types.Trip, row int, gtfs *types.Gtfs,
 	if trip.WheelchairAccessible != nil {
 		validWheelchairAccessible := map[int]bool{0: true, 1: true, 2: true}
 		if !validWheelchairAccessible[*trip.WheelchairAccessible] {
-			addMessage("Invalid wheelchair_accessible value. Valid values are 0, 1, and 2.", s)
+			addMessage(i18n.AppTranslator.Get("wheelchair_accessible_validation.invalid"), s)
 			return
 		}
 	}
@@ -58,7 +59,7 @@ func WheelchairAccessibleValidation(trip *types.Trip, row int, gtfs *types.Gtfs,
 	}
 
 	if trip.WheelchairAccessible == nil {
-		addMessage(lib.IfThenElse(s == types.SEVERITY_ERROR, "wheelchair_accessible is required", "wheelchair_accessible is recommended"), s)
+		addMessage(lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("wheelchair_accessible_validation.required"), i18n.AppTranslator.Get("wheelchair_accessible_validation.recommended")), s)
 		return
 	}
 
@@ -69,7 +70,7 @@ func WheelchairAccessibleValidation(trip *types.Trip, row int, gtfs *types.Gtfs,
 		}
 
 		if !slices.Contains(*rules.WheelchairAccessible.Options, fmt.Sprintf("%d", *trip.WheelchairAccessible)) {
-			addMessage(fmt.Sprintf("wheelchair_accessible is not allowed: %d", *trip.WheelchairAccessible), s)
+			addMessage(i18n.AppTranslator.Get("wheelchair_accessible_validation.not_allowed", map[string]interface{}{"value": *trip.WheelchairAccessible}), s)
 			return
 		}
 	}

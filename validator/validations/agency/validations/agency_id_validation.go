@@ -57,7 +57,12 @@ func AgencyIdValidation(agency *types.Agency, row int, gtfs types.Gtfs, rules *t
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("agency_id_validation.required"), i18n.AppTranslator.Get("agency_id_validation.recommended"))
+		warn := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"agency_id_validation.required",
+				"agency_id_validation.recommended",
+			),
+		)
 		addMessage(warn, s)
 		return
 	}

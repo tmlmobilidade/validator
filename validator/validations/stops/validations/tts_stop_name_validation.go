@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -45,8 +45,13 @@ func TtsStopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "tts_stop_name is required", "tts_stop_name is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"tts_stop_name_validation.required",
+				"tts_stop_name_validation.recommended",
+			),
+		)
+		addMessage(message, s)
 		return
 	}
 
@@ -57,7 +62,7 @@ func TtsStopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if !slices.Contains(*rules.TtsStopName.Options, *stop.TtsStopName) {
-			addMessage(fmt.Sprintf("tts_stop_name is not allowed: %s", *stop.TtsStopName), s)
+			addMessage(i18n.AppTranslator.Get("tts_stop_name_validation.not_allowed", *stop.TtsStopName), s)
 			return
 		}
 	}

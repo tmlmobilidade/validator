@@ -1,7 +1,7 @@
 package feed_info
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -42,7 +42,7 @@ func FeedEndDateValidation(severity *types.Severity, feedInfo *types.FeedInfo, r
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     severity,
-			ValidationID: "feed_start_date_validation",
+			ValidationID: "feed_end_date_validation",
 		})
 	}
 
@@ -50,16 +50,16 @@ func FeedEndDateValidation(severity *types.Severity, feedInfo *types.FeedInfo, r
 		if s == types.SEVERITY_IGNORE {
 			return
 		}
-		
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "required", "recommended")
-		addMessage(fmt.Sprintf("Feed start date is %s", warn), s)
+
+		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("feed_end_date_validation.required"), i18n.AppTranslator.Get("feed_end_date_validation.recommended"))
+		addMessage(warn, s)
 		return
 	}
 
 	if feedInfo.FeedEndDate != nil && *feedInfo.FeedEndDate != "" {
 		if !lib.IsValidServiceDate(*feedInfo.FeedEndDate) {
-			addMessage("feed_end_date must be in YYYYMMDD format", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("feed_end_date_validation.invalid"), types.SEVERITY_ERROR)
 			return
 		}
 	}
-} 
+}

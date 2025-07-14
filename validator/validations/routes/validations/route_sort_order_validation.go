@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -42,13 +43,13 @@ func RouteSortOrderValidation(route *types.Route, row int, rules *types.RoutesRu
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "route_sort_order is recommended", "route_sort_order is required")
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("route_sort_order_validation.recommended"), i18n.AppTranslator.Get("route_sort_order_validation.required"))
 		addMessage(warn, s)
 		return
 	}
 
 	if *route.RouteSortOrder < 0 {
-		addMessage("route_sort_order must be a non-negative integer.", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("route_sort_order_validation.invalid"), types.SEVERITY_ERROR)
 		return
 	}
 }

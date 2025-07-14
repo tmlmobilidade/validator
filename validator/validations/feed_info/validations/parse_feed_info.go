@@ -1,6 +1,7 @@
 package feed_info
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -8,22 +9,22 @@ import (
 
 func ParseFeedInfo(rawFeedInfo types.FeedInfoRaw, row int) types.FeedInfo {
 	var (
-		feedInfo types.FeedInfo = types.FeedInfo{}
-		feedLang, feedPublisherName, feedPublisherUrl string
+		feedInfo                                                                               types.FeedInfo = types.FeedInfo{}
+		feedLang, feedPublisherName, feedPublisherUrl                                          string
 		defaultLang, feedContactEmail, feedContactUrl, feedEndDate, feedStartDate, feedVersion string
-		messages []types.Message
+		messages                                                                               []types.Message
 	)
 
 	stringFields := map[string]*string{
-		"feed_lang": &feedLang,
+		"feed_lang":           &feedLang,
 		"feed_publisher_name": &feedPublisherName,
-		"feed_publisher_url": &feedPublisherUrl,
-		"default_lang": &defaultLang,
-		"feed_contact_email": &feedContactEmail,
-		"feed_contact_url": &feedContactUrl,
-		"feed_end_date": &feedEndDate,
-		"feed_start_date": &feedStartDate,
-		"feed_version": &feedVersion,
+		"feed_publisher_url":  &feedPublisherUrl,
+		"default_lang":        &defaultLang,
+		"feed_contact_email":  &feedContactEmail,
+		"feed_contact_url":    &feedContactUrl,
+		"feed_end_date":       &feedEndDate,
+		"feed_start_date":     &feedStartDate,
+		"feed_version":        &feedVersion,
 	}
 
 	addMessage := func(field, msg string) {
@@ -40,7 +41,7 @@ func ParseFeedInfo(rawFeedInfo types.FeedInfoRaw, row int) types.FeedInfo {
 	// Parse string fields
 	for field, target := range stringFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawFeedInfo, "gtfs", field), target); errMsg != "" {
-			addMessage(field, errMsg)
+			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]interface{}{"field": field, "error": errMsg}))
 		}
 	}
 

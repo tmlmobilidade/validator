@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -30,12 +30,12 @@ func StopDescValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 
 	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field:        "tts_stop_name",
+			Field:        "stop_desc",
 			FileName:     "stops.txt",
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     severity,
-			ValidationID: "tts_stop_name_validation",
+			ValidationID: "stop_desc_validation",
 		})
 	}
 
@@ -44,13 +44,18 @@ func StopDescValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "tts_stop_name is required", "tts_stop_name is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"stop_desc_validation.required",
+				"stop_desc_validation.recommended",
+			),
+		)
+		addMessage(message, s)
 		return
 	}
 
 	if stop.StopName != nil && *stop.StopName == *stop.StopDesc {
-		addMessage("stop_desc should not be a duplicate of stop_name", types.SEVERITY_WARNING)
+		addMessage(i18n.AppTranslator.Get("stop_desc_validation.duplicate"), types.SEVERITY_WARNING)
 		return
 	}
 
@@ -61,7 +66,7 @@ func StopDescValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if !slices.Contains(*rules.StopDesc.Options, *stop.StopDesc) {
-			addMessage(fmt.Sprintf("stop_desc is not allowed: %s", *stop.StopDesc), s)
+			addMessage(i18n.AppTranslator.Get("stop_desc_validation.not_allowed", *stop.StopDesc), s)
 			return
 		}
 	}

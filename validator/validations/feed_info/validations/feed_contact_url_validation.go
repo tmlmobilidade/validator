@@ -1,7 +1,7 @@
 package feed_info
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -43,16 +43,16 @@ func FeedContactUrlValidation(severity *types.Severity, feedInfo *types.FeedInfo
 		if s == types.SEVERITY_IGNORE {
 			return
 		}
-		
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "required", "recommended")
-		addMessage(fmt.Sprintf("Feed contact URL is %s", warn), s)
+
+		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("feed_contact_url_validation.required"), i18n.AppTranslator.Get("feed_contact_url_validation.recommended"))
+		addMessage(warn, s)
 		return
 	}
 
 	if feedInfo.FeedContactUrl != nil && *feedInfo.FeedContactUrl != "" {
-		if err := lib.ValidateUrl(*feedInfo.FeedContactUrl); err != "" {
-			addMessage(err, types.SEVERITY_ERROR)
+		if valid := lib.ValidateUrl(*feedInfo.FeedContactUrl); !valid {
+			addMessage(i18n.AppTranslator.Get("feed_contact_url_validation.invalid"), types.SEVERITY_ERROR)
 			return
 		}
 	}
-} 
+}

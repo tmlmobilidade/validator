@@ -2,6 +2,7 @@ package trips
 
 import (
 	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -57,7 +58,7 @@ func DirectionIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *t
 	if trip.DirectionId != nil {
 		validDirectionIds := map[int]bool{0: true, 1: true}
 		if !validDirectionIds[*trip.DirectionId] {
-			addMessage("Invalid direction_id value. Valid values are 0 and 1.", s)
+			addMessage(i18n.AppTranslator.Get("direction_id_validation.invalid"), s)
 			return
 		}
 	}
@@ -68,7 +69,7 @@ func DirectionIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *t
 	}
 
 	if trip.DirectionId == nil {
-		addMessage(lib.IfThenElse(s == types.SEVERITY_ERROR, "direction_id is required", "direction_id is recommended"), s)
+		addMessage(lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("direction_id_validation.required"), i18n.AppTranslator.Get("direction_id_validation.recommended")), s)
 		return
 	}
 
@@ -79,7 +80,7 @@ func DirectionIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *t
 		}
 
 		if !slices.Contains(*rules.DirectionId.Options, fmt.Sprintf("%d", *trip.DirectionId)) {
-			addMessage(fmt.Sprintf("direction_id is not allowed: %d", *trip.DirectionId), s)
+			addMessage(i18n.AppTranslator.Get("direction_id_validation.not_allowed", map[string]interface{}{"value": *trip.DirectionId}), s)
 			return
 		}
 	}

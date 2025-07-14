@@ -1,6 +1,7 @@
 package shapes
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -9,10 +10,10 @@ import (
 /*
 # Attributes
 
- - File: [shapes.txt]
- - Field: shape_pt_lon
- - Presence: Required
- - Type: Longitude
+  - File: [shapes.txt]
+  - Field: shape_pt_lon
+  - Presence: Required
+  - Type: Longitude
 
 # Description
 
@@ -33,13 +34,13 @@ func ShapePtLonValidation(shape *types.Shape, row int) {
 		}
 		services.AppMessageService.AddMessage(message)
 	}
-	
+
 	if shape.ShapePtLon == nil {
-		addMessage("shape_pt_lon is required and must not be empty.")
+		addMessage(i18n.AppTranslator.Get("shape_pt_lon_validation.required"))
 		return
 	}
-	
-	if errMsg := lib.ValidateLongitude(*shape.ShapePtLon); errMsg != "" {
-		addMessage(errMsg)
+
+	if !lib.ValidateLongitude(*shape.ShapePtLon) {
+		addMessage(i18n.AppTranslator.Get("shape_pt_lon_validation.invalid"))
 	}
-} 
+}

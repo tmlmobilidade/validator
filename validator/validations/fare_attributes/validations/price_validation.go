@@ -1,6 +1,7 @@
 package fare_attributes
 
 import (
+	"main/i18n"
 	"main/services"
 	"main/types"
 )
@@ -8,10 +9,10 @@ import (
 /*
 # Attributes
 
-	- File: [fare_attributes.txt]
-	- Field: price
-	- Presence: Required
-	- Type: Non-negative float
+  - File: [fare_attributes.txt]
+  - Field: price
+  - Presence: Required
+  - Type: Non-negative float
 
 # Description
 
@@ -31,13 +32,13 @@ func PriceValidation(fareAttribute *types.FareAttribute, row int) {
 			ValidationID: "price_validation",
 		})
 	}
-	
+
 	if fareAttribute.Price == nil {
-		addMessage("Price is required")
+		addMessage(i18n.AppTranslator.Get("price_validation.required"))
 		return
 	}
-	
+
 	if *fareAttribute.Price < 0 {
-		addMessage("Price must be non-negative")
+		addMessage(i18n.AppTranslator.Get("price_validation.invalid", *fareAttribute.Price))
 	}
 }

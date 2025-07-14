@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -45,13 +45,13 @@ func NetworkIdValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *t
 	}
 
 	if route.NetworkId == nil && s != types.SEVERITY_IGNORE {
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "network_id is recommended", "network_id is required")
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("network_id_validation.recommended"), i18n.AppTranslator.Get("network_id_validation.required"))
 		addMessage(warn, s)
 		return
 	}
 
 	if len(gtfs.RouteNetwork) > 0 && route.NetworkId != nil {
-		addMessage("network_id is forbidden if route_networks.txt exists", types.SEVERITY_ERROR)
+		addMessage(i18n.AppTranslator.Get("network_id_validation.forbidden_with_route_networks"), types.SEVERITY_ERROR)
 		return
 	}
 
@@ -62,7 +62,7 @@ func NetworkIdValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *t
 		}
 
 		if !slices.Contains(*rules.NetworkId.Options, *route.NetworkId) {
-			addMessage(fmt.Sprintf("network_id is not allowed: %s", *route.NetworkId), s)
+			addMessage(i18n.AppTranslator.Get("network_id_validation.not_allowed", map[string]interface{}{"value": *route.NetworkId}), s)
 			return
 		}
 	}

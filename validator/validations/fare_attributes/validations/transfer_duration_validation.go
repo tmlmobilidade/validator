@@ -1,17 +1,17 @@
 package fare_attributes
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/services"
 	"main/types"
 )
 
 /*
 # Attributes
-	- File: [fare_attributes.txt]
-	- Field: transfer_duration
-	- Presence: Optional
-	- Type: Non-negative integer
+  - File: [fare_attributes.txt]
+  - Field: transfer_duration
+  - Presence: Optional
+  - Type: Non-negative integer
 
 # Description
 
@@ -27,23 +27,23 @@ func TransferDurationValidation(severity *types.Severity, fareAttribute *types.F
 
 	addMessage := func(msg string) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field:        "transfers",
+			Field:        "transfer_duration",
 			FileName:     "fare_attributes.txt",
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     s,
-			ValidationID: "transfers_validation",
+			ValidationID: "transfer_duration_validation",
 		})
 	}
-	
+
 	if fareAttribute.TransferDuration == nil {
 		if s != types.SEVERITY_IGNORE {
-			addMessage("transfer_duration is required")
+			addMessage(i18n.AppTranslator.Get("transfers_validation.required"))
 		}
 		return
 	}
 
 	if *fareAttribute.TransferDuration < 0 {
-		addMessage(fmt.Sprintf("transfer_duration must be greater than 0, got %d", *fareAttribute.TransferDuration))
+		addMessage(i18n.AppTranslator.Get("transfers_validation.invalid", *fareAttribute.TransferDuration))
 	}
 }

@@ -1,6 +1,7 @@
 package shapes
 
 import (
+	"main/i18n"
 	"main/services"
 	"main/types"
 )
@@ -8,10 +9,10 @@ import (
 /*
 # Attributes
 
- - File: [shapes.txt]
- - Field: shape_id
- - Presence: Required
- - Type: ID
+  - File: [shapes.txt]
+  - Field: shape_id
+  - Presence: Required
+  - Type: ID
 
 # Description
 
@@ -25,10 +26,10 @@ func ShapeIdValidation(shape *types.Shape, row int) {
 			Field:        "shape_id",
 			FileName:     "shapes.txt",
 			Rows:         []int{row},
-			Message:      "shape_id is required and must not be empty.",
+			Message:      i18n.AppTranslator.Get("shape_id_validation.required"),
 			Severity:     types.SEVERITY_ERROR,
 			ValidationID: "shape_id_validation",
 		}
 		services.AppMessageService.AddMessage(message)
 	}
-} 
+}

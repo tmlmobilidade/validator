@@ -1,6 +1,7 @@
 package stops
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -9,10 +10,10 @@ import (
 /*
 # Attributes
 
- - File: [stops.txt]
- - Field: stop_lat
- - Presence: Conditionally Required
- - Type: Latitude
+  - File: [stops.txt]
+  - Field: stop_lat
+  - Presence: Conditionally Required
+  - Type: Latitude
 
 # Description
 
@@ -56,18 +57,22 @@ func StopLatValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if isRequired {
-			addMessage("stop_lat is required when location_type is 0, 1, or 2", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("stop_lat_validation.required_location_type"), types.SEVERITY_ERROR)
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "stop_lat is required", "stop_lat is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"stop_lat_validation.required",
+				"stop_lat_validation.recommended",
+			),
+		)
+		addMessage(message, s)
 		return
 	}
-	
-	err := lib.ValidateLatitude(*stop.StopLat)
-	if err != "" {
-		addMessage(err, types.SEVERITY_ERROR)
+
+	if !lib.ValidateLatitude(*stop.StopLat) {
+		addMessage(i18n.AppTranslator.Get("stop_lat_validation.invalid", *stop.StopLat), types.SEVERITY_ERROR)
 		return
 	}
-} 
+}

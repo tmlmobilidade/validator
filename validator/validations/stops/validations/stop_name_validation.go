@@ -24,7 +24,7 @@ Conditionally Required:
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -61,14 +61,19 @@ func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	}
 
 	if locationType == 0 || locationType == 1 || locationType == 2 {
-		addMessage("stop_name is required when location_type is 0, 1, or 2", s)
+		addMessage(i18n.AppTranslator.Get("stop_short_name_validation.required_location_type"), s)
 		return
 	}
 
 	// Check presence of stop_name based on severity
 	if s != types.SEVERITY_IGNORE {
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "stop_name is required", "stop_name is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"stop_short_name_validation.required",
+				"stop_short_name_validation.recommended",
+			),
+		)
+		addMessage(message, s)
 		return
 	}
 
@@ -79,7 +84,7 @@ func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if !slices.Contains(*rules.StopName.Options, *stop.StopName) {
-			addMessage(fmt.Sprintf("stop_name is not allowed: %s", *stop.StopName), s)
+			addMessage(i18n.AppTranslator.Get("stop_short_name_validation.not_allowed", *stop.StopName), s)
 			return
 		}
 	}

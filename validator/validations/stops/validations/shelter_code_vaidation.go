@@ -1,7 +1,7 @@
 package stops
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -44,8 +44,13 @@ func ShelterCodeValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "shelter_code is required", "shelter_code is recommended")
-		addMessage(warn, s)
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"shelter_code_validation.required",
+				"shelter_code_validation.recommended",
+			),
+		)
+		addMessage(message, s)
 		return
 	}
 
@@ -56,7 +61,7 @@ func ShelterCodeValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if !slices.Contains(*rules.ShelterCode.Options, *stop.ShelterCode) {
-			addMessage(fmt.Sprintf("shelter_code is not allowed: %s", *stop.ShelterCode), s)
+			addMessage(i18n.AppTranslator.Get("shelter_code_validation.not_allowed", *stop.ShelterCode), s)
 			return
 		}
 	}

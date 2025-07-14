@@ -41,15 +41,19 @@ func AgencyFareUrlValidation(agency *types.Agency, row int, rules *types.AgencyR
 
 	// Check if agency_fare_url is required
 	if agency.AgencyFareUrl == nil && s != types.SEVERITY_IGNORE {
-		message := lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("agency_fare_url_validation.required"), i18n.AppTranslator.Get("agency_fare_url_validation.recommended"))
+		message := i18n.AppTranslator.Get(
+			lib.IfThenElse(s == types.SEVERITY_ERROR,
+				"agency_fare_url_validation.required",
+				"agency_fare_url_validation.recommended",
+			),
+		)
 		addMessage(message, s)
 	}
 
 	// Check if agency_fare_url is valid
-	if agency.AgencyFareUrl != nil {
-		if urlErrors := lib.ValidateUrl(*agency.AgencyFareUrl); urlErrors != "" {
-			addMessage(urlErrors, types.SEVERITY_ERROR)
-		}
+	if agency.AgencyFareUrl != nil && !lib.ValidateUrl(*agency.AgencyFareUrl) {
+		addMessage(i18n.AppTranslator.Get("agency_fare_url_validation.invalid"), types.SEVERITY_ERROR)
+		return
 	}
 
 	// Validate rules

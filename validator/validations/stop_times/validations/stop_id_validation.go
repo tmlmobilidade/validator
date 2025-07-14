@@ -1,6 +1,7 @@
 package stop_times
 
 import (
+	"main/i18n"
 	"main/services"
 	"main/types"
 )
@@ -8,10 +9,10 @@ import (
 /*
 # Attributes
 
- - File: [stop_times.txt]
- - Field: stop_id
- - Presence: Conditionally Required
- - Type: Foreign ID referencing stops.stop_id
+  - File: [stop_times.txt]
+  - Field: stop_id
+  - Presence: Conditionally Required
+  - Type: Foreign ID referencing stops.stop_id
 
 # Description
 
@@ -45,7 +46,7 @@ func StopIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
 	// Forbidden if location_group_id or location_id are defined
 	if (stopTime.LocationGroupId != nil && *stopTime.LocationGroupId != "") || (stopTime.LocationId != nil && *stopTime.LocationId != "") {
 		if stopTime.StopId != nil && *stopTime.StopId != "" {
-			addMessage("stop_id is forbidden if location_group_id or location_id are defined.", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("stop_id_validation.forbidden_with_other_ids"), types.SEVERITY_ERROR)
 		}
 		return
 	}
@@ -53,19 +54,19 @@ func StopIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
 	// Required if location_group_id AND location_id are NOT defined
 	if (stopTime.LocationGroupId == nil || *stopTime.LocationGroupId == "") && (stopTime.LocationId == nil || *stopTime.LocationId == "") {
 		if stopTime.StopId == nil || *stopTime.StopId == "" {
-			addMessage("stop_id is required if location_group_id and location_id are not defined.", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("stop_id_validation.required"), types.SEVERITY_ERROR)
 			return
 		}
 
 		// Foreign key check: must reference a valid stop_id from stops.txt
 		stopsMap, ok := gtfs.IdMap["stops"]
 		if !ok || stopsMap == nil {
-			addMessage("stops.txt is missing or not indexed.", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("stop_id_validation.missing_stops_file"), types.SEVERITY_ERROR)
 			return
 		}
 		rows, ok := stopsMap[*stopTime.StopId]
 		if !ok || len(rows) == 0 {
-			addMessage("stop_id must reference a valid stop_id from stops.txt.", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("stop_id_validation.not_found", *stopTime.StopId), types.SEVERITY_ERROR)
 			return
 		}
 
@@ -74,8 +75,8 @@ func StopIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
 		stopRow := gtfs.Stop[rowIdx]
 		locationTypeStr := stopRow.LocationType
 		if locationTypeStr != "" && locationTypeStr != "0" {
-			addMessage("stop_id must reference a stop with location_type 0 or empty (platform/stop).", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("stop_id_validation.invalid_location_type"), types.SEVERITY_ERROR)
 			return
 		}
 	}
-} 
+}

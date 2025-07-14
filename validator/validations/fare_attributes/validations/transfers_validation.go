@@ -1,7 +1,7 @@
 package fare_attributes
 
 import (
-	"fmt"
+	"main/i18n"
 	"main/services"
 	"main/types"
 	"slices"
@@ -9,22 +9,21 @@ import (
 
 /*
 # Attributes
-	- File: [fare_attributes.txt]
-	- Field: transfers
-	- Presence: Required
-	- Type: Enum
+  - File: [fare_attributes.txt]
+  - Field: transfers
+  - Presence: Required
+  - Type: Enum
 
 # Description
 
-Indicates the number of transfers permitted on a pass.
+Indicates the number of transfers permitted on this fare.
 
 Indicates the number of transfers permitted on this fare. Valid options are:
 
- - 0 - No transfers permitted on this fare.
- - 1 - Riders may transfer once.
- - 2 - Riders may transfer twice.
- - empty - Unlimited transfers are permitted.
-
+  - 0 - No transfers permitted on this fare.
+  - 1 - Riders may transfer once.
+  - 2 - Riders may transfer twice.
+  - empty - Unlimited transfers are permitted.
 
 # Example
 
@@ -48,7 +47,7 @@ func TransfersValidation(fareAttribute *types.FareAttribute, row int, gtfs *type
 			ValidationID: "transfers_validation",
 		})
 	}
-	
+
 	// TODO: The header is required, but the content is optional.
 	if fareAttribute.Transfers == nil {
 		return
@@ -56,6 +55,6 @@ func TransfersValidation(fareAttribute *types.FareAttribute, row int, gtfs *type
 
 	validTransfers := []int{0, 1, 2}
 	if !slices.Contains(validTransfers, *fareAttribute.Transfers) {
-		addMessage(fmt.Sprintf("Wrong transfers value, must be 0, 1 or 2, got %d", *fareAttribute.Transfers))
+		addMessage(i18n.AppTranslator.Get("transfers_validation.invalid", *fareAttribute.Transfers))
 	}
 }

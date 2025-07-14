@@ -1,6 +1,7 @@
 package stop_times
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -46,7 +47,7 @@ func EndPickupDropOffWindowValidation(stopTime *types.StopTime, row int, rules *
 	// Forbidden if arrival_time or departure_time are defined
 	if (stopTime.ArrivalTime != nil && *stopTime.ArrivalTime != "") || (stopTime.DepartureTime != nil && *stopTime.DepartureTime != "") {
 		if stopTime.EndPickupDropOffWindow != nil && *stopTime.EndPickupDropOffWindow != "" {
-			addMessage("end_pickup_drop_off_window is forbidden if arrival_time or departure_time are defined.", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("end_pickup_drop_off_window_validation.forbidden_with_time"), types.SEVERITY_ERROR)
 		}
 		return
 	}
@@ -63,22 +64,22 @@ func EndPickupDropOffWindowValidation(stopTime *types.StopTime, row int, rules *
 
 	if required {
 		if stopTime.EndPickupDropOffWindow == nil || *stopTime.EndPickupDropOffWindow == "" {
-			addMessage("end_pickup_drop_off_window is required if location_group_id or location_id is defined, or if start_pickup_drop_off_window is defined.", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("end_pickup_drop_off_window_validation.required_conditional"), types.SEVERITY_ERROR)
 			return
 		}
 	}
 
 	// Validate time format if present
 	if stopTime.EndPickupDropOffWindow != nil && *stopTime.EndPickupDropOffWindow != "" {
-		if err := lib.ValidateTime(*stopTime.EndPickupDropOffWindow); err != "" {
-			addMessage(err, types.SEVERITY_ERROR)
+		if !lib.ValidateTime(*stopTime.EndPickupDropOffWindow) {
+			addMessage(i18n.AppTranslator.Get("end_pickup_drop_off_window_validation.invalid_time"), types.SEVERITY_ERROR)
 			return
 		}
 	}
 
 	// Optional
 	if stopTime.EndPickupDropOffWindow == nil && s != types.SEVERITY_IGNORE {
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, "end_pickup_drop_off_window is required.", "end_pickup_drop_off_window is recommended.")
+		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("end_pickup_drop_off_window_validation.required"), i18n.AppTranslator.Get("end_pickup_drop_off_window_validation.recommended"))
 		addMessage(warn, s)
 		return
 	}

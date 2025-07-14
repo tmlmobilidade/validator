@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -47,7 +48,7 @@ func AgencyIdValidation(route *types.Route, row int, gtfs types.Gtfs, rules *typ
 	if route.AgencyId != nil && *route.AgencyId != "" {
 		// Check Foreign Key
 		if !lib.GtfsIdMapKeyExists(&gtfs, "agency", *route.AgencyId) {
-			addMessage("agency_id '"+*route.AgencyId+"' is not a valid agency_id from agency.txt.", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("agency_id_validation.not_found", map[string]interface{}{"agency_id": *route.AgencyId}), types.SEVERITY_ERROR)
 			return
 		}
 	}
@@ -55,10 +56,10 @@ func AgencyIdValidation(route *types.Route, row int, gtfs types.Gtfs, rules *typ
 	// Handle required vs recommended cases
 	if numAgencies > 1 {
 		if route.AgencyId == nil || *route.AgencyId == "" {
-			addMessage("agency_id is required when multiple agencies are defined in agency.txt.", types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("agency_id_validation.required_multiple_agencies"), types.SEVERITY_ERROR)
 		}
 	} else if route.AgencyId == nil && s != types.SEVERITY_IGNORE {
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, "recommended", "required")
-		addMessage("agency_id is "+warn+" even if only one agency is defined in agency.txt.", s)
+		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("agency_id_validation.recommended"), i18n.AppTranslator.Get("agency_id_validation.required"))
+		addMessage(warn, s)
 	}
 }
