@@ -3,19 +3,12 @@
 
  - File: [stops.txt]
  - Field: stop_short_name
- - Presence: Conditionally Required
+ - Presence: Optional
  - Type: String
 
 # Description
 
-Name of the location. The stop_name should match the agency's rider-facing name for the location as printed on a timetable, published online, or represented on signage. For translations into other languages, use [translations.txt].
-
-When the location is a boarding area (location_type=4), the stop_name should contains the name of the boarding area as displayed by the agency. It could be just one letter (like on some European intercity railway stations), or text like "Wheelchair boarding area" (NYC's Subway) or "Head of short trains" (Paris' RER).
-
-Conditionally Required:
-
-  - Required for locations which are stops (location_type=0), stations (location_type=1) or entrances/exits (location_type=2).
-  - Optional for locations which are generic nodes (location_type=3) or boarding areas (location_type=4).
+The stop_short_name is an optional field that can be used to provide a short name for the stop.
 
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 [translations.txt]: https://gtfs.org/schedule/reference/#translationstxt
@@ -49,35 +42,29 @@ func StopShortNameValidation(stop *types.Stop, row int, rules *types.StopsRules)
 		})
 	}
 
-	// If stop_short_name is present, return
-	if stop.StopShortName != nil && *stop.StopShortName != "" {
-		return
-	}
+	// 1. Check presence of stop_short_name based on severity
+	if stop.StopShortName == nil {
+		if s == types.SEVERITY_IGNORE {
+			return
+		}
 
-	// Check presence of stop_short_name based on location_type
-	locationType := -1
-	if stop.LocationType != nil {
-		locationType = *stop.LocationType
-	}
-
-	if locationType == 0 || locationType == 1 || locationType == 2 {
-		addMessage(i18n.AppTranslator.Get("stop_short_name_validation.required_location_type"), s)
-		return
-	}
-
-	// Check presence of stop_short_name based on severity
-	if s != types.SEVERITY_IGNORE {
 		message := i18n.AppTranslator.Get(
 			lib.IfThenElse(s == types.SEVERITY_ERROR,
 				"stop_short_name_validation.required",
 				"stop_short_name_validation.recommended",
 			),
 		)
+
 		addMessage(message, s)
 		return
 	}
 
-	// Validate rules
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("stop_short_name_validation.forbidden"), s)
+		return
+	}
+
+	// 2. Validate rules
 	if rules != nil && rules.StopShortName.Options != nil {
 		if slices.Contains(*rules.StopShortName.Options, types.ALL_OPTIONS) {
 			return
