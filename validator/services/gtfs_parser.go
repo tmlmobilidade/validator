@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"main/i18n"
 	"main/lib"
 	"main/types"
 	"os"
@@ -79,6 +80,14 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 				// Validate
 				if _, valid := GTFS_FILES[fileName]; !valid {
 					lib.AppLogger.Debug("Skipping invalid GTFS file: " + fileName)
+					AppMessageService.AddMessage(types.Message{
+						FileName:     fileName,
+						Message:      i18n.AppTranslator.Get("file_validations.not_supported", fileName),
+						ValidationID: "file_validation",
+						Severity:     types.SEVERITY_WARNING,
+						Field:        "N/A",
+						Rows:         []int{},
+					})
 					continue
 				}
 

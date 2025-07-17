@@ -2,7 +2,7 @@
     "file_validations": {
         "forbidden": "Forbidden file \"%s\" is present",
         "required": "Required file \"%s\" is missing",
-        "not_supported": "The file \"%s\" is not supported by the validator",
+        "not_supported": "The file \"%s\" is not supported by the validator and was ignored",
         "not_found": "The file \"%s\" is missing",
         "not_allowed": "The file \"%s\" is not allowed",
         "stops_required_when_locations_missing": "stops.txt is required when locations.geojson is not present",

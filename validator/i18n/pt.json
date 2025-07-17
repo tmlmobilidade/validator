@@ -2,7 +2,7 @@
     "file_validations": {
         "forbidden": "O ficheiro \"%s\" é proibido",
         "required": "O ficheiro \"%s\" é obrigatório",
-        "not_supported": "O ficheiro \"%s\" não é suportado pelo validador",
+        "not_supported": "O ficheiro \"%s\" não é suportado pelo validador e foi ignorado",
         "not_found": "O ficheiro \"%s\" não existe",
         "not_allowed": "O ficheiro \"%s\" não é permitido",
         "stops_required_when_locations_missing": "stops.txt é obrigatório quando locations.geojson não está presente",
