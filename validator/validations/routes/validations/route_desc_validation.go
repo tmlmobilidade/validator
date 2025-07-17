@@ -48,7 +48,7 @@ func RouteDescValidation(route *types.Route, row int, rules *types.RoutesRules) 
 	}
 
 	if route.RouteDesc == nil || *route.RouteDesc == "" {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

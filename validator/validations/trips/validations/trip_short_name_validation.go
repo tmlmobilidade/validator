@@ -42,7 +42,7 @@ func TripShortNameValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules 
 
 	// 1. Validate trip_short_name is required
 	if trip.TripShortName == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

@@ -39,7 +39,7 @@ func FeedVersionValidation(severity *types.Severity, feedInfo *types.FeedInfo, r
 	}
 
 	if feedInfo.FeedVersion == nil || *feedInfo.FeedVersion == "" {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

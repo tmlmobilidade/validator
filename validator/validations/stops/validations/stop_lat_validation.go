@@ -52,7 +52,7 @@ func StopLatValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	isRequired := locationType == 0 || locationType == 1 || locationType == 2
 
 	if stop.StopLat == nil {
-		if s == types.SEVERITY_IGNORE && !isRequired {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN && !isRequired {
 			return
 		}
 

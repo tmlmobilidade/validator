@@ -42,7 +42,7 @@ func AgencyEmailValidation(agency *types.Agency, row int, rules *types.AgencyRul
 
 	// Check if agency_email is required
 	if agency.AgencyEmail == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

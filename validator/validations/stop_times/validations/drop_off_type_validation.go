@@ -53,7 +53,7 @@ func DropOffTypeValidation(stopTime *types.StopTime, row int, rules *types.StopT
 	}
 
 	if stopTime.DropOffType == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("drop_off_type_validation.recommended"), i18n.AppTranslator.Get("drop_off_type_validation.required"))

@@ -40,7 +40,7 @@ func ShelterMaintainerValidation(stop *types.Stop, row int, rules *types.StopsRu
 	}
 
 	if stop.ShelterMaintainer == nil || *stop.ShelterMaintainer == "" {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

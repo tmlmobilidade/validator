@@ -41,7 +41,7 @@ func StopUrlValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	}
 
 	if stop.StopUrl == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

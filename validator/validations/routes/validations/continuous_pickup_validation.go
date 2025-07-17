@@ -58,7 +58,7 @@ func ContinuousPickupValidation(route *types.Route, row int, gtfs *types.Gtfs, r
 	}
 
 	if route.ContinuousPickup == nil || *route.ContinuousPickup == "" {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

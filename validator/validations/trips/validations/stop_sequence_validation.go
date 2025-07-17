@@ -36,7 +36,7 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *
 		s = rules.StopSequence.Severity
 	}
 
-	if s == types.SEVERITY_IGNORE {
+	if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 		return
 	}
 

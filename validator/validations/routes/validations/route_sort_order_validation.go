@@ -39,7 +39,7 @@ func RouteSortOrderValidation(route *types.Route, row int, rules *types.RoutesRu
 	}
 
 	if route.RouteSortOrder == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

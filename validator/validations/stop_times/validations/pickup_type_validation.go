@@ -56,7 +56,7 @@ func PickupTypeValidation(stopTime *types.StopTime, row int, rules *types.StopTi
 
 	// Validate presence
 	if stopTime.PickupType == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

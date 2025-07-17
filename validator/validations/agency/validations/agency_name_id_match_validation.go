@@ -28,7 +28,7 @@ func AgencyNameIdMatchValidation(agency *types.Agency, row int, rules *types.Age
 		s = rules.AgencyNameIdMatch.Severity
 	}
 
-	if s == types.SEVERITY_IGNORE {
+	if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 		return
 	}
 

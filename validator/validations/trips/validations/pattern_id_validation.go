@@ -40,7 +40,7 @@ func PatternIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *typ
 	}
 
 	if trip.PatternId == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return false
 		}
 

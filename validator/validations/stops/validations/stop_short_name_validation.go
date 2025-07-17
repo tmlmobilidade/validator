@@ -44,7 +44,7 @@ func StopShortNameValidation(stop *types.Stop, row int, rules *types.StopsRules)
 
 	// 1. Check presence of stop_short_name based on severity
 	if stop.StopShortName == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

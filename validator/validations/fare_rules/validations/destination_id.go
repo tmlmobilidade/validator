@@ -49,7 +49,7 @@ func DestinationIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs
 
 	if fareRule.DestinationId == nil {
 
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

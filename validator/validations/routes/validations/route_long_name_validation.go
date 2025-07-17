@@ -52,7 +52,7 @@ func RouteLongNameValidation(route *types.Route, row int, rules *types.RoutesRul
 	}
 
 	if route.RouteLongName == nil || *route.RouteLongName == "" {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

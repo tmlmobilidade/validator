@@ -43,7 +43,7 @@ func PlatformCodeValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 	}
 
 	if stop.PlatformCode == nil || *stop.PlatformCode == "" {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

@@ -50,7 +50,7 @@ func LocationTypeValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 
 	if stop.LocationType == nil {
 		// Field is optional, so only warn/error if severity is set
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 		message := i18n.AppTranslator.Get(

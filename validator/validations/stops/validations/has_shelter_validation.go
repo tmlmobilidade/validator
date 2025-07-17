@@ -41,7 +41,7 @@ func HasShelterValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	}
 
 	if stop.HasShelter == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

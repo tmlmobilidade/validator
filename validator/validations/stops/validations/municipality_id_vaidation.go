@@ -40,7 +40,7 @@ func MunicipalityIdValidation(stop *types.Stop, row int, rules *types.StopsRules
 	}
 
 	if stop.MunicipalityId == nil || *stop.MunicipalityId == "" {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

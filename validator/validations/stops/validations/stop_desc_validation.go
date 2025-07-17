@@ -40,7 +40,7 @@ func StopDescValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	}
 
 	if stop.StopDesc == nil || *stop.StopDesc == "" {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

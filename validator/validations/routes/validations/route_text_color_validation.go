@@ -43,7 +43,7 @@ func RouteTextColorValidation(route *types.Route, row int, rules *types.RoutesRu
 	}
 
 	if route.RouteTextColor == nil || *route.RouteTextColor == "" {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

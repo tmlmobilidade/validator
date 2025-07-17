@@ -49,7 +49,7 @@ func StopHeadsignValidation(stopTime *types.StopTime, row int, rules *types.Stop
 	}
 
 	if stopTime.StopHeadsign == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

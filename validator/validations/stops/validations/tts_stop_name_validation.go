@@ -41,7 +41,7 @@ func TtsStopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	}
 
 	if stop.TtsStopName == nil || *stop.TtsStopName == "" {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

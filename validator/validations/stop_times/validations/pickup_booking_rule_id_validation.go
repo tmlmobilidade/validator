@@ -42,7 +42,7 @@ func PickupBookingRuleIdValidation(stopTime *types.StopTime, row int, gtfs *type
 	}
 
 	if stopTime.PickupBookingRuleId == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("pickup_booking_rule_id_validation.recommended"), i18n.AppTranslator.Get("pickup_booking_rule_id_validation.required"))

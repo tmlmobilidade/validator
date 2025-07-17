@@ -40,7 +40,7 @@ func FeedContactUrlValidation(severity *types.Severity, feedInfo *types.FeedInfo
 	}
 
 	if feedInfo.FeedContactUrl == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

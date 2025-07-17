@@ -48,7 +48,7 @@ func TimepointValidation(stopTime *types.StopTime, row int, rules *types.StopTim
 	}
 
 	if stopTime.Timepoint == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("timepoint_validation.recommended"), i18n.AppTranslator.Get("timepoint_validation.required"))

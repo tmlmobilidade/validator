@@ -40,7 +40,7 @@ func RegionIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	}
 
 	if stop.RegionId == nil || *stop.RegionId == "" {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

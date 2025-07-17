@@ -48,7 +48,7 @@ func StopTimezoneValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 	}
 
 	if stop.StopTimezone == nil || *stop.StopTimezone == "" {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 		message := i18n.AppTranslator.Get(

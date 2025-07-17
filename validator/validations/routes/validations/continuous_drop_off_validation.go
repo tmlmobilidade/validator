@@ -58,7 +58,7 @@ func ContinuousDropOffValidation(route *types.Route, row int, gtfs *types.Gtfs, 
 	}
 
 	if route.ContinuousDropOff == nil || *route.ContinuousDropOff == "" {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

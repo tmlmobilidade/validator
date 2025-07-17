@@ -42,7 +42,7 @@ func TripHeadsignValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *
 	}
 
 	if trip.TripHeadsign == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

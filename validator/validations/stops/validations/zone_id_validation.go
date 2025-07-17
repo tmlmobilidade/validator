@@ -42,7 +42,7 @@ func ZoneIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	}
 
 	if stop.ZoneId == nil || *stop.ZoneId == "" {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

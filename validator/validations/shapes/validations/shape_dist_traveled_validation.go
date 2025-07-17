@@ -62,7 +62,7 @@ func ShapeDistTraveledValidation(severity *types.Severity, shape *types.Shape, r
 	}
 
 	if shape.ShapeDistTraveled == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

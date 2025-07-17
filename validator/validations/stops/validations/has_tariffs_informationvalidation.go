@@ -41,7 +41,7 @@ func HasTariffsInformationValidation(stop *types.Stop, row int, rules *types.Sto
 	}
 
 	if stop.HasTariffsInformation == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

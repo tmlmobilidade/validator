@@ -54,7 +54,7 @@ func ShapeDistTraveledValidation(stopTime *types.StopTime, row int, rules *types
 	}
 
 	if stopTime.ShapeDistTraveled == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("shape_dist_traveled_validation.recommended"), i18n.AppTranslator.Get("shape_dist_traveled_validation.required"))

@@ -47,7 +47,7 @@ func FeedEndDateValidation(severity *types.Severity, feedInfo *types.FeedInfo, r
 	}
 
 	if feedInfo.FeedEndDate == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

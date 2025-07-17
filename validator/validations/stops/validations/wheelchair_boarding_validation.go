@@ -62,7 +62,7 @@ func WheelchairBoardingValidation(stop *types.Stop, row int, rules *types.StopsR
 
 	// Validate presence
 	if stop.WheelchairBoarding == nil {
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 

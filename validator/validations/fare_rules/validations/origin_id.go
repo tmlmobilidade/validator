@@ -49,7 +49,7 @@ func OriginIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, rul
 
 	if fareRule.OriginId == nil {
 
-		if s == types.SEVERITY_IGNORE {
+		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
 		}
 
