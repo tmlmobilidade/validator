@@ -262,7 +262,8 @@
         "forbidden": "O campo \"shape_dist_traveled\" é probido",
         "required": "O campo \"shape_dist_traveled\" é obrigatório",
         "recommended": "O campo \"shape_dist_traveled\" é recomendado",
-        "invalid": "O campo \"shape_dist_traveled\" deve ser um float não negativo"
+        "invalid": "O campo \"shape_dist_traveled\" deve ser um float não negativo",
+        "not_increasing": "O campo \"shape_dist_traveled\" para o shape_id '%s' deve ser crescente ao longo da viagem"
     },
     "shape_id_validation": {
         "forbidden": "O campo \"shape_id\" é probido",
@@ -289,8 +290,7 @@
         "required": "O campo \"shape_pt_sequence\" é obrigatório",
         "recommended": "O campo \"shape_pt_sequence\" é recomendado",
         "invalid": "O campo \"shape_pt_sequence\" deve ser um número inteiro não negativo",
-        "not_increasing_pt": "O campo \"shape_pt_sequence\" para o shape_id '%s' deve ser crescente ao longo da viagem",
-        "not_increasing_dist": "O campo \"shape_dist_traveled\" para o shape_id '%s' deve ser crescente ao longo da viagem"
+        "not_increasing": "O campo \"shape_pt_sequence\" para o shape_id '%s' deve ser crescente ao longo da viagem"
     },
     "arrival_time_validation": {
         "forbidden": "O campo \"arrival_time\" é probido",

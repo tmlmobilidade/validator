@@ -63,7 +63,7 @@ func PatternIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, 
 		}
 
 		if len(group.Hash) > 1 {
-			addMessage(i18n.AppTranslator.Get("pattern_id_validation.multiple_sequences", map[string]interface{}{"pattern_id": patternId}), group.Trips[0].Row, types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("pattern_id_validation.multiple_stop_sequence_variations", map[string]interface{}{"pattern_id": patternId}), group.Trips[0].Row, types.SEVERITY_ERROR)
 		}
 	}
 

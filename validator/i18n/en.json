@@ -261,7 +261,8 @@
         "forbidden": "Field \"shape_dist_traveled\" is forbidden",
         "required": "Field \"shape_dist_traveled\" is required",
         "recommended": "Field \"shape_dist_traveled\" is recommended",
-        "invalid": "Field \"shape_dist_traveled\" must be a non-negative float"
+        "invalid": "Field \"shape_dist_traveled\" must be a non-negative float",
+        "not_increasing": "Field \"shape_dist_traveled\" for shape_id '%s' must increase along the trip"
     },
     "shape_id_validation": {
         "forbidden": "Field \"shape_id\" is forbidden",
@@ -288,8 +289,7 @@
         "required": "Field \"shape_pt_sequence\" is required",
         "recommended": "Field \"shape_pt_sequence\" is recommended",
         "invalid": "Field \"shape_pt_sequence\" must be a non-negative integer",
-        "not_increasing_pt": "Field \"shape_pt_sequence\" for shape_id '%s' must increase along the trip",
-        "not_increasing_dist": "Field \"shape_dist_traveled\" for shape_id '%s' must increase along the trip"
+        "not_increasing": "Field \"shape_pt_sequence\" for shape_id '%s' must increase along the trip"
     },
     "arrival_time_validation": {
         "forbidden": "Field \"arrival_time\" is forbidden",
