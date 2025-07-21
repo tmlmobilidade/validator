@@ -84,7 +84,7 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 						FileName:     fileName,
 						Message:      i18n.AppTranslator.Get("file_validations.not_supported", fileName),
 						ValidationID: "file_validation",
-						Severity:     types.SEVERITY_WARNING,
+						Severity:     types.SEVERITY_IGNORE,
 						Field:        "N/A",
 						Rows:         []int{},
 					})
