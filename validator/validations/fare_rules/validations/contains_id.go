@@ -50,11 +50,6 @@ func ContainsIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, r
 		})
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("contains_id_validation.forbidden"), s)
-		return
-	}
-
 	if fareRule.ContainsId == nil {
 		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
 			return
@@ -62,6 +57,11 @@ func ContainsIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, r
 
 		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("contains_id_validation.recommended"), i18n.AppTranslator.Get("contains_id_validation.required"))
 		addMessage(warn, s)
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("contains_id_validation.forbidden"), s)
 		return
 	}
 

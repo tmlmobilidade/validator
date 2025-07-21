@@ -36,15 +36,15 @@ func TransferDurationValidation(fareAttribute *types.FareAttribute, row int, gtf
 		})
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("transfer_duration_validation.forbidden"), s)
-		return
-	}
-
 	if fareAttribute.TransferDuration == nil {
 		if s != types.SEVERITY_IGNORE {
 			addMessage(i18n.AppTranslator.Get("transfers_validation.required"), s)
 		}
+		return
+	}
+
+	if s == types.SEVERITY_FORBIDDEN {
+		addMessage(i18n.AppTranslator.Get("transfer_duration_validation.forbidden"), s)
 		return
 	}
 
