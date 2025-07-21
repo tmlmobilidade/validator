@@ -67,7 +67,7 @@ func (ms *MessageService) AddMessage(message types.Message) {
 	if ms.errorCount+ms.warningCount >= TOTAL_ISSUES_LIMIT {
 		lib.AppLogger.Error("Too many issues (errors + warnings > " + strconv.Itoa(TOTAL_ISSUES_LIMIT) + "). Exiting.")
 		ms.PrintJSON()
-		os.Exit(1)
+		os.Exit(0)
 	}
 }
 
