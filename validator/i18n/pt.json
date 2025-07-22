@@ -603,8 +603,8 @@
         "recommended": "O campo \"stop_sequence\" é recomendado",
         "invalid": "O campo \"stop_sequence\" deve ser um número inteiro não negativo",
         "not_allowed": "O campo \"stop_sequence\" \"%s\" não é permitido",
-        "stop_sequence_values_must_increase": "Os valores de \"stop_sequence\" devem ser crescentes ao longo da viagem ('%s')",
-        "shape_dist_traveled_values_must_increase": "Os valores de \"shape_dist_traveled\" devem ser crescentes ao longo da viagem ('%s')"
+        "non_increasing_sequence": "Os valores de \"stop_sequence\" devem ser crescentes ao longo da viagem ('%s')",
+        "non_increasing_shape_dist": "Os valores de \"shape_dist_traveled\" devem ser crescentes ao longo da viagem ('%s')"
     },
     "trip_headsign_validation": {
         "forbidden": "O campo \"trip_headsign\" é probido",

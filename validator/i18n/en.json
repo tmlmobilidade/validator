@@ -602,8 +602,8 @@
         "recommended": "Field \"stop_sequence\" is recommended",
         "invalid": "Field \"stop_sequence\" must be a non-negative integer",
         "not_allowed": "Field \"stop_sequence\" \"%s\" is not allowed",
-        "stop_sequence_values_must_increase": "The values of \"stop_sequence\" must increase along the trip ('%s')",
-        "shape_dist_traveled_values_must_increase": "The values of \"shape_dist_traveled\" must increase along the trip ('%s')"
+        "non_increasing_sequence": "The values of \"stop_sequence\" must increase along the trip ('%s')",
+        "non_increasing_shape_dist": "The values of \"shape_dist_traveled\" must increase along the trip ('%s')"
     },
     "trip_headsign_validation": {
         "forbidden": "Field \"trip_headsign\" is forbidden",

@@ -43,27 +43,27 @@ func PatternIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, 
 			//check if route_id is the same
 			if *trip.RouteId != *routeId {
 				// addMessage(fmt.Sprintf("For pattern_id %s, route_id %s is not the same as %s found in row %d", patternId, *trip.RouteId, *routeId, trip.Row), trip.Row, types.SEVERITY_ERROR)
-				addMessage(i18n.AppTranslator.Get("pattern_id_validation.different_route_id", map[string]interface{}{"pattern_id": patternId}), trip.Row, types.SEVERITY_ERROR)
+				addMessage(i18n.AppTranslator.Get("pattern_id_validation.different_route_id", patternId), trip.Row, types.SEVERITY_ERROR)
 				continue
 			}
 
 			//check if direction_id is the same
 			if *trip.DirectionId != *directionId {
 				// addMessage(fmt.Sprintf("For pattern_id %s, direction_id %v is not the same as %v found in row %d", patternId, *trip.DirectionId, *directionId, trip.Row), trip.Row, types.SEVERITY_ERROR)
-				addMessage(i18n.AppTranslator.Get("pattern_id_validation.different_direction_id", map[string]interface{}{"pattern_id": patternId}), trip.Row, types.SEVERITY_ERROR)
+				addMessage(i18n.AppTranslator.Get("pattern_id_validation.different_direction_id", patternId), trip.Row, types.SEVERITY_ERROR)
 				continue
 			}
 
 			//check if shape_id is the same
 			if *trip.ShapeId != *shapeId {
 				// addMessage(fmt.Sprintf("For pattern_id %s, shape_id %v is not the same as %v found in row %d", patternId, *trip.ShapeId, *shapeId, trip.Row), trip.Row, types.SEVERITY_ERROR)
-				addMessage(i18n.AppTranslator.Get("pattern_id_validation.different_shape_id", map[string]interface{}{"pattern_id": patternId}), trip.Row, types.SEVERITY_ERROR)
+				addMessage(i18n.AppTranslator.Get("pattern_id_validation.different_shape_id", patternId), trip.Row, types.SEVERITY_ERROR)
 				continue
 			}
 		}
 
 		if len(group.Hash) > 1 {
-			addMessage(i18n.AppTranslator.Get("pattern_id_validation.multiple_stop_sequence_variations", map[string]interface{}{"pattern_id": patternId}), group.Trips[0].Row, types.SEVERITY_ERROR)
+			addMessage(i18n.AppTranslator.Get("pattern_id_validation.multiple_stop_sequence_variations", patternId), group.Trips[0].Row, types.SEVERITY_ERROR)
 		}
 	}
 

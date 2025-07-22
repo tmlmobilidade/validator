@@ -86,7 +86,6 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *
 			StopId:            &stopId,
 		})
 
-		hash += fmt.Sprintf("%s-%v-%v", stopId, shapeDistTraveled, stopSequence)
 	}
 
 	stopSequences = lib.RemoveDuplicates(stopSequences)
@@ -94,16 +93,20 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *
 		return *stopSequences[i].StopSequence < *stopSequences[j].StopSequence
 	})
 
+	for _, stopSequence := range stopSequences {
+		hash += fmt.Sprintf("%s-%v-%v", *stopSequence.StopId, *stopSequence.ShapeDistTraveled, *stopSequence.StopSequence)
+	}
+
 	for i, stopSequence := range stopSequences {
 		if i > 0 {
 			if *stopSequence.StopSequence <= *stopSequences[i-1].StopSequence {
-				addMessage(i18n.AppTranslator.Get("stop_sequence_validation.non_increasing_sequence", map[string]interface{}{"trip_id": *trip.TripId}), types.SEVERITY_ERROR)
+				addMessage(i18n.AppTranslator.Get("stop_sequence_validation.non_increasing_sequence", *trip.TripId), types.SEVERITY_ERROR)
 				return
 			}
 
 			if *stopSequence.ShapeDistTraveled >= 0 && *stopSequences[i-1].ShapeDistTraveled >= 0 {
 				if *stopSequence.ShapeDistTraveled < *stopSequences[i-1].ShapeDistTraveled {
-					addMessage(i18n.AppTranslator.Get("stop_sequence_validation.non_increasing_shape_dist", map[string]interface{}{"trip_id": *trip.TripId}), types.SEVERITY_ERROR)
+					addMessage(i18n.AppTranslator.Get("stop_sequence_validation.non_increasing_shape_dist", *trip.TripId), types.SEVERITY_ERROR)
 					return
 				}
 			}
