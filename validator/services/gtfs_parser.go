@@ -94,18 +94,42 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 				f, err := file.Open()
 				if err != nil {
 					lib.AppLogger.Error("Error opening file: " + fileName + " " + err.Error())
+					AppMessageService.AddMessage(types.Message{
+						FileName:     fileName,
+						Message:      "Error opening file: " + fileName + " " + err.Error(),
+						ValidationID: "file_validation",
+						Severity:     types.SEVERITY_IGNORE,
+						Field:        "N/A",
+						Rows:         []int{},
+					})
 					continue
 				}
 				content, err := io.ReadAll(f)
 				f.Close() // Close immediately after reading
 				if err != nil {
 					lib.AppLogger.Error("Error reading file: " + fileName + " " + err.Error())
+					AppMessageService.AddMessage(types.Message{
+						FileName:     fileName,
+						Message:      "Error reading file: " + fileName + " " + err.Error(),
+						ValidationID: "file_validation",
+						Severity:     types.SEVERITY_IGNORE,
+						Field:        "N/A",
+						Rows:         []int{},
+					})
 					continue
 				}
 
 				parsedData, err := parseCSV(content, fileNameWithoutExt, &gtfsIdsMap, &idsMapMutex)
 				if err != nil {
 					lib.AppLogger.Error("Error parsing file: " + fileName + " " + err.Error())
+					AppMessageService.AddMessage(types.Message{
+						FileName:     fileName,
+						Message:      "Error parsing file: " + fileName + " " + err.Error(),
+						ValidationID: "file_validation",
+						Severity:     types.SEVERITY_IGNORE,
+						Field:        "N/A",
+						Rows:         []int{},
+					})
 					continue
 				}
 
