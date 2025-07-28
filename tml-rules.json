@@ -393,10 +393,10 @@
 			"severity": "error"
 		},
 		"continuous_drop_off": {
-			"severity": "error"
+			"severity": "warning"
 		},
 		"continuous_pickup": {
-			"severity": "error"
+			"severity": "warning"
 		},
 		"departure_time": {
 			"severity": "error"
