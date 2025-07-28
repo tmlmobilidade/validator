@@ -317,11 +317,11 @@
 		},
 		"continuous_drop_off": {
 			"options": ["0", "1"],
-			"severity": "error"
+			"severity": "warning"
 		},
 		"continuous_pickup": {
 			"options": ["0", "1"],
-			"severity": "error"
+			"severity": "warning"
 		},
 		"line_id": {
 			"severity": "error"
