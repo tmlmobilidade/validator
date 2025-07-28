@@ -14,6 +14,7 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"unicode/utf8"
 )
 
 // GTFS_FILES defines the set of valid GTFS filenames that will be processed.
@@ -202,8 +203,19 @@ func handlePrimaryKeyMapping(primaryKey any, header string, value string, fileNa
 
 // parseCSV parses CSV content into a slice of maps where each map represents a row
 // with column headers as keys and cell values as values.
+// Ensures content is valid UTF-8 and handles BOM if present.
 // Returns an error if the CSV is empty or cannot be parsed.
 func parseCSV(content []byte, fileNameWithoutExt string, idsMap *types.GtfsIdMap, idsMapMutex *sync.Mutex) ([]map[string]string, error) {
+	// Remove UTF-8 BOM if present
+	if len(content) >= 3 && content[0] == 0xEF && content[1] == 0xBB && content[2] == 0xBF {
+		content = content[3:]
+	}
+
+	// Ensure content is valid UTF-8
+	if !utf8.Valid(content) {
+		return nil, fmt.Errorf("file %s contains invalid UTF-8 encoding", fileNameWithoutExt)
+	}
+
 	reader := csv.NewReader(bytes.NewReader(content))
 	reader.TrimLeadingSpace = true
 
