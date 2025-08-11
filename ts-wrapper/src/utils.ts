@@ -11,7 +11,7 @@ import path from 'path';
 export async function runGoBinary<T = unknown>(
 	binaryPath: string,
 	args: string[] = [],
-	timeout: number = 1000 * 60 * 5,
+	timeout: number = 1000 * 60 * 20, // 20 minutes
 ): Promise<T> {
 	return new Promise<T>((resolve, reject) => {
 		const fullPath = path.resolve(binaryPath);
