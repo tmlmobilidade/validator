@@ -1,6 +1,7 @@
 package trips
 
 import (
+	"fmt"
 	"main/i18n"
 	"main/lib"
 	"main/services"
@@ -49,7 +50,12 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 
 	// Check if the route has continuous pickup/dropoff behavior
 	routeRow := gtfs.IdMap["routes"][*trip.RouteId]
-	if gtfs.IdMap["routes"] != nil && gtfs.Route[routeRow[0]].ContinuousPickup != "" {
+	if _, ok := gtfs.IdMap["routes"][*trip.RouteId]; !ok {
+		fmt.Println("Route not found", *trip.RouteId)
+		return
+	}
+
+	if gtfs.Route[routeRow[0]].ContinuousPickup != "" {
 		hasContinuousPickupDropoff = true
 	}
 
