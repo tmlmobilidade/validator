@@ -45,9 +45,9 @@ func (ms *MessageService) AddMessage(message types.Message) {
 			// Only keep up to 100 rows, keeping the latest row
 			newRows := append(m.Rows, message.Rows...)
 			if len(newRows) > 100 {
-				// Keep first 99 rows and the latest row
 				lastRow := newRows[len(newRows)-1]
-				newRows = append(newRows[:99], lastRow)
+				limit := min(99, len(newRows))
+				newRows = append(newRows[:limit], lastRow)
 			}
 			ms.messages[i].Rows = newRows
 			return
