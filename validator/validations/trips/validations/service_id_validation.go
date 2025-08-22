@@ -2,7 +2,6 @@ package trips
 
 import (
 	"main/i18n"
-	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -37,10 +36,13 @@ func ServiceIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 		return
 	}
 
-	// Merge calendar and calendar_dates id maps
-	serviceIds := lib.MergeMaps(gtfs.IdMap["calendar"], gtfs.IdMap["calendar_dates"])
-	if _, ok := serviceIds[*trip.ServiceId]; !ok {
-		message.Message = i18n.AppTranslator.Get("service_id_validation.not_found", map[string]interface{}{"service_id": *trip.ServiceId})
-		services.AppMessageService.AddMessage(message)
+	// Check in calendar or calendar_dates without merging the maps
+	if _, ok := gtfs.IdMap["calendar"][*trip.ServiceId]; ok {
+		return
 	}
+	if _, ok := gtfs.IdMap["calendar_dates"][*trip.ServiceId]; ok {
+		return
+	}
+	message.Message = i18n.AppTranslator.Get("service_id_validation.not_found", map[string]interface{}{"service_id": *trip.ServiceId})
+	services.AppMessageService.AddMessage(message)
 }
