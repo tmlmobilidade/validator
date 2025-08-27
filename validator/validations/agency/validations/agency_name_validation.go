@@ -2,6 +2,7 @@ package agency
 
 import (
 	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 	"slices"
@@ -48,7 +49,7 @@ func AgencyNameValidation(agency *types.Agency, row int, rules *types.AgencyRule
 		}
 
 		if !slices.Contains(*rules.AgencyName.Options, *agency.AgencyName) {
-			addMessage(i18n.AppTranslator.Get("agency_name_validation.not_allowed", *agency.AgencyName), s)
+			addMessage(i18n.AppTranslator.Get("agency_name_validation.not_allowed", *agency.AgencyName), lib.IfThenElse(rules.AgencyName.Severity == types.SEVERITY_ERROR, types.SEVERITY_ERROR, types.SEVERITY_WARNING))
 			return
 		}
 	}

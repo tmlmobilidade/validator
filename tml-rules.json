@@ -2,10 +2,10 @@
 	"agency": {
 		"_file": "error",
 		"agency_email": {
-			"severity": "error"
+			"severity": "warning"
 		},
 		"agency_fare_url": {
-			"severity": "error"
+			"severity": "warning"
 		},
 		"agency_id": {
 			"options": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "18", "21", "23", "24", "34", "41", "42", "43", "44", "49", "54"],
@@ -16,7 +16,7 @@
 		},
 		"agency_name": {
 			"options": ["Área Metropolitana de Lisboa", "Carris", "Metropolitano Olissipo", "Comboios de Portugal", "Transtejo / Soflusa", "Transportes Sul do Tejo", "Rodoviária de Lisboa", "Soflusa", "Transportes Coletivos do Barreiro", "Vimeca Transportes", "Scotturb", "ID/JJ/HLM", "Isidoro Duarte", "Barraqueiro Transportes", "Joaquim Jerónimo", "Fertagus", "Metro Transportes do Sul", "Henrique Leonardo da Mota", "Cascais Próxima", "Portal VIVA", "Rodoviária do Tejo", "Câmara Municipal de Lisboa", "Viação Alvorada", "Alsa Todi", "Município de Oeiras", "Municipio de Setúbal"],
-			"severity": "error"
+			"severity": "warning"
 		},
 		"agency_name_id_match": {
 			"compare": [
@@ -49,7 +49,7 @@
 				{ "key": "49", "value": "Município de Oeiras" },
 				{ "key": "54", "value": "Municipio de Setúbal" }
 			],
-			"severity": "error"
+			"severity": "warning"
 		},
 		"agency_phone": {
 			"severity": "error"
