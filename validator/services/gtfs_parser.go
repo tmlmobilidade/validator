@@ -99,7 +99,7 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 						FileName:     fileName,
 						Message:      "Error opening file: " + fileName + " " + err.Error(),
 						ValidationID: "file_validation",
-						Severity:     types.SEVERITY_IGNORE,
+						Severity:     types.SEVERITY_ERROR,
 						Field:        "N/A",
 						Rows:         []int{},
 					})
@@ -113,7 +113,7 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 						FileName:     fileName,
 						Message:      "Error reading file: " + fileName + " " + err.Error(),
 						ValidationID: "file_validation",
-						Severity:     types.SEVERITY_IGNORE,
+						Severity:     types.SEVERITY_ERROR,
 						Field:        "N/A",
 						Rows:         []int{},
 					})
@@ -127,7 +127,7 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 						FileName:     fileName,
 						Message:      "Error parsing file: " + fileName + " " + err.Error(),
 						ValidationID: "file_validation",
-						Severity:     types.SEVERITY_IGNORE,
+						Severity:     types.SEVERITY_ERROR,
 						Field:        "N/A",
 						Rows:         []int{},
 					})

@@ -71,6 +71,12 @@ func main() {
 		log.Fatalf("Error reading GTFS: %v", err)
 	}
 
+	// If there are errors in the GTFS, print the errors and exit
+	if services.AppMessageService.GetSummary().TotalErrors > 0 {
+		services.AppMessageService.PrintJSON()
+		return
+	}
+
 	// Check File Requirements
 	if errs := file_validation.NewFileValidation(nil).Validate(gtfs, rules); len(errs) > 0 {
 		for _, err := range errs {
