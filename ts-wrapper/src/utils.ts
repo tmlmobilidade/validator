@@ -1,73 +1,266 @@
-import { spawn } from 'child_process';
+import { ChildProcess, spawn } from 'child_process';
+import { access, constants } from 'fs/promises';
 import path from 'path';
+
+export interface RunGoBinaryOptions {
+	/** Arguments to pass to the binary */
+	args?: string[]
+	/** Working directory for the process */
+	cwd?: string
+	/** Environment variables to pass to the process */
+	env?: Record<string, string>
+	/** Maximum stderr buffer size in bytes (default: 1MB) */
+	maxStderrSize?: number
+	/** Maximum stdout buffer size in bytes (default: 10MB) */
+	maxStdoutSize?: number
+	/** Timeout in milliseconds (default: 5 minutes) */
+	timeout?: number
+}
+
+export interface GoBinaryResult<T = unknown> {
+	/** Parsed JSON output */
+	data: T
+	/** Execution time in milliseconds */
+	executionTime: number
+	/** Exit code */
+	exitCode: number
+	/** Raw stderr content */
+	stderr: string
+	/** Raw stdout content */
+	stdout: string
+}
+
+export class GoBinaryError extends Error {
+	constructor(
+		message: string,
+		public readonly code: string,
+		public readonly exitCode?: number,
+		public readonly stdout?: string,
+		public readonly stderr?: string,
+	) {
+		super(message);
+		this.name = 'GoBinaryError';
+	}
+}
 
 /**
  * Runs a Go binary and returns its JSON stdout as an object.
- * @param binaryPath Absolute or relative path to the Go binary.
- * @param args Arguments to pass to the binary (optional).
- * @param timeout Timeout in milliseconds (default 1000 * 60 * 5) - 5 minutes.
- * @returns A promise that resolves to a JSON object from the Go binary.
+ *
+ * @param binaryPath Absolute or relative path to the Go binary
+ * @param options Configuration options
+ * @returns A promise that resolves to a structured result with parsed JSON data
+ *
+ * @example
+ * ```ts
+ * const result = await runGoBinary<{status: string}>('./my-binary', {
+ *   args: ['--config', 'prod.json'],
+ *   timeout: 30000
+ * });
+ * console.log(result.data.status);
+ * ```
  */
 export async function runGoBinary<T = unknown>(
 	binaryPath: string,
-	args: string[] = [],
-	timeout: number = 1000 * 60 * 20, // 20 minutes
-): Promise<T> {
-	return new Promise<T>((resolve, reject) => {
-		const fullPath = path.resolve(binaryPath);
-		const proc = spawn(fullPath, args, {
-			stdio: ['ignore', 'pipe', 'pipe'],
-		});
+	options: RunGoBinaryOptions = {},
+): Promise<GoBinaryResult<T>> {
+	const {
+		args = [],
+		cwd = process.cwd(),
+		env = {},
+		maxStderrSize = 1024 * 1024, // 1MB
+		maxStdoutSize = 10 * 1024 * 1024, // 10MB
+		timeout = 1000 * 60 * 5, // 5 minutes
+	} = options;
+
+	// Validate binary exists and is executable
+	const fullPath = path.resolve(binaryPath);
+	try {
+		await access(fullPath, constants.F_OK | constants.X_OK);
+	}
+	catch (err) {
+		throw new GoBinaryError(
+			`Binary not found or not executable: ${fullPath}`,
+			'BINARY_NOT_FOUND',
+		);
+	}
+
+	return new Promise<GoBinaryResult<T>>((resolve, reject) => {
+		const startTime = Date.now();
+		let proc: ChildProcess;
+		let timedOut = false;
+		let stdoutSize = 0;
+		let stderrSize = 0;
 
 		const stdoutChunks: Buffer[] = [];
 		const stderrChunks: Buffer[] = [];
-		let timedOut = false;
+
+		const cleanup = () => {
+			if (timer) {
+				clearTimeout(timer);
+			}
+			if (proc && !proc.killed) {
+				proc.kill('SIGTERM');
+				// Force kill after 5 seconds if still running
+				setTimeout(() => {
+					if (proc && !proc.killed) {
+						proc.kill('SIGKILL');
+					}
+				}, 5000);
+			}
+		};
 
 		const timer = setTimeout(() => {
 			timedOut = true;
-			proc.kill();
-			reject(new Error(`Process timeout after ${timeout}ms`));
+			cleanup();
+			reject(new GoBinaryError(
+				`Process timed out after ${timeout}ms`,
+				'TIMEOUT',
+			));
 		}, timeout);
 
-		proc.stdout.on('data', (chunk: Buffer) => {
+		try {
+			proc = spawn(fullPath, args, {
+				cwd,
+				env: { ...process.env, ...env },
+				stdio: ['ignore', 'pipe', 'pipe'],
+				windowsHide: true, // Hide console window on Windows
+			});
+		}
+		catch (err) {
+			cleanup();
+			reject(new GoBinaryError(
+				`Failed to spawn process: ${err instanceof Error ? err.message : String(err)}`,
+				'SPAWN_ERROR',
+			));
+			return;
+		}
+
+		proc.stdout?.on('data', (chunk: Buffer) => {
+			stdoutSize += chunk.length;
+			if (stdoutSize > maxStdoutSize) {
+				cleanup();
+				reject(new GoBinaryError(
+					`Stdout buffer exceeded maximum size of ${maxStdoutSize} bytes`,
+					'STDOUT_TOO_LARGE',
+				));
+				return;
+			}
 			stdoutChunks.push(chunk);
 		});
 
-		proc.stderr.on('data', (chunk: Buffer) => {
+		proc.stderr?.on('data', (chunk: Buffer) => {
+			stderrSize += chunk.length;
+			if (stderrSize > maxStderrSize) {
+				cleanup();
+				reject(new GoBinaryError(
+					`Stderr buffer exceeded maximum size of ${maxStderrSize} bytes`,
+					'STDERR_TOO_LARGE',
+				));
+				return;
+			}
 			stderrChunks.push(chunk);
 		});
 
 		proc.on('error', (err: Error) => {
-			clearTimeout(timer);
-			throw new Error(`Failed to start binary: ${err.message}`);
+			cleanup();
+			reject(new GoBinaryError(
+				`Process error: ${err.message}`,
+				'PROCESS_ERROR',
+			));
 		});
 
-		proc.on('close', (code: number) => {
+		proc.on('close', (code: null | number, signal: NodeJS.Signals | null) => {
+			const executionTime = Date.now() - startTime;
+
 			try {
-				clearTimeout(timer);
-				if (timedOut) return;
+				cleanup();
+
+				if (timedOut) return; // Timeout already handled
 
 				const stdout = Buffer.concat(stdoutChunks).toString('utf-8').trim();
 				const stderr = Buffer.concat(stderrChunks).toString('utf-8').trim();
+				const exitCode = code ?? -1;
 
-				if (code !== 0) {
-					throw new Error(`Binary exited with code ${code}: ${stderr || stdout}`);
+				// Handle termination by signal
+				if (signal) {
+					reject(new GoBinaryError(
+						`Process terminated by signal ${signal}`,
+						'TERMINATED_BY_SIGNAL',
+						exitCode,
+						stdout,
+						stderr,
+					));
+					return;
 				}
+
+				// Handle non-zero exit codes
+				if (exitCode !== 0) {
+					reject(new GoBinaryError(
+						`Binary exited with code ${exitCode}${stderr ? `: ${stderr}` : ''}`,
+						'NON_ZERO_EXIT',
+						exitCode,
+						stdout,
+						stderr,
+					));
+					return;
+				}
+
+				// Handle empty output
+				if (!stdout) {
+					reject(new GoBinaryError(
+						'Binary produced no stdout output',
+						'NO_OUTPUT',
+						exitCode,
+						stdout,
+						stderr,
+					));
+					return;
+				}
+
+				// Parse JSON from the last non-empty line
+				const lines = stdout.split('\n').map(line => line.trim()).filter(Boolean);
+				if (lines.length === 0) {
+					reject(new GoBinaryError(
+						'No valid output lines found',
+						'NO_VALID_LINES',
+						exitCode,
+						stdout,
+						stderr,
+					));
+					return;
+				}
+
+				const lastLine = lines[lines.length - 1];
+				let parsedData: T;
 
 				try {
-				// Find the last line that looks like JSON
-					const lastLine = stdout.split('\n').filter(line => line.trim()).pop() || '';
-					const json = JSON.parse(lastLine) as T;
-					resolve(json);
+					parsedData = JSON.parse(lastLine) as T;
 				}
-				catch (e: unknown) {
-					throw new Error(
-						`Failed to parse JSON output: ${e instanceof Error ? e.message : String(e)} - Output: ${stdout}`,
-					);
+				catch (parseErr) {
+					reject(new GoBinaryError(
+						`Failed to parse JSON from output: ${parseErr instanceof Error ? parseErr.message : String(parseErr)}`,
+						'JSON_PARSE_ERROR',
+						exitCode,
+						stdout,
+						stderr,
+					));
+					return;
 				}
+
+				resolve({
+					data: parsedData,
+					executionTime,
+					exitCode,
+					stderr,
+					stdout,
+				});
 			}
-			catch (e: unknown) {
-				throw new Error(e instanceof Error ? e.message : String(e));
+			catch (err) {
+				cleanup();
+				reject(new GoBinaryError(
+					`Unexpected error in close handler: ${err instanceof Error ? err.message : String(err)}`,
+					'UNEXPECTED_ERROR',
+				));
 			}
 		});
 	});
