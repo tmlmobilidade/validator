@@ -9,12 +9,6 @@ import (
 	"strconv"
 )
 
-// TripStopSequence holds min/max stop sequence for a trip
-type TripStopSequence struct {
-	Min int
-	Max int
-}
-
 /*
 # Attributes
 
@@ -42,7 +36,7 @@ Conditionally Required:
 
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
-func ArrivalTimeValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs, rules *types.StopTimesRules, tripStopSequences map[string]TripStopSequence) {
+func ArrivalTimeValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs, rules *types.StopTimesRules, tripStopSequences map[string]types.TripStopSequence) {
 	s := types.SEVERITY_IGNORE
 	if rules != nil && rules.ArrivalTime.Severity != "" {
 		s = rules.ArrivalTime.Severity

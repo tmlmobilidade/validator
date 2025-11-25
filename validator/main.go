@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"main/config"
 	"main/i18n"
 	"main/lib"
 	"main/services"
@@ -17,17 +18,8 @@ func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *typ
 	// Create a wait group to wait for all validations to complete
 	var wg sync.WaitGroup
 
-	// List of all possible GTFS tables
-	gtfsTables := []string{
-		"afetacao", "agency", "archives", "areas", "attributions", "booking_rules",
-		"calendar", "calendar_dates", "fare_attributes", "fare_leg_join_rules",
-		"fare_leg_rules", "fare_media", "fare_products", "fare_rules",
-		"fare_transfer_rules", "feed_info", "frequencies", "levels",
-		"location_group_stops", "location_groups", "municipalities", "networks",
-		"pathways", "periods", "rider_categories", "route_networks", "routes",
-		"shapes", "stop_areas", "stop_times", "stops", "timeframes", "transfers",
-		"translations", "trips",
-	}
+	// List of all possible GTFS tables (from config)
+	gtfsTables := config.GTFSTables
 
 	// Run Validations for each file concurrently
 	for _, fileName := range gtfsTables {

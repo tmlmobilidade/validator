@@ -2,6 +2,7 @@ package stops
 
 import (
 	"fmt"
+	"main/config"
 	"main/lib"
 	"main/types"
 	validations "main/validations/stops/validations"
@@ -10,29 +11,11 @@ import (
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Validations for stops.txt")
 
-	// Get total count for progress tracking
-	totalCount, err := gtfs.GetTableCount("stops")
-	if err != nil {
-		lib.AppLogger.Debug(fmt.Sprintf("Could not get table count for stops: %v", err))
-		totalCount = 0
-	}
+	// Create progress tracker
+	tracker := lib.CreateProgressTracker(gtfs, "stops.txt", config.ProgressThresholdLarge)
 
-	var processedCount int
-	lastLoggedPercent := -1
-
-	err = gtfs.IterateStops(func(row int, rawStop types.StopRaw) error {
-		processedCount++
-
-		// Log progress every 10% or every 1000 rows (whichever comes first)
-		if totalCount > 0 {
-			currentPercent := (processedCount * 100) / totalCount
-			if currentPercent != lastLoggedPercent && (currentPercent%10 == 0 || processedCount%1000 == 0) {
-				lib.AppLogger.Debug(fmt.Sprintf("Validating stops.txt: %d/%d (%.1f%%)", processedCount, totalCount, float64(processedCount)*100.0/float64(totalCount)))
-				lastLoggedPercent = currentPercent
-			}
-		} else if processedCount%1000 == 0 {
-			lib.AppLogger.Debug(fmt.Sprintf("Validating stops.txt: %d rows processed", processedCount))
-		}
+	err := gtfs.IterateStops(func(row int, rawStop types.StopRaw) error {
+		tracker.Track()
 		stop := validations.ParseStop(rawStop, row)
 
 		if stop == (types.Stop{}) {
@@ -137,6 +120,6 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	if err != nil {
 		lib.AppLogger.Error(fmt.Sprintf("Error iterating stops: %v", err))
 	} else {
-		lib.AppLogger.Debug(fmt.Sprintf("Completed stops.txt validation: %d rows processed", processedCount))
+		lib.AppLogger.Debug(fmt.Sprintf("Completed stops.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 }

@@ -2,6 +2,7 @@ package feed_info
 
 import (
 	"fmt"
+	"main/config"
 	"main/lib"
 	"main/types"
 	validations "main/validations/feed_info/validations"
@@ -10,7 +11,11 @@ import (
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running FeedInfo Validations...")
 
+	// Create progress tracker
+	tracker := lib.CreateProgressTracker(gtfs, "feed_info.txt", config.ProgressThresholdSmall)
+
 	err := gtfs.IterateFeedInfos(func(i int, feedInfo types.FeedInfoRaw) error {
+		tracker.Track()
 		feedInfoParsed := validations.ParseFeedInfo(feedInfo, i)
 
 		if feedInfoParsed == (types.FeedInfo{}) {
@@ -49,5 +54,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 	if err != nil {
 		lib.AppLogger.Error(fmt.Sprintf("Error iterating feed info: %v", err))
+	} else {
+		lib.AppLogger.Debug(fmt.Sprintf("Completed feed_info.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 }

@@ -419,7 +419,10 @@ type Gtfs struct {
 	db     *sql.DB
 	dbPath string
 
-	// Slice fields kept for type safety but not populated (data is in SQLite)
+	// Deprecated: Slice fields are kept for backward compatibility but are never populated.
+	// All data is now stored in SQLite database. Use iterator methods (IterateStops, IterateTrips, etc.)
+	// or getter methods (GetStop, GetTrip, etc.) to access data.
+	// Migration guide: Replace `gtfs.Stop[i]` with `gtfs.GetStop(i)` or use `gtfs.IterateStops(...)`
 	Agency            []AgencyRaw            `gtfs:"agency"`
 	Stop              []StopRaw              `gtfs:"stop"`
 	Route             []RouteRaw             `gtfs:"route"`

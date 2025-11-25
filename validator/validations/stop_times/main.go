@@ -2,6 +2,7 @@ package stop_times
 
 import (
 	"fmt"
+	"main/config"
 	"main/lib"
 	"main/types"
 	validations "main/validations/stop_times/validations"
@@ -14,7 +15,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	// Pre-compute min/max stop sequences per trip_id for performance
 	// This avoids N+1 queries in arrival_time validation
 	lib.AppLogger.Debug("Pre-computing trip stop sequences...")
-	tripStopSequences := make(map[string]validations.TripStopSequence)
+	tripStopSequences := make(map[string]types.TripStopSequence)
 
 	err := gtfs.IterateStopTimes(func(i int, rawStopTime types.StopTimeRaw) error {
 		// Parse stop_sequence from raw data for pre-computation
@@ -37,7 +38,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 			}
 			tripStopSequences[tripId] = seq
 		} else {
-			tripStopSequences[tripId] = validations.TripStopSequence{Min: stopSeq, Max: stopSeq}
+			tripStopSequences[tripId] = types.TripStopSequence{Min: stopSeq, Max: stopSeq}
 		}
 		return nil
 	})
@@ -46,29 +47,11 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	}
 	lib.AppLogger.Debug(fmt.Sprintf("Pre-computed stop sequences for %d trips", len(tripStopSequences)))
 
-	// Get total count for progress tracking
-	totalCount, err := gtfs.GetTableCount("stop_times")
-	if err != nil {
-		lib.AppLogger.Debug(fmt.Sprintf("Could not get table count for stop_times: %v", err))
-		totalCount = 0
-	}
-
-	var processedCount int
-	lastLoggedPercent := -1
+	// Create progress tracker
+	tracker := lib.CreateProgressTracker(gtfs, "stop_times.txt", config.ProgressThresholdLarge)
 
 	err = gtfs.IterateStopTimes(func(i int, rawStopTimes types.StopTimeRaw) error {
-		processedCount++
-
-		// Log progress every 10% or every 1000 rows (whichever comes first)
-		if totalCount > 0 {
-			currentPercent := (processedCount * 100) / totalCount
-			if currentPercent != lastLoggedPercent && (currentPercent%10 == 0 || processedCount%1000 == 0) {
-				lib.AppLogger.Debug(fmt.Sprintf("Validating stop_times.txt: %d/%d (%.1f%%)", processedCount, totalCount, float64(processedCount)*100.0/float64(totalCount)))
-				lastLoggedPercent = currentPercent
-			}
-		} else if processedCount%1000 == 0 {
-			lib.AppLogger.Debug(fmt.Sprintf("Validating stop_times.txt: %d rows processed", processedCount))
-		}
+		tracker.Track()
 		stopTime := validations.ParseStopTimes(rawStopTimes, i)
 
 		if stopTime == (types.StopTime{}) {
@@ -134,6 +117,6 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	if err != nil {
 		lib.AppLogger.Error(fmt.Sprintf("Error iterating stop times: %v", err))
 	} else {
-		lib.AppLogger.Debug(fmt.Sprintf("Completed stop_times.txt validation: %d rows processed", processedCount))
+		lib.AppLogger.Debug(fmt.Sprintf("Completed stop_times.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 }

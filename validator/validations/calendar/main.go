@@ -2,6 +2,7 @@ package calendar
 
 import (
 	"fmt"
+	"main/config"
 	"main/lib"
 	"main/types"
 	validations "main/validations/calendar/validations"
@@ -10,7 +11,11 @@ import (
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Calendar Validations...")
 
+	// Create progress tracker
+	tracker := lib.CreateProgressTracker(gtfs, "calendar.txt", config.ProgressThresholdSmall)
+
 	err := gtfs.IterateCalendars(func(i int, rawCalendar types.CalendarRaw) error {
+		tracker.Track()
 		calendar := ParseCalendar(rawCalendar, i, &gtfs)
 
 		if calendar == (types.Calendar{}) {
@@ -29,5 +34,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 	if err != nil {
 		lib.AppLogger.Error(fmt.Sprintf("Error iterating calendars: %v", err))
+	} else {
+		lib.AppLogger.Debug(fmt.Sprintf("Completed calendar.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 }

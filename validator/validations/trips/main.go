@@ -2,6 +2,7 @@ package trips
 
 import (
 	"fmt"
+	"main/config"
 	"main/lib"
 	"main/types"
 	validations "main/validations/trips/validations"
@@ -28,30 +29,12 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	}
 	lib.AppLogger.Debug(fmt.Sprintf("Pre-computed stop_times for %d trips", len(tripStopTimesCache)))
 
-	// Get total count for progress tracking
-	totalCount, err := gtfs.GetTableCount("trips")
-	if err != nil {
-		lib.AppLogger.Debug(fmt.Sprintf("Could not get table count for trips: %v", err))
-		totalCount = 0
-	}
-
-	var processedCount int
-	lastLoggedPercent := -1
+	// Create progress tracker
+	tracker := lib.CreateProgressTracker(gtfs, "trips.txt", config.ProgressThresholdLarge)
 	var tripsGroupedByPattern types.TripGroupedByPattern = make(types.TripGroupedByPattern)
 
 	err = gtfs.IterateTrips(func(i int, rawTrips types.TripRaw) error {
-		processedCount++
-
-		// Log progress every 10% or every 1000 rows (whichever comes first)
-		if totalCount > 0 {
-			currentPercent := (processedCount * 100) / totalCount
-			if currentPercent != lastLoggedPercent && (currentPercent%10 == 0 || processedCount%1000 == 0) {
-				lib.AppLogger.Debug(fmt.Sprintf("Validating trips.txt: %d/%d (%.1f%%)", processedCount, totalCount, float64(processedCount)*100.0/float64(totalCount)))
-				lastLoggedPercent = currentPercent
-			}
-		} else if processedCount%1000 == 0 {
-			lib.AppLogger.Debug(fmt.Sprintf("Validating trips.txt: %d rows processed", processedCount))
-		}
+		tracker.Track()
 		trip := validations.ParseTrips(rawTrips, i)
 
 		if trip == (types.Trip{}) {
@@ -115,7 +98,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	if err != nil {
 		lib.AppLogger.Error(fmt.Sprintf("Error iterating trips: %v", err))
 	} else {
-		lib.AppLogger.Debug(fmt.Sprintf("Completed trips.txt validation: %d rows processed", processedCount))
+		lib.AppLogger.Debug(fmt.Sprintf("Completed trips.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 
 	//Validate pattern_id_group

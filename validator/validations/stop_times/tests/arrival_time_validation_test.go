@@ -17,7 +17,7 @@ func TestArrivalTimeValidation_MissingForTimepoint1(t *testing.T) {
 		ArrivalTime: nil,
 	}
 
-	validations.ArrivalTimeValidation(stopTime, 1, &types.Gtfs{}, nil, make(map[string]validations.TripStopSequence))
+	validations.ArrivalTimeValidation(stopTime, 1, &types.Gtfs{}, nil, make(map[string]types.TripStopSequence))
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,

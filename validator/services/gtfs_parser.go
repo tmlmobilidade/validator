@@ -10,25 +10,6 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// GTFS_FILES defines the set of valid GTFS filenames that will be processed.
-var GTFS_FILES = map[string]struct{}{
-	"agency.txt":          {},
-	"stops.txt":           {},
-	"routes.txt":          {},
-	"trips.txt":           {},
-	"stop_times.txt":      {},
-	"calendar.txt":        {},
-	"archives.txt":        {},
-	"calendar_dates.txt":  {},
-	"dates.txt":           {},
-	"fare_attributes.txt": {},
-	"fare_rules.txt":      {},
-	"feed_info.txt":       {},
-	"municipalities.txt":  {},
-	"periods.txt":         {},
-	"shapes.txt":          {},
-}
-
 // ReadGTFSZip reads and parses a GTFS zip file at the specified path using SQLite for efficient streaming.
 // It returns a Gtfs struct with SQLite database connection. The database file is kept during validation
 // and should be cleaned up by calling gtfs.Close() after use.

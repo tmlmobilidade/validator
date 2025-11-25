@@ -10,9 +10,8 @@ import (
 	"strings"
 
 	"github.com/olekukonko/tablewriter"
+	"main/config"
 )
-
-const TOTAL_ISSUES_LIMIT = 500
 
 type MessageService struct {
 	errorCount   int
@@ -63,9 +62,9 @@ func (ms *MessageService) AddMessage(message types.Message) {
 		ms.warningCount++
 	}
 
-	// Exit if total errors + warnings exceeds TOTAL_ISSUES_LIMIT
-	if ms.errorCount+ms.warningCount >= TOTAL_ISSUES_LIMIT {
-		lib.AppLogger.Error("Too many issues (errors + warnings > " + strconv.Itoa(TOTAL_ISSUES_LIMIT) + "). Exiting.")
+	// Exit if total errors + warnings exceeds TotalIssuesLimit
+	if ms.errorCount+ms.warningCount >= config.TotalIssuesLimit {
+		lib.AppLogger.Error("Too many issues (errors + warnings > " + strconv.Itoa(config.TotalIssuesLimit) + "). Exiting.")
 		ms.PrintJSON()
 		os.Exit(0)
 	}

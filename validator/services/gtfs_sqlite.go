@@ -16,9 +16,8 @@ import (
 	"unicode/utf8"
 
 	_ "modernc.org/sqlite"
+	"main/config"
 )
-
-const batchSize = 2000 // tune depending on SSD/HDD
 
 // GtfsSQLite wraps a SQLite database connection for GTFS data
 type GtfsSQLite struct {
@@ -94,7 +93,7 @@ func ImportGTFSZipToSQLite(zipPath, sqlitePath string) (*GtfsSQLite, error) {
 	// Even with WAL mode, concurrent writes can cause locking
 	for _, file := range zr.File {
 		// Only process known GTFS files
-		if _, ok := GTFS_FILES[file.Name]; ok {
+		if _, ok := config.GTFSFiles[file.Name]; ok {
 			if err := processGTFSFile(gtfsDB.db, file, &dbMutex); err != nil {
 				lib.AppLogger.Error(fmt.Sprintf("Error processing %s: %v", file.Name, err))
 				AppMessageService.AddMessage(types.Message{
@@ -242,7 +241,7 @@ func processGTFSFile(db *sql.DB, file *zip.File, dbMutex *sync.Mutex) error {
 		rowIndex++
 
 		// Commit batch and start new transaction
-		if count >= batchSize {
+		if count >= config.BatchSize {
 			if err := tx.Commit(); err != nil {
 				return fmt.Errorf("failed to commit transaction: %w", err)
 			}
