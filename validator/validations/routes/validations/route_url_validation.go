@@ -62,8 +62,15 @@ func RouteUrlValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *ty
 	// Check if route_url is the same as agency_url
 	if route.AgencyId != nil {
 		agencyId := *route.AgencyId
-		agencyRow := gtfs.IdMap["agency"][agencyId]
-		agencyUrl := gtfs.Agency[agencyRow[0]].AgencyUrl
+		agencyRows, err := gtfs.GetRowsById("agency", agencyId)
+		if err != nil || len(agencyRows) == 0 {
+			return
+		}
+		agencyRaw, err := gtfs.GetAgency(agencyRows[0])
+		if err != nil {
+			return
+		}
+		agencyUrl := agencyRaw.AgencyUrl
 
 		if agencyUrl != "" && *route.RouteUrl == agencyUrl {
 			addMessage(i18n.AppTranslator.Get("route_url_validation.same_as_agency_url"), types.SEVERITY_WARNING)

@@ -38,7 +38,8 @@ func TripIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 		return
 	}
 
-	if gtfs.IdMap["trips"] != nil && len(gtfs.IdMap["trips"][*trip.TripId]) > 1 {
+	rows, err := gtfs.GetRowsById("trips", *trip.TripId)
+	if err == nil && len(rows) > 1 {
 		addMessage(i18n.AppTranslator.Get("trip_id_validation.duplicate", map[string]interface{}{"trip_id": *trip.TripId}))
 		return
 	}

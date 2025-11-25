@@ -39,7 +39,8 @@ func RouteIdValidation(route *types.Route, row int, gtfs *types.Gtfs) {
 	}
 
 	// Check if route_id is Unique ID
-	if _, ok := gtfs.IdMap["routes"][*route.RouteId]; ok && len(gtfs.IdMap["routes"][*route.RouteId]) > 1 {
+	rows, err := gtfs.GetRowsById("routes", *route.RouteId)
+	if err == nil && len(rows) > 1 {
 		addMessage(i18n.AppTranslator.Get("route_id_validation.duplicate", *route.RouteId))
 		return
 	}

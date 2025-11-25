@@ -1,6 +1,7 @@
 package types
 
 import (
+	"database/sql"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -414,6 +415,11 @@ type GtfsFiles map[string][]map[string]string
 type GtfsIdMap map[string]map[string][]int // key is the filename, value is a map of ids and their row number
 
 type Gtfs struct {
+	// SQLite database connection - data is stored here instead of in-memory slices
+	db     *sql.DB
+	dbPath string
+
+	// Slice fields kept for type safety but not populated (data is in SQLite)
 	Agency            []AgencyRaw            `gtfs:"agency"`
 	Stop              []StopRaw              `gtfs:"stop"`
 	Route             []RouteRaw             `gtfs:"route"`
@@ -453,46 +459,481 @@ type Gtfs struct {
 	IdMap map[string]map[string][]int // key is the filename, value is a map of ids and their row number
 }
 
+// NewGtfs creates a new empty Gtfs struct (for backward compatibility)
 func NewGtfs() *Gtfs {
 	return &Gtfs{
-		Agency:            make([]AgencyRaw, 0),
-		Stop:              make([]StopRaw, 0),
-		Route:             make([]RouteRaw, 0),
-		Trip:              make([]TripRaw, 0),
-		StopTime:          make([]StopTimeRaw, 0),
-		Calendar:          make([]CalendarRaw, 0),
-		CalendarDates:     make([]CalendarDatesRaw, 0),
-		FareAttribute:     make([]FareAttributeRaw, 0),
-		FareRule:          make([]FareRuleRaw, 0),
-		Shape:             make([]ShapeRaw, 0),
-		Frequencies:       make([]FrequenciesRaw, 0),
-		Transfers:         make([]TransfersRaw, 0),
-		Pathways:          make([]PathwaysRaw, 0),
-		Levels:            make([]LevelsRaw, 0),
-		FeedInfo:          make([]FeedInfoRaw, 0),
-		Translations:      make([]TranslationsRaw, 0),
-		Attributions:      make([]AttributionsRaw, 0),
-		Timeframe:         make([]TimeframeRaw, 0),
-		RiderCategory:     make([]RiderCategoryRaw, 0),
-		FareMedia:         make([]FareMediaRaw, 0),
-		FareProduct:       make([]FareProductRaw, 0),
-		FareLegRule:       make([]FareLegRuleRaw, 0),
-		FareLegJoinRule:   make([]FareLegJoinRuleRaw, 0),
-		FareTransferRule:  make([]FareTransferRuleRaw, 0),
-		Area:              make([]AreaRaw, 0),
-		StopArea:          make([]StopAreaRaw, 0),
-		Network:           make([]NetworkRaw, 0),
-		RouteNetwork:      make([]RouteNetworkRaw, 0),
-		LocationGroup:     make([]LocationGroupRaw, 0),
-		LocationGroupStop: make([]LocationGroupStopRaw, 0),
-		BookingRule:       make([]BookingRuleRaw, 0),
-		Archive:           make([]ArchiveRaw, 0),
-		Municipality:      make([]MunicipalityRaw, 0),
-		Afetacao:          make([]AfetacaoRaw, 0),
-		Period:            make([]PeriodRaw, 0),
-
 		IdMap: make(map[string]map[string][]int),
 	}
+}
+
+// NewGtfsFromSQLite creates a new Gtfs struct with SQLite database connection
+func NewGtfsFromSQLite(db *sql.DB, dbPath string) *Gtfs {
+	return &Gtfs{
+		db:     db,
+		dbPath: dbPath,
+		IdMap:  make(map[string]map[string][]int),
+	}
+}
+
+// Close closes the SQLite database connection
+func (g *Gtfs) Close() error {
+	if g.db != nil {
+		return g.db.Close()
+	}
+	return nil
+}
+
+// DB returns the underlying SQLite database connection
+func (g *Gtfs) DB() *sql.DB {
+	return g.db
+}
+
+// DBPath returns the path to the SQLite database file
+func (g *Gtfs) DBPath() string {
+	return g.dbPath
+}
+
+// HasTable checks if a table exists in the SQLite database
+func (g *Gtfs) HasTable(table string) bool {
+	if g.db == nil {
+		return false
+	}
+	var count int
+	err := g.db.QueryRow("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?", sanitizeTableNameForQuery(table)).Scan(&count)
+	return err == nil && count > 0
+}
+
+// GetTableCount returns the number of rows in a table
+func (g *Gtfs) GetTableCount(table string) (int, error) {
+	if g.db == nil {
+		return 0, fmt.Errorf("database connection is nil")
+	}
+	var count int
+	err := g.db.QueryRow(fmt.Sprintf("SELECT COUNT(*) FROM %s", sanitizeTableNameForQuery(table))).Scan(&count)
+	return count, err
+}
+
+// GetRowsById returns the row indices for a given table and ID from the id_map table
+func (g *Gtfs) GetRowsById(table, id string) ([]int, error) {
+	if g.db == nil {
+		return nil, fmt.Errorf("database connection is nil")
+	}
+	rows, err := g.db.Query("SELECT row_index FROM id_map WHERE file = ? AND key = ? ORDER BY row_index", table, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []int
+	for rows.Next() {
+		var rowIndex int
+		if err := rows.Scan(&rowIndex); err != nil {
+			return nil, err
+		}
+		result = append(result, rowIndex)
+	}
+	return result, rows.Err()
+}
+
+// sanitizeTableNameForQuery sanitizes table name for use in queries (without quotes for table name)
+func sanitizeTableNameForQuery(name string) string {
+	return strings.ReplaceAll(name, "-", "_")
+}
+
+// convertRowToStruct converts a map[string]string to a struct using reflection
+func convertRowToStruct[T any](row map[string]string) T {
+	var result T
+	v := reflect.ValueOf(&result).Elem()
+	t := v.Type()
+
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		fieldType := t.Field(i)
+		tag := fieldType.Tag.Get("gtfs")
+
+		if tag != "" && tag != "-" {
+			if value, exists := row[tag]; exists && field.CanSet() {
+				field.SetString(value)
+			}
+		}
+	}
+
+	return result
+}
+
+// queryTableRowByIndex gets a specific row by index from a table
+func (g *Gtfs) queryTableRowByIndex(table string, rowIndex int) (map[string]string, error) {
+	if g.db == nil {
+		return nil, fmt.Errorf("database connection is nil")
+	}
+
+	tableName := sanitizeTableNameForQuery(table)
+
+	// Get column names
+	rows, err := g.db.Query(fmt.Sprintf("SELECT * FROM %s LIMIT 0", tableName))
+	if err != nil {
+		return nil, fmt.Errorf("failed to query table %s: %w", table, err)
+	}
+	columns, err := rows.Columns()
+	rows.Close()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get columns: %w", err)
+	}
+
+	// Query specific row using LIMIT and OFFSET
+	rows, err = g.db.Query(fmt.Sprintf("SELECT * FROM %s ORDER BY rowid LIMIT 1 OFFSET ?", tableName), rowIndex)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query row: %w", err)
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		return nil, fmt.Errorf("row index %d not found in table %s", rowIndex, table)
+	}
+
+	// Create slice of pointers to hold row values
+	values := make([]interface{}, len(columns))
+	valuePtrs := make([]interface{}, len(columns))
+	for i := range values {
+		valuePtrs[i] = &values[i]
+	}
+
+	if err := rows.Scan(valuePtrs...); err != nil {
+		return nil, fmt.Errorf("failed to scan row: %w", err)
+	}
+
+	// Convert row to map
+	rowMap := make(map[string]string)
+	for i, col := range columns {
+		val := values[i]
+		if val != nil {
+			colName := strings.Trim(col, `"`)
+			rowMap[colName] = fmt.Sprintf("%v", val)
+		} else {
+			colName := strings.Trim(col, `"`)
+			rowMap[colName] = ""
+		}
+	}
+
+	return rowMap, nil
+}
+
+// IterateStops iterates over all stops, calling fn for each stop
+func (g *Gtfs) IterateStops(fn func(int, StopRaw) error) error {
+	return g.iterateTable("stops", func(rowIndex int, row map[string]string) error {
+		stopRaw := convertRowToStruct[StopRaw](row)
+		return fn(rowIndex, stopRaw)
+	})
+}
+
+// GetStop retrieves a stop by row index
+func (g *Gtfs) GetStop(rowIndex int) (StopRaw, error) {
+	row, err := g.queryTableRowByIndex("stops", rowIndex)
+	if err != nil {
+		return StopRaw{}, err
+	}
+	return convertRowToStruct[StopRaw](row), nil
+}
+
+// IterateTrips iterates over all trips, calling fn for each trip
+func (g *Gtfs) IterateTrips(fn func(int, TripRaw) error) error {
+	return g.iterateTable("trips", func(rowIndex int, row map[string]string) error {
+		tripRaw := convertRowToStruct[TripRaw](row)
+		return fn(rowIndex, tripRaw)
+	})
+}
+
+// GetTrip retrieves a trip by row index
+func (g *Gtfs) GetTrip(rowIndex int) (TripRaw, error) {
+	row, err := g.queryTableRowByIndex("trips", rowIndex)
+	if err != nil {
+		return TripRaw{}, err
+	}
+	return convertRowToStruct[TripRaw](row), nil
+}
+
+// IterateStopTimes iterates over all stop times, calling fn for each stop time
+func (g *Gtfs) IterateStopTimes(fn func(int, StopTimeRaw) error) error {
+	return g.iterateTable("stop_times", func(rowIndex int, row map[string]string) error {
+		stopTimeRaw := convertRowToStruct[StopTimeRaw](row)
+		return fn(rowIndex, stopTimeRaw)
+	})
+}
+
+// GetStopTime retrieves a stop time by row index
+func (g *Gtfs) GetStopTime(rowIndex int) (StopTimeRaw, error) {
+	row, err := g.queryTableRowByIndex("stop_times", rowIndex)
+	if err != nil {
+		return StopTimeRaw{}, err
+	}
+	return convertRowToStruct[StopTimeRaw](row), nil
+}
+
+// IterateRoutes iterates over all routes, calling fn for each route
+func (g *Gtfs) IterateRoutes(fn func(int, RouteRaw) error) error {
+	return g.iterateTable("routes", func(rowIndex int, row map[string]string) error {
+		routeRaw := convertRowToStruct[RouteRaw](row)
+		return fn(rowIndex, routeRaw)
+	})
+}
+
+// GetRoute retrieves a route by row index
+func (g *Gtfs) GetRoute(rowIndex int) (RouteRaw, error) {
+	row, err := g.queryTableRowByIndex("routes", rowIndex)
+	if err != nil {
+		return RouteRaw{}, err
+	}
+	return convertRowToStruct[RouteRaw](row), nil
+}
+
+// IterateAgencies iterates over all agencies, calling fn for each agency
+func (g *Gtfs) IterateAgencies(fn func(int, AgencyRaw) error) error {
+	return g.iterateTable("agency", func(rowIndex int, row map[string]string) error {
+		agencyRaw := convertRowToStruct[AgencyRaw](row)
+		return fn(rowIndex, agencyRaw)
+	})
+}
+
+// GetAgency retrieves an agency by row index
+func (g *Gtfs) GetAgency(rowIndex int) (AgencyRaw, error) {
+	row, err := g.queryTableRowByIndex("agency", rowIndex)
+	if err != nil {
+		return AgencyRaw{}, err
+	}
+	return convertRowToStruct[AgencyRaw](row), nil
+}
+
+// IterateShapes iterates over all shapes, calling fn for each shape
+func (g *Gtfs) IterateShapes(fn func(int, ShapeRaw) error) error {
+	return g.iterateTable("shapes", func(rowIndex int, row map[string]string) error {
+		shapeRaw := convertRowToStruct[ShapeRaw](row)
+		return fn(rowIndex, shapeRaw)
+	})
+}
+
+// GetShape retrieves a shape by row index
+func (g *Gtfs) GetShape(rowIndex int) (ShapeRaw, error) {
+	row, err := g.queryTableRowByIndex("shapes", rowIndex)
+	if err != nil {
+		return ShapeRaw{}, err
+	}
+	return convertRowToStruct[ShapeRaw](row), nil
+}
+
+// IteratePathways iterates over all pathways, calling fn for each pathway
+func (g *Gtfs) IteratePathways(fn func(int, PathwaysRaw) error) error {
+	return g.iterateTable("pathways", func(rowIndex int, row map[string]string) error {
+		pathwayRaw := convertRowToStruct[PathwaysRaw](row)
+		return fn(rowIndex, pathwayRaw)
+	})
+}
+
+// GetPathway retrieves a pathway by row index
+func (g *Gtfs) GetPathway(rowIndex int) (PathwaysRaw, error) {
+	row, err := g.queryTableRowByIndex("pathways", rowIndex)
+	if err != nil {
+		return PathwaysRaw{}, err
+	}
+	return convertRowToStruct[PathwaysRaw](row), nil
+}
+
+// IterateFeedInfos iterates over all feed info records, calling fn for each
+func (g *Gtfs) IterateFeedInfos(fn func(int, FeedInfoRaw) error) error {
+	return g.iterateTable("feed_info", func(rowIndex int, row map[string]string) error {
+		feedInfoRaw := convertRowToStruct[FeedInfoRaw](row)
+		return fn(rowIndex, feedInfoRaw)
+	})
+}
+
+// GetFeedInfo retrieves a feed info by row index
+func (g *Gtfs) GetFeedInfo(rowIndex int) (FeedInfoRaw, error) {
+	row, err := g.queryTableRowByIndex("feed_info", rowIndex)
+	if err != nil {
+		return FeedInfoRaw{}, err
+	}
+	return convertRowToStruct[FeedInfoRaw](row), nil
+}
+
+// IterateTranslations iterates over all translations, calling fn for each
+func (g *Gtfs) IterateTranslations(fn func(int, TranslationsRaw) error) error {
+	return g.iterateTable("translations", func(rowIndex int, row map[string]string) error {
+		translationRaw := convertRowToStruct[TranslationsRaw](row)
+		return fn(rowIndex, translationRaw)
+	})
+}
+
+// GetTranslation retrieves a translation by row index
+func (g *Gtfs) GetTranslation(rowIndex int) (TranslationsRaw, error) {
+	row, err := g.queryTableRowByIndex("translations", rowIndex)
+	if err != nil {
+		return TranslationsRaw{}, err
+	}
+	return convertRowToStruct[TranslationsRaw](row), nil
+}
+
+// IterateRouteNetworks iterates over all route networks, calling fn for each
+func (g *Gtfs) IterateRouteNetworks(fn func(int, RouteNetworkRaw) error) error {
+	return g.iterateTable("route_networks", func(rowIndex int, row map[string]string) error {
+		routeNetworkRaw := convertRowToStruct[RouteNetworkRaw](row)
+		return fn(rowIndex, routeNetworkRaw)
+	})
+}
+
+// GetRouteNetwork retrieves a route network by row index
+func (g *Gtfs) GetRouteNetwork(rowIndex int) (RouteNetworkRaw, error) {
+	row, err := g.queryTableRowByIndex("route_networks", rowIndex)
+	if err != nil {
+		return RouteNetworkRaw{}, err
+	}
+	return convertRowToStruct[RouteNetworkRaw](row), nil
+}
+
+// IterateNetworks iterates over all networks, calling fn for each
+func (g *Gtfs) IterateNetworks(fn func(int, NetworkRaw) error) error {
+	return g.iterateTable("networks", func(rowIndex int, row map[string]string) error {
+		networkRaw := convertRowToStruct[NetworkRaw](row)
+		return fn(rowIndex, networkRaw)
+	})
+}
+
+// GetNetwork retrieves a network by row index
+func (g *Gtfs) GetNetwork(rowIndex int) (NetworkRaw, error) {
+	row, err := g.queryTableRowByIndex("networks", rowIndex)
+	if err != nil {
+		return NetworkRaw{}, err
+	}
+	return convertRowToStruct[NetworkRaw](row), nil
+}
+
+// IterateCalendars iterates over all calendars, calling fn for each
+func (g *Gtfs) IterateCalendars(fn func(int, CalendarRaw) error) error {
+	return g.iterateTable("calendar", func(rowIndex int, row map[string]string) error {
+		calendarRaw := convertRowToStruct[CalendarRaw](row)
+		return fn(rowIndex, calendarRaw)
+	})
+}
+
+// GetCalendar retrieves a calendar by row index
+func (g *Gtfs) GetCalendar(rowIndex int) (CalendarRaw, error) {
+	row, err := g.queryTableRowByIndex("calendar", rowIndex)
+	if err != nil {
+		return CalendarRaw{}, err
+	}
+	return convertRowToStruct[CalendarRaw](row), nil
+}
+
+// IterateCalendarDates iterates over all calendar dates, calling fn for each
+func (g *Gtfs) IterateCalendarDates(fn func(int, CalendarDatesRaw) error) error {
+	return g.iterateTable("calendar_dates", func(rowIndex int, row map[string]string) error {
+		calendarDateRaw := convertRowToStruct[CalendarDatesRaw](row)
+		return fn(rowIndex, calendarDateRaw)
+	})
+}
+
+// GetCalendarDate retrieves a calendar date by row index
+func (g *Gtfs) GetCalendarDate(rowIndex int) (CalendarDatesRaw, error) {
+	row, err := g.queryTableRowByIndex("calendar_dates", rowIndex)
+	if err != nil {
+		return CalendarDatesRaw{}, err
+	}
+	return convertRowToStruct[CalendarDatesRaw](row), nil
+}
+
+// IterateFareRules iterates over all fare rules, calling fn for each
+func (g *Gtfs) IterateFareRules(fn func(int, FareRuleRaw) error) error {
+	return g.iterateTable("fare_rules", func(rowIndex int, row map[string]string) error {
+		fareRuleRaw := convertRowToStruct[FareRuleRaw](row)
+		return fn(rowIndex, fareRuleRaw)
+	})
+}
+
+// GetFareRule retrieves a fare rule by row index
+func (g *Gtfs) GetFareRule(rowIndex int) (FareRuleRaw, error) {
+	row, err := g.queryTableRowByIndex("fare_rules", rowIndex)
+	if err != nil {
+		return FareRuleRaw{}, err
+	}
+	return convertRowToStruct[FareRuleRaw](row), nil
+}
+
+// IterateFareAttributes iterates over all fare attributes, calling fn for each
+func (g *Gtfs) IterateFareAttributes(fn func(int, FareAttributeRaw) error) error {
+	return g.iterateTable("fare_attributes", func(rowIndex int, row map[string]string) error {
+		fareAttributeRaw := convertRowToStruct[FareAttributeRaw](row)
+		return fn(rowIndex, fareAttributeRaw)
+	})
+}
+
+// GetFareAttribute retrieves a fare attribute by row index
+func (g *Gtfs) GetFareAttribute(rowIndex int) (FareAttributeRaw, error) {
+	row, err := g.queryTableRowByIndex("fare_attributes", rowIndex)
+	if err != nil {
+		return FareAttributeRaw{}, err
+	}
+	return convertRowToStruct[FareAttributeRaw](row), nil
+}
+
+// iterateTable is a generic helper to iterate over table rows
+func (g *Gtfs) iterateTable(table string, fn func(int, map[string]string) error) error {
+	if g.db == nil {
+		return fmt.Errorf("database connection is nil")
+	}
+
+	tableName := sanitizeTableNameForQuery(table)
+
+	// Get column names
+	rows, err := g.db.Query(fmt.Sprintf("SELECT * FROM %s LIMIT 0", tableName))
+	if err != nil {
+		// Table might not exist, return nil error to allow graceful handling
+		return nil
+	}
+	columns, err := rows.Columns()
+	rows.Close()
+	if err != nil {
+		return fmt.Errorf("failed to get columns: %w", err)
+	}
+
+	// Query all rows
+	rows, err = g.db.Query(fmt.Sprintf("SELECT * FROM %s ORDER BY rowid", tableName))
+	if err != nil {
+		// Table might not exist, return nil error to allow graceful handling
+		return nil
+	}
+	defer rows.Close()
+
+	rowIndex := 0
+	for rows.Next() {
+		// Create slice of pointers to hold row values
+		values := make([]interface{}, len(columns))
+		valuePtrs := make([]interface{}, len(columns))
+		for i := range values {
+			valuePtrs[i] = &values[i]
+		}
+
+		if err := rows.Scan(valuePtrs...); err != nil {
+			return fmt.Errorf("failed to scan row: %w", err)
+		}
+
+		// Convert row to map
+		rowMap := make(map[string]string)
+		for i, col := range columns {
+			val := values[i]
+			if val != nil {
+				colName := strings.Trim(col, `"`)
+				rowMap[colName] = fmt.Sprintf("%v", val)
+			} else {
+				colName := strings.Trim(col, `"`)
+				rowMap[colName] = ""
+			}
+		}
+
+		if err := fn(rowIndex, rowMap); err != nil {
+			return err
+		}
+		rowIndex++
+	}
+
+	return rows.Err()
 }
 
 // findFieldByPath traverses the struct based on a dot-separated path and tag name.

@@ -45,7 +45,11 @@ func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.
 
 	// Check if stop_id is unique
 	if stop.StopId != nil {
-		count := len(lib.RemoveDuplicates(gtfs.IdMap["stops"][*stop.StopId]))
+		rows, err := gtfs.GetRowsById("stops", *stop.StopId)
+		if err != nil {
+			return
+		}
+		count := len(lib.RemoveDuplicates(rows))
 
 		if count > 1 {
 			addMessage(i18n.AppTranslator.Get("stop_id_validation.duplicate", *stop.StopId))

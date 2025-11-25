@@ -1,6 +1,7 @@
 package agency
 
 import (
+	"fmt"
 	"main/lib"
 	"main/types"
 	validations "main/validations/agency/validations"
@@ -9,12 +10,34 @@ import (
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Validations for agency.txt")
 
-	for i, rawAgency := range gtfs.Agency {
+	// Get total count for progress tracking
+	totalCount, err := gtfs.GetTableCount("agency")
+	if err != nil {
+		lib.AppLogger.Debug(fmt.Sprintf("Could not get table count for agency: %v", err))
+		totalCount = 0
+	}
+
+	var processedCount int
+	lastLoggedPercent := -1
+
+	err = gtfs.IterateAgencies(func(i int, rawAgency types.AgencyRaw) error {
+		processedCount++
+
+		// Log progress every 10% or every 100 rows (whichever comes first)
+		if totalCount > 0 {
+			currentPercent := (processedCount * 100) / totalCount
+			if currentPercent != lastLoggedPercent && (currentPercent%10 == 0 || processedCount%100 == 0) {
+				lib.AppLogger.Debug(fmt.Sprintf("Validating agency.txt: %d/%d (%.1f%%)", processedCount, totalCount, float64(processedCount)*100.0/float64(totalCount)))
+				lastLoggedPercent = currentPercent
+			}
+		} else if processedCount%100 == 0 {
+			lib.AppLogger.Debug(fmt.Sprintf("Validating agency.txt: %d rows processed", processedCount))
+		}
 		// Parse Agency Validation
 		agency := validations.ParseAgency(rawAgency, i)
 
 		if agency == (types.Agency{}) {
-			continue
+			return nil
 		}
 
 		var agencyRules types.AgencyRules
@@ -48,5 +71,13 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 		// Validate Agency Email
 		validations.AgencyEmailValidation(&agency, i, &agencyRules)
+
+		return nil
+	})
+
+	if err != nil {
+		lib.AppLogger.Error(fmt.Sprintf("Error iterating agencies: %v", err))
+	} else {
+		lib.AppLogger.Debug(fmt.Sprintf("Completed agency.txt validation: %d rows processed", processedCount))
 	}
 }

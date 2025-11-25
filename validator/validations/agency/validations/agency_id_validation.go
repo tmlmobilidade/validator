@@ -48,7 +48,8 @@ func AgencyIdValidation(agency *types.Agency, row int, gtfs types.Gtfs, rules *t
 
 	//  Check if agency_id is required
 	if agency.AgencyId == nil {
-		if len(gtfs.Agency) > 1 {
+		agencyCount, _ := gtfs.GetTableCount("agency")
+		if agencyCount > 1 {
 			addMessage(i18n.AppTranslator.Get("agency_id_validation.required"), types.SEVERITY_ERROR)
 			return
 		}

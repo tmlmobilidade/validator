@@ -44,7 +44,8 @@ func AgencyIdValidation(fareAttribute *types.FareAttribute, row int, gtfs *types
 	}
 
 	//  Check if agency_id is required
-	if fareAttribute.AgencyId == nil && len(gtfs.Agency) > 1 {
+	agencyCount, _ := gtfs.GetTableCount("agency")
+	if fareAttribute.AgencyId == nil && agencyCount > 1 {
 		addMessage(i18n.AppTranslator.Get("agency_id_validation.required"), types.SEVERITY_ERROR)
 		return
 	}

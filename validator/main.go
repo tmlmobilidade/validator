@@ -9,6 +9,7 @@ import (
 	"main/types"
 	"main/validations"
 	file_validation "main/validations/files"
+	"os"
 	"sync"
 )
 
@@ -16,8 +17,25 @@ func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *typ
 	// Create a wait group to wait for all validations to complete
 	var wg sync.WaitGroup
 
+	// List of all possible GTFS tables
+	gtfsTables := []string{
+		"afetacao", "agency", "archives", "areas", "attributions", "booking_rules",
+		"calendar", "calendar_dates", "fare_attributes", "fare_leg_join_rules",
+		"fare_leg_rules", "fare_media", "fare_products", "fare_rules",
+		"fare_transfer_rules", "feed_info", "frequencies", "levels",
+		"location_group_stops", "location_groups", "municipalities", "networks",
+		"pathways", "periods", "rider_categories", "route_networks", "routes",
+		"shapes", "stop_areas", "stop_times", "stops", "timeframes", "transfers",
+		"translations", "trips",
+	}
+
 	// Run Validations for each file concurrently
-	for fileName := range gtfs.IdMap {
+	for _, fileName := range gtfsTables {
+		// Check if table exists in database
+		if !gtfs.HasTable(fileName) {
+			continue
+		}
+
 		// If fileName is not in the GTFS_FILE_RULES_MAP, skip
 		if _, ok := validations.GTFS_FILE_RULES_MAP[fileName]; !ok {
 			services.AppMessageService.AddMessage(types.Message{
@@ -92,6 +110,18 @@ func main() {
 
 	// Run Validations for each file
 	runValidations(gtfs, tracker, rules)
+
+	// Clean up database file
+	defer func() {
+		if err := gtfs.Close(); err != nil {
+			lib.AppLogger.Error(fmt.Sprintf("Error closing database: %v", err))
+		}
+		if gtfs.DBPath() != "" {
+			if err := os.Remove(gtfs.DBPath()); err != nil {
+				lib.AppLogger.Debug(fmt.Sprintf("Error removing temp database file: %v", err))
+			}
+		}
+	}()
 
 	// Output Summary
 	if services.AppCLI.Options.OutputPath != "" {

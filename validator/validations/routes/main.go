@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"fmt"
 	"main/lib"
 	"main/types"
 	validations "main/validations/routes/validations"
@@ -9,11 +10,33 @@ import (
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Routes Validations...")
 
-	for i, rawRoute := range gtfs.Route {
+	// Get total count for progress tracking
+	totalCount, err := gtfs.GetTableCount("routes")
+	if err != nil {
+		lib.AppLogger.Debug(fmt.Sprintf("Could not get table count for routes: %v", err))
+		totalCount = 0
+	}
+
+	var processedCount int
+	lastLoggedPercent := -1
+
+	err = gtfs.IterateRoutes(func(i int, rawRoute types.RouteRaw) error {
+		processedCount++
+
+		// Log progress every 10% or every 1000 rows (whichever comes first)
+		if totalCount > 0 {
+			currentPercent := (processedCount * 100) / totalCount
+			if currentPercent != lastLoggedPercent && (currentPercent%10 == 0 || processedCount%1000 == 0) {
+				lib.AppLogger.Debug(fmt.Sprintf("Validating routes.txt: %d/%d (%.1f%%)", processedCount, totalCount, float64(processedCount)*100.0/float64(totalCount)))
+				lastLoggedPercent = currentPercent
+			}
+		} else if processedCount%1000 == 0 {
+			lib.AppLogger.Debug(fmt.Sprintf("Validating routes.txt: %d rows processed", processedCount))
+		}
 		route := validations.ParseRoutes(rawRoute, i)
 
 		if route == (types.Route{}) {
-			continue
+			return nil
 		}
 
 		var routeRules *types.RoutesRules
@@ -59,5 +82,13 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 		// Validate network_id
 		validations.NetworkIdValidation(&route, i, &gtfs, routeRules)
+
+		return nil
+	})
+
+	if err != nil {
+		lib.AppLogger.Error(fmt.Sprintf("Error iterating routes: %v", err))
+	} else {
+		lib.AppLogger.Debug(fmt.Sprintf("Completed routes.txt validation: %d rows processed", processedCount))
 	}
 }

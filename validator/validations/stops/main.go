@@ -1,6 +1,7 @@
 package stops
 
 import (
+	"fmt"
 	"main/lib"
 	"main/types"
 	validations "main/validations/stops/validations"
@@ -9,11 +10,33 @@ import (
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Validations for stops.txt")
 
-	for row, rawStop := range gtfs.Stop {
+	// Get total count for progress tracking
+	totalCount, err := gtfs.GetTableCount("stops")
+	if err != nil {
+		lib.AppLogger.Debug(fmt.Sprintf("Could not get table count for stops: %v", err))
+		totalCount = 0
+	}
+
+	var processedCount int
+	lastLoggedPercent := -1
+
+	err = gtfs.IterateStops(func(row int, rawStop types.StopRaw) error {
+		processedCount++
+
+		// Log progress every 10% or every 1000 rows (whichever comes first)
+		if totalCount > 0 {
+			currentPercent := (processedCount * 100) / totalCount
+			if currentPercent != lastLoggedPercent && (currentPercent%10 == 0 || processedCount%1000 == 0) {
+				lib.AppLogger.Debug(fmt.Sprintf("Validating stops.txt: %d/%d (%.1f%%)", processedCount, totalCount, float64(processedCount)*100.0/float64(totalCount)))
+				lastLoggedPercent = currentPercent
+			}
+		} else if processedCount%1000 == 0 {
+			lib.AppLogger.Debug(fmt.Sprintf("Validating stops.txt: %d rows processed", processedCount))
+		}
 		stop := validations.ParseStop(rawStop, row)
 
 		if stop == (types.Stop{}) {
-			continue
+			return nil
 		}
 
 		var stopRules *types.StopsRules
@@ -107,5 +130,13 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 		// Validate has_tariffs_information
 		validations.HasTariffsInformationValidation(&stop, row, stopRules)
+
+		return nil
+	})
+
+	if err != nil {
+		lib.AppLogger.Error(fmt.Sprintf("Error iterating stops: %v", err))
+	} else {
+		lib.AppLogger.Debug(fmt.Sprintf("Completed stops.txt validation: %d rows processed", processedCount))
 	}
 }

@@ -42,7 +42,7 @@ func AgencyIdValidation(route *types.Route, row int, gtfs types.Gtfs, rules *typ
 		})
 	}
 
-	numAgencies := len(gtfs.Agency)
+	numAgencies, _ := gtfs.GetTableCount("agency")
 
 	// Check if agency_id exists and is valid
 	if route.AgencyId != nil && *route.AgencyId != "" {

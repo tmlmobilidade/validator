@@ -23,7 +23,7 @@ func TestStopSequenceValidation_ValidInput(t *testing.T) {
 			},
 		},
 	}
-	validations.StopSequenceValidation(trip, 0, gtfs, &types.TripsRules{StopSequence: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+	validations.StopSequenceValidation(trip, 0, gtfs, &types.TripsRules{StopSequence: types.RuleConfig{Severity: types.SEVERITY_ERROR}}, make(map[string][]types.StopTimeRaw))
 	assertion := lib.AssertionMessage{
 		Expected: 0,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
@@ -49,7 +49,7 @@ func TestStopSequenceValidation_NonIncreasingStopSequence(t *testing.T) {
 			},
 		},
 	}
-	validations.StopSequenceValidation(trip, 0, gtfs, &types.TripsRules{StopSequence: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+	validations.StopSequenceValidation(trip, 0, gtfs, &types.TripsRules{StopSequence: types.RuleConfig{Severity: types.SEVERITY_ERROR}}, make(map[string][]types.StopTimeRaw))
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
@@ -75,7 +75,7 @@ func TestStopSequenceValidation_NonIncreasingShapeDistTraveled(t *testing.T) {
 			},
 		},
 	}
-	validations.StopSequenceValidation(trip, 0, gtfs, &types.TripsRules{StopSequence: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+	validations.StopSequenceValidation(trip, 0, gtfs, &types.TripsRules{StopSequence: types.RuleConfig{Severity: types.SEVERITY_ERROR}}, make(map[string][]types.StopTimeRaw))
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
@@ -100,7 +100,7 @@ func TestStopSequenceValidation_InvalidStopSequence(t *testing.T) {
 			},
 		},
 	}
-	validations.StopSequenceValidation(trip, 0, gtfs, &types.TripsRules{StopSequence: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+	validations.StopSequenceValidation(trip, 0, gtfs, &types.TripsRules{StopSequence: types.RuleConfig{Severity: types.SEVERITY_ERROR}}, make(map[string][]types.StopTimeRaw))
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
@@ -126,7 +126,7 @@ func TestStopSequenceValidation_InvalidShapeDistTraveled(t *testing.T) {
 			},
 		},
 	}
-	validations.StopSequenceValidation(trip, 0, gtfs, &types.TripsRules{StopSequence: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+	validations.StopSequenceValidation(trip, 0, gtfs, &types.TripsRules{StopSequence: types.RuleConfig{Severity: types.SEVERITY_ERROR}}, make(map[string][]types.StopTimeRaw))
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
@@ -153,7 +153,7 @@ func TestStopSequenceValidation_ValidInput_NoShapeDistTraveled(t *testing.T) {
 			},
 		},
 	}
-	validations.StopSequenceValidation(trip, 0, gtfs, &types.TripsRules{StopSequence: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+	validations.StopSequenceValidation(trip, 0, gtfs, &types.TripsRules{StopSequence: types.RuleConfig{Severity: types.SEVERITY_ERROR}}, make(map[string][]types.StopTimeRaw))
 
 	assertion := lib.AssertionMessage{
 		Expected: 0,

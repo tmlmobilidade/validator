@@ -55,7 +55,8 @@ func (v *FileValidation) checkForbiddenFiles(gtfs types.Gtfs, rules *types.GtfsR
 	forbiddenFiles := services.NewRulesParser(services.AppCLI.Options.RulesPath).GetForbiddenFiles(rules)
 
 	for _, file := range forbiddenFiles {
-		if _, exists := gtfs.IdMap[file[:len(file)-4]]; exists {
+		tableName := file[:len(file)-4]
+		if gtfs.HasTable(tableName) {
 			messages = append(messages, v.newMessage(file, fmt.Sprintf(i18n.AppTranslator.Get("file_validations.forbidden"), file)))
 		}
 	}
@@ -71,7 +72,8 @@ func (v *FileValidation) checkRequiredFiles(gtfs types.Gtfs, rules *types.GtfsRu
 	var messages []types.Message
 
 	for _, file := range mergedRequired {
-		if _, exists := gtfs.IdMap[file[:len(file)-4]]; !exists {
+		tableName := file[:len(file)-4]
+		if !gtfs.HasTable(tableName) {
 			messages = append(messages, v.newMessage(file, fmt.Sprintf(i18n.AppTranslator.Get("file_validations.required"), file)))
 		}
 	}
@@ -79,8 +81,8 @@ func (v *FileValidation) checkRequiredFiles(gtfs types.Gtfs, rules *types.GtfsRu
 }
 
 func (v *FileValidation) checkStopsConditional(gtfs types.Gtfs) []types.Message {
-	if _, hasLocations := gtfs.IdMap["locations"]; !hasLocations {
-		if _, hasStops := gtfs.IdMap["stops"]; !hasStops {
+	if !gtfs.HasTable("locations") {
+		if !gtfs.HasTable("stops") {
 			return []types.Message{
 				v.newMessage("stops.txt", i18n.AppTranslator.Get("file_validations.stops_required_when_locations_missing")),
 			}
@@ -90,8 +92,8 @@ func (v *FileValidation) checkStopsConditional(gtfs types.Gtfs) []types.Message 
 }
 
 func (v *FileValidation) checkCalendarFiles(gtfs types.Gtfs) []types.Message {
-	_, hasCalendar := gtfs.IdMap["calendar"]
-	_, hasDates := gtfs.IdMap["calendar_dates"]
+	hasCalendar := gtfs.HasTable("calendar")
+	hasDates := gtfs.HasTable("calendar_dates")
 
 	if !hasCalendar && !hasDates {
 		return []types.Message{
@@ -102,50 +104,64 @@ func (v *FileValidation) checkCalendarFiles(gtfs types.Gtfs) []types.Message {
 }
 
 func (v *FileValidation) checkLevelsIfElevator(gtfs types.Gtfs) []types.Message {
-	if len(gtfs.Pathways) == 0 {
+	pathwayCount, err := gtfs.GetTableCount("pathways")
+	if err != nil || pathwayCount == 0 {
 		return nil
 	}
 
-	for _, pathway := range gtfs.Pathways {
+	err = gtfs.IteratePathways(func(_ int, pathway types.PathwaysRaw) error {
 		if pathway.PathwayMode == "5" {
-			if _, hasLevels := gtfs.IdMap["levels"]; !hasLevels {
-				return []types.Message{
-					v.newMessage("levels.txt", i18n.AppTranslator.Get("file_validations.levels_required_when_elevator")),
-				}
+			if !gtfs.HasTable("levels") {
+				return fmt.Errorf("levels required")
 			}
-			break
+		}
+		return nil
+	})
+	if err != nil && err.Error() == "levels required" {
+		return []types.Message{
+			v.newMessage("levels.txt", i18n.AppTranslator.Get("file_validations.levels_required_when_elevator")),
 		}
 	}
 	return nil
 }
 
 func (v *FileValidation) checkFeedInfoWithTranslations(gtfs types.Gtfs) []types.Message {
-	if len(gtfs.Translations) > 0 {
-		if len(gtfs.FeedInfo) == 0 {
-			return []types.Message{
-				v.newMessage("feed_info.txt", i18n.AppTranslator.Get("file_validations.feed_info_required_when_translations")),
-			}
+	translationCount, err := gtfs.GetTableCount("translations")
+	if err != nil || translationCount == 0 {
+		return nil
+	}
+	feedInfoCount, err := gtfs.GetTableCount("feed_info")
+	if err != nil || feedInfoCount == 0 {
+		return []types.Message{
+			v.newMessage("feed_info.txt", i18n.AppTranslator.Get("file_validations.feed_info_required_when_translations")),
 		}
 	}
 	return nil
 }
 
 func (v *FileValidation) checkForbiddenNetworks(gtfs types.Gtfs) []types.Message {
-	if len(gtfs.Route) == 0 {
+	routeCount, err := gtfs.GetTableCount("routes")
+	if err != nil || routeCount == 0 {
 		return nil
 	}
 
-	for _, route := range gtfs.Route {
+	var messages []types.Message
+	err = gtfs.IterateRoutes(func(_ int, route types.RouteRaw) error {
 		if route.NetworkId != "" {
-			var messages []types.Message
-			if len(gtfs.Network) > 0 {
+			networkCount, _ := gtfs.GetTableCount("networks")
+			if networkCount > 0 {
 				messages = append(messages, v.newMessage("networks.txt", i18n.AppTranslator.Get("file_validations.networks_forbidden_when_network_id")))
 			}
-			if len(gtfs.RouteNetwork) > 0 {
+			routeNetworkCount, _ := gtfs.GetTableCount("route_networks")
+			if routeNetworkCount > 0 {
 				messages = append(messages, v.newMessage("route_networks.txt", i18n.AppTranslator.Get("file_validations.route_networks_forbidden_when_network_id")))
 			}
-			return messages
+			return fmt.Errorf("found network_id") // Signal to stop iteration
 		}
+		return nil
+	})
+	if err != nil && err.Error() == "found network_id" {
+		return messages
 	}
 	return nil
 }

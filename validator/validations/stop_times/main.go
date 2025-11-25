@@ -1,19 +1,78 @@
 package stop_times
 
 import (
+	"fmt"
 	"main/lib"
 	"main/types"
 	validations "main/validations/stop_times/validations"
+	"strconv"
 )
 
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running StopTimes Validations...")
 
-	for i, rawStopTimes := range gtfs.StopTime {
+	// Pre-compute min/max stop sequences per trip_id for performance
+	// This avoids N+1 queries in arrival_time validation
+	lib.AppLogger.Debug("Pre-computing trip stop sequences...")
+	tripStopSequences := make(map[string]validations.TripStopSequence)
+
+	err := gtfs.IterateStopTimes(func(i int, rawStopTime types.StopTimeRaw) error {
+		// Parse stop_sequence from raw data for pre-computation
+		if rawStopTime.TripId == "" || rawStopTime.StopSequence == "" {
+			return nil
+		}
+
+		tripId := rawStopTime.TripId
+		stopSeq, err := strconv.Atoi(rawStopTime.StopSequence)
+		if err != nil {
+			return nil // Skip invalid sequences
+		}
+
+		if seq, exists := tripStopSequences[tripId]; exists {
+			if stopSeq < seq.Min {
+				seq.Min = stopSeq
+			}
+			if stopSeq > seq.Max {
+				seq.Max = stopSeq
+			}
+			tripStopSequences[tripId] = seq
+		} else {
+			tripStopSequences[tripId] = validations.TripStopSequence{Min: stopSeq, Max: stopSeq}
+		}
+		return nil
+	})
+	if err != nil {
+		lib.AppLogger.Error(fmt.Sprintf("Error pre-computing trip stop sequences: %v", err))
+	}
+	lib.AppLogger.Debug(fmt.Sprintf("Pre-computed stop sequences for %d trips", len(tripStopSequences)))
+
+	// Get total count for progress tracking
+	totalCount, err := gtfs.GetTableCount("stop_times")
+	if err != nil {
+		lib.AppLogger.Debug(fmt.Sprintf("Could not get table count for stop_times: %v", err))
+		totalCount = 0
+	}
+
+	var processedCount int
+	lastLoggedPercent := -1
+
+	err = gtfs.IterateStopTimes(func(i int, rawStopTimes types.StopTimeRaw) error {
+		processedCount++
+
+		// Log progress every 10% or every 1000 rows (whichever comes first)
+		if totalCount > 0 {
+			currentPercent := (processedCount * 100) / totalCount
+			if currentPercent != lastLoggedPercent && (currentPercent%10 == 0 || processedCount%1000 == 0) {
+				lib.AppLogger.Debug(fmt.Sprintf("Validating stop_times.txt: %d/%d (%.1f%%)", processedCount, totalCount, float64(processedCount)*100.0/float64(totalCount)))
+				lastLoggedPercent = currentPercent
+			}
+		} else if processedCount%1000 == 0 {
+			lib.AppLogger.Debug(fmt.Sprintf("Validating stop_times.txt: %d rows processed", processedCount))
+		}
 		stopTime := validations.ParseStopTimes(rawStopTimes, i)
 
 		if stopTime == (types.StopTime{}) {
-			continue
+			return nil
 		}
 
 		var stopTimesRules *types.StopTimesRules
@@ -24,8 +83,8 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// Validate trip_id
 		validations.TripIdValidation(&stopTime, i, &gtfs)
 
-		// Validate arrival_time
-		validations.ArrivalTimeValidation(&stopTime, i, &gtfs, stopTimesRules)
+		// Validate arrival_time (pass cached trip stop sequences)
+		validations.ArrivalTimeValidation(&stopTime, i, &gtfs, stopTimesRules, tripStopSequences)
 
 		// Validate departure_time
 		validations.DepartureTimeValidation(&stopTime, i, &gtfs, stopTimesRules)
@@ -68,5 +127,13 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 		// Validate drop_off_booking_rule_id
 		validations.DropOffBookingRuleIdValidation(&stopTime, i, &gtfs, stopTimesRules)
+
+		return nil
+	})
+
+	if err != nil {
+		lib.AppLogger.Error(fmt.Sprintf("Error iterating stop times: %v", err))
+	} else {
+		lib.AppLogger.Debug(fmt.Sprintf("Completed stop_times.txt validation: %d rows processed", processedCount))
 	}
 }

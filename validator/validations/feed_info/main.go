@@ -1,6 +1,7 @@
 package feed_info
 
 import (
+	"fmt"
 	"main/lib"
 	"main/types"
 	validations "main/validations/feed_info/validations"
@@ -9,38 +10,44 @@ import (
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running FeedInfo Validations...")
 
-	for i, feedInfo := range gtfs.FeedInfo {
-		feedInfo := validations.ParseFeedInfo(feedInfo, i)
+	err := gtfs.IterateFeedInfos(func(i int, feedInfo types.FeedInfoRaw) error {
+		feedInfoParsed := validations.ParseFeedInfo(feedInfo, i)
 
-		if feedInfo == (types.FeedInfo{}) {
-			continue
+		if feedInfoParsed == (types.FeedInfo{}) {
+			return nil
 		}
 
 		// Validate feed_lang
-		validations.FeedLangValidation(&feedInfo, i)
+		validations.FeedLangValidation(&feedInfoParsed, i)
 
 		// Validate feed_publisher_name
-		validations.FeedPublisherNameValidation(&feedInfo, i)
+		validations.FeedPublisherNameValidation(&feedInfoParsed, i)
 
 		// Validate feed_publisher_url
-		validations.FeedPublisherUrlValidation(&feedInfo, i)
+		validations.FeedPublisherUrlValidation(&feedInfoParsed, i)
 		
 		// Validate feed_contact_email
-		validations.FeedContactEmailValidation(nil, &feedInfo, i)
+		validations.FeedContactEmailValidation(nil, &feedInfoParsed, i)
 
 		// Validate feed_contact_url
-		validations.FeedContactUrlValidation(nil, &feedInfo, i)
+		validations.FeedContactUrlValidation(nil, &feedInfoParsed, i)
 
 		// Validate feed_end_date
-		validations.FeedEndDateValidation(nil, &feedInfo, i)
+		validations.FeedEndDateValidation(nil, &feedInfoParsed, i)
 
 		// Validate feed_start_date
-		validations.FeedStartDateValidation(nil, &feedInfo, i)
+		validations.FeedStartDateValidation(nil, &feedInfoParsed, i)
 
 		// Validate feed_version
-		validations.FeedVersionValidation(nil, &feedInfo, i)
+		validations.FeedVersionValidation(nil, &feedInfoParsed, i)
 
 		// Validate default_lang
-		validations.DefaultLangValidation(nil, &feedInfo, i)
+		validations.DefaultLangValidation(nil, &feedInfoParsed, i)
+
+		return nil
+	})
+
+	if err != nil {
+		lib.AppLogger.Error(fmt.Sprintf("Error iterating feed info: %v", err))
 	}
 }

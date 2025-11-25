@@ -37,7 +37,8 @@ func TripIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
 		return
 	}
 
-	if _, ok := gtfs.IdMap["trips"][*stopTime.TripId]; !ok {
+	rows, err := gtfs.GetRowsById("trips", *stopTime.TripId)
+	if err != nil || len(rows) == 0 {
 		addMessage(i18n.AppTranslator.Get("trip_id_validation.not_found", *stopTime.TripId), types.SEVERITY_ERROR)
 		return
 	}

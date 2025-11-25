@@ -1,6 +1,7 @@
 package fare_rules
 
 import (
+	"fmt"
 	"main/lib"
 	"main/types"
 	validations "main/validations/fare_rules/validations"
@@ -9,12 +10,12 @@ import (
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running FareRules Validations...")
 
-	for i, rawFareRule := range gtfs.FareRule {
+	err := gtfs.IterateFareRules(func(i int, rawFareRule types.FareRuleRaw) error {
 		// Parse Fare Rule Validation
 		fareRule := validations.ParseFareRule(rawFareRule, i)
 
 		if fareRule == (types.FareRule{}) {
-			continue
+			return nil
 		}
 
 		var fareRulesRules *types.FareRulesRules
@@ -37,5 +38,10 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// validate route_id
 		validations.RouteIdValidation(&fareRule, i, &gtfs, fareRulesRules)
 
+		return nil
+	})
+
+	if err != nil {
+		lib.AppLogger.Error(fmt.Sprintf("Error iterating fare rules: %v", err))
 	}
 }

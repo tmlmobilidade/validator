@@ -9,6 +9,12 @@ import (
 	"strconv"
 )
 
+// TripStopSequence holds min/max stop sequence for a trip
+type TripStopSequence struct {
+	Min int
+	Max int
+}
+
 /*
 # Attributes
 
@@ -36,7 +42,7 @@ Conditionally Required:
 
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
-func ArrivalTimeValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs, rules *types.StopTimesRules) {
+func ArrivalTimeValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs, rules *types.StopTimesRules, tripStopSequences map[string]TripStopSequence) {
 	s := types.SEVERITY_IGNORE
 	if rules != nil && rules.ArrivalTime.Severity != "" {
 		s = rules.ArrivalTime.Severity
@@ -66,39 +72,61 @@ func ArrivalTimeValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs, 
 	}
 
 	// Required for the first and last stop in a trip
-	if stopTime.StopSequence != nil {
-		stopTimes, exists := gtfs.IdMap["stop_times"][*stopTime.TripId]
+	if stopTime.StopSequence != nil && stopTime.TripId != nil {
+		// Use cached trip stop sequences instead of querying database
+		seq, exists := tripStopSequences[*stopTime.TripId]
 		if !exists {
-			addMessage(i18n.AppTranslator.Get("arrival_time_validation.invalid_trip_id"), types.SEVERITY_ERROR)
-			return
-		}
-
-		minStopSequence := math.MaxInt
-		maxStopSequence := math.MinInt
-
-		for _, row := range stopTimes {
-			stopSequence, err := strconv.Atoi(gtfs.StopTime[row].StopSequence)
-			if err != nil {
-				addMessage(i18n.AppTranslator.Get("arrival_time_validation.invalid_stop_sequence"), types.SEVERITY_ERROR)
+			// Fallback to database query if not in cache (shouldn't happen)
+			stopTimes, err := gtfs.GetRowsById("stop_times", *stopTime.TripId)
+			if err != nil || len(stopTimes) == 0 {
+				addMessage(i18n.AppTranslator.Get("arrival_time_validation.invalid_trip_id"), types.SEVERITY_ERROR)
 				return
 			}
 
-			if stopSequence < minStopSequence {
-				minStopSequence = stopSequence
-			}
-			if stopSequence > maxStopSequence {
-				maxStopSequence = stopSequence
-			}
-		}
+			minStopSequence := math.MaxInt
+			maxStopSequence := math.MinInt
 
-		if *stopTime.StopSequence == minStopSequence && stopTime.ArrivalTime == nil {
-			addMessage(i18n.AppTranslator.Get("arrival_time_validation.required_first_stop"), types.SEVERITY_ERROR)
-			return
-		}
+			for _, row := range stopTimes {
+				stopTimeRaw, err := gtfs.GetStopTime(row)
+				if err != nil {
+					continue
+				}
+				stopSequence, err := strconv.Atoi(stopTimeRaw.StopSequence)
+				if err != nil {
+					addMessage(i18n.AppTranslator.Get("arrival_time_validation.invalid_stop_sequence"), types.SEVERITY_ERROR)
+					return
+				}
 
-		if *stopTime.StopSequence == maxStopSequence && stopTime.ArrivalTime == nil {
-			addMessage(i18n.AppTranslator.Get("arrival_time_validation.required_last_stop"), types.SEVERITY_ERROR)
-			return
+				if stopSequence < minStopSequence {
+					minStopSequence = stopSequence
+				}
+				if stopSequence > maxStopSequence {
+					maxStopSequence = stopSequence
+				}
+			}
+
+			if *stopTime.StopSequence == minStopSequence && stopTime.ArrivalTime == nil {
+				addMessage(i18n.AppTranslator.Get("arrival_time_validation.required_first_stop"), types.SEVERITY_ERROR)
+				return
+			}
+
+			if *stopTime.StopSequence == maxStopSequence && stopTime.ArrivalTime == nil {
+				addMessage(i18n.AppTranslator.Get("arrival_time_validation.required_last_stop"), types.SEVERITY_ERROR)
+				return
+			}
+		} else {
+			// Use cached values - much faster!
+			stopSequence := *stopTime.StopSequence
+
+			if stopSequence == seq.Min && stopTime.ArrivalTime == nil {
+				addMessage(i18n.AppTranslator.Get("arrival_time_validation.required_first_stop"), types.SEVERITY_ERROR)
+				return
+			}
+
+			if stopSequence == seq.Max && stopTime.ArrivalTime == nil {
+				addMessage(i18n.AppTranslator.Get("arrival_time_validation.required_last_stop"), types.SEVERITY_ERROR)
+				return
+			}
 		}
 	}
 

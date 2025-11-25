@@ -1,6 +1,7 @@
 package fare_attributes
 
 import (
+	"fmt"
 	"main/lib"
 	"main/types"
 	validations "main/validations/fare_attributes/validations"
@@ -9,11 +10,11 @@ import (
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Fare Attributes Validations...")
 
-	for i, rawFareAttributes := range gtfs.FareAttribute {
+	err := gtfs.IterateFareAttributes(func(i int, rawFareAttributes types.FareAttributeRaw) error {
 		fareAttribute := ParseFareAttributes(rawFareAttributes, i)
 
 		if fareAttribute == (types.FareAttribute{}) {
-			continue
+			return nil
 		}
 
 		var fareAttributesRules *types.FareAttributesRules
@@ -41,5 +42,11 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 		// Validate transfer_duration
 		validations.TransferDurationValidation(&fareAttribute, i, &gtfs, fareAttributesRules)
+
+		return nil
+	})
+
+	if err != nil {
+		lib.AppLogger.Error(fmt.Sprintf("Error iterating fare attributes: %v", err))
 	}
 }

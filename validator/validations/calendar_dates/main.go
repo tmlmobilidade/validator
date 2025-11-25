@@ -1,6 +1,7 @@
 package calendar_dates
 
 import (
+	"fmt"
 	"main/lib"
 	"main/types"
 	validations "main/validations/calendar_dates/validations"
@@ -10,11 +11,11 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 	lib.AppLogger.Debug("Running Calendar Dates Validations...")
 
-	for i, rawCalendarDate := range gtfs.CalendarDates {
+	err := gtfs.IterateCalendarDates(func(i int, rawCalendarDate types.CalendarDatesRaw) error {
 		calendarDate := ParseCalendarDates(rawCalendarDate, i)
 
 		if calendarDate == (types.CalendarDates{}) {
-			continue
+			return nil
 		}
 
 		var calendarDatesRules types.CalendarDatesRules
@@ -31,5 +32,10 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// Validate exception_type
 		validations.ExceptionTypeValidation(&calendarDate, i, &calendarDatesRules)
 
+		return nil
+	})
+
+	if err != nil {
+		lib.AppLogger.Error(fmt.Sprintf("Error iterating calendar dates: %v", err))
 	}
 }

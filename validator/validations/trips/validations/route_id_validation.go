@@ -37,7 +37,8 @@ func RouteIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 	}
 
 	// Check if route_id is Foreign Key referencing routes.route_id
-	if _, ok := gtfs.IdMap["routes"][*trip.RouteId]; !ok {
+	rows, err := gtfs.GetRowsById("routes", *trip.RouteId)
+	if err != nil || len(rows) == 0 {
 		message.Message = i18n.AppTranslator.Get("route_id_validation.not_found", map[string]interface{}{"route_id": *trip.RouteId})
 		services.AppMessageService.AddMessage(message)
 	}

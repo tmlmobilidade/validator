@@ -69,9 +69,14 @@ func ContinuousDropOffValidation(route *types.Route, row int, gtfs *types.Gtfs, 
 
 	// Get all trip IDs for this route
 	tripIds := make([]string, 0)
-	if trips, exists := gtfs.IdMap["trips"][*route.RouteId]; exists {
-		for _, row := range trips {
-			if tripId := gtfs.Trip[row].TripId; tripId != "" {
+	tripRows, err := gtfs.GetRowsById("trips", *route.RouteId)
+	if err == nil {
+		for _, row := range tripRows {
+			tripRaw, err := gtfs.GetTrip(row)
+			if err != nil {
+				continue
+			}
+			if tripId := tripRaw.TripId; tripId != "" {
 				tripIds = append(tripIds, tripId)
 			}
 		}
@@ -79,10 +84,15 @@ func ContinuousDropOffValidation(route *types.Route, row int, gtfs *types.Gtfs, 
 
 	// Check each trip's stop times for pickup/dropoff windows
 	for _, tripId := range tripIds {
-		if stopTimes, exists := gtfs.IdMap["stop_times"][tripId]; exists {
+		stopTimes, err := gtfs.GetRowsById("stop_times", tripId)
+		if err == nil {
 			for _, row := range stopTimes {
-				startWindow := gtfs.StopTime[row].StartPickupDropOffWindow
-				endWindow := gtfs.StopTime[row].EndPickupDropOffWindow
+				stopTimeRaw, err := gtfs.GetStopTime(row)
+				if err != nil {
+					continue
+				}
+				startWindow := stopTimeRaw.StartPickupDropOffWindow
+				endWindow := stopTimeRaw.EndPickupDropOffWindow
 
 				if startWindow != "" || endWindow != "" {
 					lib.AppLogger.Accent("route.ContinuousDropOff", *route.ContinuousDropOff)

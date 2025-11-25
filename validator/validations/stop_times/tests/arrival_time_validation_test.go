@@ -17,7 +17,7 @@ func TestArrivalTimeValidation_MissingForTimepoint1(t *testing.T) {
 		ArrivalTime: nil,
 	}
 
-	validations.ArrivalTimeValidation(stopTime, 1, &types.Gtfs{}, nil)
+	validations.ArrivalTimeValidation(stopTime, 1, &types.Gtfs{}, nil, make(map[string]validations.TripStopSequence))
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,
@@ -277,7 +277,7 @@ func TestArrivalTimeValidation_SeverityError(t *testing.T) {
 	stopTime := &types.StopTime{}
 
 	severity := types.SEVERITY_ERROR
-	validations.ArrivalTimeValidation(stopTime, 1, &types.Gtfs{}, &types.StopTimesRules{ArrivalTime: types.RuleConfig{Severity: severity}})
+	validations.ArrivalTimeValidation(stopTime, 1, &types.Gtfs{}, &types.StopTimesRules{ArrivalTime: types.RuleConfig{Severity: severity}}, make(map[string]validations.TripStopSequence))
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,
@@ -295,7 +295,7 @@ func TestArrivalTimeValidation_SeverityWarning(t *testing.T) {
 	stopTime := &types.StopTime{}
 
 	severity := types.SEVERITY_WARNING
-	validations.ArrivalTimeValidation(stopTime, 1, &types.Gtfs{}, &types.StopTimesRules{ArrivalTime: types.RuleConfig{Severity: severity}})
+	validations.ArrivalTimeValidation(stopTime, 1, &types.Gtfs{}, &types.StopTimesRules{ArrivalTime: types.RuleConfig{Severity: severity}}, make(map[string]validations.TripStopSequence))
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,

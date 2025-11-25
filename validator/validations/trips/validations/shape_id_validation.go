@@ -25,7 +25,7 @@ Conditionally Required:
 
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 */
-func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
+func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules, tripStopTimesCache map[string][]types.StopTimeRaw) {
 	s := types.SEVERITY_IGNORE
 	if rules != nil && rules.ShapeId.Severity != "" {
 		s = rules.ShapeId.Severity
@@ -49,23 +49,40 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 	}
 
 	// Check if the route has continuous pickup/dropoff behavior
-	routeRow := gtfs.IdMap["routes"][*trip.RouteId]
-	if _, ok := gtfs.IdMap["routes"][*trip.RouteId]; !ok {
+	routeRows, err := gtfs.GetRowsById("routes", *trip.RouteId)
+	if err != nil || len(routeRows) == 0 {
 		fmt.Println("Route not found", *trip.RouteId)
 		return
 	}
 
-	if gtfs.Route[routeRow[0]].ContinuousPickup != "" {
+	routeRaw, err := gtfs.GetRoute(routeRows[0])
+	if err == nil && routeRaw.ContinuousPickup != "" {
 		hasContinuousPickupDropoff = true
 	}
 
 	// Check if the stop_times have continuous pickup/dropoff behavior
-	if gtfs.IdMap["stop_times"] != nil && len(gtfs.IdMap["stop_times"][*trip.TripId]) > 0 && !hasContinuousPickupDropoff {
-
-		for _, rowIndex := range gtfs.IdMap["stop_times"][*trip.TripId] {
-			if continuousPickup := gtfs.StopTime[rowIndex].ContinuousPickup; continuousPickup != "" {
+	// Use cached stop_times data instead of querying database
+	stopTimesRaw, exists := tripStopTimesCache[*trip.TripId]
+	if exists && !hasContinuousPickupDropoff {
+		for _, stopTimeRaw := range stopTimesRaw {
+			if continuousPickup := stopTimeRaw.ContinuousPickup; continuousPickup != "" {
 				hasContinuousPickupDropoff = true
 				break // Exit early once we find a continuous pickup
+			}
+		}
+	} else if !exists {
+		// Fallback to database query if not in cache (shouldn't happen)
+		stopTimeRows, err := gtfs.GetRowsById("stop_times", *trip.TripId)
+		if err == nil && len(stopTimeRows) > 0 && !hasContinuousPickupDropoff {
+			for _, rowIndex := range stopTimeRows {
+				stopTimeRaw, err := gtfs.GetStopTime(rowIndex)
+				if err != nil {
+					continue
+				}
+				if continuousPickup := stopTimeRaw.ContinuousPickup; continuousPickup != "" {
+					hasContinuousPickupDropoff = true
+					break // Exit early once we find a continuous pickup
+				}
 			}
 		}
 	}

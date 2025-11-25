@@ -37,10 +37,12 @@ func ServiceIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 	}
 
 	// Check in calendar or calendar_dates without merging the maps
-	if _, ok := gtfs.IdMap["calendar"][*trip.ServiceId]; ok {
+	calendarRows, err := gtfs.GetRowsById("calendar", *trip.ServiceId)
+	if err == nil && len(calendarRows) > 0 {
 		return
 	}
-	if _, ok := gtfs.IdMap["calendar_dates"][*trip.ServiceId]; ok {
+	calendarDatesRows, err := gtfs.GetRowsById("calendar_dates", *trip.ServiceId)
+	if err == nil && len(calendarDatesRows) > 0 {
 		return
 	}
 	message.Message = i18n.AppTranslator.Get("service_id_validation.not_found", map[string]interface{}{"service_id": *trip.ServiceId})

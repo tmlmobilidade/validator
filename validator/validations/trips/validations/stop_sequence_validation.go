@@ -30,7 +30,7 @@ Travel within the same location group or GeoJSON location requires two records i
 
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
-func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) (stopSequenceHash string) {
+func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules, tripStopTimesCache map[string][]types.StopTimeRaw) (stopSequenceHash string) {
 	s := types.SEVERITY_IGNORE
 	if rules != nil && rules.StopSequence.Severity != "" {
 		s = rules.StopSequence.Severity
@@ -56,36 +56,52 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *
 	}
 
 	// Check each trip's stop times for pickup/dropoff windows
+	// Use cached stop_times data instead of querying database
 
 	stopSequences := make([]types.StopTime, 0)
 	hash := ""
 
-	stopTimes := gtfs.IdMap["stop_times"][*trip.TripId]
-	for _, row := range stopTimes {
+	// Use cached stop_times data if available
+	stopTimesRaw, exists := tripStopTimesCache[*trip.TripId]
+	if !exists {
+		// Fallback to database query if not in cache (shouldn't happen)
+		stopTimes, err := gtfs.GetRowsById("stop_times", *trip.TripId)
+		if err != nil {
+			return
+		}
+		for _, row := range stopTimes {
+			stopTimeRaw, err := gtfs.GetStopTime(row)
+			if err != nil {
+				continue
+			}
+			stopTimesRaw = append(stopTimesRaw, stopTimeRaw)
+		}
+	}
 
-		stopSequence, err := strconv.Atoi(gtfs.StopTime[row].StopSequence)
+	// Process cached stop_times data
+	for _, stopTimeRaw := range stopTimesRaw {
+		stopSequence, err := strconv.Atoi(stopTimeRaw.StopSequence)
 		if err != nil {
 			addMessage(i18n.AppTranslator.Get("stop_sequence_validation.invalid_sequence"), types.SEVERITY_ERROR)
 			return
 		}
 
 		shapeDistTraveled := -1.0
-		if gtfs.StopTime[row].ShapeDistTraveled != "" {
-			shapeDistTraveled, err = strconv.ParseFloat(gtfs.StopTime[row].ShapeDistTraveled, 64)
+		if stopTimeRaw.ShapeDistTraveled != "" {
+			shapeDistTraveled, err = strconv.ParseFloat(stopTimeRaw.ShapeDistTraveled, 64)
 			if err != nil {
 				addMessage(i18n.AppTranslator.Get("stop_sequence_validation.invalid_shape_dist"), types.SEVERITY_ERROR)
 				return
 			}
 		}
 
-		stopId := gtfs.StopTime[row].StopId
+		stopId := stopTimeRaw.StopId
 
 		stopSequences = append(stopSequences, types.StopTime{
 			StopSequence:      &stopSequence,
 			ShapeDistTraveled: &shapeDistTraveled,
 			StopId:            &stopId,
 		})
-
 	}
 
 	stopSequences = lib.RemoveDuplicates(stopSequences)

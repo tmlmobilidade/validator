@@ -59,20 +59,18 @@ func StopIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
 		}
 
 		// Foreign key check: must reference a valid stop_id from stops.txt
-		stopsMap, ok := gtfs.IdMap["stops"]
-		if !ok || stopsMap == nil {
-			addMessage(i18n.AppTranslator.Get("stop_id_validation.missing_stops_file"), types.SEVERITY_ERROR)
-			return
-		}
-		rows, ok := stopsMap[*stopTime.StopId]
-		if !ok || len(rows) == 0 {
+		rows, err := gtfs.GetRowsById("stops", *stopTime.StopId)
+		if err != nil || len(rows) == 0 {
 			addMessage(i18n.AppTranslator.Get("stop_id_validation.not_found", *stopTime.StopId), types.SEVERITY_ERROR)
 			return
 		}
 
 		// Check location_type is 0 or empty
 		rowIdx := rows[0]
-		stopRow := gtfs.Stop[rowIdx]
+		stopRow, err := gtfs.GetStop(rowIdx)
+		if err != nil {
+			return
+		}
 		locationTypeStr := stopRow.LocationType
 		if locationTypeStr != "" && locationTypeStr != "0" {
 			addMessage(i18n.AppTranslator.Get("stop_id_validation.invalid_location_type"), types.SEVERITY_ERROR)
