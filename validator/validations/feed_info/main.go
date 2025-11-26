@@ -6,7 +6,12 @@ import (
 	"main/lib"
 	"main/types"
 	validations "main/validations/feed_info/validations"
+	registry "main/validations"
 )
+
+func init() {
+	registry.Register("feed_info", RunValidations)
+}
 
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running FeedInfo Validations...")

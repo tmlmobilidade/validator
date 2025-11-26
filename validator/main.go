@@ -12,6 +12,43 @@ import (
 	file_validation "main/validations/files"
 	"os"
 	"sync"
+
+	// Import all validation packages to trigger their init() functions
+	_ "main/validations/afetacao"
+	_ "main/validations/agency"
+	_ "main/validations/archives"
+	_ "main/validations/areas"
+	_ "main/validations/attributions"
+	_ "main/validations/booking_rules"
+	_ "main/validations/calendar"
+	_ "main/validations/calendar_dates"
+	_ "main/validations/fare_attributes"
+	_ "main/validations/fare_leg_join_rules"
+	_ "main/validations/fare_leg_rules"
+	_ "main/validations/fare_media"
+	_ "main/validations/fare_products"
+	_ "main/validations/fare_rules"
+	_ "main/validations/fare_transfer_rules"
+	_ "main/validations/feed_info"
+	_ "main/validations/frequencies"
+	_ "main/validations/levels"
+	_ "main/validations/location_group_stops"
+	_ "main/validations/location_groups"
+	_ "main/validations/municipalities"
+	_ "main/validations/networks"
+	_ "main/validations/pathways"
+	_ "main/validations/periods"
+	_ "main/validations/rider_categories"
+	_ "main/validations/route_networks"
+	_ "main/validations/routes"
+	_ "main/validations/shapes"
+	_ "main/validations/stop_areas"
+	_ "main/validations/stop_times"
+	_ "main/validations/stops"
+	_ "main/validations/timeframes"
+	_ "main/validations/transfers"
+	_ "main/validations/translations"
+	_ "main/validations/trips"
 )
 
 func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *types.GtfsRules) {
@@ -28,8 +65,9 @@ func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *typ
 			continue
 		}
 
-		// If fileName is not in the GTFS_FILE_RULES_MAP, skip
-		if _, ok := validations.GTFS_FILE_RULES_MAP[fileName]; !ok {
+		// Check if validation is registered for this table
+		validationFn, ok := validations.Get(fileName)
+		if !ok {
 			services.AppMessageService.AddMessage(types.Message{
 				Rows:         []int{},
 				Field:        "N/A",
@@ -42,10 +80,10 @@ func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *typ
 		}
 
 		wg.Add(1)
-		go func(name string) {
+		go func(name string, fn validations.ValidationFunction) {
 			defer wg.Done()
-			validations.GTFS_FILE_RULES_MAP[name](gtfs, rules)
-		}(fileName)
+			fn(gtfs, rules)
+		}(fileName, validationFn)
 	}
 
 	// Wait for all validations to complete

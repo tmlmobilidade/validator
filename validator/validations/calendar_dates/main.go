@@ -6,7 +6,12 @@ import (
 	"main/lib"
 	"main/types"
 	validations "main/validations/calendar_dates/validations"
+	registry "main/validations"
 )
+
+func init() {
+	registry.Register("calendar_dates", RunValidations)
+}
 
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Calendar Dates Validations...")

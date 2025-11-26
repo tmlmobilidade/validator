@@ -5,9 +5,14 @@ import (
 	"main/config"
 	"main/lib"
 	"main/types"
+	registry "main/validations"
 	validations "main/validations/stop_times/validations"
 	"strconv"
 )
+
+func init() {
+	registry.Register("stop_times", RunValidations)
+}
 
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running StopTimes Validations...")

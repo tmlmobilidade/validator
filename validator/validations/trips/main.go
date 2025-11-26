@@ -6,8 +6,13 @@ import (
 	"main/lib"
 	"main/types"
 	validations "main/validations/trips/validations"
+	registry "main/validations"
 	"slices"
 )
+
+func init() {
+	registry.Register("trips", RunValidations)
+}
 
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Trips Validations...")
