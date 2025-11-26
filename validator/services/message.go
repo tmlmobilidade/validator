@@ -9,10 +9,21 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/olekukonko/tablewriter"
 	"main/config"
+
+	"github.com/olekukonko/tablewriter"
 )
 
+// MessageServiceInterface defines the interface for message service operations
+// This allows for dependency injection and improved testability
+type MessageServiceInterface interface {
+	AddMessage(message types.Message)
+	AddMessages(messages []types.Message)
+	GetSummary() types.Summary
+	Clear()
+}
+
+// MessageService implements MessageServiceInterface
 type MessageService struct {
 	errorCount   int
 	warningCount int

@@ -15,8 +15,10 @@ import (
 	"sync"
 	"unicode/utf8"
 
-	_ "modernc.org/sqlite"
 	"main/config"
+	dbops "main/services/database"
+
+	_ "modernc.org/sqlite"
 )
 
 // GtfsSQLite wraps a SQLite database connection for GTFS data
@@ -286,35 +288,16 @@ func handlePrimaryKeyMappingSQLite(tx *sql.Tx, stmt *sql.Stmt, primaryKey any, h
 	}
 }
 
-// createSQLiteTableIfNotExists creates a SQLite table with the given headers
+// createSQLiteTableIfNotExists is a wrapper for database.CreateTableIfNotExists
+// Deprecated: Use database.CreateTableIfNotExists directly
 func createSQLiteTableIfNotExists(db *sql.DB, table string, headers []string) error {
-	var cols []string
-	for _, h := range headers {
-		// Sanitize column name (SQLite identifiers)
-		colName := sanitizeColumnName(h)
-		col := fmt.Sprintf("%s TEXT", colName)
-		cols = append(cols, col)
-	}
-
-	sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (%s);", sanitizeTableName(table), strings.Join(cols, ","))
-	_, err := db.Exec(sql)
-	return err
+	return dbops.CreateTableIfNotExists(db, table, headers)
 }
 
-// sanitizeColumnName sanitizes a column name for SQLite
-func sanitizeColumnName(name string) string {
-	// Replace spaces and special characters with underscores
-	name = strings.ReplaceAll(name, " ", "_")
-	name = strings.ReplaceAll(name, "-", "_")
-	// Wrap in quotes to handle reserved words
-	return fmt.Sprintf(`"%s"`, name)
-}
-
-// sanitizeTableName sanitizes a table name for SQLite
+// sanitizeTableName is a wrapper for database.SanitizeTableName
+// Deprecated: Use database.SanitizeTableName directly
 func sanitizeTableName(name string) string {
-	// Replace dashes with underscores
-	name = strings.ReplaceAll(name, "-", "_")
-	return name
+	return dbops.SanitizeTableName(name)
 }
 
 // convertToInterface converts a []string to []any
