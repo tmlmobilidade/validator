@@ -30,6 +30,9 @@ export interface GoBinaryResult<T = unknown> {
 	stdout: string
 }
 
+/**
+ * Error thrown when a Go binary execution fails.
+ */
 export class GoBinaryError extends Error {
 	constructor(
 		message: string,
@@ -40,6 +43,10 @@ export class GoBinaryError extends Error {
 	) {
 		super(message);
 		this.name = 'GoBinaryError';
+		// Maintains proper stack trace for where our error was thrown (only available on V8)
+		if (typeof Error.captureStackTrace === 'function') {
+			Error.captureStackTrace(this, GoBinaryError);
+		}
 	}
 }
 
@@ -59,6 +66,14 @@ export class GoBinaryError extends Error {
  * console.log(result.data.status);
  * ```
  */
+/**
+ * Default buffer sizes and timeout constants.
+ */
+const DEFAULT_MAX_STDERR_SIZE = 1024 * 1024; // 1MB
+const DEFAULT_MAX_STDOUT_SIZE = 10 * 1024 * 1024; // 10MB
+const DEFAULT_TIMEOUT_MS = 1000 * 60 * 5; // 5 minutes
+const FORCE_KILL_DELAY_MS = 5000; // 5 seconds
+
 export async function runGoBinary<T = unknown>(
 	binaryPath: string,
 	options: RunGoBinaryOptions = {},
@@ -67,9 +82,9 @@ export async function runGoBinary<T = unknown>(
 		args = [],
 		cwd = process.cwd(),
 		env = {},
-		maxStderrSize = 1024 * 1024, // 1MB
-		maxStdoutSize = 10 * 1024 * 1024, // 10MB
-		timeout = 1000 * 60 * 5, // 5 minutes
+		maxStderrSize = DEFAULT_MAX_STDERR_SIZE,
+		maxStdoutSize = DEFAULT_MAX_STDOUT_SIZE,
+		timeout = DEFAULT_TIMEOUT_MS,
 	} = options;
 
 	// Validate binary exists and is executable
@@ -78,9 +93,13 @@ export async function runGoBinary<T = unknown>(
 		await access(fullPath, constants.F_OK | constants.X_OK);
 	}
 	catch (err) {
+		const error = err instanceof Error ? err : new Error(String(err));
 		throw new GoBinaryError(
 			`Binary not found or not executable: ${fullPath}`,
 			'BINARY_NOT_FOUND',
+			undefined,
+			undefined,
+			error.message,
 		);
 	}
 
@@ -99,13 +118,23 @@ export async function runGoBinary<T = unknown>(
 				clearTimeout(timer);
 			}
 			if (proc && !proc.killed) {
-				proc.kill('SIGTERM');
-				// Force kill after 5 seconds if still running
-				setTimeout(() => {
-					if (proc && !proc.killed) {
-						proc.kill('SIGKILL');
-					}
-				}, 5000);
+				try {
+					proc.kill('SIGTERM');
+					// Force kill after delay if still running
+					setTimeout(() => {
+						if (proc && !proc.killed) {
+							try {
+								proc.kill('SIGKILL');
+							}
+							catch {
+								// Ignore errors during force kill
+							}
+						}
+					}, FORCE_KILL_DELAY_MS);
+				}
+				catch {
+					// Ignore errors during cleanup
+				}
 			}
 		};
 
@@ -171,15 +200,14 @@ export async function runGoBinary<T = unknown>(
 
 		proc.on('close', (code: null | number, signal: NodeJS.Signals | null) => {
 			const executionTime = Date.now() - startTime;
+			const stdout = Buffer.concat(stdoutChunks).toString('utf-8').trim();
+			const stderr = Buffer.concat(stderrChunks).toString('utf-8').trim();
+			const exitCode = code ?? -1;
 
 			try {
 				cleanup();
 
 				if (timedOut) return; // Timeout already handled
-
-				const stdout = Buffer.concat(stdoutChunks).toString('utf-8').trim();
-				const stderr = Buffer.concat(stderrChunks).toString('utf-8').trim();
-				const exitCode = code ?? -1;
 
 				// Handle termination by signal
 				if (signal) {
@@ -218,7 +246,7 @@ export async function runGoBinary<T = unknown>(
 				}
 
 				// Parse JSON from the last non-empty line
-				const lines = stdout.split('\n').map(line => line.trim()).filter(Boolean);
+				const lines = stdout.split('\n').map((line: string) => line.trim()).filter(Boolean);
 				if (lines.length === 0) {
 					reject(new GoBinaryError(
 						'No valid output lines found',
@@ -257,9 +285,13 @@ export async function runGoBinary<T = unknown>(
 			}
 			catch (err) {
 				cleanup();
+				const errorMessage = err instanceof Error ? err.message : String(err);
 				reject(new GoBinaryError(
-					`Unexpected error in close handler: ${err instanceof Error ? err.message : String(err)}`,
+					`Unexpected error in close handler: ${errorMessage}`,
 					'UNEXPECTED_ERROR',
+					exitCode,
+					stdout,
+					stderr,
 				));
 			}
 		});

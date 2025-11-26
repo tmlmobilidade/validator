@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 
 import { GoBinaryError, runGoBinary, type RunGoBinaryOptions } from './src/utils.js';
 
-const BINARY_DISTRIBUTIONS: Record<string, string> = {
+const BINARY_DISTRIBUTIONS = {
 	'darwin-arm64': 'validator-darwin-arm64',
 	'darwin-x64': 'validator-darwin-amd64',
 	'linux-arm64': 'validator-linux-arm64',
@@ -18,18 +18,28 @@ const __dirname = dirname(__filename);
 
 type SupportedPlatform = keyof typeof BINARY_DISTRIBUTIONS;
 
+/**
+ * Supported language codes for validation messages.
+ */
+export type SupportedLanguage = 'en' | 'pt';
+
+/**
+ * Default timeout for validation operations (30 minutes).
+ */
+const DEFAULT_TIMEOUT_MS = 30 * 60 * 1000;
+
 export interface GTFSValidatorOptions {
 	/** Working directory for the validation process */
 	cwd?: string
 	/** Additional environment variables */
 	env?: Record<string, string>
 	/** Language for validation messages (e.g., 'en', 'pt') */
-	lang?: string
+	lang?: SupportedLanguage
 	/** Output file path for detailed validation results */
 	out_file?: string
 	/** Path to custom validation rules file */
 	rules_path?: string
-	/** Timeout in milliseconds (default: 10 minutes) */
+	/** Timeout in milliseconds (default: 30 minutes) */
 	timeout?: number
 }
 
@@ -61,15 +71,21 @@ export class GTFSValidatorError extends Error {
 
 /**
  * Gets the current platform identifier in the format expected by the binary distributions.
+ *
+ * @returns The platform key matching the current system
+ * @throws {GTFSValidatorError} If the platform is not supported
+ *
+ * @internal
  */
 function getCurrentPlatform(): SupportedPlatform {
 	const platform = process.platform;
 	const arch = process.arch;
 	const platformKey = `${platform}-${arch}` as SupportedPlatform;
 
-	if (!BINARY_DISTRIBUTIONS[platformKey]) {
+	if (!(platformKey in BINARY_DISTRIBUTIONS)) {
+		const supportedPlatforms = Object.keys(BINARY_DISTRIBUTIONS).join(', ');
 		throw new GTFSValidatorError(
-			`Unsupported platform: ${platformKey}. Supported platforms: ${Object.keys(BINARY_DISTRIBUTIONS).join(', ')}`,
+			`Unsupported platform: ${platformKey}. Supported platforms: ${supportedPlatforms}`,
 			'UNSUPPORTED_PLATFORM',
 		);
 	}
@@ -79,6 +95,11 @@ function getCurrentPlatform(): SupportedPlatform {
 
 /**
  * Gets the path to the validator binary for the current platform.
+ *
+ * @returns The absolute path to the validator binary
+ * @throws {GTFSValidatorError} If the binary is not found or not executable
+ *
+ * @internal
  */
 async function getValidatorBinaryPath(): Promise<string> {
 	const platform = getCurrentPlatform();
@@ -90,19 +111,25 @@ async function getValidatorBinaryPath(): Promise<string> {
 		return binaryPath;
 	}
 	catch (err) {
+		const error = err instanceof Error ? err : new Error(String(err));
 		throw new GTFSValidatorError(
 			`GTFS validator binary not found or not executable: ${binaryPath}. Please ensure the binary is installed for platform ${platform}`,
 			'BINARY_NOT_FOUND',
-			err instanceof Error ? err : new Error(String(err)),
+			error,
 		);
 	}
 }
 
 /**
  * Validates input parameters before running the validator.
+ *
+ * @param input - The input path to validate
+ * @throws {GTFSValidatorError} If the input is invalid or not accessible
+ *
+ * @internal
  */
 async function validateInput(input: string): Promise<void> {
-	if (!input || typeof input !== 'string') {
+	if (typeof input !== 'string' || input.trim().length === 0) {
 		throw new GTFSValidatorError(
 			'Input path is required and must be a non-empty string',
 			'INVALID_INPUT',
@@ -114,16 +141,80 @@ async function validateInput(input: string): Promise<void> {
 		await access(inputPath, constants.F_OK | constants.R_OK);
 	}
 	catch (err) {
+		const error = err instanceof Error ? err : new Error(String(err));
 		throw new GTFSValidatorError(
 			`Input path does not exist or is not readable: ${input}`,
 			'INPUT_NOT_ACCESSIBLE',
-			err instanceof Error ? err : new Error(String(err)),
+			error,
 		);
 	}
 }
 
 /**
+ * Validates options object and normalizes values.
+ *
+ * @param options - The options to validate
+ * @returns Normalized options
+ * @throws {GTFSValidatorError} If options are invalid
+ *
+ * @internal
+ */
+function validateOptions(options: GTFSValidatorOptions = {}): GTFSValidatorOptions {
+	const { cwd, env, lang, out_file, rules_path, timeout } = options;
+
+	if (timeout !== undefined && (typeof timeout !== 'number' || timeout <= 0 || !Number.isFinite(timeout))) {
+		throw new GTFSValidatorError(
+			'Timeout must be a positive finite number',
+			'INVALID_OPTIONS',
+		);
+	}
+
+	if (lang !== undefined && typeof lang !== 'string') {
+		throw new GTFSValidatorError(
+			'Language must be a string',
+			'INVALID_OPTIONS',
+		);
+	}
+
+	if (out_file !== undefined && (typeof out_file !== 'string' || out_file.trim().length === 0)) {
+		throw new GTFSValidatorError(
+			'Output file path must be a non-empty string',
+			'INVALID_OPTIONS',
+		);
+	}
+
+	if (rules_path !== undefined && (typeof rules_path !== 'string' || rules_path.trim().length === 0)) {
+		throw new GTFSValidatorError(
+			'Rules path must be a non-empty string',
+			'INVALID_OPTIONS',
+		);
+	}
+
+	if (cwd !== undefined && typeof cwd !== 'string') {
+		throw new GTFSValidatorError(
+			'Working directory must be a string',
+			'INVALID_OPTIONS',
+		);
+	}
+
+	if (env !== undefined && (typeof env !== 'object' || env === null || Array.isArray(env))) {
+		throw new GTFSValidatorError(
+			'Environment variables must be an object',
+			'INVALID_OPTIONS',
+		);
+	}
+
+	return options;
+}
+
+/**
  * Builds command line arguments for the GTFS validator.
+ *
+ * @param input - The input path
+ * @param options - Validation options
+ * @returns Array of command line arguments
+ *
+ * @internal
  */
 function buildValidatorArgs(input: string, options: GTFSValidatorOptions = {}): string[] {
 	const { lang, out_file, rules_path } = options;
@@ -169,16 +260,46 @@ function buildValidatorArgs(input: string, options: GTFSValidatorOptions = {}): 
  * }
  * ```
  */
+/**
+ * Runs the GTFS validator on the specified input.
+ *
+ * @param input - Path to the GTFS feed (file or directory)
+ * @param options - Validation options
+ * @returns Promise resolving to validation results
+ *
+ * @throws {GTFSValidatorError} If validation fails or input is invalid
+ *
+ * @example
+ * ```ts
+ * try {
+ *   const result = await GTFSValidator('./gtfs-feed.zip', {
+ *     lang: 'en',
+ *     timeout: 300000, // 5 minutes
+ *     out_file: './validation-report.json'
+ *   });
+ *
+ *   console.log(`Validation completed in ${result.executionTime}ms`);
+ *   console.log(`Found ${result.summary.errorCount} errors`);
+ * } catch (err) {
+ *   if (err instanceof GTFSValidatorError) {
+ *     console.error(`Validation failed: ${err.message}`);
+ *     console.error(`Error code: ${err.code}`);
+ *   }
+ * }
+ * ```
+ */
 export async function GTFSValidator(
 	input: string,
 	options: GTFSValidatorOptions = {},
 ): Promise<GTFSValidatorResult> {
+	// Validate and normalize options
+	const validatedOptions = validateOptions(options);
 	const {
 		cwd,
 		env,
-		timeout = 3000 * 60 * 10, // 30 minutes default
+		timeout = DEFAULT_TIMEOUT_MS,
 		...validatorOptions
-	} = options;
+	} = validatedOptions;
 
 	try {
 		// Validate input
@@ -211,10 +332,12 @@ export async function GTFSValidator(
 		};
 	}
 	catch (err) {
+		// Re-throw GTFSValidatorError as-is
 		if (err instanceof GTFSValidatorError) {
 			throw err;
 		}
 
+		// Convert GoBinaryError to GTFSValidatorError with context
 		if (err instanceof GoBinaryError) {
 			let errorMessage = `GTFS validation failed: ${err.message}`;
 			let errorCode = 'VALIDATION_FAILED';
@@ -222,12 +345,20 @@ export async function GTFSValidator(
 			// Provide more specific error messages based on the binary error
 			switch (err.code) {
 				case 'JSON_PARSE_ERROR':
-					errorMessage = `Failed to parse validation results. The validator may have crashed or produced invalid output.`;
+					errorMessage = 'Failed to parse validation results. The validator may have crashed or produced invalid output.';
 					errorCode = 'PARSE_ERROR';
 					break;
 				case 'NON_ZERO_EXIT':
-					errorMessage = `GTFS validator exited with error code ${err.exitCode}${err.stderr ? `: ${err.stderr}` : ''}`;
+					errorMessage = `GTFS validator exited with error code ${err.exitCode ?? 'unknown'}${err.stderr ? `: ${err.stderr}` : ''}`;
 					errorCode = 'VALIDATOR_ERROR';
+					break;
+				case 'STDERR_TOO_LARGE':
+					errorMessage = 'Validation error output exceeded maximum size.';
+					errorCode = 'ERROR_OUTPUT_TOO_LARGE';
+					break;
+				case 'STDOUT_TOO_LARGE':
+					errorMessage = 'Validation output exceeded maximum size. The GTFS feed may be too large.';
+					errorCode = 'OUTPUT_TOO_LARGE';
 					break;
 				case 'TIMEOUT':
 					errorMessage = `GTFS validation timed out after ${timeout}ms. Consider increasing the timeout for large feeds.`;
@@ -245,8 +376,9 @@ export async function GTFSValidator(
 		}
 
 		// Handle unexpected errors
+		const errorMessage = err instanceof Error ? err.message : String(err);
 		throw new GTFSValidatorError(
-			`Unexpected error during GTFS validation: ${err instanceof Error ? err.message : String(err)}`,
+			`Unexpected error during GTFS validation: ${errorMessage}`,
 			'UNEXPECTED_ERROR',
 			err instanceof Error ? err : new Error(String(err)),
 		);
@@ -255,6 +387,18 @@ export async function GTFSValidator(
 
 /**
  * Gets information about the available validator binary for the current platform.
+ *
+ * @returns Information about the validator binary including availability status
+ *
+ * @example
+ * ```ts
+ * const info = await getValidatorInfo();
+ * if (info.isAvailable) {
+ *   console.log(`Binary found at: ${info.binaryPath}`);
+ * } else {
+ *   console.log(`Binary not found for platform: ${info.platform}`);
+ * }
+ * ```
  */
 export async function getValidatorInfo(): Promise<{
 	binaryName: string
@@ -272,7 +416,7 @@ export async function getValidatorInfo(): Promise<{
 		isAvailable = true;
 	}
 	catch {
-		// Binary not available
+		// Binary not available - this is expected in some scenarios
 	}
 
 	return {
