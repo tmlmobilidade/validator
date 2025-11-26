@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -28,39 +27,30 @@ Conditionally Required:
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
 func RouteShortNameValidation(route *types.Route, row int, rules *types.RoutesRules) {
-	s := types.SEVERITY_WARNING
+	ctx := lib.NewValidationContext("route_short_name", "routes.txt", "route_short_name_validation", row, services.AppMessageService)
 	if rules != nil && rules.RouteShortName.Severity != "" {
-		s = rules.RouteShortName.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "route_short_name",
-			FileName:     "routes.txt",
-			ValidationID: "route_short_name_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-		})
+		ctx.WithSeverity(rules.RouteShortName.Severity)
+	} else {
+		ctx.WithSeverity(types.SEVERITY_WARNING)
 	}
 
 	// Extract values with nil checks
 	if route.RouteShortName == nil && route.RouteLongName == nil {
-		addMessage(i18n.AppTranslator.Get("route_short_name_validation.required_if_long_name_empty"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("route_short_name_validation.required_if_long_name_empty"))
 		return
 	}
 
 	if route.RouteShortName == nil {
-		if s != types.SEVERITY_IGNORE {
-			warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("route_short_name_validation.recommended"), i18n.AppTranslator.Get("route_short_name_validation.required"))
-			addMessage(warn, s)
+		if !ctx.ShouldIgnore() {
+			message := ctx.GetRequiredMessage("route_short_name_validation.required", "route_short_name_validation.recommended")
+			ctx.AddMessageWithSeverity(message)
 		}
 		return
 	}
 
 	// Validate length
 	if len(*route.RouteShortName) > 12 {
-		addMessage(i18n.AppTranslator.Get("route_short_name_validation.too_long"), types.SEVERITY_WARNING)
+		ctx.AddWarning(ctx.GetTranslatedMessage("route_short_name_validation.too_long"))
 	}
 
 	// Validate rules
@@ -70,7 +60,7 @@ func RouteShortNameValidation(route *types.Route, row int, rules *types.RoutesRu
 		}
 
 		if !slices.Contains(*rules.RouteShortName.Options, *route.RouteShortName) {
-			addMessage(i18n.AppTranslator.Get("route_short_name_validation.not_allowed", map[string]interface{}{"value": *route.RouteShortName}), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_short_name_validation.not_allowed", map[string]interface{}{"value": *route.RouteShortName}))
 			return
 		}
 	}

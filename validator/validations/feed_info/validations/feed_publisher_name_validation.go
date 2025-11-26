@@ -1,7 +1,7 @@
 package feed_info
 
 import (
-	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -21,19 +21,10 @@ Full name of the organization that publishes the dataset. This may be the same a
 [feed_info.txt]: https://gtfs.org/schedule/reference/#feed_infotxt
 */
 func FeedPublisherNameValidation(feedInfo *types.FeedInfo, row int) {
-	addMessage := func(msg string) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "feed_publisher_name",
-			FileName:     "feed_info.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "feed_publisher_name_validation",
-		})
-	}
+	ctx := lib.NewValidationContext("feed_publisher_name", "feed_info.txt", "feed_publisher_name_validation", row, services.AppMessageService)
 
 	if feedInfo.FeedPublisherName == nil || *feedInfo.FeedPublisherName == "" {
-		addMessage(i18n.AppTranslator.Get("feed_publisher_name_validation.required"))
+		ctx.AddError(ctx.GetTranslatedMessage("feed_publisher_name_validation.required"))
 		return
 	}
 }

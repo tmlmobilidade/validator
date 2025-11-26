@@ -1,19 +1,30 @@
 package routes
 
 import (
+	"fmt"
+	"main/config"
 	"main/lib"
 	"main/types"
 	validations "main/validations/routes/validations"
+	registry "main/validations"
 )
+
+func init() {
+	registry.Register("routes", RunValidations)
+}
 
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Routes Validations...")
 
-	for i, rawRoute := range gtfs.Route {
+	// Create progress tracker
+	tracker := lib.CreateProgressTracker(gtfs, "routes.txt", config.ProgressThresholdLarge)
+
+	err := gtfs.IterateRoutes(func(i int, rawRoute types.RouteRaw) error {
+		tracker.Track()
 		route := validations.ParseRoutes(rawRoute, i)
 
 		if route == (types.Route{}) {
-			continue
+			return nil
 		}
 
 		var routeRules *types.RoutesRules
@@ -59,5 +70,13 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 		// Validate network_id
 		validations.NetworkIdValidation(&route, i, &gtfs, routeRules)
+
+		return nil
+	})
+
+	if err != nil {
+		lib.AppLogger.Error(fmt.Sprintf("Error iterating routes: %v", err))
+	} else {
+		lib.AppLogger.Debug(fmt.Sprintf("Completed routes.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 }

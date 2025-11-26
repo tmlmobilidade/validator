@@ -1,7 +1,6 @@
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -23,39 +22,23 @@ Shelter code for a stop.
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func ShelterMaintainerValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("shelter_maintainer", "stops.txt", "shelter_maintainer_validation", row, services.AppMessageService)
 	if rules != nil && rules.ShelterMaintainer.Severity != "" {
-		s = rules.ShelterMaintainer.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "shelter_maintainer",
-			FileName:     "stops.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "shelter_maintainer_validation",
-		})
+		ctx.WithSeverity(rules.ShelterMaintainer.Severity)
 	}
 
 	if stop.ShelterMaintainer == nil || *stop.ShelterMaintainer == "" {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"shelter_maintainer_validation.required",
-				"shelter_maintainer_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("shelter_maintainer_validation.required", "shelter_maintainer_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("shelter_maintainer_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("shelter_maintainer_validation.forbidden"))
 		return
 	}
 
@@ -66,7 +49,7 @@ func ShelterMaintainerValidation(stop *types.Stop, row int, rules *types.StopsRu
 		}
 
 		if !slices.Contains(*rules.ShelterMaintainer.Options, *stop.ShelterMaintainer) {
-			addMessage(i18n.AppTranslator.Get("shelter_maintainer_validation.not_allowed", *stop.ShelterMaintainer), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("shelter_maintainer_validation.not_allowed", *stop.ShelterMaintainer))
 			return
 		}
 	}

@@ -1,7 +1,6 @@
 package feed_info
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -30,35 +29,26 @@ If feed_start_date or feed_end_date extend beyond the active calendar dates defi
 [feed_info.txt]: https://gtfs.org/schedule/reference/#feed_infotxt
 */
 func FeedStartDateValidation(severity *types.Severity, feedInfo *types.FeedInfo, row int) {
-	s := types.SEVERITY_WARNING
+	ctx := lib.NewValidationContext("feed_start_date", "feed_info.txt", "feed_start_date_validation", row, services.AppMessageService)
 	if severity != nil {
-		s = *severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "feed_start_date",
-			FileName:     "feed_info.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "feed_start_date_validation",
-		})
+		ctx.WithSeverity(*severity)
+	} else {
+		ctx.WithSeverity(types.SEVERITY_WARNING)
 	}
 
 	if feedInfo.FeedStartDate == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("feed_start_date_validation.required"), i18n.AppTranslator.Get("feed_start_date_validation.recommended"))
-		addMessage(warn, s)
+		message := ctx.GetRequiredMessage("feed_start_date_validation.required", "feed_start_date_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
 	if feedInfo.FeedStartDate != nil && *feedInfo.FeedStartDate != "" {
 		if !lib.IsValidServiceDate(*feedInfo.FeedStartDate) {
-			addMessage(i18n.AppTranslator.Get("feed_start_date_validation.invalid"), types.SEVERITY_ERROR)
+			ctx.AddError(ctx.GetTranslatedMessage("feed_start_date_validation.invalid"))
 			return
 		}
 	}

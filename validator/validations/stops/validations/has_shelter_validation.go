@@ -1,7 +1,6 @@
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -24,46 +23,30 @@ Describes if the stop has a shelter.
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func HasShelterValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("has_shelter", "stops.txt", "has_shelter_validation", row, services.AppMessageService)
 	if rules != nil && rules.HasShelter.Severity != "" {
-		s = rules.HasShelter.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "has_shelter",
-			FileName:     "stops.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "has_shelter_validation",
-		})
+		ctx.WithSeverity(rules.HasShelter.Severity)
 	}
 
 	if stop.HasShelter == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"has_shelter_validation.required",
-				"has_shelter_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("has_shelter_validation.required", "has_shelter_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("has_shelter_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("has_shelter_validation.forbidden"))
 		return
 	}
 
 	// Validate value
 	validValues := []int{0, 1}
 	if !slices.Contains(validValues, *stop.HasShelter) {
-		addMessage(i18n.AppTranslator.Get("has_shelter_validation.invalid", *stop.HasShelter), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("has_shelter_validation.invalid", *stop.HasShelter))
 		return
 	}
 
@@ -74,7 +57,7 @@ func HasShelterValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if !slices.Contains(*rules.HasShelter.Options, strconv.Itoa(*stop.HasShelter)) {
-			addMessage(i18n.AppTranslator.Get("has_shelter_validation.not_allowed", *stop.HasShelter), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("has_shelter_validation.not_allowed", *stop.HasShelter))
 			return
 		}
 	}

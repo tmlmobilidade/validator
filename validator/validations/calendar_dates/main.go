@@ -1,20 +1,30 @@
 package calendar_dates
 
 import (
+	"fmt"
+	"main/config"
 	"main/lib"
 	"main/types"
 	validations "main/validations/calendar_dates/validations"
+	registry "main/validations"
 )
 
-func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
+func init() {
+	registry.Register("calendar_dates", RunValidations)
+}
 
+func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Calendar Dates Validations...")
 
-	for i, rawCalendarDate := range gtfs.CalendarDates {
+	// Create progress tracker
+	tracker := lib.CreateProgressTracker(gtfs, "calendar_dates.txt", config.ProgressThresholdSmall)
+
+	err := gtfs.IterateCalendarDates(func(i int, rawCalendarDate types.CalendarDatesRaw) error {
+		tracker.Track()
 		calendarDate := ParseCalendarDates(rawCalendarDate, i)
 
 		if calendarDate == (types.CalendarDates{}) {
-			continue
+			return nil
 		}
 
 		var calendarDatesRules types.CalendarDatesRules
@@ -31,5 +41,12 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// Validate exception_type
 		validations.ExceptionTypeValidation(&calendarDate, i, &calendarDatesRules)
 
+		return nil
+	})
+
+	if err != nil {
+		lib.AppLogger.Error(fmt.Sprintf("Error iterating calendar dates: %v", err))
+	} else {
+		lib.AppLogger.Debug(fmt.Sprintf("Completed calendar_dates.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 }

@@ -1,7 +1,7 @@
 package shapes
 
 import (
-	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 	"sort"
@@ -20,24 +20,14 @@ Validate the shape sequence, based on shape_pt_sequence and shape_dist_traveled.
 https://gtfs.org/schedule/reference/#shapestxt
 */
 func ShapeSequenceValidation(shapes []types.Shape) {
-
-	addMessage := func(msg string, row int) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "shape_pt_sequence",
-			FileName:     "shapes.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "shape_pt_sequence_validation",
-		})
-	}
-
 	// Group shapes by shape_id
 	shapeGroups := make(map[string][]ShapePtSequenceGroup)
 
 	for i, shape := range shapes {
+		ctx := lib.NewValidationContext("shape_pt_sequence", "shapes.txt", "shape_pt_sequence_validation", i, services.AppMessageService)
+
 		if shape.ShapeId == nil || shape.ShapePtSequence == nil {
-			addMessage(i18n.AppTranslator.Get("shape_pt_sequence_validation.required"), i)
+			ctx.AddError(ctx.GetTranslatedMessage("shape_pt_sequence_validation.required"))
 			return
 		}
 
@@ -64,13 +54,15 @@ func ShapeSequenceValidation(shapes []types.Shape) {
 		// Check if the shape_pt_sequence values are increasing
 		for i, shape := range shapeGroup {
 			if i > 0 {
+				ctx := lib.NewValidationContext("shape_pt_sequence", "shapes.txt", "shape_pt_sequence_validation", shape.row, services.AppMessageService)
 				if shape.sequence <= shapeGroup[i-1].sequence {
-					addMessage(i18n.AppTranslator.Get("shape_pt_sequence_validation.not_increasing", shape.shapeId), shape.row)
+					ctx.AddError(ctx.GetTranslatedMessage("shape_pt_sequence_validation.not_increasing", shape.shapeId))
 				}
 				// Only check dist if both current and previous are present
 				if shape.dist >= 0 && shapeGroup[i-1].dist >= 0 {
 					if shape.dist < shapeGroup[i-1].dist {
-						addMessage(i18n.AppTranslator.Get("shape_dist_traveled_validation.not_increasing", shape.shapeId), shape.row)
+						ctxDist := lib.NewValidationContext("shape_dist_traveled", "shapes.txt", "shape_dist_traveled_validation", shape.row, services.AppMessageService)
+						ctxDist.AddError(ctxDist.GetTranslatedMessage("shape_dist_traveled_validation.not_increasing", shape.shapeId))
 					}
 				}
 			}

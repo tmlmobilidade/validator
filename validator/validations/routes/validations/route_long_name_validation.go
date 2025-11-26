@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -29,35 +28,24 @@ Conditionally Required:
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
 func RouteLongNameValidation(route *types.Route, row int, rules *types.RoutesRules) {
-
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("route_long_name", "routes.txt", "route_long_name_validation", row, services.AppMessageService)
 	if rules != nil && rules.RouteLongName.Severity != "" {
-		s = rules.RouteLongName.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "route_long_name",
-			FileName:     "routes.txt",
-			ValidationID: "route_long_name_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-		})
+		ctx.WithSeverity(rules.RouteLongName.Severity)
 	}
 
 	if (route.RouteLongName == nil || *route.RouteLongName == "") && (route.RouteShortName == nil || *route.RouteShortName == "") {
-		addMessage(i18n.AppTranslator.Get("route_long_name_validation.required_if_short_name_empty"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("route_long_name_validation.required_if_short_name_empty"))
 		return
 	}
 
 	if route.RouteLongName == nil || *route.RouteLongName == "" {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("route_long_name_validation.recommended"), i18n.AppTranslator.Get("route_long_name_validation.required"))
-		addMessage(warn, s)
+		message := ctx.GetRequiredMessage("route_long_name_validation.required", "route_long_name_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
+		return
 	}
 
 	// Validate rules
@@ -67,7 +55,7 @@ func RouteLongNameValidation(route *types.Route, row int, rules *types.RoutesRul
 		}
 
 		if !slices.Contains(*rules.RouteLongName.Options, *route.RouteLongName) {
-			addMessage(i18n.AppTranslator.Get("route_long_name_validation.not_allowed", map[string]interface{}{"value": *route.RouteLongName}), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_long_name_validation.not_allowed", map[string]interface{}{"value": *route.RouteLongName}))
 			return
 		}
 	}

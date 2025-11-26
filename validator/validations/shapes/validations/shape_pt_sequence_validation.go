@@ -1,7 +1,7 @@
 package shapes
 
 import (
-	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -32,25 +32,14 @@ If the shape "A_shp" has three points in its definition, the [shapes.txt] file m
 [shapes.txt]: https://gtfs.org/schedule/reference/#shapestxt
 */
 func ShapePtSequenceValidation(shape *types.Shape, row int) {
-
-	addMessage := func(msg string) {
-		message := types.Message{
-			Field:        "shape_pt_sequence",
-			FileName:     "shapes.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "shape_pt_sequence_validation",
-		}
-		services.AppMessageService.AddMessage(message)
-	}
+	ctx := lib.NewValidationContext("shape_pt_sequence", "shapes.txt", "shape_pt_sequence_validation", row, services.AppMessageService)
 
 	if shape.ShapePtSequence == nil {
-		addMessage(i18n.AppTranslator.Get("shape_pt_sequence_validation.required"))
+		ctx.AddError(ctx.GetTranslatedMessage("shape_pt_sequence_validation.required"))
 		return
 	}
 
 	if *shape.ShapePtSequence < 0 {
-		addMessage(i18n.AppTranslator.Get("shape_pt_sequence_validation.invalid"))
+		ctx.AddError(ctx.GetTranslatedMessage("shape_pt_sequence_validation.invalid"))
 	}
 }

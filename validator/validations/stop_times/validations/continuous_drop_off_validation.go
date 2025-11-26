@@ -2,7 +2,6 @@ package stop_times
 
 import (
 	"fmt"
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -38,41 +37,30 @@ Conditionally Forbidden:
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
 func ContinuousDropOffValidation(stopTime *types.StopTime, row int, rules *types.StopTimesRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("continuous_drop_off", "stop_times.txt", "continuous_drop_off_validation", row, services.AppMessageService)
 	if rules != nil && rules.ContinuousDropOff.Severity != "" {
-		s = rules.ContinuousDropOff.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "continuous_drop_off",
-			FileName:     "stop_times.txt",
-			ValidationID: "continuous_drop_off_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-		})
+		ctx.WithSeverity(rules.ContinuousDropOff.Severity)
 	}
 
 	// If not present, it's optional unless severity is set
 	if stopTime.ContinuousDropOff == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("continuous_drop_off_validation.recommended"), i18n.AppTranslator.Get("continuous_drop_off_validation.required"))
-		addMessage(warn, s)
+		message := ctx.GetRequiredMessage("continuous_drop_off_validation.required", "continuous_drop_off_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
 	cd := *stopTime.ContinuousDropOff
 	if cd < 0 || cd > 3 {
-		addMessage(i18n.AppTranslator.Get("continuous_drop_off_validation.invalid"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("continuous_drop_off_validation.invalid"))
 		return
 	}
 
 	// Forbidden: Any value other than 1 or empty if start/end_pickup_drop_off_window are defined
 	if ((stopTime.StartPickupDropOffWindow != nil && *stopTime.StartPickupDropOffWindow != "") || (stopTime.EndPickupDropOffWindow != nil && *stopTime.EndPickupDropOffWindow != "")) && (cd != 1) {
-		addMessage(i18n.AppTranslator.Get("continuous_drop_off_validation.forbidden_with_window"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("continuous_drop_off_validation.forbidden_with_window"))
 		return
 	}
 
@@ -83,7 +71,7 @@ func ContinuousDropOffValidation(stopTime *types.StopTime, row int, rules *types
 		}
 
 		if !slices.Contains(*rules.ContinuousDropOff.Options, fmt.Sprintf("%d", cd)) {
-			addMessage(i18n.AppTranslator.Get("continuous_drop_off_validation.not_allowed", fmt.Sprintf("%d", cd)), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("continuous_drop_off_validation.not_allowed", fmt.Sprintf("%d", cd)))
 			return
 		}
 	}

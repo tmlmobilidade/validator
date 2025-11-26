@@ -1,7 +1,7 @@
 package fare_attributes
 
 import (
-	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -21,24 +21,14 @@ Fare price, in the unit specified by currency_type.
 [fare_attributes.txt]: https://gtfs.org/schedule/reference/#fare_attributestxt
 */
 func PriceValidation(fareAttribute *types.FareAttribute, row int) {
-
-	addMessage := func(msg string) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "price",
-			FileName:     "fare_attributes.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "price_validation",
-		})
-	}
+	ctx := lib.NewValidationContext("price", "fare_attributes.txt", "price_validation", row, services.AppMessageService)
 
 	if fareAttribute.Price == nil {
-		addMessage(i18n.AppTranslator.Get("price_validation.required"))
+		ctx.AddError(ctx.GetTranslatedMessage("price_validation.required"))
 		return
 	}
 
 	if *fareAttribute.Price < 0 {
-		addMessage(i18n.AppTranslator.Get("price_validation.invalid", *fareAttribute.Price))
+		ctx.AddError(ctx.GetTranslatedMessage("price_validation.invalid", *fareAttribute.Price))
 	}
 }

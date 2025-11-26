@@ -1,7 +1,7 @@
 package trips
 
 import (
-	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -21,25 +21,16 @@ Identifies a trip.
 [trips.txt]: https://gtfs.org/schedule/reference/#trips
 */
 func TripIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
-
-	addMessage := func(msg string) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "trip_id",
-			FileName:     "trips.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "trip_id_validation",
-		})
-	}
+	ctx := lib.NewValidationContext("trip_id", "trips.txt", "trip_id_validation", row, services.AppMessageService)
 
 	if trip.TripId == nil {
-		addMessage(i18n.AppTranslator.Get("trip_id_validation.required"))
+		ctx.AddError(ctx.GetTranslatedMessage("trip_id_validation.required"))
 		return
 	}
 
-	if gtfs.IdMap["trips"] != nil && len(gtfs.IdMap["trips"][*trip.TripId]) > 1 {
-		addMessage(i18n.AppTranslator.Get("trip_id_validation.duplicate", map[string]interface{}{"trip_id": *trip.TripId}))
+	rows, err := gtfs.GetRowsById("trips", *trip.TripId)
+	if err == nil && len(rows) > 1 {
+		ctx.AddError(ctx.GetTranslatedMessage("trip_id_validation.duplicate", map[string]interface{}{"trip_id": *trip.TripId}))
 		return
 	}
 }

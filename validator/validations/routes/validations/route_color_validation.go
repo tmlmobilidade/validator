@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -25,42 +24,30 @@ Route color designation that matches public facing material. Defaults to white (
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
 func RouteColorValidation(route *types.Route, row int, rules *types.RoutesRules) {
-
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("route_color", "routes.txt", "route_color_validation", row, services.AppMessageService)
 	if rules != nil && rules.RouteColor.Severity != "" {
-		s = rules.RouteColor.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "route_color",
-			FileName:     "routes.txt",
-			ValidationID: "route_color_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-		})
+		ctx.WithSeverity(rules.RouteColor.Severity)
 	}
 
 	if route.RouteColor == nil || *route.RouteColor == "" {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("route_color_validation.recommended"), i18n.AppTranslator.Get("route_color_validation.required"))
-		addMessage(warn, s)
+		message := ctx.GetRequiredMessage("route_color_validation.required", "route_color_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("route_color_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_color_validation.forbidden"))
 		return
 	}
 
 	color := strings.ToUpper(*route.RouteColor)
 	matched, _ := regexp.MatchString(`^[0-9A-F]{6}$`, color)
 	if !matched {
-		addMessage(i18n.AppTranslator.Get("route_color_validation.invalid"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("route_color_validation.invalid"))
 		return
 	}
 
@@ -71,7 +58,7 @@ func RouteColorValidation(route *types.Route, row int, rules *types.RoutesRules)
 		}
 
 		if !slices.Contains(*rules.RouteColor.Options, *route.RouteColor) {
-			addMessage(i18n.AppTranslator.Get("route_color_validation.not_allowed", map[string]interface{}{"value": *route.RouteColor}), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_color_validation.not_allowed", map[string]interface{}{"value": *route.RouteColor}))
 			return
 		}
 	}

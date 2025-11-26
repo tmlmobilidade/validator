@@ -1,19 +1,30 @@
 package stops
 
 import (
+	"fmt"
+	"main/config"
 	"main/lib"
 	"main/types"
 	validations "main/validations/stops/validations"
+	registry "main/validations"
 )
+
+func init() {
+	registry.Register("stops", RunValidations)
+}
 
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Validations for stops.txt")
 
-	for row, rawStop := range gtfs.Stop {
+	// Create progress tracker
+	tracker := lib.CreateProgressTracker(gtfs, "stops.txt", config.ProgressThresholdLarge)
+
+	err := gtfs.IterateStops(func(row int, rawStop types.StopRaw) error {
+		tracker.Track()
 		stop := validations.ParseStop(rawStop, row)
 
 		if stop == (types.Stop{}) {
-			continue
+			return nil
 		}
 
 		var stopRules *types.StopsRules
@@ -107,5 +118,13 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 		// Validate has_tariffs_information
 		validations.HasTariffsInformationValidation(&stop, row, stopRules)
+
+		return nil
+	})
+
+	if err != nil {
+		lib.AppLogger.Error(fmt.Sprintf("Error iterating stops: %v", err))
+	} else {
+		lib.AppLogger.Debug(fmt.Sprintf("Completed stops.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 }

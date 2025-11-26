@@ -1,7 +1,6 @@
 package shapes
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -22,25 +21,14 @@ Latitude of a shape point. Each record in shapes.txt represents a shape point us
 [shapes.txt]: https://gtfs.org/schedule/reference/#shapestxt
 */
 func ShapePtLatValidation(shape *types.Shape, row int) {
-
-	addMessage := func(msg string) {
-		message := types.Message{
-			Field:        "shape_pt_lat",
-			FileName:     "shapes.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "shape_pt_lat_validation",
-		}
-		services.AppMessageService.AddMessage(message)
-	}
+	ctx := lib.NewValidationContext("shape_pt_lat", "shapes.txt", "shape_pt_lat_validation", row, services.AppMessageService)
 
 	if shape.ShapePtLat == nil {
-		addMessage(i18n.AppTranslator.Get("shape_pt_lat_validation.required"))
+		ctx.AddError(ctx.GetTranslatedMessage("shape_pt_lat_validation.required"))
 		return
 	}
 
 	if !lib.ValidateLatitude(*shape.ShapePtLat) {
-		addMessage(i18n.AppTranslator.Get("shape_pt_lat_validation.invalid"))
+		ctx.AddError(ctx.GetTranslatedMessage("shape_pt_lat_validation.invalid"))
 	}
 }

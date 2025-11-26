@@ -1,7 +1,6 @@
 package trips
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -23,29 +22,18 @@ Patterns correspond to the unfolding of the routes by the directions, if more th
 Trips with the same pattern_id must have the same route_id, trip_headsign, direction_id, shape_id and the same stop sequence.
 */
 func PatternIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) bool {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("pattern_id", "trips.txt", "pattern_id_validation", row, services.AppMessageService)
 	if rules != nil && rules.PatternId.Severity != "" {
-		s = rules.PatternId.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "pattern_id",
-			FileName:     "trips.txt",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-			ValidationID: "pattern_id_validation",
-		})
+		ctx.WithSeverity(rules.PatternId.Severity)
 	}
 
 	if trip.PatternId == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return false
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("pattern_id_validation.recommended"), i18n.AppTranslator.Get("pattern_id_validation.required"))
-		addMessage(warn, s)
+		message := ctx.GetRequiredMessage("pattern_id_validation.required", "pattern_id_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return false
 	}
 

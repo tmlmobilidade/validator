@@ -1,7 +1,6 @@
 package fare_attributes
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -27,43 +26,31 @@ Conditionally Required:
 [calendar_dates.txt]: https://gtfs.org/schedule/reference/#calendar_datestxt
 */
 func AgencyIdValidation(fareAttribute *types.FareAttribute, row int, gtfs *types.Gtfs, rules *types.FareAttributesRules) {
-	s := types.SEVERITY_WARNING
+	ctx := lib.NewValidationContext("agency_id", "fare_attributes.txt", "agency_id_validation", row, services.AppMessageService)
 	if rules != nil && rules.AgencyId.Severity != "" {
-		s = rules.AgencyId.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "agency_id",
-			FileName:     "fare_attributes.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "agency_id_validation",
-		})
+		ctx.WithSeverity(rules.AgencyId.Severity)
+	} else {
+		ctx.WithSeverity(types.SEVERITY_WARNING)
 	}
 
 	//  Check if agency_id is required
-	if fareAttribute.AgencyId == nil && len(gtfs.Agency) > 1 {
-		addMessage(i18n.AppTranslator.Get("agency_id_validation.required"), types.SEVERITY_ERROR)
+	agencyCount, _ := gtfs.GetTableCount("agency")
+	if fareAttribute.AgencyId == nil && agencyCount > 1 {
+		ctx.AddError(ctx.GetTranslatedMessage("agency_id_validation.required"))
 		return
 	}
 
-	if s != types.SEVERITY_IGNORE && fareAttribute.AgencyId == nil {
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"agency_id_validation.required",
-				"agency_id_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+	if !ctx.ShouldIgnore() && fareAttribute.AgencyId == nil {
+		message := ctx.GetRequiredMessage("agency_id_validation.required", "agency_id_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
 	// Check if agency_id exists in agencies.txt
 	if fareAttribute.AgencyId != nil {
-		if _, ok := gtfs.IdMap["agency"][*fareAttribute.AgencyId]; !ok {
-			addMessage(i18n.AppTranslator.Get("agency_id_validation.not_found"), types.SEVERITY_ERROR)
+		rows, err := gtfs.GetRowsById("agency", *fareAttribute.AgencyId)
+		if err != nil || len(rows) == 0 {
+			ctx.AddError(ctx.GetTranslatedMessage("agency_id_validation.not_found"))
 		}
 	}
 }

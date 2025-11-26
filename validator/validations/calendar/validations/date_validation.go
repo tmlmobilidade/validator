@@ -1,10 +1,8 @@
 package trips
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
-	"main/types"
 )
 
 /*
@@ -24,25 +22,15 @@ End service day for the service interval. This service day is included in the in
 [calendar.txt]: https://gtfs.org/schedule/reference/#calendartxt
 */
 func DateValidation(date string, dateType string, row int) {
-
-	addMessage := func(message string) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        dateType,
-			FileName:     "calendar.txt",
-			Message:      message,
-			Rows:         []int{row},
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "date_validation",
-		})
-	}
+	ctx := lib.NewValidationContext(dateType, "calendar.txt", "date_validation", row, services.AppMessageService)
 
 	if date == "" {
-		addMessage(i18n.AppTranslator.Get("date_validation.required"))
+		ctx.AddError(ctx.GetTranslatedMessage("date_validation.required"))
 		return
 	}
 
 	if !lib.IsValidServiceDate(date) {
-		addMessage(i18n.AppTranslator.Get("date_validation.invalid", date))
+		ctx.AddError(ctx.GetTranslatedMessage("date_validation.invalid", date))
 		return
 	}
 }

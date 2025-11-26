@@ -9,11 +9,21 @@ import (
 	"strconv"
 	"strings"
 
+	"main/config"
+
 	"github.com/olekukonko/tablewriter"
 )
 
-const TOTAL_ISSUES_LIMIT = 500
+// MessageServiceInterface defines the interface for message service operations
+// This allows for dependency injection and improved testability
+type MessageServiceInterface interface {
+	AddMessage(message types.Message)
+	AddMessages(messages []types.Message)
+	GetSummary() types.Summary
+	Clear()
+}
 
+// MessageService implements MessageServiceInterface
 type MessageService struct {
 	errorCount   int
 	warningCount int
@@ -63,9 +73,9 @@ func (ms *MessageService) AddMessage(message types.Message) {
 		ms.warningCount++
 	}
 
-	// Exit if total errors + warnings exceeds TOTAL_ISSUES_LIMIT
-	if ms.errorCount+ms.warningCount >= TOTAL_ISSUES_LIMIT {
-		lib.AppLogger.Error("Too many issues (errors + warnings > " + strconv.Itoa(TOTAL_ISSUES_LIMIT) + "). Exiting.")
+	// Exit if total errors + warnings exceeds TotalIssuesLimit
+	if ms.errorCount+ms.warningCount >= config.TotalIssuesLimit {
+		lib.AppLogger.Error("Too many issues (errors + warnings > " + strconv.Itoa(config.TotalIssuesLimit) + "). Exiting.")
 		ms.PrintJSON()
 		os.Exit(0)
 	}

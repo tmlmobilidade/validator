@@ -1,7 +1,6 @@
 package feed_info
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -22,29 +21,20 @@ String that indicates the current version of their GTFS dataset. GTFS-consuming 
 [feed_info.txt]: https://gtfs.org/schedule/reference/#feed_infotxt
 */
 func FeedVersionValidation(severity *types.Severity, feedInfo *types.FeedInfo, row int) {
-	s := types.SEVERITY_WARNING
+	ctx := lib.NewValidationContext("feed_version", "feed_info.txt", "feed_version_validation", row, services.AppMessageService)
 	if severity != nil {
-		s = *severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "feed_version",
-			FileName:     "feed_info.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "feed_version_validation",
-		})
+		ctx.WithSeverity(*severity)
+	} else {
+		ctx.WithSeverity(types.SEVERITY_WARNING)
 	}
 
 	if feedInfo.FeedVersion == nil || *feedInfo.FeedVersion == "" {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("feed_version_validation.required"), i18n.AppTranslator.Get("feed_version_validation.recommended"))
-		addMessage(warn, s)
+		message := ctx.GetRequiredMessage("feed_version_validation.required", "feed_version_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 }

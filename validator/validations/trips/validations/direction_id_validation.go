@@ -2,7 +2,6 @@ package trips
 
 import (
 	"fmt"
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -38,40 +37,24 @@ The `trip_headsign` and `direction_id` fields may be used together to assign a n
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 */
 func DirectionIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("direction_id", "trips.txt", "direction_id_validation", row, services.AppMessageService)
 	if rules != nil && rules.DirectionId.Severity != "" {
-		s = rules.DirectionId.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "direction_id",
-			FileName:     "trips.txt",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-			ValidationID: "direction_id_validation",
-		})
+		ctx.WithSeverity(rules.DirectionId.Severity)
 	}
 
 	// 1. Validate direction_id is required
 	if trip.DirectionId == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"direction_id_validation.required",
-				"direction_id_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("direction_id_validation.required", "direction_id_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("direction_id_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("direction_id_validation.forbidden"))
 		return
 	}
 
@@ -79,7 +62,7 @@ func DirectionIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *t
 	if trip.DirectionId != nil {
 		validDirectionIds := map[int]bool{0: true, 1: true}
 		if !validDirectionIds[*trip.DirectionId] {
-			addMessage(i18n.AppTranslator.Get("direction_id_validation.invalid"), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("direction_id_validation.invalid"))
 			return
 		}
 	}
@@ -91,7 +74,7 @@ func DirectionIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *t
 		}
 
 		if !slices.Contains(*rules.DirectionId.Options, fmt.Sprintf("%d", *trip.DirectionId)) {
-			addMessage(i18n.AppTranslator.Get("direction_id_validation.not_allowed", map[string]interface{}{"value": *trip.DirectionId}), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("direction_id_validation.not_allowed", map[string]interface{}{"value": *trip.DirectionId}))
 			return
 		}
 	}

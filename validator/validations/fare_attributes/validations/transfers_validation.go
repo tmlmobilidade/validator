@@ -1,7 +1,7 @@
 package fare_attributes
 
 import (
-	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 	"slices"
@@ -37,16 +37,7 @@ For a particular holiday, the [calendar_dates.txt] file could be used to add the
 [calendar_dates.txt]: https://gtfs.org/schedule/reference/#calendar_datestxt
 */
 func TransfersValidation(fareAttribute *types.FareAttribute, row int, gtfs *types.Gtfs) {
-	addMessage := func(msg string) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "transfers",
-			FileName:     "fare_attributes.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "transfers_validation",
-		})
-	}
+	ctx := lib.NewValidationContext("transfers", "fare_attributes.txt", "transfers_validation", row, services.AppMessageService)
 
 	// TODO: The header is required, but the content is optional.
 	if fareAttribute.Transfers == nil {
@@ -55,6 +46,6 @@ func TransfersValidation(fareAttribute *types.FareAttribute, row int, gtfs *type
 
 	validTransfers := []int{0, 1, 2}
 	if !slices.Contains(validTransfers, *fareAttribute.Transfers) {
-		addMessage(i18n.AppTranslator.Get("transfers_validation.invalid", *fareAttribute.Transfers))
+		ctx.AddError(ctx.GetTranslatedMessage("transfers_validation.invalid", *fareAttribute.Transfers))
 	}
 }

@@ -1,266 +1,63 @@
 package services
 
 import (
-	"archive/zip"
-	"bytes"
-	"encoding/csv"
-	"errors"
+	"database/sql"
 	"fmt"
-	"io"
-	"main/i18n"
 	"main/lib"
 	"main/types"
 	"os"
-	"runtime"
-	"strings"
-	"sync"
-	"unicode/utf8"
+
+	_ "modernc.org/sqlite"
 )
 
-// GTFS_FILES defines the set of valid GTFS filenames that will be processed.
-var GTFS_FILES = map[string]struct{}{
-	"agency.txt":          {},
-	"stops.txt":           {},
-	"routes.txt":          {},
-	"trips.txt":           {},
-	"stop_times.txt":      {},
-	"calendar.txt":        {},
-	"archives.txt":        {},
-	"calendar_dates.txt":  {},
-	"dates.txt":           {},
-	"fare_attributes.txt": {},
-	"fare_rules.txt":      {},
-	"feed_info.txt":       {},
-	"municipalities.txt":  {},
-	"periods.txt":         {},
-	"shapes.txt":          {},
-}
-
-// ReadGTFSZip reads and parses a GTFS zip file at the specified path.
-// It returns a Gtfs map containing the parsed data from all valid GTFS files,
-// or an error if the file cannot be read or processed.
+// ReadGTFSZip reads and parses a GTFS zip file at the specified path using SQLite for efficient streaming.
+// It returns a Gtfs struct with SQLite database connection. The database file is kept during validation
+// and should be cleaned up by calling gtfs.Close() after use.
 func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 	if _, err := os.Stat(zipPath); os.IsNotExist(err) {
 		return types.Gtfs{}, fmt.Errorf("file %s does not exist", zipPath)
 	}
 
-	zipReader, err := zip.OpenReader(zipPath)
+	//
+	// 1. Create a temporary SQLite database for this GTFS import
+	tmpDB, err := os.CreateTemp("", "gtfs_*.db")
 	if err != nil {
-		return types.Gtfs{}, err
+		return types.Gtfs{}, fmt.Errorf("failed to create temporary database: %w", err)
 	}
-	defer zipReader.Close()
+	tmpDBPath := tmpDB.Name()
+	tmpDB.Close()
+	lib.AppLogger.Debug(fmt.Sprintf("Created temporary SQLite database: %s", tmpDBPath))
 
-	gtfs := types.NewGtfs()
-	gtfsIdsMap := make(types.GtfsIdMap)
-
-	// Add mutexes to protect concurrent access to shared maps
-	// What is a mutex? https://stackoverflow.com/questions/34524/what-is-a-mutex
-	var idsMapMutex sync.Mutex
-
-	type result struct {
-		fileNameWithoutExt string
-		data               []map[string]string
-		err                error
+	//
+	// 2. Import GTFS zip to SQLite using streaming parser
+	gtfsDB, err := ImportGTFSZipToSQLite(zipPath, tmpDBPath)
+	if err != nil {
+		os.Remove(tmpDBPath) // Clean up on error
+		return types.Gtfs{}, fmt.Errorf("failed to import GTFS to SQLite: %w", err)
 	}
+	gtfsDB.Close() // Close the import connection
 
-	// Channels
-	jobs := make(chan *zip.File, len(zipReader.File))
-	results := make(chan result, len(zipReader.File))
-
-	// Worker pool
-	numWorkers := runtime.NumCPU()
-	var wg sync.WaitGroup
-	for range numWorkers {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for file := range jobs {
-				fileName := file.Name
-				fileNameWithoutExt := strings.TrimSuffix(fileName, ".txt")
-
-				// Validate
-				if _, valid := GTFS_FILES[fileName]; !valid {
-					lib.AppLogger.Debug("Skipping invalid GTFS file: " + fileName)
-					AppMessageService.AddMessage(types.Message{
-						FileName:     fileName,
-						Message:      i18n.AppTranslator.Get("file_validations.not_supported", fileName),
-						ValidationID: "file_validation",
-						Severity:     types.SEVERITY_IGNORE,
-						Field:        "N/A",
-						Rows:         []int{},
-					})
-					continue
-				}
-
-				f, err := file.Open()
-				if err != nil {
-					lib.AppLogger.Error("Error opening file: " + fileName + " " + err.Error())
-					AppMessageService.AddMessage(types.Message{
-						FileName:     fileName,
-						Message:      "Error opening file: " + fileName + " " + err.Error(),
-						ValidationID: "file_validation",
-						Severity:     types.SEVERITY_ERROR,
-						Field:        "N/A",
-						Rows:         []int{},
-					})
-					continue
-				}
-				content, err := io.ReadAll(f)
-				f.Close() // Close immediately after reading
-				if err != nil {
-					lib.AppLogger.Error("Error reading file: " + fileName + " " + err.Error())
-					AppMessageService.AddMessage(types.Message{
-						FileName:     fileName,
-						Message:      "Error reading file: " + fileName + " " + err.Error(),
-						ValidationID: "file_validation",
-						Severity:     types.SEVERITY_ERROR,
-						Field:        "N/A",
-						Rows:         []int{},
-					})
-					continue
-				}
-
-				parsedData, err := parseCSV(content, fileNameWithoutExt, &gtfsIdsMap, &idsMapMutex)
-				if err != nil {
-					lib.AppLogger.Error("Error parsing file: " + fileName + " " + err.Error())
-					AppMessageService.AddMessage(types.Message{
-						FileName:     fileName,
-						Message:      "Error parsing file: " + fileName + " " + err.Error(),
-						ValidationID: "file_validation",
-						Severity:     types.SEVERITY_ERROR,
-						Field:        "N/A",
-						Rows:         []int{},
-					})
-					continue
-				}
-
-				results <- result{fileNameWithoutExt, parsedData, nil}
-			}
-		}()
+	//
+	// 3. Open a new connection for the Gtfs struct
+	db, err := sql.Open("sqlite", tmpDBPath)
+	if err != nil {
+		os.Remove(tmpDBPath) // Clean up on error
+		return types.Gtfs{}, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	// Feed jobs
-	go func() {
-		for _, file := range zipReader.File {
-			jobs <- file
-		}
-		close(jobs)
-	}()
+	//
+	// 4. Create Gtfs struct with SQLite connection
+	gtfs := types.NewGtfsFromSQLite(db, tmpDBPath)
 
-	// Close results after workers are done
-	go func() {
-		wg.Wait()
-		close(results)
-	}()
-
-	// Collect results
-	for res := range results {
-		if res.err != nil {
-			lib.AppLogger.Error("Error processing file: " + res.fileNameWithoutExt + " " + res.err.Error())
-			continue
-		}
-		if err := gtfs.SetFieldData(res.fileNameWithoutExt, res.data); err != nil {
-			lib.AppLogger.Error("Error setting field data: " + res.fileNameWithoutExt + " " + err.Error())
-			continue
-		}
+	//
+	// 5. Load ID map from SQLite
+	gtfsIdsMap, err := LoadIdMapFromSQLite(db)
+	if err != nil {
+		gtfs.Close()
+		os.Remove(tmpDBPath)
+		return types.Gtfs{}, fmt.Errorf("failed to load ID map: %w", err)
 	}
-
 	gtfs.IdMap = gtfsIdsMap
 
 	return *gtfs, nil
-}
-
-// handlePrimaryKeyMapping processes the primary key mapping for a given file, header, and value.
-// It handles both single and composite primary keys, updating the idsMap accordingly.
-func handlePrimaryKeyMapping(primaryKey any, header string, value string, fileNameWithoutExt string, rowIndex int, idsMap *types.GtfsIdMap, idsMapMutex *sync.Mutex) {
-	if primaryKey == nil {
-		return
-	}
-
-	switch pk := primaryKey.(type) {
-	case string:
-		// Single primary key case
-		if pk == header && value != "" {
-			idsMapMutex.Lock()
-			(*idsMap)[fileNameWithoutExt][value] = append((*idsMap)[fileNameWithoutExt][value], rowIndex)
-			idsMapMutex.Unlock()
-		}
-	case []string:
-		// Composite primary key case
-		for _, key := range pk {
-			if key == header && value != "" {
-				idsMapMutex.Lock()
-				if _, exists := (*idsMap)[fileNameWithoutExt]; !exists {
-					(*idsMap)[fileNameWithoutExt] = make(map[string][]int)
-				}
-				// Store each component separately with a prefix to avoid collisions
-				(*idsMap)[fileNameWithoutExt][value] = append((*idsMap)[fileNameWithoutExt][value], rowIndex)
-				idsMapMutex.Unlock()
-			}
-		}
-	}
-}
-
-// parseCSV parses CSV content into a slice of maps where each map represents a row
-// with column headers as keys and cell values as values.
-// Ensures content is valid UTF-8 and handles BOM if present.
-// Returns an error if the CSV is empty or cannot be parsed.
-func parseCSV(content []byte, fileNameWithoutExt string, idsMap *types.GtfsIdMap, idsMapMutex *sync.Mutex) ([]map[string]string, error) {
-	// Remove UTF-8 BOM if present
-	if len(content) >= 3 && content[0] == 0xEF && content[1] == 0xBB && content[2] == 0xBF {
-		content = content[3:]
-	}
-
-	// Ensure content is valid UTF-8
-	if !utf8.Valid(content) {
-		return nil, fmt.Errorf("file %s contains invalid UTF-8 encoding", fileNameWithoutExt)
-	}
-
-	reader := csv.NewReader(bytes.NewReader(content))
-	reader.TrimLeadingSpace = true
-
-	records, err := reader.ReadAll()
-	if err != nil {
-		return nil, err
-	}
-	if len(records) < 1 {
-		return nil, errors.New("CSV file is empty")
-	}
-
-	headers := records[0]
-	result := make([]map[string]string, 0, len(records)-1)
-
-	localCounts := make(map[string]int)
-
-	primaryKey, ok := types.GTFS_PRIMARY_KEYS[fileNameWithoutExt]
-
-	if !ok {
-		panic("primary key not found for file: " + fileNameWithoutExt)
-	}
-
-	// Initialize the inner map for this file if it doesn't exist
-	idsMapMutex.Lock()
-	if (*idsMap)[fileNameWithoutExt] == nil {
-		(*idsMap)[fileNameWithoutExt] = make(map[string][]int)
-	}
-	idsMapMutex.Unlock()
-
-	for rowIndex, row := range records[1:] {
-		entry := make(map[string]string, len(headers))
-		for i, value := range row {
-			if i >= len(headers) {
-				continue
-			}
-			header := headers[i]
-			entry[header] = value
-			if value != "" {
-				localCounts[header]++
-			}
-
-			handlePrimaryKeyMapping(primaryKey, header, value, fileNameWithoutExt, rowIndex, idsMap, idsMapMutex)
-		}
-		result = append(result, entry)
-	}
-
-	return result, nil
 }

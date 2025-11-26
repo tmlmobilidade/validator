@@ -2,7 +2,6 @@ package trips
 
 import (
 	"fmt"
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -25,21 +24,10 @@ Conditionally Required:
 
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 */
-func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
-	s := types.SEVERITY_IGNORE
+func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules, tripStopTimesCache map[string][]types.StopTimeRaw) {
+	ctx := lib.NewValidationContext("shape_id", "trips.txt", "shape_id_validation", row, services.AppMessageService)
 	if rules != nil && rules.ShapeId.Severity != "" {
-		s = rules.ShapeId.Severity
-	}
-
-	addMessage := func(message string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "shape_id",
-			FileName:     "trips.txt",
-			Rows:         []int{row},
-			Severity:     severity,
-			Message:      message,
-			ValidationID: "shape_id_validation",
-		})
+		ctx.WithSeverity(rules.ShapeId.Severity)
 	}
 
 	hasContinuousPickupDropoff := false
@@ -49,45 +37,62 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 	}
 
 	// Check if the route has continuous pickup/dropoff behavior
-	routeRow := gtfs.IdMap["routes"][*trip.RouteId]
-	if _, ok := gtfs.IdMap["routes"][*trip.RouteId]; !ok {
+	routeRows, err := gtfs.GetRowsById("routes", *trip.RouteId)
+	if err != nil || len(routeRows) == 0 {
 		fmt.Println("Route not found", *trip.RouteId)
 		return
 	}
 
-	if gtfs.Route[routeRow[0]].ContinuousPickup != "" {
+	routeRaw, err := gtfs.GetRoute(routeRows[0])
+	if err == nil && routeRaw.ContinuousPickup != "" {
 		hasContinuousPickupDropoff = true
 	}
 
 	// Check if the stop_times have continuous pickup/dropoff behavior
-	if gtfs.IdMap["stop_times"] != nil && len(gtfs.IdMap["stop_times"][*trip.TripId]) > 0 && !hasContinuousPickupDropoff {
-
-		for _, rowIndex := range gtfs.IdMap["stop_times"][*trip.TripId] {
-			if continuousPickup := gtfs.StopTime[rowIndex].ContinuousPickup; continuousPickup != "" {
+	// Use cached stop_times data instead of querying database
+	stopTimesRaw, exists := tripStopTimesCache[*trip.TripId]
+	if exists && !hasContinuousPickupDropoff {
+		for _, stopTimeRaw := range stopTimesRaw {
+			if continuousPickup := stopTimeRaw.ContinuousPickup; continuousPickup != "" {
 				hasContinuousPickupDropoff = true
 				break // Exit early once we find a continuous pickup
+			}
+		}
+	} else if !exists {
+		// Fallback to database query if not in cache (shouldn't happen)
+		stopTimeRows, err := gtfs.GetRowsById("stop_times", *trip.TripId)
+		if err == nil && len(stopTimeRows) > 0 && !hasContinuousPickupDropoff {
+			for _, rowIndex := range stopTimeRows {
+				stopTimeRaw, err := gtfs.GetStopTime(rowIndex)
+				if err != nil {
+					continue
+				}
+				if continuousPickup := stopTimeRaw.ContinuousPickup; continuousPickup != "" {
+					hasContinuousPickupDropoff = true
+					break // Exit early once we find a continuous pickup
+				}
 			}
 		}
 	}
 
 	if hasContinuousPickupDropoff && trip.ShapeId == nil {
-		addMessage(i18n.AppTranslator.Get("shape_id_validation.required_with_continuous"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.required_with_continuous"))
 		return
 	}
 
 	if trip.ShapeId == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("shape_id_validation.required"), i18n.AppTranslator.Get("shape_id_validation.recommended"))
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("shape_id_validation.required", "shape_id_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
 	// Check Foreign Key
 	if !lib.GtfsIdMapKeyExists(gtfs, "shapes", *trip.ShapeId) {
-		addMessage(i18n.AppTranslator.Get("shape_id_validation.not_found", map[string]interface{}{"shape_id": *trip.ShapeId}), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.not_found", map[string]interface{}{"shape_id": *trip.ShapeId}))
 		return
 	}
 }

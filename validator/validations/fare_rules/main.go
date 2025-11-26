@@ -1,20 +1,31 @@
 package fare_rules
 
 import (
+	"fmt"
+	"main/config"
 	"main/lib"
 	"main/types"
 	validations "main/validations/fare_rules/validations"
+	registry "main/validations"
 )
+
+func init() {
+	registry.Register("fare_rules", RunValidations)
+}
 
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running FareRules Validations...")
 
-	for i, rawFareRule := range gtfs.FareRule {
+	// Create progress tracker
+	tracker := lib.CreateProgressTracker(gtfs, "fare_rules.txt", config.ProgressThresholdSmall)
+
+	err := gtfs.IterateFareRules(func(i int, rawFareRule types.FareRuleRaw) error {
+		tracker.Track()
 		// Parse Fare Rule Validation
 		fareRule := validations.ParseFareRule(rawFareRule, i)
 
 		if fareRule == (types.FareRule{}) {
-			continue
+			return nil
 		}
 
 		var fareRulesRules *types.FareRulesRules
@@ -37,5 +48,12 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// validate route_id
 		validations.RouteIdValidation(&fareRule, i, &gtfs, fareRulesRules)
 
+		return nil
+	})
+
+	if err != nil {
+		lib.AppLogger.Error(fmt.Sprintf("Error iterating fare rules: %v", err))
+	} else {
+		lib.AppLogger.Debug(fmt.Sprintf("Completed fare_rules.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 }

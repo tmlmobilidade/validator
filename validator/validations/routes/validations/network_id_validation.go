@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -28,30 +27,20 @@ Conditionally Forbidden:
 [route_networks.txt]: https://gtfs.org/schedule/reference/#routenetworkstxt
 */
 func NetworkIdValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *types.RoutesRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("network_id", "routes.txt", "network_id_validation", row, services.AppMessageService)
 	if rules != nil && rules.NetworkId.Severity != "" {
-		s = rules.NetworkId.Severity
+		ctx.WithSeverity(rules.NetworkId.Severity)
 	}
 
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "network_id",
-			FileName:     "routes.txt",
-			ValidationID: "network_id_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-		})
-	}
-
-	if route.NetworkId == nil && s != types.SEVERITY_IGNORE {
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("network_id_validation.recommended"), i18n.AppTranslator.Get("network_id_validation.required"))
-		addMessage(warn, s)
+	if route.NetworkId == nil && !ctx.ShouldIgnore() {
+		message := ctx.GetRequiredMessage("network_id_validation.required", "network_id_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if len(gtfs.RouteNetwork) > 0 && route.NetworkId != nil {
-		addMessage(i18n.AppTranslator.Get("network_id_validation.forbidden_when_route_networks_exists"), types.SEVERITY_ERROR)
+	routeNetworkCount, _ := gtfs.GetTableCount("route_networks")
+	if routeNetworkCount > 0 && route.NetworkId != nil {
+		ctx.AddError(ctx.GetTranslatedMessage("network_id_validation.forbidden_when_route_networks_exists"))
 		return
 	}
 
@@ -62,7 +51,7 @@ func NetworkIdValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *t
 		}
 
 		if !slices.Contains(*rules.NetworkId.Options, *route.NetworkId) {
-			addMessage(i18n.AppTranslator.Get("network_id_validation.not_allowed", map[string]interface{}{"value": *route.NetworkId}), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("network_id_validation.not_allowed", map[string]interface{}{"value": *route.NetworkId}))
 			return
 		}
 	}

@@ -1,7 +1,6 @@
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -23,45 +22,29 @@ Level of the location. The same level may be used by multiple unlinked stations.
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func LevelIdValidation(stop *types.Stop, row int, gtfs types.Gtfs, rules *types.StopsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("level_id", "stops.txt", "level_id_validation", row, services.AppMessageService)
 	if rules != nil && rules.LevelId.Severity != "" {
-		s = rules.LevelId.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "level_id",
-			FileName:     "stops.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "level_id_validation",
-		})
+		ctx.WithSeverity(rules.LevelId.Severity)
 	}
 
 	if stop.LevelId == nil || *stop.LevelId == "" {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"level_id_validation.required",
-				"level_id_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("level_id_validation.required", "level_id_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("level_id_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("level_id_validation.forbidden"))
 		return
 	}
 
 	// Check Foreign Key
 	if !lib.GtfsIdMapKeyExists(&gtfs, "levels", *stop.LevelId) {
-		addMessage(i18n.AppTranslator.Get("level_id_validation.not_found", *stop.LevelId), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("level_id_validation.not_found", *stop.LevelId))
 		return
 	}
 
@@ -72,7 +55,7 @@ func LevelIdValidation(stop *types.Stop, row int, gtfs types.Gtfs, rules *types.
 		}
 
 		if !slices.Contains(*rules.LevelId.Options, *stop.LevelId) {
-			addMessage(i18n.AppTranslator.Get("level_id_validation.not_allowed", *stop.LevelId), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("level_id_validation.not_allowed", *stop.LevelId))
 			return
 		}
 	}

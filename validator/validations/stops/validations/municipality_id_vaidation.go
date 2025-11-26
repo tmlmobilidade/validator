@@ -1,7 +1,6 @@
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -23,39 +22,23 @@ Municipality identifier for a stop.
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func MunicipalityIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("municipality_id", "stops.txt", "municipality_id_validation", row, services.AppMessageService)
 	if rules != nil && rules.MunicipalityId.Severity != "" {
-		s = rules.MunicipalityId.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "municipality_id",
-			FileName:     "stops.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "municipality_id_validation",
-		})
+		ctx.WithSeverity(rules.MunicipalityId.Severity)
 	}
 
 	if stop.MunicipalityId == nil || *stop.MunicipalityId == "" {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"municipality_id_validation.required",
-				"municipality_id_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("municipality_id_validation.required", "municipality_id_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("municipality_id_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("municipality_id_validation.forbidden"))
 		return
 	}
 
@@ -66,7 +49,7 @@ func MunicipalityIdValidation(stop *types.Stop, row int, rules *types.StopsRules
 		}
 
 		if !slices.Contains(*rules.MunicipalityId.Options, *stop.MunicipalityId) {
-			addMessage(i18n.AppTranslator.Get("municipality_id_validation.not_allowed", *stop.MunicipalityId), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("municipality_id_validation.not_allowed", *stop.MunicipalityId))
 			return
 		}
 	}

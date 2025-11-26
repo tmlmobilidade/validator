@@ -1,7 +1,6 @@
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -24,46 +23,30 @@ Describes if the stop has schedules.
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func HasSchedulesValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("has_schedules", "stops.txt", "has_schedules_validation", row, services.AppMessageService)
 	if rules != nil && rules.HasSchedules.Severity != "" {
-		s = rules.HasSchedules.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "has_schedules",
-			FileName:     "stops.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "has_schedules_validation",
-		})
+		ctx.WithSeverity(rules.HasSchedules.Severity)
 	}
 
 	if stop.HasSchedules == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"has_schedules_validation.required",
-				"has_schedules_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("has_schedules_validation.required", "has_schedules_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("has_schedules_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("has_schedules_validation.forbidden"))
 		return
 	}
 
 	// Validate value
 	validValues := []int{0, 1}
 	if !slices.Contains(validValues, *stop.HasSchedules) {
-		addMessage(i18n.AppTranslator.Get("has_schedules_validation.invalid", *stop.HasSchedules), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("has_schedules_validation.invalid", *stop.HasSchedules))
 		return
 	}
 
@@ -74,7 +57,7 @@ func HasSchedulesValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 		}
 
 		if !slices.Contains(*rules.HasSchedules.Options, strconv.Itoa(*stop.HasSchedules)) {
-			addMessage(i18n.AppTranslator.Get("has_schedules_validation.not_allowed", *stop.HasSchedules), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("has_schedules_validation.not_allowed", *stop.HasSchedules))
 			return
 		}
 	}

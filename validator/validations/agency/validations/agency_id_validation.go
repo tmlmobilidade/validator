@@ -1,7 +1,6 @@
 package agency
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -30,47 +29,35 @@ Conditionally Required:
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
 func AgencyIdValidation(agency *types.Agency, row int, gtfs types.Gtfs, rules *types.AgencyRules) {
-	s := types.SEVERITY_WARNING
-	if rules != nil {
-		s = rules.AgencyId.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "agency_id",
-			FileName:     "agency.txt",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-			ValidationID: "agency_id_validation",
-		})
+	ctx := lib.NewValidationContext("agency_id", "agency.txt", "agency_id_validation", row, services.AppMessageService)
+	if rules != nil && rules.AgencyId.Severity != "" {
+		ctx.WithSeverity(rules.AgencyId.Severity)
+	} else {
+		ctx.WithSeverity(types.SEVERITY_WARNING)
 	}
 
 	//  Check if agency_id is required
 	if agency.AgencyId == nil {
-		if len(gtfs.Agency) > 1 {
-			addMessage(i18n.AppTranslator.Get("agency_id_validation.required"), types.SEVERITY_ERROR)
+		agencyCount, _ := gtfs.GetTableCount("agency")
+		if agencyCount > 1 {
+			ctx.AddError(ctx.GetTranslatedMessage("agency_id_validation.required"))
 			return
 		}
 
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		warn := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"agency_id_validation.required",
-				"agency_id_validation.recommended",
-			),
-		)
-		addMessage(warn, s)
+		message := ctx.GetRequiredMessage("agency_id_validation.required", "agency_id_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
 	if agency.AgencyId != nil {
 		// Check if agency_id is Unique ID
-		if _, ok := gtfs.IdMap["agency"][*agency.AgencyId]; ok && len(gtfs.IdMap["agency"][*agency.AgencyId]) > 1 {
-			addMessage(i18n.AppTranslator.Get("agency_id_validation.duplicate"), types.SEVERITY_ERROR)
+		rows, err := gtfs.GetRowsById("agency", *agency.AgencyId)
+		if err == nil && len(rows) > 1 {
+			ctx.AddError(ctx.GetTranslatedMessage("agency_id_validation.duplicate"))
 		}
 
 		// Validate rules
@@ -80,7 +67,7 @@ func AgencyIdValidation(agency *types.Agency, row int, gtfs types.Gtfs, rules *t
 			}
 
 			if !slices.Contains(*rules.AgencyId.Options, *agency.AgencyId) {
-				addMessage(i18n.AppTranslator.Get("agency_id_validation.not_allowed", *agency.AgencyId), s)
+				ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("agency_id_validation.not_allowed", *agency.AgencyId))
 				return
 			}
 		}

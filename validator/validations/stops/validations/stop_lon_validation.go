@@ -1,7 +1,6 @@
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -28,20 +27,9 @@ Conditionally Required:
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func StopLonValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("stop_lon", "stops.txt", "stop_lon_validation", row, services.AppMessageService)
 	if rules != nil && rules.StopLon.Severity != "" {
-		s = rules.StopLon.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "stop_lon",
-			FileName:     "stops.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "stop_lon_validation",
-		})
+		ctx.WithSeverity(rules.StopLon.Severity)
 	}
 
 	locationType := -1
@@ -52,27 +40,22 @@ func StopLonValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	isRequired := locationType == 0 || locationType == 1 || locationType == 2
 
 	if stop.StopLon == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN && !isRequired {
+		if ctx.ShouldIgnore() || (ctx.IsForbidden() && !isRequired) {
 			return
 		}
 
 		if isRequired {
-			addMessage(i18n.AppTranslator.Get("stop_lon_validation.required_location_type"), types.SEVERITY_ERROR)
+			ctx.AddError(ctx.GetTranslatedMessage("stop_lon_validation.required_location_type"))
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"stop_lon_validation.required",
-				"stop_lon_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("stop_lon_validation.required", "stop_lon_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
 	if !lib.ValidateLongitude(*stop.StopLon) {
-		addMessage(i18n.AppTranslator.Get("stop_lon_validation.invalid", *stop.StopLon), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("stop_lon_validation.invalid", *stop.StopLon))
 		return
 	}
 }

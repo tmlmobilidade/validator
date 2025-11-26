@@ -1,7 +1,6 @@
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -26,39 +25,23 @@ This allows feed consumers to more easily internationalize and localize the plat
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func PlatformCodeValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("platform_code", "stops.txt", "platform_code_validation", row, services.AppMessageService)
 	if rules != nil && rules.PlatformCode.Severity != "" {
-		s = rules.PlatformCode.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "platform_code",
-			FileName:     "stops.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "platform_code_validation",
-		})
+		ctx.WithSeverity(rules.PlatformCode.Severity)
 	}
 
 	if stop.PlatformCode == nil || *stop.PlatformCode == "" {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"platform_code_validation.required",
-				"platform_code_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("platform_code_validation.required", "platform_code_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("platform_code_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("platform_code_validation.forbidden"))
 		return
 	}
 
@@ -69,7 +52,7 @@ func PlatformCodeValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 		}
 
 		if !slices.Contains(*rules.PlatformCode.Options, *stop.PlatformCode) {
-			addMessage(i18n.AppTranslator.Get("platform_code_validation.not_allowed", *stop.PlatformCode), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("platform_code_validation.not_allowed", *stop.PlatformCode))
 			return
 		}
 	}

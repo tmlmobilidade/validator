@@ -16,7 +16,7 @@ func TestShapeIdValidation_Required(t *testing.T) {
 		StopTime: []types.StopTimeRaw{},
 		IdMap:    map[string]map[string][]int{},
 	}
-	validations.ShapeIdValidation(trip, 1, gtfs, &types.TripsRules{ShapeId: types.RuleConfig{Severity: severity}})
+	validations.ShapeIdValidation(trip, 1, gtfs, &types.TripsRules{ShapeId: types.RuleConfig{Severity: severity}}, make(map[string][]types.StopTimeRaw))
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,
@@ -34,7 +34,7 @@ func TestShapeIdValidation_Recommended(t *testing.T) {
 	severity := types.SEVERITY_WARNING
 	trip := &types.Trip{RouteId: lib.Ptr("route1"), TripId: lib.Ptr("trip1"), ShapeId: nil}
 	gtfs := &types.Gtfs{}
-	validations.ShapeIdValidation(trip, 2, gtfs, &types.TripsRules{ShapeId: types.RuleConfig{Severity: severity}})
+	validations.ShapeIdValidation(trip, 2, gtfs, &types.TripsRules{ShapeId: types.RuleConfig{Severity: severity}}, make(map[string][]types.StopTimeRaw))
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,
@@ -52,7 +52,7 @@ func TestShapeIdValidation_Ignore(t *testing.T) {
 	severity := types.SEVERITY_IGNORE
 	trip := &types.Trip{RouteId: lib.Ptr("route1"), TripId: lib.Ptr("trip1"), ShapeId: nil}
 	gtfs := &types.Gtfs{}
-	validations.ShapeIdValidation(trip, 3, gtfs, &types.TripsRules{ShapeId: types.RuleConfig{Severity: severity}})
+	validations.ShapeIdValidation(trip, 3, gtfs, &types.TripsRules{ShapeId: types.RuleConfig{Severity: severity}}, make(map[string][]types.StopTimeRaw))
 
 	assertion := lib.AssertionMessage{
 		Expected: 0,
@@ -74,7 +74,7 @@ func TestShapeIdValidation_DoesNotExist(t *testing.T) {
 	gtfs := &types.Gtfs{
 		IdMap: map[string]map[string][]int{},
 	}
-	validations.ShapeIdValidation(trip, 4, gtfs, &types.TripsRules{ShapeId: types.RuleConfig{Severity: severity}})
+	validations.ShapeIdValidation(trip, 4, gtfs, &types.TripsRules{ShapeId: types.RuleConfig{Severity: severity}}, make(map[string][]types.StopTimeRaw))
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,

@@ -1,7 +1,6 @@
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -27,28 +26,23 @@ ID must be unique across all stops.stop_id, locations.geojson id, and location_g
 
 // StopIdValidation validates the presence and uniqueness of stop_id in stops.txt
 func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.StopsRules) {
-	addMessage := func(msg string) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "stop_id",
-			FileName:     "stops.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "stop_id_validation",
-		})
-	}
+	ctx := lib.NewValidationContext("stop_id", "stops.txt", "stop_id_validation", row, services.AppMessageService)
 
 	// Check if stop_id is missing
 	if stop.StopId == nil || *stop.StopId == "" {
-		addMessage(i18n.AppTranslator.Get("stop_id_validation.required"))
+		ctx.AddError(ctx.GetTranslatedMessage("stop_id_validation.required"))
 	}
 
 	// Check if stop_id is unique
 	if stop.StopId != nil {
-		count := len(lib.RemoveDuplicates(gtfs.IdMap["stops"][*stop.StopId]))
+		rows, err := gtfs.GetRowsById("stops", *stop.StopId)
+		if err != nil {
+			return
+		}
+		count := len(lib.RemoveDuplicates(rows))
 
 		if count > 1 {
-			addMessage(i18n.AppTranslator.Get("stop_id_validation.duplicate", *stop.StopId))
+			ctx.AddError(ctx.GetTranslatedMessage("stop_id_validation.duplicate", *stop.StopId))
 			return
 		}
 	}
@@ -60,7 +54,7 @@ func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.
 		}
 
 		if !slices.Contains(*rules.StopId.Options, *stop.StopId) {
-			addMessage(i18n.AppTranslator.Get("stop_id_validation.not_allowed", *stop.StopId))
+			ctx.AddError(ctx.GetTranslatedMessage("stop_id_validation.not_allowed", *stop.StopId))
 			return
 		}
 	}

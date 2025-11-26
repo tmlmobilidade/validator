@@ -2,7 +2,6 @@ package stop_times
 
 import (
 	"fmt"
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -37,44 +36,32 @@ Conditionally Forbidden:
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
 func PickupTypeValidation(stopTime *types.StopTime, row int, rules *types.StopTimesRules) {
-
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("pickup_type", "stop_times.txt", "pickup_type_validation", row, services.AppMessageService)
 	if rules != nil && rules.PickupType.Severity != "" {
-		s = rules.PickupType.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "pickup_type",
-			FileName:     "stop_times.txt",
-			ValidationID: "pickup_type_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-		})
+		ctx.WithSeverity(rules.PickupType.Severity)
 	}
 
 	// Validate presence
 	if stopTime.PickupType == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("pickup_type_validation.recommended"), i18n.AppTranslator.Get("pickup_type_validation.required"))
-		addMessage(warn, s)
+		message := ctx.GetRequiredMessage("pickup_type_validation.required", "pickup_type_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
 	// Validate values
 	pt := *stopTime.PickupType
 	if pt < 0 || pt > 3 {
-		addMessage(i18n.AppTranslator.Get("pickup_type_validation.invalid"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("pickup_type_validation.invalid"))
 		return
 	}
 
 	// pickup_type=0 or 3 forbidden if start_pickup_drop_off_window or end_pickup_drop_off_window are defined
 	if (pt == 0 || pt == 3) && ((stopTime.StartPickupDropOffWindow != nil && *stopTime.StartPickupDropOffWindow != "") || (stopTime.EndPickupDropOffWindow != nil && *stopTime.EndPickupDropOffWindow != "")) {
-		addMessage(i18n.AppTranslator.Get("pickup_type_validation.forbidden_with_window"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("pickup_type_validation.forbidden_with_window"))
 		return
 	}
 
@@ -85,7 +72,7 @@ func PickupTypeValidation(stopTime *types.StopTime, row int, rules *types.StopTi
 		}
 
 		if !slices.Contains(*rules.PickupType.Options, fmt.Sprintf("%d", pt)) {
-			addMessage(i18n.AppTranslator.Get("pickup_type_validation.not_allowed", fmt.Sprintf("%d", pt)), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("pickup_type_validation.not_allowed", fmt.Sprintf("%d", pt)))
 			return
 		}
 	}

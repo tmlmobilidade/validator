@@ -1,7 +1,6 @@
 package agency
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -23,22 +22,16 @@ Full name of the transit agency.
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
 func AgencyNameValidation(agency *types.Agency, row int, rules *types.AgencyRules) {
-	s := types.SEVERITY_ERROR
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "agency_name",
-			FileName:     "agency.txt",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-			ValidationID: "agency_name_validation",
-		})
+	ctx := lib.NewValidationContext("agency_name", "agency.txt", "agency_name_validation", row, services.AppMessageService)
+	if rules != nil && rules.AgencyName.Severity != "" {
+		ctx.WithSeverity(rules.AgencyName.Severity)
+	} else {
+		ctx.WithSeverity(types.SEVERITY_ERROR)
 	}
 
-	// Check if agency_email is required
+	// Check if agency_name is required
 	if agency.AgencyName == nil {
-		addMessage(i18n.AppTranslator.Get("agency_name_validation.required"), s)
+		ctx.AddError(ctx.GetTranslatedMessage("agency_name_validation.required"))
 		return
 	}
 
@@ -49,7 +42,11 @@ func AgencyNameValidation(agency *types.Agency, row int, rules *types.AgencyRule
 		}
 
 		if !slices.Contains(*rules.AgencyName.Options, *agency.AgencyName) {
-			addMessage(i18n.AppTranslator.Get("agency_name_validation.not_allowed", *agency.AgencyName), lib.IfThenElse(rules.AgencyName.Severity == types.SEVERITY_ERROR, types.SEVERITY_ERROR, types.SEVERITY_WARNING))
+			if rules.AgencyName.Severity == types.SEVERITY_ERROR {
+				ctx.AddError(ctx.GetTranslatedMessage("agency_name_validation.not_allowed", *agency.AgencyName))
+			} else {
+				ctx.AddWarning(ctx.GetTranslatedMessage("agency_name_validation.not_allowed", *agency.AgencyName))
+			}
 			return
 		}
 	}

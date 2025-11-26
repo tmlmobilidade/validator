@@ -1,7 +1,6 @@
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -23,39 +22,23 @@ Parish identifier for a stop.
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func ParishIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("parish_id", "stops.txt", "parish_id_validation", row, services.AppMessageService)
 	if rules != nil && rules.ParishId.Severity != "" {
-		s = rules.ParishId.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "parish_id",
-			FileName:     "stops.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "parish_id_validation",
-		})
+		ctx.WithSeverity(rules.ParishId.Severity)
 	}
 
 	if stop.ParishId == nil || *stop.ParishId == "" {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"parish_id_validation.required",
-				"parish_id_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("parish_id_validation.required", "parish_id_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("parish_id_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("parish_id_validation.forbidden"))
 		return
 	}
 
@@ -66,7 +49,7 @@ func ParishIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if !slices.Contains(*rules.ParishId.Options, *stop.ParishId) {
-			addMessage(i18n.AppTranslator.Get("parish_id_validation.not_allowed", *stop.ParishId), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("parish_id_validation.not_allowed", *stop.ParishId))
 			return
 		}
 	}

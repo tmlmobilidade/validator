@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 	"slices"
@@ -36,15 +36,9 @@ Valid options are:
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
 func RouteTypeValidation(route *types.Route, row int, rules *types.RoutesRules) {
-	addMessage := func(msg string) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "route_type",
-			FileName:     "routes.txt",
-			ValidationID: "route_type_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     types.SEVERITY_ERROR,
-		})
+	ctx := lib.NewValidationContext("route_type", "routes.txt", "route_type_validation", row, services.AppMessageService)
+	if rules != nil && rules.RouteType.Severity != "" {
+		ctx.WithSeverity(rules.RouteType.Severity)
 	}
 
 	validTypes := map[int]struct{}{
@@ -52,12 +46,12 @@ func RouteTypeValidation(route *types.Route, row int, rules *types.RoutesRules) 
 	}
 
 	if route.RouteType == nil {
-		addMessage(i18n.AppTranslator.Get("route_type_validation.required"))
+		ctx.AddError(ctx.GetTranslatedMessage("route_type_validation.required"))
 		return
 	}
 
 	if _, ok := validTypes[*route.RouteType]; !ok {
-		addMessage(i18n.AppTranslator.Get("route_type_validation.invalid"))
+		ctx.AddError(ctx.GetTranslatedMessage("route_type_validation.invalid"))
 	}
 
 	// Validate rules
@@ -67,7 +61,7 @@ func RouteTypeValidation(route *types.Route, row int, rules *types.RoutesRules) 
 		}
 
 		if !slices.Contains(*rules.RouteType.Options, strconv.Itoa(*route.RouteType)) {
-			addMessage(i18n.AppTranslator.Get("route_type_validation.not_allowed", map[string]interface{}{"value": *route.RouteType}))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_type_validation.not_allowed", map[string]interface{}{"value": *route.RouteType}))
 			return
 		}
 	}

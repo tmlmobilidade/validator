@@ -1,7 +1,6 @@
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -24,39 +23,23 @@ Readable version of the stop_name. See "Text-to-speech field" in the [Term Defin
 [Term Definitions]: https://gtfs.org/schedule/reference/#term-definitions
 */
 func TtsStopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("tts_stop_name", "stops.txt", "tts_stop_name_validation", row, services.AppMessageService)
 	if rules != nil && rules.TtsStopName.Severity != "" {
-		s = rules.TtsStopName.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "tts_stop_name",
-			FileName:     "stops.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "tts_stop_name_validation",
-		})
+		ctx.WithSeverity(rules.TtsStopName.Severity)
 	}
 
 	if stop.TtsStopName == nil || *stop.TtsStopName == "" {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"tts_stop_name_validation.required",
-				"tts_stop_name_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("tts_stop_name_validation.required", "tts_stop_name_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("tts_stop_name_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("tts_stop_name_validation.forbidden"))
 		return
 	}
 
@@ -67,7 +50,7 @@ func TtsStopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if !slices.Contains(*rules.TtsStopName.Options, *stop.TtsStopName) {
-			addMessage(i18n.AppTranslator.Get("tts_stop_name_validation.not_allowed", *stop.TtsStopName), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("tts_stop_name_validation.not_allowed", *stop.TtsStopName))
 			return
 		}
 	}

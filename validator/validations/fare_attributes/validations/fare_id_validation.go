@@ -1,7 +1,7 @@
 package fare_attributes
 
 import (
-	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -21,25 +21,16 @@ Identifies a fare class.
 [fare_attributes.txt]: https://gtfs.org/schedule/reference/#fare_attributestxt
 */
 func FareIdValidation(fareAttribute *types.FareAttribute, row int, gtfs *types.Gtfs) {
-
-	addMessage := func(msg string) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "fare_id",
-			FileName:     "fare_attributes.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "fare_id_validation",
-		})
-	}
+	ctx := lib.NewValidationContext("fare_id", "fare_attributes.txt", "fare_id_validation", row, services.AppMessageService)
 
 	if fareAttribute.FareId == nil {
-		addMessage(i18n.AppTranslator.Get("fare_id_validation.required"))
+		ctx.AddError(ctx.GetTranslatedMessage("fare_id_validation.required"))
 		return
 	}
 
-	if gtfs.IdMap["fare_rules"] != nil && len(gtfs.IdMap["fare_rules"][*fareAttribute.FareId]) > 1 {
-		addMessage(i18n.AppTranslator.Get("fare_id_validation.duplicate", *fareAttribute.FareId))
+	rows, err := gtfs.GetRowsById("fare_rules", *fareAttribute.FareId)
+	if err == nil && len(rows) > 1 {
+		ctx.AddError(ctx.GetTranslatedMessage("fare_id_validation.duplicate", *fareAttribute.FareId))
 		return
 	}
 }

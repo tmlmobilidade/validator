@@ -2,7 +2,6 @@ package stop_times
 
 import (
 	"fmt"
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -36,41 +35,30 @@ Conditionally Forbidden:
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
 func DropOffTypeValidation(stopTime *types.StopTime, row int, rules *types.StopTimesRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("drop_off_type", "stop_times.txt", "drop_off_type_validation", row, services.AppMessageService)
 	if rules != nil && rules.DropOffType.Severity != "" {
-		s = rules.DropOffType.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "drop_off_type",
-			FileName:     "stop_times.txt",
-			ValidationID: "drop_off_type_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-		})
+		ctx.WithSeverity(rules.DropOffType.Severity)
 	}
 
 	if stopTime.DropOffType == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("drop_off_type_validation.recommended"), i18n.AppTranslator.Get("drop_off_type_validation.required"))
-		addMessage(warn, s)
+		message := ctx.GetRequiredMessage("drop_off_type_validation.required", "drop_off_type_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
 	// Validate values
 	dt := *stopTime.DropOffType
 	if dt < 0 || dt > 3 {
-		addMessage(i18n.AppTranslator.Get("drop_off_type_validation.invalid"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("drop_off_type_validation.invalid"))
 		return
 	}
 
 	// drop_off_type=0 forbidden if start_pickup_drop_off_window or end_pickup_drop_off_window are defined
 	if dt == 0 && ((stopTime.StartPickupDropOffWindow != nil && *stopTime.StartPickupDropOffWindow != "") || (stopTime.EndPickupDropOffWindow != nil && *stopTime.EndPickupDropOffWindow != "")) {
-		addMessage(i18n.AppTranslator.Get("drop_off_type_validation.forbidden_zero_with_window"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("drop_off_type_validation.forbidden_zero_with_window"))
 		return
 	}
 
@@ -81,7 +69,7 @@ func DropOffTypeValidation(stopTime *types.StopTime, row int, rules *types.StopT
 		}
 
 		if !slices.Contains(*rules.DropOffType.Options, fmt.Sprintf("%d", dt)) {
-			addMessage(i18n.AppTranslator.Get("drop_off_type_validation.not_allowed", fmt.Sprintf("%d", dt)), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("drop_off_type_validation.not_allowed", fmt.Sprintf("%d", dt)))
 			return
 		}
 	}

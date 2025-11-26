@@ -1,7 +1,6 @@
 package fare_attributes
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -22,25 +21,15 @@ Currency used to pay the fare.
 [fare_attributes.txt]: https://gtfs.org/schedule/reference/#fare_attributestxt
 */
 func CurrencyTypeValidation(fareAttribute *types.FareAttribute, row int) {
-
-	addMessage := func(msg string) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "currency_type",
-			FileName:     "fare_attributes.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "currency_type_validation",
-		})
-	}
+	ctx := lib.NewValidationContext("currency_type", "fare_attributes.txt", "currency_type_validation", row, services.AppMessageService)
 
 	if fareAttribute.CurrencyType == nil {
-		addMessage(i18n.AppTranslator.Get("currency_type_validation.required"))
+		ctx.AddError(ctx.GetTranslatedMessage("currency_type_validation.required"))
 		return
 	}
 
 	if !lib.ValidateCurrencyType(*fareAttribute.CurrencyType) {
-		addMessage(i18n.AppTranslator.Get("currency_type_validation.invalid", *fareAttribute.CurrencyType))
+		ctx.AddError(ctx.GetTranslatedMessage("currency_type_validation.invalid", *fareAttribute.CurrencyType))
 		return
 	}
 }

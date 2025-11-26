@@ -22,7 +22,6 @@ The times provided in stop_times.txt are in the timezone specified by `agency.ag
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -31,43 +30,27 @@ import (
 
 // StopTimezoneValidation validates the stop_timezone field in stops.txt
 func StopTimezoneValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("stop_timezone", "stops.txt", "stop_timezone_validation", row, services.AppMessageService)
 	if rules != nil && rules.StopTimezone.Severity != "" {
-		s = rules.StopTimezone.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "stop_timezone",
-			FileName:     "stops.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "stop_timezone_validation",
-		})
+		ctx.WithSeverity(rules.StopTimezone.Severity)
 	}
 
 	if stop.StopTimezone == nil || *stop.StopTimezone == "" {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"stop_timezone_validation.required",
-				"stop_timezone_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("stop_timezone_validation.required", "stop_timezone_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("stop_timezone_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("stop_timezone_validation.forbidden"))
 		return
 	}
 
 	if !lib.ValidateTimezone(*stop.StopTimezone) {
-		addMessage(i18n.AppTranslator.Get("stop_timezone_validation.invalid", *stop.StopTimezone), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("stop_timezone_validation.invalid", *stop.StopTimezone))
 		return
 	}
 
@@ -78,7 +61,7 @@ func StopTimezoneValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 		}
 
 		if !slices.Contains(*rules.StopTimezone.Options, *stop.StopTimezone) {
-			addMessage(i18n.AppTranslator.Get("stop_timezone_validation.not_allowed", *stop.StopTimezone), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("stop_timezone_validation.not_allowed", *stop.StopTimezone))
 			return
 		}
 	}

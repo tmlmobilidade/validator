@@ -1,7 +1,6 @@
 package stop_times
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -29,26 +28,15 @@ Conditionally Required:
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
 func StartPickupDropOffWindowValidation(stopTime *types.StopTime, row int, rules *types.StopTimesRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("start_pickup_drop_off_window", "stop_times.txt", "start_pickup_drop_off_window_validation", row, services.AppMessageService)
 	if rules != nil && rules.StartPickupDropOffWindow.Severity != "" {
-		s = rules.StartPickupDropOffWindow.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "start_pickup_drop_off_window",
-			FileName:     "stop_times.txt",
-			ValidationID: "start_pickup_drop_off_window_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-		})
+		ctx.WithSeverity(rules.StartPickupDropOffWindow.Severity)
 	}
 
 	// Forbidden if arrival_time or departure_time are defined
 	if (stopTime.ArrivalTime != nil && *stopTime.ArrivalTime != "") || (stopTime.DepartureTime != nil && *stopTime.DepartureTime != "") {
 		if stopTime.StartPickupDropOffWindow != nil && *stopTime.StartPickupDropOffWindow != "" {
-			addMessage(i18n.AppTranslator.Get("start_pickup_drop_off_window_validation.forbidden_with_time"), types.SEVERITY_ERROR)
+			ctx.AddError(ctx.GetTranslatedMessage("start_pickup_drop_off_window_validation.forbidden_with_time"))
 		}
 		return
 	}
@@ -65,7 +53,7 @@ func StartPickupDropOffWindowValidation(stopTime *types.StopTime, row int, rules
 
 	if required {
 		if stopTime.StartPickupDropOffWindow == nil || *stopTime.StartPickupDropOffWindow == "" {
-			addMessage(i18n.AppTranslator.Get("start_pickup_drop_off_window_validation.required_conditional"), types.SEVERITY_ERROR)
+			ctx.AddError(ctx.GetTranslatedMessage("start_pickup_drop_off_window_validation.required_conditional"))
 			return
 		}
 	}
@@ -73,15 +61,15 @@ func StartPickupDropOffWindowValidation(stopTime *types.StopTime, row int, rules
 	// Validate time format if present
 	if stopTime.StartPickupDropOffWindow != nil && *stopTime.StartPickupDropOffWindow != "" {
 		if !lib.ValidateTime(*stopTime.StartPickupDropOffWindow) {
-			addMessage(i18n.AppTranslator.Get("start_pickup_drop_off_window_validation.invalid_time"), types.SEVERITY_ERROR)
+			ctx.AddError(ctx.GetTranslatedMessage("start_pickup_drop_off_window_validation.invalid_time"))
 			return
 		}
 	}
 
 	// Optional
-	if stopTime.StartPickupDropOffWindow == nil && s != types.SEVERITY_IGNORE {
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("start_pickup_drop_off_window_validation.required"), i18n.AppTranslator.Get("start_pickup_drop_off_window_validation.recommended"))
-		addMessage(warn, s)
+	if stopTime.StartPickupDropOffWindow == nil && !ctx.ShouldIgnore() {
+		message := ctx.GetRequiredMessage("start_pickup_drop_off_window_validation.required", "start_pickup_drop_off_window_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 }

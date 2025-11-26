@@ -1,7 +1,7 @@
 package stop_times
 
 import (
-	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -32,21 +32,12 @@ Conditionally Required:
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
 func StopIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "stop_id",
-			FileName:     "stop_times.txt",
-			ValidationID: "stop_id_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-		})
-	}
+	ctx := lib.NewValidationContext("stop_id", "stop_times.txt", "stop_id_validation", row, services.AppMessageService)
 
 	// Forbidden if location_group_id or location_id are defined
 	if (stopTime.LocationGroupId != nil && *stopTime.LocationGroupId != "") || (stopTime.LocationId != nil && *stopTime.LocationId != "") {
 		if stopTime.StopId != nil && *stopTime.StopId != "" {
-			addMessage(i18n.AppTranslator.Get("stop_id_validation.forbidden_with_other_ids"), types.SEVERITY_ERROR)
+			ctx.AddError(ctx.GetTranslatedMessage("stop_id_validation.forbidden_with_other_ids"))
 		}
 		return
 	}
@@ -54,28 +45,26 @@ func StopIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
 	// Required if location_group_id AND location_id are NOT defined
 	if (stopTime.LocationGroupId == nil || *stopTime.LocationGroupId == "") && (stopTime.LocationId == nil || *stopTime.LocationId == "") {
 		if stopTime.StopId == nil || *stopTime.StopId == "" {
-			addMessage(i18n.AppTranslator.Get("stop_id_validation.required"), types.SEVERITY_ERROR)
+			ctx.AddError(ctx.GetTranslatedMessage("stop_id_validation.required"))
 			return
 		}
 
 		// Foreign key check: must reference a valid stop_id from stops.txt
-		stopsMap, ok := gtfs.IdMap["stops"]
-		if !ok || stopsMap == nil {
-			addMessage(i18n.AppTranslator.Get("stop_id_validation.missing_stops_file"), types.SEVERITY_ERROR)
-			return
-		}
-		rows, ok := stopsMap[*stopTime.StopId]
-		if !ok || len(rows) == 0 {
-			addMessage(i18n.AppTranslator.Get("stop_id_validation.not_found", *stopTime.StopId), types.SEVERITY_ERROR)
+		rows, err := gtfs.GetRowsById("stops", *stopTime.StopId)
+		if err != nil || len(rows) == 0 {
+			ctx.AddError(ctx.GetTranslatedMessage("stop_id_validation.not_found", *stopTime.StopId))
 			return
 		}
 
 		// Check location_type is 0 or empty
 		rowIdx := rows[0]
-		stopRow := gtfs.Stop[rowIdx]
+		stopRow, err := gtfs.GetStop(rowIdx)
+		if err != nil {
+			return
+		}
 		locationTypeStr := stopRow.LocationType
 		if locationTypeStr != "" && locationTypeStr != "0" {
-			addMessage(i18n.AppTranslator.Get("stop_id_validation.invalid_location_type"), types.SEVERITY_ERROR)
+			ctx.AddError(ctx.GetTranslatedMessage("stop_id_validation.invalid_location_type"))
 			return
 		}
 	}

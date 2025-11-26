@@ -1,7 +1,6 @@
 package agency
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -26,38 +25,24 @@ Dialable text (for example, TriMet's "503-238-RIDE") is permitted, but the field
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
 func AgencyPhoneValidation(agency *types.Agency, row int, rules *types.AgencyRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("agency_phone", "agency.txt", "agency_phone_validation", row, services.AppMessageService)
 	if rules != nil && rules.AgencyPhone.Severity != "" {
-		s = rules.AgencyPhone.Severity
-	}
-
-	addMessage := func(message string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "agency_phone",
-			FileName:     "agency.txt",
-			Message:      message,
-			Rows:         []int{row},
-			Severity:     severity,
-			ValidationID: "agency_phone_validation",
-		})
+		ctx.WithSeverity(rules.AgencyPhone.Severity)
 	}
 
 	// Check if agency_phone is required
 	if agency.AgencyPhone == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		addMessage(i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"agency_phone_validation.required",
-				"agency_phone_validation.recommended",
-			),
-		), s)
+		message := ctx.GetRequiredMessage("agency_phone_validation.required", "agency_phone_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
+		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("agency_phone_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("agency_phone_validation.forbidden"))
 		return
 	}
 
@@ -68,7 +53,7 @@ func AgencyPhoneValidation(agency *types.Agency, row int, rules *types.AgencyRul
 		}
 
 		if !slices.Contains(*rules.AgencyPhone.Options, *agency.AgencyPhone) {
-			addMessage(i18n.AppTranslator.Get("agency_phone_validation.not_allowed", *agency.AgencyPhone), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("agency_phone_validation.not_allowed", *agency.AgencyPhone))
 			return
 		}
 	}
