@@ -18,7 +18,8 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 		return types.Gtfs{}, fmt.Errorf("file %s does not exist", zipPath)
 	}
 
-	// Create a temporary SQLite database for this GTFS import
+	//
+	// 1. Create a temporary SQLite database for this GTFS import
 	tmpDB, err := os.CreateTemp("", "gtfs_*.db")
 	if err != nil {
 		return types.Gtfs{}, fmt.Errorf("failed to create temporary database: %w", err)
@@ -26,9 +27,9 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 	tmpDBPath := tmpDB.Name()
 	tmpDB.Close()
 	lib.AppLogger.Debug(fmt.Sprintf("Created temporary SQLite database: %s", tmpDBPath))
-	// Note: We don't delete the temp file here - it will be cleaned up after validations complete
 
-	// Import GTFS zip to SQLite using streaming parser
+	//
+	// 2. Import GTFS zip to SQLite using streaming parser
 	gtfsDB, err := ImportGTFSZipToSQLite(zipPath, tmpDBPath)
 	if err != nil {
 		os.Remove(tmpDBPath) // Clean up on error
@@ -36,17 +37,20 @@ func ReadGTFSZip(zipPath string) (types.Gtfs, error) {
 	}
 	gtfsDB.Close() // Close the import connection
 
-	// Open a new connection for the Gtfs struct
+	//
+	// 3. Open a new connection for the Gtfs struct
 	db, err := sql.Open("sqlite", tmpDBPath)
 	if err != nil {
 		os.Remove(tmpDBPath) // Clean up on error
 		return types.Gtfs{}, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	// Create Gtfs struct with SQLite connection
+	//
+	// 4. Create Gtfs struct with SQLite connection
 	gtfs := types.NewGtfsFromSQLite(db, tmpDBPath)
 
-	// Load ID map from SQLite
+	//
+	// 5. Load ID map from SQLite
 	gtfsIdsMap, err := LoadIdMapFromSQLite(db)
 	if err != nil {
 		gtfs.Close()

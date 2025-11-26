@@ -92,28 +92,34 @@ func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *typ
 }
 
 func main() {
+
+	//
+	// 0.1 Initialize CLI
 	services.AppCLI.Run()
 	lib.AppLogger.SetLogLevel(services.AppCLI.Options.LogLevel)
 
-	// Set Translator Language
+	// 0.2 Initialize Translator
 	if services.AppCLI.Options.RulesLang != "" {
 		i18n.AppTranslator.SetLanguage(services.AppCLI.Options.RulesLang)
 	}
 
-	// Parse Rules
+	//
+	// 0.3 Parse Rules
 	rules, err := services.NewRulesParser(services.AppCLI.Options.RulesPath).ParseRules()
 	if err != nil {
 		log.Fatalf("Error parsing rules: %v", err)
 	}
 
-	// Clear the terminal
+	//
 	lib.AppLogger.Clear()
 	lib.AppLogger.Divider("GTFS Validator")
 
-	// Start Performance Tracker
+	//
+	// 0.4 Start Performance Tracker
 	tracker := lib.AppLogger.StartPerformanceTracker("Reading GTFS")
 
-	// Read GTFS from zip file
+	//
+	// 1. Read GTFS from zip file
 	gtfs, err := services.ReadGTFSZip(services.AppCLI.Options.InputPath)
 	if err != nil {
 		log.Fatalf("Error reading GTFS: %v", err)
@@ -125,23 +131,23 @@ func main() {
 		return
 	}
 
-	// Check File Requirements
+	//
+	// 2. Check File Requirements
 	if errs := file_validation.NewFileValidation(nil).Validate(gtfs, rules); len(errs) > 0 {
 		for _, err := range errs {
 			services.AppMessageService.AddMessage(err)
 		}
 
-		// Print JSON
-		// services.AppMessageService.PrintJSON()
-
 		services.AppMessageService.PrintJSON()
 		return
 	}
 
-	// Run Validations for each file
+	//
+	// 3. Run Validations for each file
 	runValidations(gtfs, tracker, rules)
 
-	// Clean up database file
+	//
+	// 4. Clean up database file
 	defer func() {
 		if err := gtfs.Close(); err != nil {
 			lib.AppLogger.Error(fmt.Sprintf("Error closing database: %v", err))
@@ -153,7 +159,8 @@ func main() {
 		}
 	}()
 
-	// Output Summary
+	//
+	// 5. Output Summary
 	if services.AppCLI.Options.OutputPath != "" {
 		services.AppMessageService.WriteToFile(services.AppCLI.Options.OutputPath)
 		lib.AppLogger.Info("Summary written to: " + services.AppCLI.Options.OutputPath)
