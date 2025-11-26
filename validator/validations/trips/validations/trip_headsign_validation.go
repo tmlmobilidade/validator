@@ -1,7 +1,6 @@
 package trips
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -25,39 +24,23 @@ If the headsign changes during a trip, values for `trip_headsign` may be overrid
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 */
 func TripHeadsignValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("trip_headsign", "trips.txt", "trip_headsign_validation", row, services.AppMessageService)
 	if rules != nil && rules.TripHeadsign.Severity != "" {
-		s = rules.TripHeadsign.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "trip_headsign",
-			FileName:     "trips.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "trip_headsign_validation",
-		})
+		ctx.WithSeverity(rules.TripHeadsign.Severity)
 	}
 
 	if trip.TripHeadsign == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"trip_headsign_validation.required",
-				"trip_headsign_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("trip_headsign_validation.required", "trip_headsign_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("trip_headsign_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("trip_headsign_validation.forbidden"))
 		return
 	}
 }

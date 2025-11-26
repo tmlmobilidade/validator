@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -26,20 +25,11 @@ Conditionally Required:
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
 func AgencyIdValidation(route *types.Route, row int, gtfs types.Gtfs, rules *types.RoutesRules) {
-	s := types.SEVERITY_WARNING
+	ctx := lib.NewValidationContext("agency_id", "routes.txt", "agency_id_validation", row, services.AppMessageService)
 	if rules != nil && rules.AgencyId.Severity != "" {
-		s = rules.AgencyId.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "agency_id",
-			FileName:     "routes.txt",
-			ValidationID: "agency_id_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-		})
+		ctx.WithSeverity(rules.AgencyId.Severity)
+	} else {
+		ctx.WithSeverity(types.SEVERITY_WARNING)
 	}
 
 	numAgencies, _ := gtfs.GetTableCount("agency")
@@ -48,7 +38,7 @@ func AgencyIdValidation(route *types.Route, row int, gtfs types.Gtfs, rules *typ
 	if route.AgencyId != nil && *route.AgencyId != "" {
 		// Check Foreign Key
 		if !lib.GtfsIdMapKeyExists(&gtfs, "agency", *route.AgencyId) {
-			addMessage(i18n.AppTranslator.Get("agency_id_validation.not_found", map[string]interface{}{"agency_id": *route.AgencyId}), types.SEVERITY_ERROR)
+			ctx.AddError(ctx.GetTranslatedMessage("agency_id_validation.not_found", map[string]interface{}{"agency_id": *route.AgencyId}))
 			return
 		}
 	}
@@ -56,10 +46,10 @@ func AgencyIdValidation(route *types.Route, row int, gtfs types.Gtfs, rules *typ
 	// Handle required vs recommended cases
 	if numAgencies > 1 {
 		if route.AgencyId == nil || *route.AgencyId == "" {
-			addMessage(i18n.AppTranslator.Get("agency_id_validation.required_multiple_agencies"), types.SEVERITY_ERROR)
+			ctx.AddError(ctx.GetTranslatedMessage("agency_id_validation.required_multiple_agencies"))
 		}
-	} else if route.AgencyId == nil && s != types.SEVERITY_IGNORE {
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("agency_id_validation.recommended"), i18n.AppTranslator.Get("agency_id_validation.required"))
-		addMessage(warn, s)
+	} else if route.AgencyId == nil && !ctx.ShouldIgnore() {
+		message := ctx.GetRequiredMessage("agency_id_validation.required", "agency_id_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 	}
 }

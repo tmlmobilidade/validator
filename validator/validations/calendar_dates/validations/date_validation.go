@@ -20,27 +20,17 @@ Date when service exception occurs.
 [calendar_dates.txt]: https://gtfs.org/schedule/reference/#calendar_datestxt
 */
 func DateValidation(calendarDate *types.CalendarDates, row int) {
-
-	addMessage := func(message string) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "date",
-			FileName:     "calendar_dates.txt",
-			Rows:         []int{row},
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "date_validation",
-			Message:      message,
-		})
-	}
+	ctx := lib.NewValidationContext("date", "calendar_dates.txt", "date_validation", row, services.AppMessageService)
 
 	date := calendarDate.Date
 
 	if date == "" {
-		addMessage("Date is required")
+		ctx.AddError(ctx.GetTranslatedMessage("date_validation.required"))
 		return
 	}
 
 	if !lib.IsValidServiceDate(date) {
-		addMessage("Date is not valid service date format, should be YYYYMMDD")
+		ctx.AddError(ctx.GetTranslatedMessage("date_validation.invalid", date))
 		return
 	}
 }

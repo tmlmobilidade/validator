@@ -1,7 +1,7 @@
 package stop_times
 
 import (
-	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -21,25 +21,16 @@ Identifies a trip.
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
 func TripIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "trip_id",
-			FileName:     "stop_times.txt",
-			ValidationID: "trip_id_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-		})
-	}
+	ctx := lib.NewValidationContext("trip_id", "stop_times.txt", "trip_id_validation", row, services.AppMessageService)
 
 	if stopTime.TripId == nil || *stopTime.TripId == "" {
-		addMessage(i18n.AppTranslator.Get("trip_id_validation.required"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("trip_id_validation.required"))
 		return
 	}
 
 	rows, err := gtfs.GetRowsById("trips", *stopTime.TripId)
 	if err != nil || len(rows) == 0 {
-		addMessage(i18n.AppTranslator.Get("trip_id_validation.not_found", *stopTime.TripId), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("trip_id_validation.not_found", *stopTime.TripId))
 		return
 	}
 }

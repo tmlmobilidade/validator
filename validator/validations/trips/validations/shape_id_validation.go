@@ -2,7 +2,6 @@ package trips
 
 import (
 	"fmt"
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -26,20 +25,9 @@ Conditionally Required:
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 */
 func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules, tripStopTimesCache map[string][]types.StopTimeRaw) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("shape_id", "trips.txt", "shape_id_validation", row, services.AppMessageService)
 	if rules != nil && rules.ShapeId.Severity != "" {
-		s = rules.ShapeId.Severity
-	}
-
-	addMessage := func(message string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "shape_id",
-			FileName:     "trips.txt",
-			Rows:         []int{row},
-			Severity:     severity,
-			Message:      message,
-			ValidationID: "shape_id_validation",
-		})
+		ctx.WithSeverity(rules.ShapeId.Severity)
 	}
 
 	hasContinuousPickupDropoff := false
@@ -88,23 +76,23 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 	}
 
 	if hasContinuousPickupDropoff && trip.ShapeId == nil {
-		addMessage(i18n.AppTranslator.Get("shape_id_validation.required_with_continuous"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.required_with_continuous"))
 		return
 	}
 
 	if trip.ShapeId == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("shape_id_validation.required"), i18n.AppTranslator.Get("shape_id_validation.recommended"))
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("shape_id_validation.required", "shape_id_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
 	// Check Foreign Key
 	if !lib.GtfsIdMapKeyExists(gtfs, "shapes", *trip.ShapeId) {
-		addMessage(i18n.AppTranslator.Get("shape_id_validation.not_found", map[string]interface{}{"shape_id": *trip.ShapeId}), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.not_found", map[string]interface{}{"shape_id": *trip.ShapeId}))
 		return
 	}
 }

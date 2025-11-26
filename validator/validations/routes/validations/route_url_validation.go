@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -23,39 +22,28 @@ URL of a web page about the particular route. Should be different from the agenc
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
 func RouteUrlValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *types.RoutesRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("route_url", "routes.txt", "route_url_validation", row, services.AppMessageService)
 	if rules != nil && rules.RouteUrl.Severity != "" {
-		s = rules.RouteUrl.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "route_url",
-			FileName:     "routes.txt",
-			ValidationID: "route_url_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-		})
+		ctx.WithSeverity(rules.RouteUrl.Severity)
 	}
 
 	if route.RouteUrl == nil || *route.RouteUrl == "" {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("route_url_validation.recommended"), i18n.AppTranslator.Get("route_url_validation.required"))
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("route_url_validation.required", "route_url_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("route_url_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_url_validation.forbidden"))
 		return
 	}
 
 	if valid := lib.ValidateUrl(*route.RouteUrl); !valid {
-		addMessage(i18n.AppTranslator.Get("route_url_validation.invalid"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("route_url_validation.invalid"))
 		return
 	}
 
@@ -73,7 +61,7 @@ func RouteUrlValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *ty
 		agencyUrl := agencyRaw.AgencyUrl
 
 		if agencyUrl != "" && *route.RouteUrl == agencyUrl {
-			addMessage(i18n.AppTranslator.Get("route_url_validation.same_as_agency_url"), types.SEVERITY_WARNING)
+			ctx.AddWarning(ctx.GetTranslatedMessage("route_url_validation.same_as_agency_url"))
 		}
 	}
 
@@ -84,7 +72,7 @@ func RouteUrlValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *ty
 		}
 
 		if !slices.Contains(*rules.RouteUrl.Options, *route.RouteUrl) {
-			addMessage(i18n.AppTranslator.Get("route_url_validation.not_allowed", map[string]interface{}{"value": *route.RouteUrl}), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_url_validation.not_allowed", map[string]interface{}{"value": *route.RouteUrl}))
 			return
 		}
 	}

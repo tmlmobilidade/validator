@@ -1,7 +1,6 @@
 package agency
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -23,41 +22,26 @@ URL of a web page where a rider can purchase tickets or other fare instruments f
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
 func AgencyFareUrlValidation(agency *types.Agency, row int, rules *types.AgencyRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("agency_fare_url", "agency.txt", "agency_fare_url_validation", row, services.AppMessageService)
 	if rules != nil && rules.AgencyFare.Severity != "" {
-		s = rules.AgencyFare.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "agency_fare_url",
-			FileName:     "agency.txt",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-			ValidationID: "agency_fare_url_validation",
-		})
+		ctx.WithSeverity(rules.AgencyFare.Severity)
 	}
 
 	// Check if agency_fare_url is required
-	if agency.AgencyFareUrl == nil && s != types.SEVERITY_IGNORE {
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"agency_fare_url_validation.required",
-				"agency_fare_url_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+	if agency.AgencyFareUrl == nil && !ctx.ShouldIgnore() {
+		message := ctx.GetRequiredMessage("agency_fare_url_validation.required", "agency_fare_url_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
+		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("agency_fare_url_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("agency_fare_url_validation.forbidden"))
 		return
 	}
 
 	// Check if agency_fare_url is valid
 	if agency.AgencyFareUrl != nil && !lib.ValidateUrl(*agency.AgencyFareUrl) {
-		addMessage(i18n.AppTranslator.Get("agency_fare_url_validation.invalid"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("agency_fare_url_validation.invalid"))
 		return
 	}
 
@@ -68,7 +52,7 @@ func AgencyFareUrlValidation(agency *types.Agency, row int, rules *types.AgencyR
 		}
 
 		if !slices.Contains(*rules.AgencyFare.Options, *agency.AgencyFareUrl) {
-			addMessage(i18n.AppTranslator.Get("agency_fare_url_validation.not_allowed", *agency.AgencyFareUrl), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("agency_fare_url_validation.not_allowed", *agency.AgencyFareUrl))
 			return
 		}
 	}

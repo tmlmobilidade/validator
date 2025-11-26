@@ -24,7 +24,6 @@ Conditionally Required:
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -33,20 +32,9 @@ import (
 
 // StopNameValidation validates the presence of stop_name in stops.txt according to location_type
 func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("stop_name", "stops.txt", "stop_name_validation", row, services.AppMessageService)
 	if rules != nil && rules.StopName.Severity != "" {
-		s = rules.StopName.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "stop_name",
-			FileName:     "stops.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "stop_name_validation",
-		})
+		ctx.WithSeverity(rules.StopName.Severity)
 	}
 
 	// If stop_name is present, return
@@ -61,19 +49,14 @@ func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	}
 
 	if locationType == 0 || locationType == 1 || locationType == 2 {
-		addMessage(i18n.AppTranslator.Get("stop_short_name_validation.required_location_type"), s)
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("stop_short_name_validation.required_location_type"))
 		return
 	}
 
 	// Check presence of stop_name based on severity
-	if s != types.SEVERITY_IGNORE {
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"stop_short_name_validation.required",
-				"stop_short_name_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+	if !ctx.ShouldIgnore() {
+		message := ctx.GetRequiredMessage("stop_short_name_validation.required", "stop_short_name_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
@@ -84,7 +67,7 @@ func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if !slices.Contains(*rules.StopName.Options, *stop.StopName) {
-			addMessage(i18n.AppTranslator.Get("stop_short_name_validation.not_allowed", *stop.StopName), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("stop_short_name_validation.not_allowed", *stop.StopName))
 			return
 		}
 	}

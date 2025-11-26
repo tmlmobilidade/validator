@@ -1,7 +1,6 @@
 package trips
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -36,46 +35,30 @@ The example below is valid, with distinct blocks every day of the week.
 
 Notes on above table:
 
-  - On Friday into Saturday morning, for example, a single vehicle operates `trip_1`, `trip_2`, and `trip_3` (10:00 PM through 12:55 AM). Note that the last trip occurs on Saturday, 12:00 AM to 12:55 AM, but is part of the Friday “service day” because the times are 24:00:00 to 24:55:00.
+  - On Friday into Saturday morning, for example, a single vehicle operates `trip_1`, `trip_2`, and `trip_3` (10:00 PM through 12:55 AM). Note that the last trip occurs on Saturday, 12:00 AM to 12:55 AM, but is part of the Friday "service day" because the times are 24:00:00 to 24:55:00.
   - On Monday, Tuesday, Wednesday, and Thursday, a single vehicle operates `trip_1`, `trip_4`, and `trip_5` in a block from 8:00 PM to 10:55 PM.
 
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 [transfers]: https://gtfs.org/documentation/schedule/reference/#transferstxt
 */
 func BlockIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("block_id", "trips.txt", "block_id_validation", row, services.AppMessageService)
 	if rules != nil && rules.BlockId.Severity != "" {
-		s = rules.BlockId.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "block_id",
-			FileName:     "trips.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "block_id_validation",
-		})
+		ctx.WithSeverity(rules.BlockId.Severity)
 	}
 
 	if trip.BlockId == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"block_id_validation.required",
-				"block_id_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("block_id_validation.required", "block_id_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("block_id_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("block_id_validation.forbidden"))
 		return
 	}
 }

@@ -1,7 +1,7 @@
 package trips
 
 import (
-	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -21,18 +21,10 @@ Identifies a service.
 [trips.txt]: https://gtfs.org/schedule/reference/#trips
 */
 func ServiceIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
-	message := types.Message{
-		Field:        "service_id",
-		FileName:     "trips.txt",
-		Message:      i18n.AppTranslator.Get("service_id_validation.required"),
-		Rows:         []int{row},
-		Severity:     types.SEVERITY_ERROR,
-		ValidationID: "service_id_validation",
-	}
+	ctx := lib.NewValidationContext("service_id", "trips.txt", "service_id_validation", row, services.AppMessageService)
 
 	if trip.ServiceId == nil {
-		message.Message = i18n.AppTranslator.Get("service_id_validation.required")
-		services.AppMessageService.AddMessage(message)
+		ctx.AddError(ctx.GetTranslatedMessage("service_id_validation.required"))
 		return
 	}
 
@@ -45,6 +37,5 @@ func ServiceIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 	if err == nil && len(calendarDatesRows) > 0 {
 		return
 	}
-	message.Message = i18n.AppTranslator.Get("service_id_validation.not_found", map[string]interface{}{"service_id": *trip.ServiceId})
-	services.AppMessageService.AddMessage(message)
+	ctx.AddError(ctx.GetTranslatedMessage("service_id_validation.not_found", map[string]interface{}{"service_id": *trip.ServiceId}))
 }

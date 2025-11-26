@@ -1,7 +1,6 @@
 package agency
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -24,40 +23,26 @@ Should be provided to help GTFS consumers choose capitalization rules and other 
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
 func AgencyLangValidation(agency *types.Agency, row int, rules *types.AgencyRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("agency_lang", "agency.txt", "agency_lang_validation", row, services.AppMessageService)
 	if rules != nil && rules.AgencyLang.Severity != "" {
-		s = rules.AgencyLang.Severity
-	}
-
-	addMessage := func(message string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "agency_lang",
-			FileName:     "agency.txt",
-			Message:      message,
-			Rows:         []int{row},
-			Severity:     severity,
-			ValidationID: "agency_lang_validation",
-		})
+		ctx.WithSeverity(rules.AgencyLang.Severity)
 	}
 
 	// Check if agency_lang is required
-	if agency.AgencyLang == nil && s != types.SEVERITY_IGNORE {
-		addMessage(i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"agency_lang_validation.required",
-				"agency_lang_validation.recommended",
-			),
-		), s)
+	if agency.AgencyLang == nil && !ctx.ShouldIgnore() {
+		message := ctx.GetRequiredMessage("agency_lang_validation.required", "agency_lang_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
+		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("agency_lang_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("agency_lang_validation.forbidden"))
 		return
 	}
 
 	// Check if agency_lang is valid
 	if agency.AgencyLang != nil && !lib.ValidateLanguage(*agency.AgencyLang) {
-		addMessage(i18n.AppTranslator.Get("agency_lang_validation.invalid"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("agency_lang_validation.invalid"))
 		return
 	}
 
@@ -68,7 +53,7 @@ func AgencyLangValidation(agency *types.Agency, row int, rules *types.AgencyRule
 		}
 
 		if !slices.Contains(*rules.AgencyLang.Options, *agency.AgencyLang) {
-			addMessage(i18n.AppTranslator.Get("agency_lang_validation.not_allowed", *agency.AgencyLang), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("agency_lang_validation.not_allowed", *agency.AgencyLang))
 			return
 		}
 	}

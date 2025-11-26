@@ -1,7 +1,6 @@
 package stop_times
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -37,38 +36,27 @@ If a bus travels a distance of 5.25 kilometers from the start of the shape to th
 [shapes.txt]: https://gtfs.org/schedule/reference/#shapestxt
 */
 func ShapeDistTraveledValidation(stopTime *types.StopTime, row int, rules *types.StopTimesRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("shape_dist_traveled", "stop_times.txt", "shape_dist_traveled_validation", row, services.AppMessageService)
 	if rules != nil && rules.ShapeDistTraveled.Severity != "" {
-		s = rules.ShapeDistTraveled.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "shape_dist_traveled",
-			FileName:     "stop_times.txt",
-			ValidationID: "shape_dist_traveled_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-		})
+		ctx.WithSeverity(rules.ShapeDistTraveled.Severity)
 	}
 
 	if stopTime.ShapeDistTraveled == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("shape_dist_traveled_validation.recommended"), i18n.AppTranslator.Get("shape_dist_traveled_validation.required"))
-		addMessage(warn, s)
+		message := ctx.GetRequiredMessage("shape_dist_traveled_validation.required", "shape_dist_traveled_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("shape_dist_traveled_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("shape_dist_traveled_validation.forbidden"))
 		return
 	}
 
 	if *stopTime.ShapeDistTraveled < 0 {
-		addMessage(i18n.AppTranslator.Get("shape_dist_traveled_validation.negative"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("shape_dist_traveled_validation.negative"))
 		return
 	}
 }

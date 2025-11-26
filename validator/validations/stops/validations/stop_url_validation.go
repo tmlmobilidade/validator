@@ -1,7 +1,6 @@
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -23,45 +22,28 @@ URL of the transit stop.
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func StopUrlValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-
-	s := types.SEVERITY_IGNORE
-	if rules != nil {
-		s = rules.StopUrl.Severity
-	}
-
-	addMessage := func(message string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "stop_url",
-			FileName:     "stops.txt",
-			Message:      message,
-			Rows:         []int{row},
-			Severity:     severity,
-			ValidationID: "stop_url_validation",
-		})
+	ctx := lib.NewValidationContext("stop_url", "stops.txt", "stop_url_validation", row, services.AppMessageService)
+	if rules != nil && rules.StopUrl.Severity != "" {
+		ctx.WithSeverity(rules.StopUrl.Severity)
 	}
 
 	if stop.StopUrl == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"stop_url_validation.required",
-				"stop_url_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("stop_url_validation.required", "stop_url_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("stop_url_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("stop_url_validation.forbidden"))
 		return
 	}
 
 	if !lib.ValidateUrl(*stop.StopUrl) {
-		addMessage(i18n.AppTranslator.Get("stop_url_validation.invalid", *stop.StopUrl), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("stop_url_validation.invalid", *stop.StopUrl))
 		return
 	}
 
@@ -72,7 +54,7 @@ func StopUrlValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if !slices.Contains(*rules.StopUrl.Options, *stop.StopUrl) {
-			addMessage(i18n.AppTranslator.Get("stop_url_validation.not_allowed", *stop.StopUrl), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("stop_url_validation.not_allowed", *stop.StopUrl))
 			return
 		}
 	}

@@ -2,7 +2,6 @@ package stop_times
 
 import (
 	"fmt"
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -38,41 +37,30 @@ Conditionally Forbidden:
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
 func ContinuousPickupValidation(stopTime *types.StopTime, row int, rules *types.StopTimesRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("continuous_pickup", "stop_times.txt", "continuous_pickup_validation", row, services.AppMessageService)
 	if rules != nil && rules.ContinuousPickup.Severity != "" {
-		s = rules.ContinuousPickup.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "continuous_pickup",
-			FileName:     "stop_times.txt",
-			ValidationID: "continuous_pickup_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-		})
+		ctx.WithSeverity(rules.ContinuousPickup.Severity)
 	}
 
 	// If not present, it's optional unless severity is set
 	if stopTime.ContinuousPickup == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("continuous_pickup_validation.recommended"), i18n.AppTranslator.Get("continuous_pickup_validation.required"))
-		addMessage(warn, s)
+		message := ctx.GetRequiredMessage("continuous_pickup_validation.required", "continuous_pickup_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
 	cp := *stopTime.ContinuousPickup
 	if cp < 0 || cp > 3 {
-		addMessage(i18n.AppTranslator.Get("continuous_pickup_validation.invalid"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("continuous_pickup_validation.invalid"))
 		return
 	}
 
 	// Forbidden: Any value other than 1 or empty if start/end_pickup_drop_off_window are defined
 	if ((stopTime.StartPickupDropOffWindow != nil && *stopTime.StartPickupDropOffWindow != "") || (stopTime.EndPickupDropOffWindow != nil && *stopTime.EndPickupDropOffWindow != "")) && (cp != 1) {
-		addMessage(i18n.AppTranslator.Get("continuous_pickup_validation.forbidden_with_window"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("continuous_pickup_validation.forbidden_with_window"))
 		return
 	}
 
@@ -86,7 +74,7 @@ func ContinuousPickupValidation(stopTime *types.StopTime, row int, rules *types.
 			return
 		}
 
-		addMessage(i18n.AppTranslator.Get("continuous_pickup_validation.not_allowed", fmt.Sprintf("%d", cp)), s)
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("continuous_pickup_validation.not_allowed", fmt.Sprintf("%d", cp)))
 		return
 	}
 }

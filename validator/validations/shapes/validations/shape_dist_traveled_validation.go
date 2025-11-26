@@ -1,7 +1,6 @@
 package shapes
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -42,43 +41,29 @@ If a bus travels along the three points defined above for A_shp, the additional 
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
 func ShapeDistTraveledValidation(severity *types.Severity, shape *types.Shape, row int) {
-
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("shape_dist_traveled", "shapes.txt", "shape_dist_traveled_validation", row, services.AppMessageService)
 	if severity != nil {
-		s = *severity
-	}
-
-	// Add message to the message service
-	addMessage := func(msg string, severity types.Severity) {
-		message := types.Message{
-			Field:        "shape_dist_traveled",
-			FileName:     "shapes.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "shape_dist_traveled_validation",
-		}
-		services.AppMessageService.AddMessage(message)
+		ctx.WithSeverity(*severity)
 	}
 
 	if shape.ShapeDistTraveled == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_ERROR, i18n.AppTranslator.Get("shape_dist_traveled_validation.required"), i18n.AppTranslator.Get("shape_dist_traveled_validation.recommended"))
-		addMessage(warn, s)
+		message := ctx.GetRequiredMessage("shape_dist_traveled_validation.required", "shape_dist_traveled_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("shape_dist_traveled_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("shape_dist_traveled_validation.forbidden"))
 		return
 	}
 
 	// Validate shape_dist_traveled
 	if *shape.ShapeDistTraveled < 0 {
-		addMessage(i18n.AppTranslator.Get("shape_dist_traveled_validation.invalid"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("shape_dist_traveled_validation.invalid"))
 		return
 	}
 }

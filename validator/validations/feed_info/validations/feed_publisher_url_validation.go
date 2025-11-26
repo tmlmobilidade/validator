@@ -1,7 +1,6 @@
 package feed_info
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -22,24 +21,15 @@ URL of the dataset publishing organization's website. This may be the same as on
 [feed_info.txt]: https://gtfs.org/schedule/reference/#feed_infotxt
 */
 func FeedPublisherUrlValidation(feedInfo *types.FeedInfo, row int) {
-	addMessage := func(msg string) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "feed_publisher_url",
-			FileName:     "feed_info.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "feed_publisher_url_validation",
-		})
-	}
+	ctx := lib.NewValidationContext("feed_publisher_url", "feed_info.txt", "feed_publisher_url_validation", row, services.AppMessageService)
 
 	if feedInfo.FeedPublisherUrl == nil || *feedInfo.FeedPublisherUrl == "" {
-		addMessage(i18n.AppTranslator.Get("feed_publisher_url_validation.required"))
+		ctx.AddError(ctx.GetTranslatedMessage("feed_publisher_url_validation.required"))
 		return
 	}
 
 	if valid := lib.ValidateUrl(*feedInfo.FeedPublisherUrl); !valid {
-		addMessage(i18n.AppTranslator.Get("feed_publisher_url_validation.invalid"))
+		ctx.AddError(ctx.GetTranslatedMessage("feed_publisher_url_validation.invalid"))
 		return
 	}
 }

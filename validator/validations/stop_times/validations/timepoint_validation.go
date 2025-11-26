@@ -2,7 +2,6 @@ package stop_times
 
 import (
 	"fmt"
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -31,39 +30,28 @@ All records of [stop_times.txt] with defined arrival or departure times should h
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
 func TimepointValidation(stopTime *types.StopTime, row int, rules *types.StopTimesRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("timepoint", "stop_times.txt", "timepoint_validation", row, services.AppMessageService)
 	if rules != nil && rules.Timepoint.Severity != "" {
-		s = rules.Timepoint.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "timepoint",
-			FileName:     "stop_times.txt",
-			ValidationID: "timepoint_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-		})
+		ctx.WithSeverity(rules.Timepoint.Severity)
 	}
 
 	if stopTime.Timepoint == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("timepoint_validation.recommended"), i18n.AppTranslator.Get("timepoint_validation.required"))
-		addMessage(warn, s)
+		message := ctx.GetRequiredMessage("timepoint_validation.required", "timepoint_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("timepoint_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("timepoint_validation.forbidden"))
 		return
 	}
 
 	tp := *stopTime.Timepoint
 	if tp != 0 && tp != 1 {
-		addMessage(i18n.AppTranslator.Get("timepoint_validation.invalid"), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("timepoint_validation.invalid"))
 		return
 	}
 
@@ -74,7 +62,7 @@ func TimepointValidation(stopTime *types.StopTime, row int, rules *types.StopTim
 		}
 
 		if !slices.Contains(*rules.Timepoint.Options, fmt.Sprintf("%d", tp)) {
-			addMessage(i18n.AppTranslator.Get("timepoint_validation.not_allowed", fmt.Sprintf("%d", tp)), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("timepoint_validation.not_allowed", fmt.Sprintf("%d", tp)))
 			return
 		}
 	}

@@ -1,7 +1,6 @@
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -28,20 +27,9 @@ Conditionally Required:
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func StopLatValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("stop_lat", "stops.txt", "stop_lat_validation", row, services.AppMessageService)
 	if rules != nil && rules.StopLat.Severity != "" {
-		s = rules.StopLat.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "stop_lat",
-			FileName:     "stops.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "stop_lat_validation",
-		})
+		ctx.WithSeverity(rules.StopLat.Severity)
 	}
 
 	locationType := -1
@@ -52,27 +40,22 @@ func StopLatValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	isRequired := locationType == 0 || locationType == 1 || locationType == 2
 
 	if stop.StopLat == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN && !isRequired {
+		if ctx.ShouldIgnore() || (ctx.IsForbidden() && !isRequired) {
 			return
 		}
 
 		if isRequired {
-			addMessage(i18n.AppTranslator.Get("stop_lat_validation.required_location_type"), types.SEVERITY_ERROR)
+			ctx.AddError(ctx.GetTranslatedMessage("stop_lat_validation.required_location_type"))
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"stop_lat_validation.required",
-				"stop_lat_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("stop_lat_validation.required", "stop_lat_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
 	if !lib.ValidateLatitude(*stop.StopLat) {
-		addMessage(i18n.AppTranslator.Get("stop_lat_validation.invalid", *stop.StopLat), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("stop_lat_validation.invalid", *stop.StopLat))
 		return
 	}
 }

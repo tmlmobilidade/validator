@@ -1,7 +1,7 @@
 package fare_attributes
 
 import (
-	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 	"slices"
@@ -27,26 +27,16 @@ Valid options are:
 [fare_attributes.txt]: https://gtfs.org/schedule/reference/#fare_attributestxt
 */
 func PaymentMethodValidation(fareAttribute *types.FareAttribute, row int) {
-
-	addMessage := func(msg string) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "payment_method",
-			FileName:     "fare_attributes.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "payment_method_validation",
-		})
-	}
+	ctx := lib.NewValidationContext("payment_method", "fare_attributes.txt", "payment_method_validation", row, services.AppMessageService)
 
 	if fareAttribute.PaymentMethod == nil {
-		addMessage(i18n.AppTranslator.Get("payment_method_validation.required"))
+		ctx.AddError(ctx.GetTranslatedMessage("payment_method_validation.required"))
 		return
 	}
 
 	validPaymentMethods := []int{0, 1}
 	if !slices.Contains(validPaymentMethods, *fareAttribute.PaymentMethod) {
-		addMessage(i18n.AppTranslator.Get("payment_method_validation.invalid", *fareAttribute.PaymentMethod))
+		ctx.AddError(ctx.GetTranslatedMessage("payment_method_validation.invalid", *fareAttribute.PaymentMethod))
 		return
 	}
 }

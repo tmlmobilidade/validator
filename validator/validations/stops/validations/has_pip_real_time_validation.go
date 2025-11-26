@@ -1,7 +1,6 @@
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -24,46 +23,30 @@ Describes if the stop has a network map.
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func HasPipRealTimeValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("has_pip_real_time", "stops.txt", "has_pip_real_time_validation", row, services.AppMessageService)
 	if rules != nil && rules.HasPipRealTime.Severity != "" {
-		s = rules.HasPipRealTime.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "has_pip_real_time",
-			FileName:     "stops.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "has_pip_real_time_validation",
-		})
+		ctx.WithSeverity(rules.HasPipRealTime.Severity)
 	}
 
 	if stop.HasPipRealTime == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"has_pip_real_time_validation.required",
-				"has_pip_real_time_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("has_pip_real_time_validation.required", "has_pip_real_time_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("has_pip_real_time_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("has_pip_real_time_validation.forbidden"))
 		return
 	}
 
 	// Validate value
 	validValues := []int{0, 1, 2}
 	if !slices.Contains(validValues, *stop.HasPipRealTime) {
-		addMessage(i18n.AppTranslator.Get("has_pip_real_time_validation.invalid", *stop.HasPipRealTime), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("has_pip_real_time_validation.invalid", *stop.HasPipRealTime))
 		return
 	}
 
@@ -74,7 +57,7 @@ func HasPipRealTimeValidation(stop *types.Stop, row int, rules *types.StopsRules
 		}
 
 		if !slices.Contains(*rules.HasPipRealTime.Options, strconv.Itoa(*stop.HasPipRealTime)) {
-			addMessage(i18n.AppTranslator.Get("has_pip_real_time_validation.not_allowed", *stop.HasPipRealTime), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("has_pip_real_time_validation.not_allowed", *stop.HasPipRealTime))
 			return
 		}
 	}

@@ -1,7 +1,6 @@
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -24,46 +23,30 @@ Describes if the stop is visible to the public.
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func PublicVisibleValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("public_visible", "stops.txt", "public_visible_validation", row, services.AppMessageService)
 	if rules != nil && rules.PublicVisible.Severity != "" {
-		s = rules.PublicVisible.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "public_visible",
-			FileName:     "stops.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "public_visible_validation",
-		})
+		ctx.WithSeverity(rules.PublicVisible.Severity)
 	}
 
 	if stop.PublicVisible == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"public_visible_validation.required",
-				"public_visible_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("public_visible_validation.required", "public_visible_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("public_visible_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("public_visible_validation.forbidden"))
 		return
 	}
 
 	// Validate value
 	validValues := []int{0, 1}
 	if !slices.Contains(validValues, *stop.PublicVisible) {
-		addMessage(i18n.AppTranslator.Get("public_visible_validation.invalid", *stop.PublicVisible), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("public_visible_validation.invalid", *stop.PublicVisible))
 		return
 	}
 
@@ -74,7 +57,7 @@ func PublicVisibleValidation(stop *types.Stop, row int, rules *types.StopsRules)
 		}
 
 		if !slices.Contains(*rules.PublicVisible.Options, strconv.Itoa(*stop.PublicVisible)) {
-			addMessage(i18n.AppTranslator.Get("public_visible_validation.not_allowed", *stop.PublicVisible), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("public_visible_validation.not_allowed", *stop.PublicVisible))
 			return
 		}
 	}

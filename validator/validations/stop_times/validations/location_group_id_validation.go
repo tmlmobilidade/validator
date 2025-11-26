@@ -1,7 +1,6 @@
 package stop_times
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -28,21 +27,12 @@ Conditionally Forbidden:
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
 func LocationGroupIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "location_group_id",
-			FileName:     "stop_times.txt",
-			ValidationID: "location_group_id_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-		})
-	}
+	ctx := lib.NewValidationContext("location_group_id", "stop_times.txt", "location_group_id_validation", row, services.AppMessageService)
 
 	// Forbidden if stop_id or location_id are defined
 	if (stopTime.StopId != nil && *stopTime.StopId != "") || (stopTime.LocationId != nil && *stopTime.LocationId != "") {
 		if stopTime.LocationGroupId != nil && *stopTime.LocationGroupId != "" {
-			addMessage(i18n.AppTranslator.Get("location_group_id_validation.forbidden_with_other_ids"), types.SEVERITY_ERROR)
+			ctx.AddError(ctx.GetTranslatedMessage("location_group_id_validation.forbidden_with_other_ids"))
 		}
 		return
 	}
@@ -51,7 +41,7 @@ func LocationGroupIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gt
 	if stopTime.LocationGroupId != nil && *stopTime.LocationGroupId != "" {
 		// Check Foreign Key
 		if !lib.GtfsIdMapKeyExists(gtfs, "location_groups", *stopTime.LocationGroupId) {
-			addMessage(i18n.AppTranslator.Get("location_group_id_validation.not_found", *stopTime.LocationGroupId), types.SEVERITY_ERROR)
+			ctx.AddError(ctx.GetTranslatedMessage("location_group_id_validation.not_found", *stopTime.LocationGroupId))
 			return
 		}
 	}

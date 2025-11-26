@@ -1,7 +1,7 @@
 package trips
 
 import (
-	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -21,25 +21,16 @@ Identifies a route.
 [trips.txt]: https://gtfs.org/schedule/reference/#trips
 */
 func RouteIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
-	message := types.Message{
-		Field:        "route_id",
-		FileName:     "trips.txt",
-		Message:      i18n.AppTranslator.Get("route_id_validation.required"),
-		Rows:         []int{row},
-		Severity:     types.SEVERITY_ERROR,
-		ValidationID: "route_id_validation",
-	}
+	ctx := lib.NewValidationContext("route_id", "trips.txt", "route_id_validation", row, services.AppMessageService)
 
 	if trip.RouteId == nil {
-		message.Message = i18n.AppTranslator.Get("route_id_validation.required")
-		services.AppMessageService.AddMessage(message)
+		ctx.AddError(ctx.GetTranslatedMessage("route_id_validation.required"))
 		return
 	}
 
 	// Check if route_id is Foreign Key referencing routes.route_id
 	rows, err := gtfs.GetRowsById("routes", *trip.RouteId)
 	if err != nil || len(rows) == 0 {
-		message.Message = i18n.AppTranslator.Get("route_id_validation.not_found", map[string]interface{}{"route_id": *trip.RouteId})
-		services.AppMessageService.AddMessage(message)
+		ctx.AddError(ctx.GetTranslatedMessage("route_id_validation.not_found", map[string]interface{}{"route_id": *trip.RouteId}))
 	}
 }

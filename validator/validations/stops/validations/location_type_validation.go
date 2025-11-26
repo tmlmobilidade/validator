@@ -1,7 +1,6 @@
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -32,45 +31,29 @@ Valid options are:
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func LocationTypeValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("location_type", "stops.txt", "location_type_validation", row, services.AppMessageService)
 	if rules != nil && rules.LocationType.Severity != "" {
-		s = rules.LocationType.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "location_type",
-			FileName:     "stops.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "location_type_validation",
-		})
+		ctx.WithSeverity(rules.LocationType.Severity)
 	}
 
 	if stop.LocationType == nil {
 		// Field is optional, so only warn/error if severity is set
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"location_type_validation.required",
-				"location_type_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("location_type_validation.required", "location_type_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("location_type_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("location_type_validation.forbidden"))
 		return
 	}
 
 	validValues := map[int]bool{0: true, 1: true, 2: true, 3: true, 4: true}
 	if !validValues[*stop.LocationType] {
-		addMessage(i18n.AppTranslator.Get("location_type_validation.invalid", *stop.LocationType), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("location_type_validation.invalid", *stop.LocationType))
 		return
 	}
 
@@ -81,7 +64,7 @@ func LocationTypeValidation(stop *types.Stop, row int, rules *types.StopsRules) 
 		}
 
 		if !slices.Contains(*rules.LocationType.Options, strconv.Itoa(*stop.LocationType)) {
-			addMessage(i18n.AppTranslator.Get("location_type_validation.not_allowed", *stop.LocationType), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("location_type_validation.not_allowed", *stop.LocationType))
 			return
 		}
 	}

@@ -1,7 +1,6 @@
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -24,46 +23,30 @@ Describes if the stop has tariffs information.
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func HasTariffsInformationValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("has_tariffs_information", "stops.txt", "has_tariffs_information_validation", row, services.AppMessageService)
 	if rules != nil && rules.HasTariffsInformation.Severity != "" {
-		s = rules.HasTariffsInformation.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "has_tariffs_information",
-			FileName:     "stops.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "has_tariffs_information_validation",
-		})
+		ctx.WithSeverity(rules.HasTariffsInformation.Severity)
 	}
 
 	if stop.HasTariffsInformation == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"has_tariffs_information_validation.required",
-				"has_tariffs_information_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("has_tariffs_information_validation.required", "has_tariffs_information_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("has_tariffs_information_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("has_tariffs_information_validation.forbidden"))
 		return
 	}
 
 	// Validate value
 	validValues := []int{0, 1, 2, 3}
 	if !slices.Contains(validValues, *stop.HasTariffsInformation) {
-		addMessage(i18n.AppTranslator.Get("has_tariffs_information_validation.invalid", *stop.HasTariffsInformation), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("has_tariffs_information_validation.invalid", *stop.HasTariffsInformation))
 		return
 	}
 
@@ -74,7 +57,7 @@ func HasTariffsInformationValidation(stop *types.Stop, row int, rules *types.Sto
 		}
 
 		if !slices.Contains(*rules.HasTariffsInformation.Options, strconv.Itoa(*stop.HasTariffsInformation)) {
-			addMessage(i18n.AppTranslator.Get("has_tariffs_information_validation.not_allowed", *stop.HasTariffsInformation), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("has_tariffs_information_validation.not_allowed", *stop.HasTariffsInformation))
 			return
 		}
 	}

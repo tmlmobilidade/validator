@@ -1,7 +1,7 @@
 package fare_attributes
 
 import (
-	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -20,35 +20,24 @@ Length of time in seconds before a transfer expires. When transfers=0 this field
 [fare_attributes.txt]: https://gtfs.org/schedule/reference/#fare_attributestxt
 */
 func TransferDurationValidation(fareAttribute *types.FareAttribute, row int, gtfs *types.Gtfs, rules *types.FareAttributesRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("transfer_duration", "fare_attributes.txt", "transfer_duration_validation", row, services.AppMessageService)
 	if rules != nil && rules.TransferDuration.Severity != "" {
-		s = rules.TransferDuration.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "transfer_duration",
-			FileName:     "fare_attributes.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "transfer_duration_validation",
-		})
+		ctx.WithSeverity(rules.TransferDuration.Severity)
 	}
 
 	if fareAttribute.TransferDuration == nil {
-		if s != types.SEVERITY_IGNORE {
-			addMessage(i18n.AppTranslator.Get("transfers_validation.required"), s)
+		if !ctx.ShouldIgnore() {
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("transfers_validation.required"))
 		}
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("transfer_duration_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("transfer_duration_validation.forbidden"))
 		return
 	}
 
 	if *fareAttribute.TransferDuration < 0 {
-		addMessage(i18n.AppTranslator.Get("transfers_validation.invalid", *fareAttribute.TransferDuration), types.SEVERITY_ERROR)
+		ctx.AddError(ctx.GetTranslatedMessage("transfers_validation.invalid", *fareAttribute.TransferDuration))
 	}
 }

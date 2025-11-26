@@ -1,7 +1,6 @@
 package stops
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -25,39 +24,23 @@ Identifies the fare zone for a stop. If this record represents a station or stat
 
 // ZoneIdValidation validates the zone_id field in stops.txt
 func ZoneIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("zone_id", "stops.txt", "zone_id_validation", row, services.AppMessageService)
 	if rules != nil && rules.ZoneId.Severity != "" {
-		s = rules.ZoneId.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "zone_id",
-			FileName:     "stops.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "zone_id_validation",
-		})
+		ctx.WithSeverity(rules.ZoneId.Severity)
 	}
 
 	if stop.ZoneId == nil || *stop.ZoneId == "" {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"zone_id_validation.required",
-				"zone_id_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("zone_id_validation.required", "zone_id_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("zone_id_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("zone_id_validation.forbidden"))
 		return
 	}
 
@@ -68,7 +51,7 @@ func ZoneIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if !slices.Contains(*rules.ZoneId.Options, *stop.ZoneId) {
-			addMessage(i18n.AppTranslator.Get("zone_id_validation.not_allowed", *stop.ZoneId), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("zone_id_validation.not_allowed", *stop.ZoneId))
 			return
 		}
 	}

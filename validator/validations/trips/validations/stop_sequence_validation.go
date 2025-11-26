@@ -2,7 +2,6 @@ package trips
 
 import (
 	"fmt"
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -31,24 +30,13 @@ Travel within the same location group or GeoJSON location requires two records i
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
 func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules, tripStopTimesCache map[string][]types.StopTimeRaw) (stopSequenceHash string) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("stop_sequence", "stop_times.txt", "stop_sequence_validation", row, services.AppMessageService)
 	if rules != nil && rules.StopSequence.Severity != "" {
-		s = rules.StopSequence.Severity
+		ctx.WithSeverity(rules.StopSequence.Severity)
 	}
 
-	if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+	if ctx.ShouldSkip() {
 		return
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "stop_sequence",
-			FileName:     "stop_times.txt",
-			ValidationID: "stop_sequence_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-		})
 	}
 
 	if trip.TripId == nil {
@@ -82,7 +70,7 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *
 	for _, stopTimeRaw := range stopTimesRaw {
 		stopSequence, err := strconv.Atoi(stopTimeRaw.StopSequence)
 		if err != nil {
-			addMessage(i18n.AppTranslator.Get("stop_sequence_validation.invalid_sequence"), types.SEVERITY_ERROR)
+			ctx.AddError(ctx.GetTranslatedMessage("stop_sequence_validation.invalid_sequence"))
 			return
 		}
 
@@ -90,7 +78,7 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *
 		if stopTimeRaw.ShapeDistTraveled != "" {
 			shapeDistTraveled, err = strconv.ParseFloat(stopTimeRaw.ShapeDistTraveled, 64)
 			if err != nil {
-				addMessage(i18n.AppTranslator.Get("stop_sequence_validation.invalid_shape_dist"), types.SEVERITY_ERROR)
+				ctx.AddError(ctx.GetTranslatedMessage("stop_sequence_validation.invalid_shape_dist"))
 				return
 			}
 		}
@@ -116,13 +104,13 @@ func StopSequenceValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *
 	for i, stopSequence := range stopSequences {
 		if i > 0 {
 			if *stopSequence.StopSequence <= *stopSequences[i-1].StopSequence {
-				addMessage(i18n.AppTranslator.Get("stop_sequence_validation.non_increasing_sequence", *trip.TripId), types.SEVERITY_ERROR)
+				ctx.AddError(ctx.GetTranslatedMessage("stop_sequence_validation.non_increasing_sequence", *trip.TripId))
 				return
 			}
 
 			if *stopSequence.ShapeDistTraveled >= 0 && *stopSequences[i-1].ShapeDistTraveled >= 0 {
 				if *stopSequence.ShapeDistTraveled < *stopSequences[i-1].ShapeDistTraveled {
-					addMessage(i18n.AppTranslator.Get("stop_sequence_validation.non_increasing_shape_dist", *trip.TripId), types.SEVERITY_ERROR)
+					ctx.AddError(ctx.GetTranslatedMessage("stop_sequence_validation.non_increasing_shape_dist", *trip.TripId))
 					return
 				}
 			}

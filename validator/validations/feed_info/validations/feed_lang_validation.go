@@ -1,7 +1,6 @@
 package feed_info
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -28,25 +27,16 @@ Consider a dataset from a multilingual country like Switzerland, with the origin
 [feed_info.txt]: https://gtfs.org/schedule/reference/#feed_infotxt
 */
 func FeedLangValidation(feedInfo *types.FeedInfo, row int) {
-	addMessage := func(msg string) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "feed_lang",
-			FileName:     "feed_info.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "feed_lang_validation",
-		})
-	}
+	ctx := lib.NewValidationContext("feed_lang", "feed_info.txt", "feed_lang_validation", row, services.AppMessageService)
 
 	if feedInfo.FeedLang == nil || *feedInfo.FeedLang == "" {
-		addMessage(i18n.AppTranslator.Get("feed_lang_validation.required"))
+		ctx.AddError(ctx.GetTranslatedMessage("feed_lang_validation.required"))
 		return
 	}
 
 	if *feedInfo.FeedLang != "mul" {
 		if valid := lib.ValidateLanguage(*feedInfo.FeedLang); !valid {
-			addMessage(i18n.AppTranslator.Get("feed_lang_validation.invalid"))
+			ctx.AddError(ctx.GetTranslatedMessage("feed_lang_validation.invalid"))
 			return
 		}
 	}

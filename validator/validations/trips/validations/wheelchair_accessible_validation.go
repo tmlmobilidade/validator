@@ -2,7 +2,6 @@ package trips
 
 import (
 	"fmt"
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -28,41 +27,25 @@ Indicates wheelchair accessibility. Valid options are:
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 */
 func WheelchairAccessibleValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("wheelchair_accessible", "trips.txt", "wheelchair_accessible_validation", row, services.AppMessageService)
 	if rules != nil && rules.WheelchairAccessible.Severity != "" {
-		s = rules.WheelchairAccessible.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "wheelchair_accessible",
-			FileName:     "trips.txt",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-			ValidationID: "wheelchair_accessible_validation",
-		})
+		ctx.WithSeverity(rules.WheelchairAccessible.Severity)
 	}
 
 	// 1. Validate wheelchair_accessible is required
 	if trip.WheelchairAccessible == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"wheelchair_accessible_validation.required",
-				"wheelchair_accessible_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("wheelchair_accessible_validation.required", "wheelchair_accessible_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
 	// 2. Validate wheelchair_accessible is forbidden
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("wheelchair_accessible_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("wheelchair_accessible_validation.forbidden"))
 		return
 	}
 
@@ -70,7 +53,7 @@ func WheelchairAccessibleValidation(trip *types.Trip, row int, gtfs *types.Gtfs,
 	if trip.WheelchairAccessible != nil {
 		validWheelchairAccessible := map[int]bool{0: true, 1: true, 2: true}
 		if !validWheelchairAccessible[*trip.WheelchairAccessible] {
-			addMessage(i18n.AppTranslator.Get("wheelchair_accessible_validation.invalid"), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("wheelchair_accessible_validation.invalid"))
 			return
 		}
 	}
@@ -82,7 +65,7 @@ func WheelchairAccessibleValidation(trip *types.Trip, row int, gtfs *types.Gtfs,
 		}
 
 		if !slices.Contains(*rules.WheelchairAccessible.Options, fmt.Sprintf("%d", *trip.WheelchairAccessible)) {
-			addMessage(i18n.AppTranslator.Get("wheelchair_accessible_validation.not_allowed", map[string]interface{}{"value": *trip.WheelchairAccessible}), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("wheelchair_accessible_validation.not_allowed", map[string]interface{}{"value": *trip.WheelchairAccessible}))
 			return
 		}
 	}

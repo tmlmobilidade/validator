@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -31,42 +30,31 @@ Conditionally Required:
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
 func RouteDescValidation(route *types.Route, row int, rules *types.RoutesRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("route_desc", "routes.txt", "route_desc_validation", row, services.AppMessageService)
 	if rules != nil && rules.RouteDesc.Severity != "" {
-		s = rules.RouteDesc.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "route_desc",
-			FileName:     "routes.txt",
-			ValidationID: "route_desc_validation",
-			Message:      msg,
-			Rows:         []int{row},
-			Severity:     severity,
-		})
+		ctx.WithSeverity(rules.RouteDesc.Severity)
 	}
 
 	if route.RouteDesc == nil || *route.RouteDesc == "" {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		warn := lib.IfThenElse(s == types.SEVERITY_WARNING, i18n.AppTranslator.Get("route_desc_validation.recommended"), i18n.AppTranslator.Get("route_desc_validation.required"))
-		addMessage(warn, s)
+		message := ctx.GetRequiredMessage("route_desc_validation.required", "route_desc_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("route_desc_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_desc_validation.forbidden"))
 		return
 	}
 
 	if route.RouteShortName != nil && *route.RouteDesc == *route.RouteShortName {
-		addMessage(i18n.AppTranslator.Get("route_desc_validation.duplicate_short_name"), types.SEVERITY_WARNING)
+		ctx.AddWarning(ctx.GetTranslatedMessage("route_desc_validation.duplicate_short_name"))
 	}
 	if route.RouteLongName != nil && *route.RouteDesc == *route.RouteLongName {
-		addMessage(i18n.AppTranslator.Get("route_desc_validation.duplicate_long_name"), types.SEVERITY_WARNING)
+		ctx.AddWarning(ctx.GetTranslatedMessage("route_desc_validation.duplicate_long_name"))
 	}
 
 	// Validate rules
@@ -76,7 +64,7 @@ func RouteDescValidation(route *types.Route, row int, rules *types.RoutesRules) 
 		}
 
 		if !slices.Contains(*rules.RouteDesc.Options, *route.RouteDesc) {
-			addMessage(i18n.AppTranslator.Get("route_desc_validation.not_allowed", map[string]interface{}{"value": *route.RouteDesc}), s)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_desc_validation.not_allowed", map[string]interface{}{"value": *route.RouteDesc}))
 			return
 		}
 	}

@@ -1,7 +1,6 @@
 package trips
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -24,41 +23,25 @@ A `trip_short_name` value, if provided, should uniquely identify a trip within a
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 */
 func TripShortNameValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
-	s := types.SEVERITY_IGNORE
+	ctx := lib.NewValidationContext("trip_short_name", "trips.txt", "trip_short_name_validation", row, services.AppMessageService)
 	if rules != nil && rules.TripShortName.Severity != "" {
-		s = rules.TripShortName.Severity
-	}
-
-	addMessage := func(msg string, severity types.Severity) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "trip_short_name",
-			FileName:     "trips.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "trip_short_name_validation",
-		})
+		ctx.WithSeverity(rules.TripShortName.Severity)
 	}
 
 	// 1. Validate trip_short_name is required
 	if trip.TripShortName == nil {
-		if s == types.SEVERITY_IGNORE || s == types.SEVERITY_FORBIDDEN {
+		if ctx.ShouldSkip() {
 			return
 		}
 
-		message := i18n.AppTranslator.Get(
-			lib.IfThenElse(s == types.SEVERITY_ERROR,
-				"trip_short_name_validation.required",
-				"trip_short_name_validation.recommended",
-			),
-		)
-		addMessage(message, s)
+		message := ctx.GetRequiredMessage("trip_short_name_validation.required", "trip_short_name_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
 	// 2. Validate trip_short_name is forbidden
-	if s == types.SEVERITY_FORBIDDEN {
-		addMessage(i18n.AppTranslator.Get("trip_short_name_validation.forbidden"), s)
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("trip_short_name_validation.forbidden"))
 		return
 	}
 
