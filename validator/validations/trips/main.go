@@ -5,8 +5,8 @@ import (
 	"main/config"
 	"main/lib"
 	"main/types"
-	validations "main/validations/trips/validations"
 	registry "main/validations"
+	validations "main/validations/trips/validations"
 	"slices"
 )
 
@@ -96,6 +96,9 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 			tripsGroupedByPattern[*trip.PatternId] = group
 		}
+
+		// Validate direction_id matches pattern_id
+		validations.DirectionPatternIdMatchValidation(&trip, i, &gtfs, tripRules)
 
 		return nil
 	})

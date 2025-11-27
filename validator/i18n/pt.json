@@ -645,5 +645,10 @@
         "recommended": "O campo \"origin_id\" é recomendado",
         "invalid": "O campo \"origin_id\" deve ser um ID válido de stops.txt",
         "not_allowed": "O campo \"origin_id\" \"%s\" não é permitido"
+    },
+    "direction_pattern_id_match": {
+        "invalid_pattern_id": "O campo \"pattern_id\" deve ser um ID válido no formato \"XXXX_[0|1]_1\", recebido: %s",
+        "invalid_direction_id": "O campo \"direction_id\" deve ser um número inteiro entre 0 e 1, recebido: %s",
+        "not_matching": "O campo \"direction_id\" \"%s\" não corresponde do pattern_id \"%s\""
     }
 }
