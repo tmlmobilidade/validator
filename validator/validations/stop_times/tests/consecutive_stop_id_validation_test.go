@@ -30,8 +30,8 @@ func TestConsecutiveStopIdValidation_ValidDifferentStopIds(t *testing.T) {
 
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Different stop_ids consecutively should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Different stop_ids consecutively should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -59,8 +59,8 @@ func TestConsecutiveStopIdValidation_InvalidConsecutiveStopIds(t *testing.T) {
 
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Same stop_id consecutively should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Same stop_id consecutively should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -88,8 +88,8 @@ func TestConsecutiveStopIdValidation_SameStopIdDifferentTrips(t *testing.T) {
 
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Same stop_id in different trips should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Same stop_id in different trips should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -110,8 +110,8 @@ func TestConsecutiveStopIdValidation_FirstStopInTrip(t *testing.T) {
 
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "First stop in a trip should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "First stop in a trip should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -131,8 +131,8 @@ func TestConsecutiveStopIdValidation_MissingStopId(t *testing.T) {
 
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing stop_id should skip validation",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing stop_id should skip validation",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -153,8 +153,8 @@ func TestConsecutiveStopIdValidation_EmptyStopId(t *testing.T) {
 
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Empty stop_id should skip validation",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Empty stop_id should skip validation",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -174,8 +174,8 @@ func TestConsecutiveStopIdValidation_MissingTripId(t *testing.T) {
 
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing trip_id should skip validation",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing trip_id should skip validation",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -210,8 +210,8 @@ func TestConsecutiveStopIdValidation_ValidAfterNonConsecutive(t *testing.T) {
 
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Same stop_id appearing non-consecutively should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Same stop_id appearing non-consecutively should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -248,11 +248,10 @@ func TestConsecutiveStopIdValidation_MultipleConsecutiveErrors(t *testing.T) {
 	// with multiple rows (rows 2 and 3) instead of 2 separate error messages
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Multiple consecutive stop_ids should produce one error message with multiple rows",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Multiple consecutive stop_ids should produce one error message with multiple rows",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
 }
-
