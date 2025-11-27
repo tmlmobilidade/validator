@@ -55,6 +55,9 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	// Create progress tracker
 	tracker := lib.CreateProgressTracker(gtfs, "stop_times.txt", config.ProgressThresholdLarge)
 
+	// Track previous stop_id per trip_id for consecutive stop_id validation
+	previousStopIdByTrip := make(map[string]*string)
+
 	err = gtfs.IterateStopTimes(func(i int, rawStopTimes types.StopTimeRaw) error {
 		tracker.Track()
 		stopTime := validations.ParseStopTimes(rawStopTimes, i)
@@ -79,6 +82,9 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 		// Validate stop_id
 		validations.StopIdValidation(&stopTime, i, &gtfs)
+
+		// Validate consecutive stop_ids
+		validations.ConsecutiveStopIdValidation(&stopTime, i, previousStopIdByTrip)
 
 		// Validate location_group_id
 		validations.LocationGroupIdValidation(&stopTime, i, &gtfs)
