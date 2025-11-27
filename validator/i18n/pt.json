@@ -377,6 +377,9 @@
         "required_location_group_id_location_id": "O campo \"stop_id\" é obrigatório se \"location_group_id\" e \"location_id\" não estiverem definidos",
         "invalid_location_type": "O campo \"stop_id\" deve referenciar uma paragem com location_type 0 ou vazio (plataforma/paragem)"
     },
+    "consecutive_stop_id_validation": {
+        "consecutive_stop_ids": "Não é possível ter a mesma paragem \"%s\", diretamente uma depois da outra na viagem \"%s\""
+    },
     "timepoint_validation": {
         "forbidden": "O campo \"timepoint\" é probido",
         "required": "O campo \"timepoint\" é obrigatório",
