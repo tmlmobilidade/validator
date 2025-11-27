@@ -613,6 +613,9 @@
 		},
 		"wheelchair_accessible": {
 			"severity": "warning"
+		},
+		"direction_pattern_id_match": {
+			"severity": "error"
 		}
 	},
 	"vehicles": {
