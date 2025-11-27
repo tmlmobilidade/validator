@@ -33,20 +33,20 @@ func DirectionPatternIdMatchValidation(trip *types.Trip, row int, gtfs *types.Gt
 	// Must have three parts: routeId, directionId, variant
 	patternIdParts := strings.Split(*trip.PatternId, "_")
 	if len(patternIdParts) != 3 {
-		ctx.AddError(ctx.GetTranslatedMessage("direction_pattern_id_match.invalid_pattern_id"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("direction_pattern_id_match.invalid_pattern_id"))
 		return
 	}
 
 	// Parse the directionId part (second part) as integer
 	directionId, err := strconv.Atoi(patternIdParts[1])
 	if err != nil || directionId < 0 || directionId > 1 {
-		ctx.AddError(ctx.GetTranslatedMessage("direction_pattern_id_match.invalid_direction_id"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("direction_pattern_id_match.invalid_direction_id"))
 		return
 	}
 
 	// Ensure trip.DirectionId matches parsed directionId from patternId
 	if *trip.DirectionId != directionId {
-		ctx.AddError(ctx.GetTranslatedMessage("direction_pattern_id_match.not_matching"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("direction_pattern_id_match.not_matching"))
 		return
 	}
 }
