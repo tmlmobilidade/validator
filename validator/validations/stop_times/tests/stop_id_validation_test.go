@@ -26,8 +26,8 @@ func TestStopIdValidation_Required(t *testing.T) {
 	validations.StopIdValidation(stopTime, 1, gtfs, stopLocationTypeCache)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid stop_id should not error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid stop_id should not error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -39,7 +39,7 @@ func TestStopIdValidation_Forbidden(t *testing.T) {
 	stopId := "S1"
 	locationGroupId := "LG1"
 	stopTime := &types.StopTime{
-		StopId: &stopId,
+		StopId:          &stopId,
 		LocationGroupId: &locationGroupId,
 	}
 	gtfs := &types.Gtfs{}
@@ -47,8 +47,8 @@ func TestStopIdValidation_Forbidden(t *testing.T) {
 	validations.StopIdValidation(stopTime, 2, gtfs, stopLocationTypeCache)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "stop_id should be forbidden if location_group_id is defined",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "stop_id should be forbidden if location_group_id is defined",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -63,8 +63,8 @@ func TestStopIdValidation_RequiredMissing(t *testing.T) {
 	validations.StopIdValidation(stopTime, 3, gtfs, stopLocationTypeCache)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing stop_id should error if location_group_id and location_id are not defined",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Missing stop_id should error if location_group_id and location_id are not defined",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -86,8 +86,8 @@ func TestStopIdValidation_InvalidForeignKey(t *testing.T) {
 	validations.StopIdValidation(stopTime, 4, gtfs, stopLocationTypeCache)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Invalid stop_id foreign key should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Invalid stop_id foreign key should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -112,8 +112,8 @@ func TestStopIdValidation_InvalidLocationType(t *testing.T) {
 	validations.StopIdValidation(stopTime, 5, gtfs, stopLocationTypeCache)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "stop_id with invalid location_type should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "stop_id with invalid location_type should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
