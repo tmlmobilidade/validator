@@ -17,7 +17,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running FeedInfo Validations...")
 
 	// Create progress tracker
-	tracker := lib.CreateProgressTracker(gtfs, "feed_info.txt", config.ProgressThresholdSmall)
+	tracker := lib.CreateProgressTracker(gtfs, "feed_info", config.ProgressThresholdSmall)
 
 	err := gtfs.IterateFeedInfos(func(i int, feedInfo types.FeedInfoRaw) error {
 		tracker.Track()
@@ -60,6 +60,6 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	if err != nil {
 		lib.AppLogger.Error(fmt.Sprintf("Error iterating feed info: %v", err))
 	} else {
-		lib.AppLogger.Debug(fmt.Sprintf("Completed feed_info.txt validation: %d rows processed", tracker.GetProcessedCount()))
+		lib.AppLogger.Info(fmt.Sprintf("Completed feed_info.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 }

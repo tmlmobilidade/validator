@@ -35,7 +35,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug(fmt.Sprintf("Pre-computed stop_times for %d trips", len(tripStopTimesCache)))
 
 	// Create progress tracker
-	tracker := lib.CreateProgressTracker(gtfs, "trips.txt", config.ProgressThresholdLarge)
+	tracker := lib.CreateProgressTracker(gtfs, "trips", config.ProgressThresholdLarge)
 	var tripsGroupedByPattern types.TripGroupedByPattern = make(types.TripGroupedByPattern)
 
 	err = gtfs.IterateTrips(func(i int, rawTrips types.TripRaw) error {
@@ -106,7 +106,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	if err != nil {
 		lib.AppLogger.Error(fmt.Sprintf("Error iterating trips: %v", err))
 	} else {
-		lib.AppLogger.Debug(fmt.Sprintf("Completed trips.txt validation: %d rows processed", tracker.GetProcessedCount()))
+		lib.AppLogger.Info(fmt.Sprintf("Completed trips.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 
 	//Validate pattern_id_group

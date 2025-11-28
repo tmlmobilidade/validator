@@ -53,7 +53,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug(fmt.Sprintf("Pre-computed stop sequences for %d trips", len(tripStopSequences)))
 
 	// Create progress tracker
-	tracker := lib.CreateProgressTracker(gtfs, "stop_times.txt", config.ProgressThresholdLarge)
+	tracker := lib.CreateProgressTracker(gtfs, "stop_times", config.ProgressThresholdLarge)
 
 	// Track previous stop_id per trip_id for consecutive stop_id validation
 	previousStopIdByTrip := make(map[string]*string)
@@ -128,6 +128,6 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	if err != nil {
 		lib.AppLogger.Error(fmt.Sprintf("Error iterating stop times: %v", err))
 	} else {
-		lib.AppLogger.Debug(fmt.Sprintf("Completed stop_times.txt validation: %d rows processed", tracker.GetProcessedCount()))
+		lib.AppLogger.Info(fmt.Sprintf("Completed stop_times.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 }

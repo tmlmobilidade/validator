@@ -17,7 +17,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Calendar Dates Validations...")
 
 	// Create progress tracker
-	tracker := lib.CreateProgressTracker(gtfs, "calendar_dates.txt", config.ProgressThresholdSmall)
+	tracker := lib.CreateProgressTracker(gtfs, "calendar_dates", config.ProgressThresholdSmall)
 
 	err := gtfs.IterateCalendarDates(func(i int, rawCalendarDate types.CalendarDatesRaw) error {
 		tracker.Track()
@@ -47,6 +47,6 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	if err != nil {
 		lib.AppLogger.Error(fmt.Sprintf("Error iterating calendar dates: %v", err))
 	} else {
-		lib.AppLogger.Debug(fmt.Sprintf("Completed calendar_dates.txt validation: %d rows processed", tracker.GetProcessedCount()))
+		lib.AppLogger.Info(fmt.Sprintf("Completed calendar_dates.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 }

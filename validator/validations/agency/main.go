@@ -5,8 +5,8 @@ import (
 	"main/config"
 	"main/lib"
 	"main/types"
-	validations "main/validations/agency/validations"
 	registry "main/validations"
+	validations "main/validations/agency/validations"
 )
 
 func init() {
@@ -17,7 +17,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Validations for agency.txt")
 
 	// Create progress tracker
-	tracker := lib.CreateProgressTracker(gtfs, "agency.txt", config.ProgressThresholdSmall)
+	tracker := lib.CreateProgressTracker(gtfs, "agency", config.ProgressThresholdSmall)
 
 	err := gtfs.IterateAgencies(func(i int, rawAgency types.AgencyRaw) error {
 		tracker.Track()
@@ -66,6 +66,6 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	if err != nil {
 		lib.AppLogger.Error(fmt.Sprintf("Error iterating agencies: %v", err))
 	} else {
-		lib.AppLogger.Debug(fmt.Sprintf("Completed agency.txt validation: %d rows processed", tracker.GetProcessedCount()))
+		lib.AppLogger.Info(fmt.Sprintf("Completed agency.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 }

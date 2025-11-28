@@ -32,8 +32,19 @@ func (pt *ProgressTracker) Track() {
 	// Log progress every 10% or every rowThreshold rows (whichever comes first)
 	if pt.totalCount > 0 {
 		currentPercent := (pt.processedCount * 100) / pt.totalCount
-		if currentPercent != pt.lastLoggedPercent && (currentPercent%10 == 0 || pt.processedCount%pt.rowThreshold == 0) {
-			AppLogger.Debug(fmt.Sprintf("Validating %s: %d/%d (%.1f%%)", pt.tableName, pt.processedCount, pt.totalCount, float64(pt.processedCount)*100.0/float64(pt.totalCount)))
+		// Check if we've crossed a 10% milestone (e.g., from 9% to 10%, 19% to 20%, etc.)
+		hasCrossed10Percent := currentPercent/10 > pt.lastLoggedPercent/10
+		shouldLogRowThreshold := pt.processedCount%pt.rowThreshold == 0 && currentPercent != pt.lastLoggedPercent
+		isComplete := pt.processedCount >= pt.totalCount
+
+		if hasCrossed10Percent || shouldLogRowThreshold || isComplete {
+			if hasCrossed10Percent || isComplete {
+				// Log at Info level for 10% milestones and completion
+				AppLogger.Info(fmt.Sprintf("Validating %s: %d/%d (%.1f%%)", pt.tableName, pt.processedCount, pt.totalCount, float64(pt.processedCount)*100.0/float64(pt.totalCount)))
+			} else {
+				// Log at Debug level for rowThreshold milestones
+				AppLogger.Debug(fmt.Sprintf("Validating %s: %d/%d (%.1f%%)", pt.tableName, pt.processedCount, pt.totalCount, float64(pt.processedCount)*100.0/float64(pt.totalCount)))
+			}
 			pt.lastLoggedPercent = currentPercent
 		}
 	} else if pt.processedCount%pt.rowThreshold == 0 {

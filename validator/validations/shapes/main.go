@@ -17,7 +17,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Shapes Validations...")
 
 	// Create progress tracker
-	tracker := lib.CreateProgressTracker(gtfs, "shapes.txt", config.ProgressThresholdLarge)
+	tracker := lib.CreateProgressTracker(gtfs, "shapes", config.ProgressThresholdLarge)
 	var allShapes []types.Shape
 
 	err := gtfs.IterateShapes(func(row int, rawShape types.ShapeRaw) error {
@@ -50,7 +50,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	if err != nil {
 		lib.AppLogger.Error(fmt.Sprintf("Error iterating shapes: %v", err))
 	} else {
-		lib.AppLogger.Debug(fmt.Sprintf("Completed shapes.txt validation: %d rows processed", tracker.GetProcessedCount()))
+		lib.AppLogger.Info(fmt.Sprintf("Completed shapes.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 
 	// Group-level validation: shape_pt_sequence must increase for each shape_id

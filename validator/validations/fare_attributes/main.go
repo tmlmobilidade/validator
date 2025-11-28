@@ -17,7 +17,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Fare Attributes Validations...")
 
 	// Create progress tracker
-	tracker := lib.CreateProgressTracker(gtfs, "fare_attributes.txt", config.ProgressThresholdSmall)
+	tracker := lib.CreateProgressTracker(gtfs, "fare_attributes", config.ProgressThresholdSmall)
 
 	err := gtfs.IterateFareAttributes(func(i int, rawFareAttributes types.FareAttributeRaw) error {
 		tracker.Track()
@@ -59,6 +59,6 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	if err != nil {
 		lib.AppLogger.Error(fmt.Sprintf("Error iterating fare attributes: %v", err))
 	} else {
-		lib.AppLogger.Debug(fmt.Sprintf("Completed fare_attributes.txt validation: %d rows processed", tracker.GetProcessedCount()))
+		lib.AppLogger.Info(fmt.Sprintf("Completed fare_attributes.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 }

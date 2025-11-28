@@ -17,7 +17,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Routes Validations...")
 
 	// Create progress tracker
-	tracker := lib.CreateProgressTracker(gtfs, "routes.txt", config.ProgressThresholdLarge)
+	tracker := lib.CreateProgressTracker(gtfs, "routes", config.ProgressThresholdLarge)
 
 	err := gtfs.IterateRoutes(func(i int, rawRoute types.RouteRaw) error {
 		tracker.Track()
@@ -77,6 +77,6 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	if err != nil {
 		lib.AppLogger.Error(fmt.Sprintf("Error iterating routes: %v", err))
 	} else {
-		lib.AppLogger.Debug(fmt.Sprintf("Completed routes.txt validation: %d rows processed", tracker.GetProcessedCount()))
+		lib.AppLogger.Info(fmt.Sprintf("Completed routes.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 }
