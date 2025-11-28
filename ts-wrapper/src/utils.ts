@@ -9,6 +9,8 @@ export interface RunGoBinaryOptions {
 	cwd?: string
 	/** Environment variables to pass to the process */
 	env?: Record<string, string>
+	/** Forward stdout/stderr to parent process while capturing (default: true) */
+	forwardOutput?: boolean
 	/** Maximum stderr buffer size in bytes (default: 1MB) */
 	maxStderrSize?: number
 	/** Maximum stdout buffer size in bytes (default: 10MB) */
@@ -82,6 +84,7 @@ export async function runGoBinary<T = unknown>(
 		args = [],
 		cwd = process.cwd(),
 		env = {},
+		forwardOutput = true,
 		maxStderrSize = DEFAULT_MAX_STDERR_SIZE,
 		maxStdoutSize = DEFAULT_MAX_STDOUT_SIZE,
 		timeout = DEFAULT_TIMEOUT_MS,
@@ -175,6 +178,10 @@ export async function runGoBinary<T = unknown>(
 				return;
 			}
 			stdoutChunks.push(chunk);
+			// Forward to parent process stdout if enabled
+			if (forwardOutput) {
+				process.stdout.write(chunk);
+			}
 		});
 
 		proc.stderr?.on('data', (chunk: Buffer) => {
@@ -188,6 +195,10 @@ export async function runGoBinary<T = unknown>(
 				return;
 			}
 			stderrChunks.push(chunk);
+			// Forward to parent process stderr if enabled
+			if (forwardOutput) {
+				process.stderr.write(chunk);
+			}
 		});
 
 		proc.on('error', (err: Error) => {

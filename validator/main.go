@@ -111,7 +111,7 @@ func main() {
 	}
 
 	//
-	lib.AppLogger.Clear()
+	// lib.AppLogger.Clear()
 	lib.AppLogger.Divider("GTFS Validator")
 
 	//
