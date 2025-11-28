@@ -35,6 +35,8 @@ export interface GTFSValidatorOptions {
 	env?: Record<string, string>
 	/** Language for validation messages (e.g., 'en', 'pt') */
 	lang?: SupportedLanguage
+	/** Log level for validation messages */
+	log_level?: 'debug' | 'error' | 'info'
 	/** Output file path for detailed validation results */
 	out_file?: string
 	/** Path to custom validation rules file */
@@ -217,7 +219,7 @@ function validateOptions(options: GTFSValidatorOptions = {}): GTFSValidatorOptio
  * @internal
  */
 function buildValidatorArgs(input: string, options: GTFSValidatorOptions = {}): string[] {
-	const { lang, out_file, rules_path } = options;
+	const { lang, log_level, out_file, rules_path } = options;
 	const args: string[] = ['-input', input];
 
 	if (out_file) {
@@ -230,6 +232,10 @@ function buildValidatorArgs(input: string, options: GTFSValidatorOptions = {}): 
 
 	if (lang) {
 		args.push('-lang', lang);
+	}
+
+	if (log_level) {
+		args.push('-log', log_level);
 	}
 
 	return args;
