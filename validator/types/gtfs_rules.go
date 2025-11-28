@@ -84,19 +84,20 @@ type RoutesRules struct {
 }
 
 type TripsRules struct {
-	File                 Severity   `json:"_file"`
-	RouteId              RuleConfig `json:"route_id"`
-	PatternId            RuleConfig `json:"pattern_id"`
-	ServiceId            RuleConfig `json:"service_id"`
-	TripId               RuleConfig `json:"trip_id"`
-	TripHeadsign         RuleConfig `json:"trip_headsign"`
-	TripShortName        RuleConfig `json:"trip_short_name"`
-	DirectionId          RuleConfig `json:"direction_id"`
-	BlockId              RuleConfig `json:"block_id"`
-	ShapeId              RuleConfig `json:"shape_id"`
-	WheelchairAccessible RuleConfig `json:"wheelchair_accessible"`
-	BikesAllowed         RuleConfig `json:"bikes_allowed"`
-	StopSequence         RuleConfig `json:"stop_sequence"`
+	File                    Severity   `json:"_file"`
+	RouteId                 RuleConfig `json:"route_id"`
+	PatternId               RuleConfig `json:"pattern_id"`
+	ServiceId               RuleConfig `json:"service_id"`
+	TripId                  RuleConfig `json:"trip_id"`
+	TripHeadsign            RuleConfig `json:"trip_headsign"`
+	TripShortName           RuleConfig `json:"trip_short_name"`
+	DirectionId             RuleConfig `json:"direction_id"`
+	BlockId                 RuleConfig `json:"block_id"`
+	ShapeId                 RuleConfig `json:"shape_id"`
+	WheelchairAccessible    RuleConfig `json:"wheelchair_accessible"`
+	BikesAllowed            RuleConfig `json:"bikes_allowed"`
+	StopSequence            RuleConfig `json:"stop_sequence"`
+	DirectionPatternIdMatch RuleConfig `json:"direction_pattern_id_match"`
 }
 
 type StopTimesRules struct {

@@ -1,6 +1,7 @@
 package trips
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -21,11 +22,18 @@ Ensure the direction_id is consistent with the pattern_id (e.g., pattern_id "100
 */
 func DirectionPatternIdMatchValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
 	ctx := lib.NewValidationContext("direction_pattern_id_match", "trips.txt", "direction_pattern_id_match", row, services.AppMessageService)
-	if rules != nil && rules.DirectionId.Severity != "" {
-		ctx.WithSeverity(rules.DirectionId.Severity)
+	if rules != nil && rules.DirectionPatternIdMatch.Severity != "" {
+		lib.AppLogger.Debug(fmt.Sprintf("DirectionPatternIdMatchValidation: severity: %s", rules.DirectionPatternIdMatch.Severity))
+		ctx.WithSeverity(rules.DirectionPatternIdMatch.Severity)
 	}
 
 	if ctx.ShouldSkip() {
+		return
+	}
+
+	// Handle required fields
+	if trip.PatternId == nil || trip.DirectionId == nil {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("direction_pattern_id_match.required"))
 		return
 	}
 
