@@ -1,5 +1,5 @@
 import { GTFSValidatorSummary } from '@tmlmobilidade/types';
-import { access, constants } from 'fs/promises';
+import { access, constants, readFile } from 'fs/promises';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -223,7 +223,7 @@ function buildValidatorArgs(input: string, options: GTFSValidatorOptions = {}): 
 	const args: string[] = ['-input', input];
 
 	if (out_file) {
-		args.push('-o', out_file);
+		args.push('-out', out_file);
 	}
 
 	if (rules_path) {
@@ -317,6 +317,11 @@ export async function GTFSValidator(
 		// Build arguments
 		const args = buildValidatorArgs(input, validatorOptions);
 
+		// Determine output file path (resolve relative to cwd if provided)
+		const outputFilePath = validatorOptions.out_file
+			? resolve(cwd || process.cwd(), validatorOptions.out_file)
+			: undefined;
+
 		// Run validator
 		const runOptions: RunGoBinaryOptions = {
 			args,
@@ -327,14 +332,61 @@ export async function GTFSValidator(
 			timeout,
 		};
 
-		const result = await runGoBinary<GTFSValidatorSummary>(binaryPath, runOptions);
+		const startTime = Date.now();
+		let result: Awaited<ReturnType<typeof runGoBinary<GTFSValidatorSummary>>>;
+		let summary: GTFSValidatorSummary;
+
+		try {
+			result = await runGoBinary<GTFSValidatorSummary>(binaryPath, runOptions);
+			summary = result.data;
+		}
+		catch (err) {
+			// If output file was specified and we got a JSON parse error or no output,
+			// try reading from the file instead (the validator writes to file, not stdout)
+			if (
+				outputFilePath
+				&& err instanceof GoBinaryError
+				&& (err.code === 'NO_OUTPUT' || err.code === 'JSON_PARSE_ERROR' || err.code === 'NO_VALID_LINES')
+			) {
+				try {
+					// Wait a bit for the file to be written (in case of race condition)
+					await new Promise(resolve => setTimeout(resolve, 100));
+					const fileContent = await readFile(outputFilePath, 'utf-8');
+					summary = JSON.parse(fileContent.trim()) as GTFSValidatorSummary;
+					// Calculate execution time from when we started
+					const executionTime = Date.now() - startTime;
+					// Create a result object with the file data, preserving error info for stderr/stdout
+					result = {
+						data: summary,
+						executionTime,
+						exitCode: err.exitCode ?? 0,
+						stderr: err.stderr || '',
+						stdout: err.stdout || '',
+					};
+				}
+				catch (fileErr) {
+					const error = fileErr instanceof Error ? fileErr : new Error(String(fileErr));
+					throw new GTFSValidatorError(
+						`Failed to read or parse output file: ${outputFilePath}. ${error.message}`,
+						'OUTPUT_FILE_READ_ERROR',
+						error,
+						err.stdout,
+						err.stderr,
+					);
+				}
+			}
+			else {
+				// Re-throw the original error
+				throw err;
+			}
+		}
 
 		return {
 			args,
 			executionTime: result.executionTime,
 			stderr: result.stderr,
 			stdout: result.stdout,
-			summary: result.data,
+			summary,
 		};
 	}
 	catch (err) {
