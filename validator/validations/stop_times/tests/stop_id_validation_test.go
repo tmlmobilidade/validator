@@ -22,7 +22,8 @@ func TestStopIdValidation_Required(t *testing.T) {
 			{StopId: "S1", LocationType: "0"},
 		},
 	}
-	validations.StopIdValidation(stopTime, 1, gtfs)
+	stopLocationTypeCache := map[string]string{"S1": "0"}
+	validations.StopIdValidation(stopTime, 1, gtfs, stopLocationTypeCache)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,
@@ -42,7 +43,8 @@ func TestStopIdValidation_Forbidden(t *testing.T) {
 		LocationGroupId: &locationGroupId,
 	}
 	gtfs := &types.Gtfs{}
-	validations.StopIdValidation(stopTime, 2, gtfs)
+	stopLocationTypeCache := map[string]string{}
+	validations.StopIdValidation(stopTime, 2, gtfs, stopLocationTypeCache)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,
@@ -57,7 +59,8 @@ func TestStopIdValidation_RequiredMissing(t *testing.T) {
 	services.AppMessageService.Clear()
 	stopTime := &types.StopTime{}
 	gtfs := &types.Gtfs{}
-	validations.StopIdValidation(stopTime, 3, gtfs)
+	stopLocationTypeCache := map[string]string{}
+	validations.StopIdValidation(stopTime, 3, gtfs, stopLocationTypeCache)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,
@@ -79,7 +82,8 @@ func TestStopIdValidation_InvalidForeignKey(t *testing.T) {
 			"stops": {},
 		},
 	}
-	validations.StopIdValidation(stopTime, 4, gtfs)
+	stopLocationTypeCache := map[string]string{}
+	validations.StopIdValidation(stopTime, 4, gtfs, stopLocationTypeCache)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,
@@ -104,7 +108,8 @@ func TestStopIdValidation_InvalidLocationType(t *testing.T) {
 			{StopId: "S2", LocationType: "1"},
 		},
 	}
-	validations.StopIdValidation(stopTime, 5, gtfs)
+	stopLocationTypeCache := map[string]string{"S2": "1"}
+	validations.StopIdValidation(stopTime, 5, gtfs, stopLocationTypeCache)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual: services.AppMessageService.GetSummary().TotalErrors,

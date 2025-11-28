@@ -17,50 +17,56 @@ func init() {
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running StopTimes Validations...")
 
-	// Pre-compute min/max stop sequences per trip_id for performance
-	// This avoids N+1 queries in arrival_time validation
-	lib.AppLogger.Debug("Pre-computing trip stop sequences...")
-	tripStopSequences := make(map[string]types.TripStopSequence)
-
-	err := gtfs.IterateStopTimes(func(i int, rawStopTime types.StopTimeRaw) error {
-		// Parse stop_sequence from raw data for pre-computation
-		if rawStopTime.TripId == "" || rawStopTime.StopSequence == "" {
-			return nil
-		}
-
-		tripId := rawStopTime.TripId
-		stopSeq, err := strconv.Atoi(rawStopTime.StopSequence)
-		if err != nil {
-			return nil // Skip invalid sequences
-		}
-
-		if seq, exists := tripStopSequences[tripId]; exists {
-			if stopSeq < seq.Min {
-				seq.Min = stopSeq
-			}
-			if stopSeq > seq.Max {
-				seq.Max = stopSeq
-			}
-			tripStopSequences[tripId] = seq
-		} else {
-			tripStopSequences[tripId] = types.TripStopSequence{Min: stopSeq, Max: stopSeq}
+	// Pre-load stop location_type cache for performance
+	// This avoids repeated database queries in stop_id validation
+	lib.AppLogger.Debug("Pre-loading stop location_type cache...")
+	stopLocationTypeCache := make(map[string]string) // stop_id -> location_type
+	err := gtfs.IterateStops(func(i int, rawStop types.StopRaw) error {
+		if rawStop.StopId != "" {
+			stopLocationTypeCache[rawStop.StopId] = rawStop.LocationType
 		}
 		return nil
 	})
 	if err != nil {
-		lib.AppLogger.Error(fmt.Sprintf("Error pre-computing trip stop sequences: %v", err))
+		lib.AppLogger.Error(fmt.Sprintf("Error pre-loading stop location_type cache: %v", err))
 	}
-	lib.AppLogger.Debug(fmt.Sprintf("Pre-computed stop sequences for %d trips", len(tripStopSequences)))
+	lib.AppLogger.Debug(fmt.Sprintf("Pre-loaded location_type for %d stops", len(stopLocationTypeCache)))
 
 	// Create progress tracker
 	tracker := lib.CreateProgressTracker(gtfs, "stop_times", config.ProgressThresholdLarge)
 
+	// Pre-compute min/max stop sequences per trip_id for performance
+	// This avoids N+1 queries in arrival_time validation
+	tripStopSequences := make(map[string]types.TripStopSequence)
+
 	// Track previous stop_id per trip_id for consecutive stop_id validation
 	previousStopIdByTrip := make(map[string]*string)
 
-	err = gtfs.IterateStopTimes(func(i int, rawStopTimes types.StopTimeRaw) error {
+	// Single iteration: combine pre-computation and validation
+	err = gtfs.IterateStopTimes(func(i int, rawStopTime types.StopTimeRaw) error {
 		tracker.Track()
-		stopTime := validations.ParseStopTimes(rawStopTimes, i)
+
+		// Pre-compute trip stop sequences
+		if rawStopTime.TripId != "" && rawStopTime.StopSequence != "" {
+			tripId := rawStopTime.TripId
+			stopSeq, err := strconv.Atoi(rawStopTime.StopSequence)
+			if err == nil {
+				if seq, exists := tripStopSequences[tripId]; exists {
+					if stopSeq < seq.Min {
+						seq.Min = stopSeq
+					}
+					if stopSeq > seq.Max {
+						seq.Max = stopSeq
+					}
+					tripStopSequences[tripId] = seq
+				} else {
+					tripStopSequences[tripId] = types.TripStopSequence{Min: stopSeq, Max: stopSeq}
+				}
+			}
+		}
+
+		// Parse and validate stop time
+		stopTime := validations.ParseStopTimes(rawStopTime, i)
 
 		if stopTime == (types.StopTime{}) {
 			return nil
@@ -71,7 +77,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 			stopTimesRules = &rules.StopTimes
 		}
 
-		// Validate trip_id
+		// Validate trip_id (using IdMap cache - no database query)
 		validations.TripIdValidation(&stopTime, i, &gtfs)
 
 		// Validate arrival_time (pass cached trip stop sequences)
@@ -80,8 +86,8 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// Validate departure_time
 		validations.DepartureTimeValidation(&stopTime, i, &gtfs, stopTimesRules)
 
-		// Validate stop_id
-		validations.StopIdValidation(&stopTime, i, &gtfs)
+		// Validate stop_id (using IdMap cache and location_type cache - no database query)
+		validations.StopIdValidation(&stopTime, i, &gtfs, stopLocationTypeCache)
 
 		// Validate consecutive stop_ids
 		validations.ConsecutiveStopIdValidation(&stopTime, i, previousStopIdByTrip)

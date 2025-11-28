@@ -31,7 +31,7 @@ Conditionally Required:
 
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
-func StopIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
+func StopIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs, stopLocationTypeCache map[string]string) {
 	ctx := lib.NewValidationContext("stop_id", "stop_times.txt", "stop_id_validation", row, services.AppMessageService)
 
 	// Forbidden if location_group_id or location_id are defined
@@ -50,20 +50,15 @@ func StopIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
 		}
 
 		// Foreign key check: must reference a valid stop_id from stops.txt
-		rows, err := gtfs.GetRowsById("stops", *stopTime.StopId)
-		if err != nil || len(rows) == 0 {
+		// Use IdMap cache instead of database query for performance
+		if !lib.GtfsIdMapKeyExists(gtfs, "stops", *stopTime.StopId) {
 			ctx.AddError(ctx.GetTranslatedMessage("stop_id_validation.not_found", *stopTime.StopId))
 			return
 		}
 
-		// Check location_type is 0 or empty
-		rowIdx := rows[0]
-		stopRow, err := gtfs.GetStop(rowIdx)
-		if err != nil {
-			return
-		}
-		locationTypeStr := stopRow.LocationType
-		if locationTypeStr != "" && locationTypeStr != "0" {
+		// Check location_type is 0 or empty using cache
+		locationTypeStr, exists := stopLocationTypeCache[*stopTime.StopId]
+		if exists && locationTypeStr != "" && locationTypeStr != "0" {
 			ctx.AddError(ctx.GetTranslatedMessage("stop_id_validation.invalid_location_type"))
 			return
 		}

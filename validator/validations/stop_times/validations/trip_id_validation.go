@@ -28,8 +28,8 @@ func TripIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs) {
 		return
 	}
 
-	rows, err := gtfs.GetRowsById("trips", *stopTime.TripId)
-	if err != nil || len(rows) == 0 {
+	// Use IdMap cache instead of database query for performance
+	if !lib.GtfsIdMapKeyExists(gtfs, "trips", *stopTime.TripId) {
 		ctx.AddError(ctx.GetTranslatedMessage("trip_id_validation.not_found", *stopTime.TripId))
 		return
 	}
