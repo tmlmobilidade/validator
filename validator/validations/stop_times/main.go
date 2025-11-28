@@ -39,9 +39,6 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	// This avoids N+1 queries in arrival_time validation
 	tripStopSequences := make(map[string]types.TripStopSequence)
 
-	// Track previous stop_id per trip_id for consecutive stop_id validation
-	previousStopIdByTrip := make(map[string]*string)
-
 	// Single iteration: combine pre-computation and validation
 	err = gtfs.IterateStopTimes(func(i int, rawStopTime types.StopTimeRaw) error {
 		tracker.Track()
@@ -88,9 +85,6 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 		// Validate stop_id (using IdMap cache and location_type cache - no database query)
 		validations.StopIdValidation(&stopTime, i, &gtfs, stopLocationTypeCache)
-
-		// Validate consecutive stop_ids
-		validations.ConsecutiveStopIdValidation(&stopTime, i, previousStopIdByTrip)
 
 		// Validate location_group_id
 		validations.LocationGroupIdValidation(&stopTime, i, &gtfs)

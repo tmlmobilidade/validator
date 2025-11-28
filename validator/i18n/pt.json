@@ -377,9 +377,6 @@
         "required_location_group_id_location_id": "O campo \"stop_id\" é obrigatório se \"location_group_id\" e \"location_id\" não estiverem definidos",
         "invalid_location_type": "O campo \"stop_id\" deve referenciar uma paragem com location_type 0 ou vazio (plataforma/paragem)"
     },
-    "consecutive_stop_id_validation": {
-        "consecutive_stop_ids": "Não é possível ter a mesma paragem \"%s\", diretamente uma depois da outra na viagem \"%s\""
-    },
     "timepoint_validation": {
         "forbidden": "O campo \"timepoint\" é probido",
         "required": "O campo \"timepoint\" é obrigatório",
@@ -607,7 +604,8 @@
         "invalid": "O campo \"stop_sequence\" deve ser um número inteiro não negativo",
         "not_allowed": "O campo \"stop_sequence\" \"%s\" não é permitido",
         "non_increasing_sequence": "Os valores de \"stop_sequence\" devem ser crescentes ao longo da viagem ('%s')",
-        "non_increasing_shape_dist": "Os valores de \"shape_dist_traveled\" devem ser crescentes ao longo da viagem ('%s')"
+        "non_increasing_shape_dist": "Os valores de \"shape_dist_traveled\" devem ser crescentes ao longo da viagem ('%s')",
+        "consecutive_stop_ids": "Não é possível ter a mesma paragem \"%s\", diretamente uma depois da outra na viagem \"%s\""
     },
     "trip_headsign_validation": {
         "forbidden": "O campo \"trip_headsign\" é probido",
