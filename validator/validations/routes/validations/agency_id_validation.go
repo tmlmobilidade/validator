@@ -32,7 +32,11 @@ func AgencyIdValidation(route *types.Route, row int, gtfs types.Gtfs, rules *typ
 		ctx.WithSeverity(types.SEVERITY_WARNING)
 	}
 
-	numAgencies, _ := gtfs.GetTableCount("agency")
+	numAgencies, err := gtfs.GetTableCount("agency")
+	// Fallback to in-memory data if database is not available
+	if err != nil {
+		numAgencies = len(gtfs.Agency)
+	}
 
 	// Check if agency_id exists and is valid
 	if route.AgencyId != nil && *route.AgencyId != "" {

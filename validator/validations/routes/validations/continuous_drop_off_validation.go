@@ -34,7 +34,7 @@ Conditionally Forbidden:
 
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
-func ContinuousDropOffValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *types.RoutesRules) {
+func ContinuousDropOffValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *types.RoutesRules, routesWithWindows map[string]bool) {
 	ctx := lib.NewValidationContext("continuous_drop_off", "routes.txt", "continuous_drop_off_validation", row, services.AppMessageService)
 	if rules != nil && rules.ContinuousDropOff.Severity != "" {
 		ctx.WithSeverity(rules.ContinuousDropOff.Severity)
@@ -55,39 +55,12 @@ func ContinuousDropOffValidation(route *types.Route, row int, gtfs *types.Gtfs, 
 		return
 	}
 
-	// Get all trip IDs for this route
-	tripIds := make([]string, 0)
-	tripRows, err := gtfs.GetRowsById("trips", *route.RouteId)
-	if err == nil {
-		for _, row := range tripRows {
-			tripRaw, err := gtfs.GetTrip(row)
-			if err != nil {
-				continue
-			}
-			if tripId := tripRaw.TripId; tripId != "" {
-				tripIds = append(tripIds, tripId)
-			}
-		}
-	}
-
-	// Check each trip's stop times for pickup/dropoff windows
-	for _, tripId := range tripIds {
-		stopTimes, err := gtfs.GetRowsById("stop_times", tripId)
-		if err == nil {
-			for _, row := range stopTimes {
-				stopTimeRaw, err := gtfs.GetStopTime(row)
-				if err != nil {
-					continue
-				}
-				startWindow := stopTimeRaw.StartPickupDropOffWindow
-				endWindow := stopTimeRaw.EndPickupDropOffWindow
-
-				if startWindow != "" || endWindow != "" {
-					lib.AppLogger.Accent("route.ContinuousDropOff", *route.ContinuousDropOff)
-					ctx.AddError(ctx.GetTranslatedMessage("continuous_drop_off_validation.forbidden_with_window"))
-					return
-				}
-			}
+	// Check if this route has trips with pickup/dropoff windows using pre-computed cache
+	if route.RouteId != nil {
+		if routesWithWindows[*route.RouteId] {
+			lib.AppLogger.Accent("route.ContinuousDropOff", *route.ContinuousDropOff)
+			ctx.AddError(ctx.GetTranslatedMessage("continuous_drop_off_validation.forbidden_with_window"))
+			return
 		}
 	}
 

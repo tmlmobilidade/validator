@@ -13,7 +13,8 @@ func TestContinuousDropOffValidation_MissingContinuousDropOff(t *testing.T) {
 	routeId := "MY_ROUTE_ID"
 	route := &types.Route{RouteId: &routeId, ContinuousDropOff: nil}
 	gtfs := &types.Gtfs{}
-	validations.ContinuousDropOffValidation(route, 1, gtfs, nil)
+	routesWithWindows := make(map[string]bool)
+	validations.ContinuousDropOffValidation(route, 1, gtfs, nil, routesWithWindows)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
@@ -31,7 +32,8 @@ func TestContinuousDropOffValidation_MissingRequiredContinuousDropOff(t *testing
 	gtfs := &types.Gtfs{}
 
 	severity := types.SEVERITY_ERROR
-	validations.ContinuousDropOffValidation(route, 1, gtfs, &types.RoutesRules{ContinuousDropOff: types.RuleConfig{Severity: severity}})
+	routesWithWindows := make(map[string]bool)
+	validations.ContinuousDropOffValidation(route, 1, gtfs, &types.RoutesRules{ContinuousDropOff: types.RuleConfig{Severity: severity}}, routesWithWindows)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
@@ -65,7 +67,9 @@ func TestContinuousDropOffValidation_ForbiddenValueWithDropOffWindow(t *testing.
 		},
 	}
 	severity := types.SEVERITY_ERROR
-	validations.ContinuousDropOffValidation(route, 2, gtfs, &types.RoutesRules{ContinuousDropOff: types.RuleConfig{Severity: severity}})
+	routesWithWindows := make(map[string]bool)
+	routesWithWindows[routeId] = true // Route has trips with pickup/dropoff windows
+	validations.ContinuousDropOffValidation(route, 2, gtfs, &types.RoutesRules{ContinuousDropOff: types.RuleConfig{Severity: severity}}, routesWithWindows)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
@@ -99,7 +103,8 @@ func TestContinuousDropOffValidation_ValidInput(t *testing.T) {
 		},
 	}
 	severity := types.SEVERITY_ERROR
-	validations.ContinuousDropOffValidation(route, 3, gtfs, &types.RoutesRules{ContinuousDropOff: types.RuleConfig{Severity: severity}})
+	routesWithWindows := make(map[string]bool)
+	validations.ContinuousDropOffValidation(route, 3, gtfs, &types.RoutesRules{ContinuousDropOff: types.RuleConfig{Severity: severity}}, routesWithWindows)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
@@ -133,7 +138,9 @@ func TestContinuousDropOffValidation_ValidInputWithDropOffWindow(t *testing.T) {
 		},
 	}
 	severity := types.SEVERITY_ERROR
-	validations.ContinuousDropOffValidation(route, 4, gtfs, &types.RoutesRules{ContinuousDropOff: types.RuleConfig{Severity: severity}})
+	routesWithWindows := make(map[string]bool)
+	routesWithWindows[routeId] = true // Route has trips with pickup/dropoff windows, but continuous_drop_off is "1" so it returns early
+	validations.ContinuousDropOffValidation(route, 4, gtfs, &types.RoutesRules{ContinuousDropOff: types.RuleConfig{Severity: severity}}, routesWithWindows)
 
 	assertion := lib.AssertionMessage{
 		Expected: 0,

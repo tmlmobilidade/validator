@@ -16,10 +16,47 @@ func init() {
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Routes Validations...")
 
+	// Pre-compute trip_id -> route_id mapping for performance
+	// This avoids repeated database queries when checking continuous pickup/dropoff
+	lib.AppLogger.Debug("Pre-computing trip_id -> route_id mapping...")
+	tripToRouteMap := make(map[string]string) // trip_id -> route_id
+	err := gtfs.IterateTrips(func(i int, rawTrip types.TripRaw) error {
+		if rawTrip.TripId != "" && rawTrip.RouteId != "" {
+			tripToRouteMap[rawTrip.TripId] = rawTrip.RouteId
+		}
+		return nil
+	})
+	if err != nil {
+		lib.AppLogger.Error(fmt.Sprintf("Error pre-computing trip to route mapping: %v", err))
+	}
+	lib.AppLogger.Debug(fmt.Sprintf("Pre-computed route mapping for %d trips", len(tripToRouteMap)))
+
+	// Pre-compute which routes have trips with pickup/dropoff windows
+	// This avoids expensive nested loops in continuous pickup/dropoff validation
+	lib.AppLogger.Debug("Pre-computing routes with pickup/dropoff windows...")
+	routesWithWindows := make(map[string]bool) // route_id -> has windows
+	err = gtfs.IterateStopTimes(func(i int, rawStopTime types.StopTimeRaw) error {
+		if rawStopTime.TripId == "" {
+			return nil
+		}
+		// Check if this stop_time has pickup/dropoff windows
+		if rawStopTime.StartPickupDropOffWindow != "" || rawStopTime.EndPickupDropOffWindow != "" {
+			// Get route_id for this trip
+			if routeId, exists := tripToRouteMap[rawStopTime.TripId]; exists {
+				routesWithWindows[routeId] = true
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		lib.AppLogger.Error(fmt.Sprintf("Error pre-computing routes with windows: %v", err))
+	}
+	lib.AppLogger.Debug(fmt.Sprintf("Pre-computed windows for %d routes", len(routesWithWindows)))
+
 	// Create progress tracker
 	tracker := lib.CreateProgressTracker(gtfs, "routes", config.ProgressThresholdLarge)
 
-	err := gtfs.IterateRoutes(func(i int, rawRoute types.RouteRaw) error {
+	err = gtfs.IterateRoutes(func(i int, rawRoute types.RouteRaw) error {
 		tracker.Track()
 		route := validations.ParseRoutes(rawRoute, i)
 
@@ -62,11 +99,11 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// Validate route_sort_order
 		validations.RouteSortOrderValidation(&route, i, routeRules)
 
-		// Validate continuous_drop_off
-		validations.ContinuousDropOffValidation(&route, i, &gtfs, routeRules)
+		// Validate continuous_drop_off (using pre-computed cache)
+		validations.ContinuousDropOffValidation(&route, i, &gtfs, routeRules, routesWithWindows)
 
-		// Validate continuous_pickup
-		validations.ContinuousPickupValidation(&route, i, &gtfs, routeRules)
+		// Validate continuous_pickup (using pre-computed cache)
+		validations.ContinuousPickupValidation(&route, i, &gtfs, routeRules, routesWithWindows)
 
 		// Validate network_id
 		validations.NetworkIdValidation(&route, i, &gtfs, routeRules)

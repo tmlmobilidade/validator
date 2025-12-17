@@ -30,7 +30,19 @@ func RouteIdValidation(route *types.Route, row int, gtfs *types.Gtfs) {
 
 	// Check if route_id is Unique ID
 	rows, err := gtfs.GetRowsById("routes", *route.RouteId)
-	if err == nil && len(rows) > 1 {
+	if err != nil {
+		// Fallback to in-memory IdMap if database is not available
+		if gtfs.IdMap != nil {
+			if routeRows, exists := gtfs.IdMap["routes"]; exists {
+				if indices, found := routeRows[*route.RouteId]; found && len(indices) > 1 {
+					ctx.AddError(ctx.GetTranslatedMessage("route_id_validation.duplicate", *route.RouteId))
+					return
+				}
+			}
+		}
+		return
+	}
+	if len(rows) > 1 {
 		ctx.AddError(ctx.GetTranslatedMessage("route_id_validation.duplicate", *route.RouteId))
 		return
 	}

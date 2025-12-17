@@ -34,7 +34,7 @@ Conditionally Forbidden:
 
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
-func ContinuousPickupValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *types.RoutesRules) {
+func ContinuousPickupValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *types.RoutesRules, routesWithWindows map[string]bool) {
 	ctx := lib.NewValidationContext("continuous_pickup", "routes.txt", "continuous_pickup_validation", row, services.AppMessageService)
 	if rules != nil && rules.ContinuousPickup.Severity != "" {
 		ctx.WithSeverity(rules.ContinuousPickup.Severity)
@@ -55,39 +55,12 @@ func ContinuousPickupValidation(route *types.Route, row int, gtfs *types.Gtfs, r
 		return
 	}
 
-	// Get all trip IDs for this route
-	tripIds := make([]string, 0)
-	tripRows, err := gtfs.GetRowsById("trips", *route.RouteId)
-	if err == nil {
-		for _, row := range tripRows {
-			tripRaw, err := gtfs.GetTrip(row)
-			if err != nil {
-				continue
-			}
-			if tripId := tripRaw.TripId; tripId != "" {
-				tripIds = append(tripIds, tripId)
-			}
-		}
-	}
-
-	// Check each trip's stop times for pickup/dropoff windows
-	for _, tripId := range tripIds {
-		stopTimes, err := gtfs.GetRowsById("stop_times", tripId)
-		if err == nil {
-			for _, row := range stopTimes {
-				stopTimeRaw, err := gtfs.GetStopTime(row)
-				if err != nil {
-					continue
-				}
-				startWindow := stopTimeRaw.StartPickupDropOffWindow
-				endWindow := stopTimeRaw.EndPickupDropOffWindow
-
-				if startWindow != "" || endWindow != "" {
-					lib.AppLogger.Accent("route.ContinuousPickup", *route.ContinuousPickup)
-					ctx.AddError(ctx.GetTranslatedMessage("continuous_pickup_validation.forbidden_with_window"))
-					return
-				}
-			}
+	// Check if this route has trips with pickup/dropoff windows using pre-computed cache
+	if route.RouteId != nil {
+		if routesWithWindows[*route.RouteId] {
+			lib.AppLogger.Accent("route.ContinuousPickup", *route.ContinuousPickup)
+			ctx.AddError(ctx.GetTranslatedMessage("continuous_pickup_validation.forbidden_with_window"))
+			return
 		}
 	}
 

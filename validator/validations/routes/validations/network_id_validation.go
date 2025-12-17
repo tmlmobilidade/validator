@@ -38,7 +38,11 @@ func NetworkIdValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *t
 		return
 	}
 
-	routeNetworkCount, _ := gtfs.GetTableCount("route_networks")
+	routeNetworkCount, err := gtfs.GetTableCount("route_networks")
+	// Fallback to in-memory data if database is not available
+	if err != nil {
+		routeNetworkCount = len(gtfs.RouteNetwork)
+	}
 	if routeNetworkCount > 0 && route.NetworkId != nil {
 		ctx.AddError(ctx.GetTranslatedMessage("network_id_validation.forbidden_when_route_networks_exists"))
 		return

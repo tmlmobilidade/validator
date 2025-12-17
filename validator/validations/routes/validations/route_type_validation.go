@@ -52,6 +52,7 @@ func RouteTypeValidation(route *types.Route, row int, rules *types.RoutesRules) 
 
 	if _, ok := validTypes[*route.RouteType]; !ok {
 		ctx.AddError(ctx.GetTranslatedMessage("route_type_validation.invalid"))
+		return
 	}
 
 	// Validate rules
@@ -61,7 +62,7 @@ func RouteTypeValidation(route *types.Route, row int, rules *types.RoutesRules) 
 		}
 
 		if !slices.Contains(*rules.RouteType.Options, strconv.Itoa(*route.RouteType)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_type_validation.not_allowed", map[string]interface{}{"value": *route.RouteType}))
+			ctx.AddError(ctx.GetTranslatedMessage("route_type_validation.not_allowed", map[string]interface{}{"value": *route.RouteType}))
 			return
 		}
 	}
