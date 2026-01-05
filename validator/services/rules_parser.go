@@ -220,13 +220,62 @@ func (rp *RulesParser) GetRequiredFiles(rules *types.GtfsRules) []string {
 		return []string{}
 	}
 
-	allFiles := lib.GetAllStructTagValues(types.GtfsRules{}, "json")
 	requiredFiles := make([]string, 0)
-
-	for _, file := range allFiles {
-		if lib.GetFieldByTag(rules, file, "_file") == "error" {
-			requiredFiles = append(requiredFiles, file)
-		}
+	
+	// Check each file rules struct for File field with error severity
+	if rules.Agency.File == types.SEVERITY_ERROR {
+		requiredFiles = append(requiredFiles, "agency.txt")
+	}
+	if rules.Stops.File == types.SEVERITY_ERROR {
+		requiredFiles = append(requiredFiles, "stops.txt")
+	}
+	if rules.Routes.File == types.SEVERITY_ERROR {
+		requiredFiles = append(requiredFiles, "routes.txt")
+	}
+	if rules.Trips.File == types.SEVERITY_ERROR {
+		requiredFiles = append(requiredFiles, "trips.txt")
+	}
+	if rules.StopTimes.File == types.SEVERITY_ERROR {
+		requiredFiles = append(requiredFiles, "stop_times.txt")
+	}
+	if rules.Calendar.File == types.SEVERITY_ERROR {
+		requiredFiles = append(requiredFiles, "calendar.txt")
+	}
+	if rules.CalendarDates.File == types.SEVERITY_ERROR {
+		requiredFiles = append(requiredFiles, "calendar_dates.txt")
+	}
+	if rules.Vehicles.File == types.SEVERITY_ERROR {
+		requiredFiles = append(requiredFiles, "vehicles.txt")
+	}
+	if rules.FareAttributes.File == types.SEVERITY_ERROR {
+		requiredFiles = append(requiredFiles, "fare_attributes.txt")
+	}
+	if rules.FareRules.File == types.SEVERITY_ERROR {
+		requiredFiles = append(requiredFiles, "fare_rules.txt")
+	}
+	if rules.Shapes.File == types.SEVERITY_ERROR {
+		requiredFiles = append(requiredFiles, "shapes.txt")
+	}
+	if rules.Frequencies.File == types.SEVERITY_ERROR {
+		requiredFiles = append(requiredFiles, "frequencies.txt")
+	}
+	if rules.Transfers.File == types.SEVERITY_ERROR {
+		requiredFiles = append(requiredFiles, "transfers.txt")
+	}
+	if rules.Pathways.File == types.SEVERITY_ERROR {
+		requiredFiles = append(requiredFiles, "pathways.txt")
+	}
+	if rules.Levels.File == types.SEVERITY_ERROR {
+		requiredFiles = append(requiredFiles, "levels.txt")
+	}
+	if rules.FeedInfo.File == types.SEVERITY_ERROR {
+		requiredFiles = append(requiredFiles, "feed_info.txt")
+	}
+	if rules.Translations.File == types.SEVERITY_ERROR {
+		requiredFiles = append(requiredFiles, "translations.txt")
+	}
+	if rules.Attributions.File == types.SEVERITY_ERROR {
+		requiredFiles = append(requiredFiles, "attributions.txt")
 	}
 
 	return requiredFiles
@@ -237,14 +286,63 @@ func (rp *RulesParser) GetForbiddenFiles(rules *types.GtfsRules) []string {
 		return []string{}
 	}
 
-	allFiles := lib.GetAllStructTagValues(types.GtfsRules{}, "json")
-	requiredFiles := make([]string, 0)
-
-	for _, file := range allFiles {
-		if lib.GetFieldByTag(rules, file, "_file") == "forbidden" {
-			requiredFiles = append(requiredFiles, file)
-		}
+	forbiddenFiles := make([]string, 0)
+	
+	// Check each file rules struct for File field with forbidden severity
+	if rules.Agency.File == types.SEVERITY_FORBIDDEN {
+		forbiddenFiles = append(forbiddenFiles, "agency.txt")
+	}
+	if rules.Stops.File == types.SEVERITY_FORBIDDEN {
+		forbiddenFiles = append(forbiddenFiles, "stops.txt")
+	}
+	if rules.Routes.File == types.SEVERITY_FORBIDDEN {
+		forbiddenFiles = append(forbiddenFiles, "routes.txt")
+	}
+	if rules.Trips.File == types.SEVERITY_FORBIDDEN {
+		forbiddenFiles = append(forbiddenFiles, "trips.txt")
+	}
+	if rules.StopTimes.File == types.SEVERITY_FORBIDDEN {
+		forbiddenFiles = append(forbiddenFiles, "stop_times.txt")
+	}
+	if rules.Calendar.File == types.SEVERITY_FORBIDDEN {
+		forbiddenFiles = append(forbiddenFiles, "calendar.txt")
+	}
+	if rules.CalendarDates.File == types.SEVERITY_FORBIDDEN {
+		forbiddenFiles = append(forbiddenFiles, "calendar_dates.txt")
+	}
+	if rules.Vehicles.File == types.SEVERITY_FORBIDDEN {
+		forbiddenFiles = append(forbiddenFiles, "vehicles.txt")
+	}
+	if rules.FareAttributes.File == types.SEVERITY_FORBIDDEN {
+		forbiddenFiles = append(forbiddenFiles, "fare_attributes.txt")
+	}
+	if rules.FareRules.File == types.SEVERITY_FORBIDDEN {
+		forbiddenFiles = append(forbiddenFiles, "fare_rules.txt")
+	}
+	if rules.Shapes.File == types.SEVERITY_FORBIDDEN {
+		forbiddenFiles = append(forbiddenFiles, "shapes.txt")
+	}
+	if rules.Frequencies.File == types.SEVERITY_FORBIDDEN {
+		forbiddenFiles = append(forbiddenFiles, "frequencies.txt")
+	}
+	if rules.Transfers.File == types.SEVERITY_FORBIDDEN {
+		forbiddenFiles = append(forbiddenFiles, "transfers.txt")
+	}
+	if rules.Pathways.File == types.SEVERITY_FORBIDDEN {
+		forbiddenFiles = append(forbiddenFiles, "pathways.txt")
+	}
+	if rules.Levels.File == types.SEVERITY_FORBIDDEN {
+		forbiddenFiles = append(forbiddenFiles, "levels.txt")
+	}
+	if rules.FeedInfo.File == types.SEVERITY_FORBIDDEN {
+		forbiddenFiles = append(forbiddenFiles, "feed_info.txt")
+	}
+	if rules.Translations.File == types.SEVERITY_FORBIDDEN {
+		forbiddenFiles = append(forbiddenFiles, "translations.txt")
+	}
+	if rules.Attributions.File == types.SEVERITY_FORBIDDEN {
+		forbiddenFiles = append(forbiddenFiles, "attributions.txt")
 	}
 
-	return requiredFiles
+	return forbiddenFiles
 }

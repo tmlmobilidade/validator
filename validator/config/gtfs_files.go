@@ -17,6 +17,7 @@ var GTFSFileToTable = map[string]string{
 	"municipalities.txt":  "municipalities",
 	"periods.txt":         "periods",
 	"shapes.txt":          "shapes",
+	"vehicles.txt":        "vehicles",
 }
 
 // GTFSFiles is the set of valid GTFS filenames that will be processed
@@ -36,6 +37,7 @@ var GTFSFiles = map[string]struct{}{
 	"municipalities.txt":  {},
 	"periods.txt":         {},
 	"shapes.txt":          {},
+	"vehicles.txt":        {},
 }
 
 // GTFSTables is the list of all possible GTFS table names (without .txt extension)
@@ -48,7 +50,7 @@ var GTFSTables = []string{
 	"location_group_stops", "location_groups", "municipalities", "networks",
 	"pathways", "periods", "rider_categories", "route_networks", "routes",
 	"shapes", "stop_areas", "stop_times", "stops", "timeframes", "transfers",
-	"translations", "trips",
+	"translations", "trips", "vehicles",
 }
 
 // FileToTable converts a GTFS file name (with .txt extension) to its table name
