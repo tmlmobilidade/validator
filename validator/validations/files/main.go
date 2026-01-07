@@ -29,6 +29,7 @@ func NewFileValidation(severity *types.Severity) *FileValidation {
 
 func (v *FileValidation) Validate(gtfs types.Gtfs, rules *types.GtfsRules) (messages []types.Message) {
 	messages = append(messages, v.checkForbiddenFiles(gtfs, rules)...)
+	messages = append(messages, v.checkWarningFiles(gtfs, rules)...)
 	messages = append(messages, v.checkRequiredFiles(gtfs, rules)...)
 	messages = append(messages, v.checkStopsConditional(gtfs)...)
 	messages = append(messages, v.checkCalendarFiles(gtfs)...)
@@ -58,6 +59,20 @@ func (v *FileValidation) checkForbiddenFiles(gtfs types.Gtfs, rules *types.GtfsR
 		tableName := file[:len(file)-4]
 		if gtfs.HasTable(tableName) {
 			messages = append(messages, v.newMessage(file, fmt.Sprintf(i18n.AppTranslator.Get("file_validations.forbidden"), file)))
+		}
+	}
+	return messages
+}
+
+func (v *FileValidation) checkWarningFiles(gtfs types.Gtfs, rules *types.GtfsRules) []types.Message {
+	var messages []types.Message
+
+	warningFiles := services.NewRulesParser(services.AppCLI.Options.RulesPath).GetWarningFiles(rules)
+
+	for _, file := range warningFiles {
+		tableName := file[:len(file)-4]
+		if gtfs.HasTable(tableName) {
+			messages = append(messages, v.newMessage(file, fmt.Sprintf(i18n.AppTranslator.Get("file_validations.warning"), file)))
 		}
 	}
 	return messages

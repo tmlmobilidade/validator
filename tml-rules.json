@@ -15,20 +15,20 @@
 			"severity": "ignore"
 		},
 		"agency_name": {
-			"options": ["Área Metropolitana de Lisboa", "Carris", "Metropolitano Olissipo", "Comboios de Portugal", "Transtejo / Soflusa", "Transportes Sul do Tejo", "Rodoviária de Lisboa", "Soflusa", "Transportes Coletivos do Barreiro", "Vimeca Transportes", "Scotturb", "ID/JJ/HLM", "Isidoro Duarte", "Barraqueiro Transportes", "Joaquim Jerónimo", "Fertagus", "Metro Transportes do Sul", "Henrique Leonardo da Mota", "Cascais Próxima", "Portal VIVA", "Rodoviária do Tejo", "Câmara Municipal de Lisboa", "Viação Alvorada", "Alsa Todi", "Município de Oeiras", "Municipio de Setúbal"],
+			"options": ["Área Metropolitana de Lisboa", "Carris", "Metropolitano de Lisboa", "Comboios de Portugal", "TTSL - Transtejo Soflusa", "Transportes Sul do Tejo", "Rodoviária de Lisboa", "Soflusa", "Transportes Coletivos do Barreiro", "Vimeca Transportes", "Scotturb", "ID/JJ/HLM", "Isidoro Duarte", "Barraqueiro Transportes", "Joaquim Jerónimo", "Fertagus", "Metro Transportes do Sul", "Henrique Leonardo da Mota", "Cascais Próxima", "Portal VIVA", "Rodoviária do Tejo", "Câmara Municipal de Lisboa", "Viação Alvorada", "Alsa Todi", "Município de Oeiras", "Municipio de Setúbal"],
 			"severity": "warning"
 		},
 		"agency_name_id_match": {
 			"compare": [
 				{ "key": "0", "value": "Área Metropolitana de Lisboa" },
 				{ "key": "1", "value": "Carris" },
-				{ "key": "2", "value": "Metropolitano Olissipo" },
+				{ "key": "2", "value": "Metropolitano de Lisboa" },
 				{ "key": "3", "value": "Comboios de Portugal" },
-				{ "key": "4", "value": "Transtejo / Soflusa" },
+				{ "key": "4", "value": "TTSL - Transtejo Soflusa" },
 				{ "key": "5", "value": "Transportes Sul do Tejo" },
 				{ "key": "6", "value": "Rodoviária de Lisboa" },
 				{ "key": "7", "value": "Soflusa" },
-				{ "key": "8", "value": "Transportes Coletivos do Barreiro" },
+				{ "key": "8", "value": "Transportes Colectivos do Barreiro" },
 				{ "key": "9", "value": "Vimeca Transportes" },
 				{ "key": "10", "value": "Scotturb" },
 				{ "key": "11", "value": "ID/JJ/HLM" },
@@ -49,7 +49,7 @@
 				{ "key": "49", "value": "Município de Oeiras" },
 				{ "key": "54", "value": "Municipio de Setúbal" }
 			],
-			"severity": "warning"
+			"severity": "error"
 		},
 		"agency_phone": {
 			"severity": "error"
@@ -587,6 +587,9 @@
 		"direction_id": {
 			"severity": "error"
 		},
+		"direction_pattern_id_match": {
+			"severity": "ignore"
+		},
 		"pattern_id": {
 			"severity": "error"
 		},
@@ -613,13 +616,10 @@
 		},
 		"wheelchair_accessible": {
 			"severity": "warning"
-		},
-		"direction_pattern_id_match": {
-			"severity": "error"
 		}
 	},
 	"vehicles": {
-		"_file": "ignore",
+		"_file": "warning",
 		"agency_id": {
 			"severity": "error"
 		},

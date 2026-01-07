@@ -1,6 +1,7 @@
 {
     "file_validations": {
         "forbidden": "Forbidden file \"%s\" is present",
+        "warning": "Warning file \"%s\" is recommended",
         "required": "Required file \"%s\" is missing",
         "not_supported": "The file \"%s\" is not supported by the validator and was ignored",
         "not_found": "The file \"%s\" is missing",
