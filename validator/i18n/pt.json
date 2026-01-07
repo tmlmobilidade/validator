@@ -1,6 +1,7 @@
 {
     "file_validations": {
         "forbidden": "O ficheiro \"%s\" é proibido",
+        "warning": "O ficheiro \"%s\" é recomendado",
         "required": "O ficheiro \"%s\" é obrigatório",
         "not_supported": "O ficheiro \"%s\" não é suportado pelo validador e foi ignorado",
         "not_found": "O ficheiro \"%s\" não existe",

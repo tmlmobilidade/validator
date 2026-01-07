@@ -7,6 +7,7 @@ import (
 	"main/lib"
 	"main/types"
 	"os"
+	"reflect"
 )
 
 // RulesParser handles parsing of GTFS validation rules from JSON files
@@ -224,12 +225,47 @@ func (rp *RulesParser) GetRequiredFiles(rules *types.GtfsRules) []string {
 	requiredFiles := make([]string, 0)
 
 	for _, file := range allFiles {
-		if lib.GetFieldByTag(rules, file, "_file") == "error" {
-			requiredFiles = append(requiredFiles, file)
+		// Get the nested struct field value by json tag
+		fileValue := rp.getNestedFieldByTag(rules, "json", file)
+		if fileValue.IsValid() && fileValue.Kind() == reflect.Struct {
+			// Look for _file field in the nested struct
+			fileField := rp.getNestedFieldByTag(fileValue.Addr().Interface(), "json", "_file")
+			if fileField.IsValid() {
+				severity := types.Severity(fileField.String())
+				if severity == types.SEVERITY_ERROR {
+					// Add .txt extension to match file name format
+					requiredFiles = append(requiredFiles, file+".txt")
+				}
+			}
 		}
 	}
 
 	return requiredFiles
+}
+
+// getNestedFieldByTag gets a field value by tag from a struct (handles nested structs)
+func (rp *RulesParser) getNestedFieldByTag(obj interface{}, tagKey, tagValue string) reflect.Value {
+	v := reflect.ValueOf(obj)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+
+	if v.Kind() != reflect.Struct {
+		return reflect.Value{}
+	}
+
+	t := v.Type()
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		fieldType := t.Field(i)
+		tag := fieldType.Tag.Get(tagKey)
+
+		if tag == tagValue {
+			return field
+		}
+	}
+
+	return reflect.Value{}
 }
 
 func (rp *RulesParser) GetForbiddenFiles(rules *types.GtfsRules) []string {
@@ -238,13 +274,50 @@ func (rp *RulesParser) GetForbiddenFiles(rules *types.GtfsRules) []string {
 	}
 
 	allFiles := lib.GetAllStructTagValues(types.GtfsRules{}, "json")
-	requiredFiles := make([]string, 0)
+	forbiddenFiles := make([]string, 0)
 
 	for _, file := range allFiles {
-		if lib.GetFieldByTag(rules, file, "_file") == "forbidden" {
-			requiredFiles = append(requiredFiles, file)
+		// Get the nested struct field value by json tag
+		fileValue := rp.getNestedFieldByTag(rules, "json", file)
+		if fileValue.IsValid() && fileValue.Kind() == reflect.Struct {
+			// Look for _file field in the nested struct
+			fileField := rp.getNestedFieldByTag(fileValue.Addr().Interface(), "json", "_file")
+			if fileField.IsValid() {
+				severity := types.Severity(fileField.String())
+				if severity == types.SEVERITY_FORBIDDEN {
+					// Add .txt extension to match file name format
+					forbiddenFiles = append(forbiddenFiles, file+".txt")
+				}
+			}
 		}
 	}
 
-	return requiredFiles
+	return forbiddenFiles
+}
+
+func (rp *RulesParser) GetWarningFiles(rules *types.GtfsRules) []string {
+	if rules == nil {
+		return []string{}
+	}
+
+	allFiles := lib.GetAllStructTagValues(types.GtfsRules{}, "json")
+	warningFiles := make([]string, 0)
+
+	for _, file := range allFiles {
+		// Get the nested struct field value by json tag
+		fileValue := rp.getNestedFieldByTag(rules, "json", file)
+		if fileValue.IsValid() && fileValue.Kind() == reflect.Struct {
+			// Look for _file field in the nested struct
+			fileField := rp.getNestedFieldByTag(fileValue.Addr().Interface(), "json", "_file")
+			if fileField.IsValid() {
+				severity := types.Severity(fileField.String())
+				if severity == types.SEVERITY_WARNING {
+					// Add .txt extension to match file name format
+					warningFiles = append(warningFiles, file+".txt")
+				}
+			}
+		}
+	}
+
+	return warningFiles
 }
