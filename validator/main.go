@@ -133,12 +133,11 @@ func main() {
 
 	//
 	// 2. Check File Requirements
-	if errs := file_validation.NewFileValidation(nil).Validate(gtfs, rules); len(errs) > 0 {
-		for _, err := range errs {
-			services.AppMessageService.AddMessage(err)
-		}
-
-		services.AppMessageService.PrintJSON()
+	// File validations add messages directly to AppMessageService
+	// Only exit early if there are errors (warnings are ok to continue)
+	if hasErrors := file_validation.NewFileValidation().Validate(gtfs, rules); hasErrors {
+		services.AppMessageService.WriteToFile(services.AppCLI.Options.OutputPath)
+		lib.AppLogger.Error("File validations found errors. Exiting.")
 		return
 	}
 

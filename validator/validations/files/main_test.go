@@ -3,6 +3,7 @@ package file_validation
 import (
 	"database/sql"
 	"fmt"
+	"main/services"
 	"main/types"
 	"os"
 	"reflect"
@@ -219,8 +220,8 @@ func TestFileValidation(t *testing.T) {
 		name                 string
 		gtfs                 types.Gtfs
 		rules                *types.GtfsRules
-		wantMessages         int
-		wantSeverity         types.Severity
+		wantErrors           int
+		wantWarnings         int
 		checkMessages        func([]types.Message) bool
 		createLocationsTable bool // For testing locations.geojson scenario
 	}{
@@ -235,8 +236,8 @@ func TestFileValidation(t *testing.T) {
 				Calendar: []types.CalendarRaw{{ServiceId: "1"}},
 			},
 			rules:        nil,
-			wantMessages: 0,
-			wantSeverity: types.SEVERITY_ERROR,
+			wantErrors:   0,
+			wantWarnings: 0,
 		},
 		{
 			name: "missing required files",
@@ -247,8 +248,8 @@ func TestFileValidation(t *testing.T) {
 				Calendar: []types.CalendarRaw{{ServiceId: "1"}},
 			},
 			rules:        nil,
-			wantMessages: 3, // missing agency.txt, trips.txt, stop_times.txt
-			wantSeverity: types.SEVERITY_ERROR,
+			wantErrors:   3, // missing agency.txt, trips.txt, stop_times.txt
+			wantWarnings: 0,
 			checkMessages: func(messages []types.Message) bool {
 				requiredFiles := map[string]bool{
 					"agency.txt":     false,
@@ -281,8 +282,8 @@ func TestFileValidation(t *testing.T) {
 				Calendar: []types.CalendarRaw{{ServiceId: "1"}},
 			},
 			rules:        nil,
-			wantMessages: 1,
-			wantSeverity: types.SEVERITY_ERROR,
+			wantErrors:   1,
+			wantWarnings: 0,
 			checkMessages: func(messages []types.Message) bool {
 				for _, msg := range messages {
 					if msg.FileName == "stops.txt" {
@@ -302,8 +303,8 @@ func TestFileValidation(t *testing.T) {
 				Calendar: []types.CalendarRaw{{ServiceId: "1"}},
 			},
 			rules:                nil,
-			wantMessages:         0,
-			wantSeverity:         types.SEVERITY_ERROR,
+			wantErrors:           0,
+			wantWarnings:         0,
 			createLocationsTable: true, // Create locations table to simulate locations.geojson
 		},
 		{
@@ -317,8 +318,8 @@ func TestFileValidation(t *testing.T) {
 				// No Calendar or CalendarDates
 			},
 			rules:        nil,
-			wantMessages: 1, // One for either required
-			wantSeverity: types.SEVERITY_ERROR,
+			wantErrors:   1, // One for either required
+			wantWarnings: 0,
 			checkMessages: func(messages []types.Message) bool {
 				for _, msg := range messages {
 					if msg.FileName == "calendar.txt" {
@@ -341,8 +342,8 @@ func TestFileValidation(t *testing.T) {
 				Pathways: []types.PathwaysRaw{{PathwayMode: "5"}}, // elevator
 			},
 			rules:        nil,
-			wantMessages: 1,
-			wantSeverity: types.SEVERITY_ERROR,
+			wantErrors:   1,
+			wantWarnings: 0,
 			checkMessages: func(messages []types.Message) bool {
 				for _, msg := range messages {
 					if msg.FileName == "levels.txt" {
@@ -364,8 +365,8 @@ func TestFileValidation(t *testing.T) {
 				Translations: []types.TranslationsRaw{{Translation: "1"}},
 			},
 			rules:        nil,
-			wantMessages: 1,
-			wantSeverity: types.SEVERITY_ERROR,
+			wantErrors:   1,
+			wantWarnings: 0,
 			checkMessages: func(messages []types.Message) bool {
 				for _, msg := range messages {
 					if msg.FileName == "feed_info.txt" {
@@ -387,8 +388,8 @@ func TestFileValidation(t *testing.T) {
 				Network:  []types.NetworkRaw{{NetworkId: "1"}}, // networks.txt exists, should be forbidden
 			},
 			rules:        nil,
-			wantMessages: 1,
-			wantSeverity: types.SEVERITY_ERROR,
+			wantErrors:   1,
+			wantWarnings: 0,
 			checkMessages: func(messages []types.Message) bool {
 				for _, msg := range messages {
 					if msg.FileName == "networks.txt" {
@@ -410,8 +411,8 @@ func TestFileValidation(t *testing.T) {
 				RouteNetwork: []types.RouteNetworkRaw{{NetworkId: "1"}},
 			},
 			rules:        nil,
-			wantMessages: 1,
-			wantSeverity: types.SEVERITY_ERROR,
+			wantErrors:   1,
+			wantWarnings: 0,
 			checkMessages: func(messages []types.Message) bool {
 				for _, msg := range messages {
 					if msg.FileName == "route_networks.txt" {
@@ -436,8 +437,8 @@ func TestFileValidation(t *testing.T) {
 					File: types.SEVERITY_ERROR, // Mark feed_info.txt as required
 				},
 			},
-			wantMessages: 1,
-			wantSeverity: types.SEVERITY_ERROR,
+			wantErrors:   1,
+			wantWarnings: 0,
 			checkMessages: func(messages []types.Message) bool {
 				for _, msg := range messages {
 					if msg.FileName == "feed_info.txt" {
@@ -462,8 +463,8 @@ func TestFileValidation(t *testing.T) {
 					File: types.SEVERITY_ERROR, // Mark shapes.txt as required
 				},
 			},
-			wantMessages: 1,
-			wantSeverity: types.SEVERITY_ERROR,
+			wantErrors:   1,
+			wantWarnings: 0,
 			checkMessages: func(messages []types.Message) bool {
 				for _, msg := range messages {
 					if msg.FileName == "shapes.txt" {
@@ -494,8 +495,8 @@ func TestFileValidation(t *testing.T) {
 					File: types.SEVERITY_ERROR,
 				},
 			},
-			wantMessages: 3,
-			wantSeverity: types.SEVERITY_ERROR,
+			wantErrors:   3,
+			wantWarnings: 0,
 			checkMessages: func(messages []types.Message) bool {
 				requiredFiles := map[string]bool{
 					"feed_info.txt":       false,
@@ -533,13 +534,16 @@ func TestFileValidation(t *testing.T) {
 					File: types.SEVERITY_ERROR, // Mark feed_info.txt as required
 				},
 			},
-			wantMessages: 0,
-			wantSeverity: types.SEVERITY_ERROR,
+			wantErrors:   0,
+			wantWarnings: 0,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Clear message service before each test
+			services.AppMessageService.Clear()
+
 			// Create test GTFS with database
 			testGtfs, cleanup, err := createTestGtfs(tt.gtfs)
 			if err != nil {
@@ -556,26 +560,34 @@ func TestFileValidation(t *testing.T) {
 				}
 			}
 
-			v := NewFileValidation(&tt.wantSeverity)
-			messages := v.Validate(*testGtfs, tt.rules)
+			v := NewFileValidation()
+			hasErrors := v.Validate(*testGtfs, tt.rules)
 
-			if len(messages) != tt.wantMessages {
-				t.Errorf("[%v] FileValidation.Validate() got %v messages, want %v", tt.name, len(messages), tt.wantMessages)
-				for _, msg := range messages {
+			summary := services.AppMessageService.GetSummary()
+			if summary.TotalErrors != tt.wantErrors {
+				t.Errorf("[%v] FileValidation.Validate() got %v errors, want %v", tt.name, summary.TotalErrors, tt.wantErrors)
+				for _, msg := range summary.Messages {
 					fmt.Println(msg)
 				}
 			}
 
-			for _, msg := range messages {
-				if msg.Severity != tt.wantSeverity {
-					t.Errorf("[%v] FileValidation.Validate() got message with severity %v, want %v", tt.name, msg.Severity, tt.wantSeverity)
-				}
+			if summary.TotalWarnings != tt.wantWarnings {
+				t.Errorf("[%v] FileValidation.Validate() got %v warnings, want %v", tt.name, summary.TotalWarnings, tt.wantWarnings)
+			}
+
+			// Check hasErrors return value
+			expectedHasErrors := tt.wantErrors > 0
+			if hasErrors != expectedHasErrors {
+				t.Errorf("[%v] FileValidation.Validate() hasErrors = %v, want %v", tt.name, hasErrors, expectedHasErrors)
+			}
+
+			for _, msg := range summary.Messages {
 				if msg.ValidationID != v.ID {
 					t.Errorf("[%v] FileValidation.Validate() got message with validation ID %v, want %v", tt.name, msg.ValidationID, v.ID)
 				}
 			}
 
-			if tt.checkMessages != nil && !tt.checkMessages(messages) {
+			if tt.checkMessages != nil && !tt.checkMessages(summary.Messages) {
 				t.Errorf("[%v] FileValidation.Validate() messages did not match expected conditions", tt.name)
 			}
 		})
@@ -587,8 +599,7 @@ func TestCheckWarningFiles(t *testing.T) {
 		name          string
 		gtfs          types.Gtfs
 		rules         *types.GtfsRules
-		wantMessages  int
-		wantSeverity  types.Severity
+		wantWarnings  int
 		checkMessages func([]types.Message) bool
 	}{
 		{
@@ -607,8 +618,7 @@ func TestCheckWarningFiles(t *testing.T) {
 					File: types.SEVERITY_WARNING, // Mark feed_info.txt as warning
 				},
 			},
-			wantMessages: 1,
-			wantSeverity: types.SEVERITY_WARNING,
+			wantWarnings: 1,
 			checkMessages: func(messages []types.Message) bool {
 				for _, msg := range messages {
 					if msg.FileName == "feed_info.txt" && msg.Severity == types.SEVERITY_WARNING {
@@ -634,8 +644,7 @@ func TestCheckWarningFiles(t *testing.T) {
 					File: types.SEVERITY_WARNING, // Mark shapes.txt as warning
 				},
 			},
-			wantMessages: 1,
-			wantSeverity: types.SEVERITY_WARNING,
+			wantWarnings: 1,
 			checkMessages: func(messages []types.Message) bool {
 				for _, msg := range messages {
 					if msg.FileName == "shapes.txt" && msg.Severity == types.SEVERITY_WARNING {
@@ -661,8 +670,7 @@ func TestCheckWarningFiles(t *testing.T) {
 					File: types.SEVERITY_WARNING, // Mark feed_info.txt as warning
 				},
 			},
-			wantMessages: 0,
-			wantSeverity: types.SEVERITY_WARNING,
+			wantWarnings: 0,
 		},
 		{
 			name: "warning file from rules - multiple files marked as warning",
@@ -686,8 +694,7 @@ func TestCheckWarningFiles(t *testing.T) {
 					File: types.SEVERITY_WARNING,
 				},
 			},
-			wantMessages: 3,
-			wantSeverity: types.SEVERITY_WARNING,
+			wantWarnings: 3,
 			checkMessages: func(messages []types.Message) bool {
 				warningFiles := map[string]bool{
 					"feed_info.txt":       false,
@@ -722,8 +729,7 @@ func TestCheckWarningFiles(t *testing.T) {
 				Calendar: []types.CalendarRaw{{ServiceId: "1"}},
 			},
 			rules:        nil,
-			wantMessages: 0,
-			wantSeverity: types.SEVERITY_WARNING,
+			wantWarnings: 0,
 		},
 		{
 			name: "warning file from rules - mix of warning and error severity",
@@ -744,25 +750,27 @@ func TestCheckWarningFiles(t *testing.T) {
 					File: types.SEVERITY_ERROR, // Error severity (should not appear in warning messages)
 				},
 			},
-			wantMessages: 1, // Only feed_info.txt should generate warning
-			wantSeverity: types.SEVERITY_WARNING,
+			wantWarnings: 1, // Only feed_info.txt should generate warning
 			checkMessages: func(messages []types.Message) bool {
+				warningCount := 0
 				for _, msg := range messages {
-					if msg.FileName == "feed_info.txt" && msg.Severity == types.SEVERITY_WARNING {
-						return true
-					}
-					// shapes.txt should not appear here (it's error severity, handled by checkRequiredFiles)
-					if msg.FileName == "shapes.txt" {
-						return false
+					if msg.Severity == types.SEVERITY_WARNING {
+						warningCount++
+						if msg.FileName != "feed_info.txt" {
+							return false
+						}
 					}
 				}
-				return true
+				return warningCount == 1
 			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Clear message service before each test
+			services.AppMessageService.Clear()
+
 			// Create test GTFS with database
 			testGtfs, cleanup, err := createTestGtfs(tt.gtfs)
 			if err != nil {
@@ -771,17 +779,18 @@ func TestCheckWarningFiles(t *testing.T) {
 			defer cleanup()
 			defer testGtfs.Close()
 
-			v := NewFileValidation(&tt.wantSeverity)
-			messages := v.checkWarningFiles(*testGtfs, tt.rules)
+			v := NewFileValidation()
+			v.checkWarningFiles(*testGtfs, tt.rules)
 
-			if len(messages) != tt.wantMessages {
-				t.Errorf("[%v] FileValidation.checkWarningFiles() got %v messages, want %v", tt.name, len(messages), tt.wantMessages)
-				for _, msg := range messages {
+			summary := services.AppMessageService.GetSummary()
+			if summary.TotalWarnings != tt.wantWarnings {
+				t.Errorf("[%v] FileValidation.checkWarningFiles() got %v warnings, want %v", tt.name, summary.TotalWarnings, tt.wantWarnings)
+				for _, msg := range summary.Messages {
 					fmt.Println(msg)
 				}
 			}
 
-			for _, msg := range messages {
+			for _, msg := range summary.Messages {
 				if msg.Severity != types.SEVERITY_WARNING {
 					t.Errorf("[%v] FileValidation.checkWarningFiles() got message with severity %v, want %v", tt.name, msg.Severity, types.SEVERITY_WARNING)
 				}
@@ -790,7 +799,7 @@ func TestCheckWarningFiles(t *testing.T) {
 				}
 			}
 
-			if tt.checkMessages != nil && !tt.checkMessages(messages) {
+			if tt.checkMessages != nil && !tt.checkMessages(summary.Messages) {
 				t.Errorf("[%v] FileValidation.checkWarningFiles() messages did not match expected conditions", tt.name)
 			}
 		})
