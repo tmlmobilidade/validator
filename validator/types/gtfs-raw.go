@@ -71,6 +71,7 @@ type RouteRaw struct {
 	RouteTextColor    string `gtfs:"route_text_color"`
 	RouteUrl          string `gtfs:"route_url"`
 	NetworkId         string `gtfs:"network_id"`
+	PathType          string `gtfs:"path_type"`
 }
 
 /* TRIP */

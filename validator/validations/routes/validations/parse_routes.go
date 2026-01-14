@@ -9,12 +9,12 @@ import (
 
 func ParseRoutes(rawRoute types.RouteRaw, row int) types.Route {
 	var (
-		route                                                                                                                         types.Route = types.Route{}
-		routeId                                                                                                                       string
-		routeType                                                                                                                     int
-		agencyId, continuousDropOff, continuousPickup, routeColor, routeDesc, routeLongName, routeShortName, routeTextColor, routeUrl string
-		routeSortOrder                                                                                                                int
-		messages                                                                                                                      []types.Message
+		route                                                                                                                                   types.Route = types.Route{}
+		routeId                                                                                                                                 string
+		routeType                                                                                                                               int
+		agencyId, continuousDropOff, continuousPickup, routeColor, routeDesc, routeLongName, routeShortName, routeTextColor, routeUrl, pathType string
+		routeSortOrder                                                                                                                          int
+		messages                                                                                                                                []types.Message
 	)
 
 	stringFields := map[string]*string{
@@ -28,6 +28,7 @@ func ParseRoutes(rawRoute types.RouteRaw, row int) types.Route {
 		"route_short_name":    &routeShortName,
 		"route_text_color":    &routeTextColor,
 		"route_url":           &routeUrl,
+		"path_type":           &pathType,
 	}
 
 	intFields := map[string]*int{
@@ -75,6 +76,7 @@ func ParseRoutes(rawRoute types.RouteRaw, row int) types.Route {
 	route.RouteSortOrder = lib.IfThenElse(rawRoute.RouteSortOrder != "", &routeSortOrder, nil)
 	route.RouteTextColor = lib.IfThenElse(rawRoute.RouteTextColor != "", &routeTextColor, nil)
 	route.RouteUrl = lib.IfThenElse(rawRoute.RouteUrl != "", &routeUrl, nil)
+	route.PathType = lib.IfThenElse(rawRoute.PathType != "", &pathType, nil)
 
 	return route
 }

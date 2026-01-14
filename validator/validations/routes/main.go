@@ -108,6 +108,9 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// Validate network_id
 		validations.NetworkIdValidation(&route, i, &gtfs, routeRules)
 
+		// Validate path_type (TML-specific)
+		validations.PathTypeValidation(&route, i, routeRules)
+
 		return nil
 	})
 

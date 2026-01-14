@@ -103,6 +103,7 @@ type Route struct {
 	RouteTextColor    *string `json:"route_text_color"`
 	RouteUrl          *string `json:"route_url"`
 	NetworkId         *string `json:"network_id"`
+	PathType          *string `json:"path_type"`
 }
 
 /* TRIP */

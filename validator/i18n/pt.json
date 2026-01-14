@@ -252,6 +252,11 @@
         "invalid": "O campo \"route_type\" deve ser um dos valores enum GTFS válidos (0,1,2,3,4,5,6,7,11,12)",
         "not_allowed": "O campo \"route_type\" \"%s\" não é permitido"
     },
+    "path_type_validation": {
+        "forbidden": "O campo \"path_type\" é proibido",
+        "invalid": "O campo \"path_type\" deve ser um dos valores válidos (1, 2 ou 3). Recebido: \"%s\"",
+        "not_allowed": "O campo \"path_type\" \"%s\" não é permitido"
+    },
     "route_url_validation": {
         "forbidden": "O campo \"route_url\" é probido",
         "required": "O campo \"route_url\" é obrigatório",
