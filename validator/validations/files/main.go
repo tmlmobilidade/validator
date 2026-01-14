@@ -65,13 +65,13 @@ func (v *FileValidation) checkForbiddenFiles(gtfs types.Gtfs, rules *types.GtfsR
 }
 
 func (v *FileValidation) checkWarningFiles(gtfs types.Gtfs, rules *types.GtfsRules) []types.Message {
+	warningFromRules := services.NewRulesParser(services.AppCLI.Options.RulesPath).GetWarningFiles(rules)
+
 	var messages []types.Message
 
-	warningFiles := services.NewRulesParser(services.AppCLI.Options.RulesPath).GetWarningFiles(rules)
-
-	for _, file := range warningFiles {
+	for _, file := range warningFromRules {
 		tableName := file[:len(file)-4]
-		if gtfs.HasTable(tableName) {
+		if !gtfs.HasTable(tableName) {
 			messages = append(messages, v.newMessage(file, fmt.Sprintf(i18n.AppTranslator.Get("file_validations.warning"), file)))
 		}
 	}
