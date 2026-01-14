@@ -5,8 +5,8 @@ import (
 	"main/config"
 	"main/lib"
 	"main/types"
-	validations "main/validations/routes/validations"
 	registry "main/validations"
+	validations "main/validations/routes/validations"
 )
 
 func init() {
@@ -108,7 +108,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// Validate network_id
 		validations.NetworkIdValidation(&route, i, &gtfs, routeRules)
 
-		// Validate path_type (TML-specific)
+		// [CUSTOM VALIDATION] Validate path_type
 		validations.PathTypeValidation(&route, i, routeRules)
 
 		return nil

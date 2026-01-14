@@ -29,40 +29,35 @@ This is a TML-specific extension to the GTFS standard.
 */
 func PathTypeValidation(route *types.Route, row int, rules *types.RoutesRules) {
 	ctx := lib.NewValidationContext("path_type", "routes.txt", "path_type_validation", row, services.AppMessageService)
-	if rules != nil && rules.PathType.Severity != "" {
+	if rules != nil && rules.PathType.Severity != types.SEVERITY_IGNORE {
 		ctx.WithSeverity(rules.PathType.Severity)
 	}
 
-	validTypes := []string{"1", "2", "3"}
-
-	// path_type is optional, so if it's nil or empty, we don't validate
+	// Check Required
 	if route.PathType == nil || *route.PathType == "" {
-		if ctx.IsForbidden() {
-			ctx.AddError(ctx.GetTranslatedMessage("path_type_validation.forbidden"))
+		if ctx.ShouldSkip() {
+			return
 		}
+
+		message := ctx.GetRequiredMessage("path_type_validation.required", "path_type_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
 	// Check if field is forbidden - if present, it's an error
 	if ctx.IsForbidden() {
-		ctx.AddError(ctx.GetTranslatedMessage("path_type_validation.forbidden"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("path_type_validation.forbidden"))
 		return
 	}
 
-	// Validate against valid options
-	if !slices.Contains(validTypes, *route.PathType) {
-		ctx.AddError(ctx.GetTranslatedMessage("path_type_validation.invalid", *route.PathType))
-		return
-	}
-
-	// Validate rules - check if the value is in the allowed options
+	// Validate Rule Options
 	if rules != nil && rules.PathType.Options != nil {
 		if slices.Contains(*rules.PathType.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.PathType.Options, *route.PathType) {
-			ctx.AddError(ctx.GetTranslatedMessage("path_type_validation.not_allowed", *route.PathType))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("path_type_validation.not_allowed", *route.PathType))
 			return
 		}
 	}
