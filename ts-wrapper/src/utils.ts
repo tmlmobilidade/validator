@@ -94,8 +94,7 @@ export async function runGoBinary<T = unknown>(
 	const fullPath = path.resolve(binaryPath);
 	try {
 		await access(fullPath, constants.F_OK | constants.X_OK);
-	}
-	catch (err) {
+	} catch (err) {
 		const error = err instanceof Error ? err : new Error(String(err));
 		throw new GoBinaryError(
 			`Binary not found or not executable: ${fullPath}`,
@@ -128,14 +127,12 @@ export async function runGoBinary<T = unknown>(
 						if (proc && !proc.killed) {
 							try {
 								proc.kill('SIGKILL');
-							}
-							catch {
+							} catch {
 								// Ignore errors during force kill
 							}
 						}
 					}, FORCE_KILL_DELAY_MS);
-				}
-				catch {
+				} catch {
 					// Ignore errors during cleanup
 				}
 			}
@@ -157,8 +154,7 @@ export async function runGoBinary<T = unknown>(
 				stdio: ['ignore', 'pipe', 'pipe'],
 				windowsHide: true, // Hide console window on Windows
 			});
-		}
-		catch (err) {
+		} catch (err) {
 			cleanup();
 			reject(new GoBinaryError(
 				`Failed to spawn process: ${err instanceof Error ? err.message : String(err)}`,
@@ -274,8 +270,7 @@ export async function runGoBinary<T = unknown>(
 
 				try {
 					parsedData = JSON.parse(lastLine) as T;
-				}
-				catch (parseErr) {
+				} catch (parseErr) {
 					reject(new GoBinaryError(
 						`Failed to parse JSON from output: ${parseErr instanceof Error ? parseErr.message : String(parseErr)}`,
 						'JSON_PARSE_ERROR',
@@ -293,8 +288,7 @@ export async function runGoBinary<T = unknown>(
 					stderr,
 					stdout,
 				});
-			}
-			catch (err) {
+			} catch (err) {
 				cleanup();
 				const errorMessage = err instanceof Error ? err.message : String(err);
 				reject(new GoBinaryError(

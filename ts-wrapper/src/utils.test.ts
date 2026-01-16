@@ -144,8 +144,7 @@ describe('runGoBinary', () => {
 			await expect(promise).rejects.toThrow(GoBinaryError);
 			try {
 				await promise;
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GoBinaryError).code).toBe('NON_ZERO_EXIT');
 			}
 		});
@@ -164,8 +163,7 @@ describe('runGoBinary', () => {
 			await expect(promise).rejects.toThrow(GoBinaryError);
 			try {
 				await promise;
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GoBinaryError).code).toBe('NO_OUTPUT');
 			}
 		});
@@ -185,8 +183,7 @@ describe('runGoBinary', () => {
 			await expect(promise).rejects.toThrow(GoBinaryError);
 			try {
 				await promise;
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GoBinaryError).code).toBe('JSON_PARSE_ERROR');
 			}
 		});
@@ -202,8 +199,7 @@ describe('runGoBinary', () => {
 			await expect(promise).rejects.toThrow(GoBinaryError);
 			try {
 				await promise;
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GoBinaryError).code).toBe('TIMEOUT');
 			}
 		});
@@ -224,8 +220,7 @@ describe('runGoBinary', () => {
 			await expect(promise).rejects.toThrow(GoBinaryError);
 			try {
 				await promise;
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GoBinaryError).code).toBe('STDOUT_TOO_LARGE');
 			}
 		});
@@ -246,8 +241,7 @@ describe('runGoBinary', () => {
 			await expect(promise).rejects.toThrow(GoBinaryError);
 			try {
 				await promise;
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GoBinaryError).code).toBe('STDERR_TOO_LARGE');
 			}
 		});
@@ -266,8 +260,7 @@ describe('runGoBinary', () => {
 			await expect(promise).rejects.toThrow(GoBinaryError);
 			try {
 				await promise;
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GoBinaryError).code).toBe('PROCESS_ERROR');
 			}
 		});
@@ -286,8 +279,7 @@ describe('runGoBinary', () => {
 			await expect(promise).rejects.toThrow(GoBinaryError);
 			try {
 				await promise;
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GoBinaryError).code).toBe('TERMINATED_BY_SIGNAL');
 			}
 		});
@@ -301,8 +293,7 @@ describe('runGoBinary', () => {
 			await expect(runGoBinary('/binary')).rejects.toThrow(GoBinaryError);
 			try {
 				await runGoBinary('/binary');
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GoBinaryError).code).toBe('SPAWN_ERROR');
 			}
 		});
