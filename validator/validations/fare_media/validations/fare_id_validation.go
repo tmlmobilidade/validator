@@ -37,6 +37,7 @@ func FareIdValidation(fareMedia *types.FareMedia, row int, gtfs *types.Gtfs, rul
 
 	if fareMedia.FareMediaId == "" {
 		addMessage(i18n.AppTranslator.Get("fare_id_validation.required"))
+		return
 	}
 
 	if !lib.GtfsIdMapKeyExists(gtfs, "fare_media", *&fareMedia.FareMediaId) {
