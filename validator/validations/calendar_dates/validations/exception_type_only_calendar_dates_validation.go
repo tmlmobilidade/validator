@@ -1,6 +1,7 @@
 package calendar_dates
 
 import (
+	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -44,9 +45,11 @@ func ExceptionTypeOnlyCalendarDatesValidation(calendarDate *types.CalendarDates,
 		return
 	}
 
+	lib.AppLogger.Accent(fmt.Sprintf("===== > ctx.Severity: %s", string(ctx.Severity)))
+
 	// The field is forbidden but came with a value, so we need to add an error
 	if ctx.IsForbidden() {
-		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("exception_type_only_calendar_dates_validation.forbidden"))
+		ctx.AddError(ctx.GetTranslatedMessage("exception_type_only_calendar_dates_validation.forbidden"))
 		return
 	}
 

@@ -78,7 +78,8 @@ func TestExceptionTypeOnlyCalendarDatesValidation_NoCalendar_InvalidExceptionTyp
 	options := []string{"1"}
 	rules := &types.CalendarDatesRules{
 		ExceptionTypeOnlyCalendarDates: types.RuleConfig{
-			Options: &options,
+			Severity: types.SEVERITY_ERROR,
+			Options:  &options,
 		},
 	}
 	calendarDate := &types.CalendarDates{
@@ -105,7 +106,8 @@ func TestExceptionTypeOnlyCalendarDatesValidation_NoCalendar_ValidExceptionType_
 	options := []string{"1"}
 	rules := &types.CalendarDatesRules{
 		ExceptionTypeOnlyCalendarDates: types.RuleConfig{
-			Options: &options,
+			Severity: types.SEVERITY_ERROR,
+			Options:  &options,
 		},
 	}
 	calendarDate := &types.CalendarDates{
