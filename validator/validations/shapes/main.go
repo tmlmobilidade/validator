@@ -5,8 +5,8 @@ import (
 	"main/config"
 	"main/lib"
 	"main/types"
-	validations "main/validations/shapes/validations"
 	registry "main/validations"
+	validations "main/validations/shapes/validations"
 )
 
 func init() {
@@ -41,7 +41,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		validations.ShapePtSequenceValidation(&shape, row)
 
 		// Validate shape_dist_traveled
-		validations.ShapeDistTraveledValidation(nil, &shape, row)
+		validations.ShapeDistTraveledValidation(&shape, row, &rules.Shapes)
 
 		allShapes = append(allShapes, shape)
 		return nil
