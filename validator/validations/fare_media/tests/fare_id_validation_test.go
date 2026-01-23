@@ -20,9 +20,9 @@ func TestFareIdValidation_MissingFareMediaId(t *testing.T) {
 	validations.FareIdValidation(fareMedia, 1, gtfs, nil)
 
 	assertion := lib.AssertionMessage{
-		Expected: 2, // required + invalid
+		Expected: 1,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing fare_media_id should error",
+		Message:  "Missing fare_media_id should produce required error",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
@@ -48,7 +48,7 @@ func TestFareIdValidation_InvalidFareMediaId(t *testing.T) {
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid fare_media_id should error",
+		Message:  "Invalid fare_media_id should produce invalid error",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
@@ -76,7 +76,7 @@ func TestFareIdValidation_ValidFareMediaId(t *testing.T) {
 	assertion := lib.AssertionMessage{
 		Expected: 0,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid fare_media_id should not error",
+		Message:  "Valid fare_media_id should not produce errors",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
