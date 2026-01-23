@@ -199,6 +199,19 @@
 			"severity": "error"
 		}
 	},
+	"fare_media": {
+		"_file": "error",
+		"fare_id": {
+			"severity": "error"
+		},
+		"fare_media_name": {
+			"severity": "error"
+		},
+		"fare_media_type": {
+			"severity": "error",
+			"options": ["0", "1", "2", "3", "4"]
+		}
+	},
 	"feed_info": {
 		"_file": "error",
 		"default_lang": {

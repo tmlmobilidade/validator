@@ -193,6 +193,13 @@ type FareRulesRules struct {
 	ContainsId    RuleConfig `json:"contains_id"`
 }
 
+type FareMediaRules struct {
+	File 	 Severity   `json:"_file"`
+	FareId	 RuleConfig `json:"fare_id"`
+	FareName RuleConfig `json:"fare_Name"`
+	FareType RuleConfig `json:"fare_type"`
+}
+
 type ShapesRules struct {
 	File              Severity   `json:"_file"`
 	ShapeId           RuleConfig `json:"shape_id"`
