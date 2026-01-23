@@ -657,5 +657,12 @@
         "invalid_direction_id": "Field \"direction_id\" must be an integer between 0 and 1, received: %s",
         "not_matching": "Field \"direction_id\" \"%s\" does not match the pattern_id \"%s\"",
         "required": "Fields \"pattern_id\" and \"direction_id\" are required to validate the match"
+    },
+    "exception_type_only_calendar_dates_validation": {
+        "forbidden": "Field \"exception_type_only_calendar_dates\" is forbidden",
+        "required": "Field \"exception_type_only_calendar_dates\" is required",
+        "recommended": "Field \"exception_type_only_calendar_dates\" is recommended",
+        "invalid": "Field \"exception_type_only_calendar_dates\" must be one of the following options: \"%s\"",
+        "not_allowed": "Field \"exception_type_only_calendar_dates\" \"%s\" is not allowed"
     }
 }

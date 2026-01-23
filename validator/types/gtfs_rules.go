@@ -135,10 +135,11 @@ type CalendarRules struct {
 }
 
 type CalendarDatesRules struct {
-	File          Severity   `json:"_file"`
-	ServiceId     RuleConfig `json:"service_id"`
-	Date          RuleConfig `json:"date"`
-	ExceptionType RuleConfig `json:"exception_type"`
+	File                           Severity   `json:"_file"`
+	ServiceId                      RuleConfig `json:"service_id"`
+	Date                           RuleConfig `json:"date"`
+	ExceptionType                  RuleConfig `json:"exception_type"`
+	ExceptionTypeOnlyCalendarDates RuleConfig `json:"exception_type_only_calendar_dates"`
 }
 
 type VehiclesRules struct {

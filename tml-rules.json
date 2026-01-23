@@ -152,6 +152,10 @@
 		},
 		"service_id": {
 			"severity": "error"
+		},
+		"exception_type_only_calendar_dates": {
+			"severity": "error",
+			"options": ["1"]
 		}
 	},
 	"fare_attributes": {

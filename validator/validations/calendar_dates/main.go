@@ -5,8 +5,8 @@ import (
 	"main/config"
 	"main/lib"
 	"main/types"
-	validations "main/validations/calendar_dates/validations"
 	registry "main/validations"
+	validations "main/validations/calendar_dates/validations"
 )
 
 func init() {
@@ -40,6 +40,9 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 		// Validate exception_type
 		validations.ExceptionTypeValidation(&calendarDate, i, &calendarDatesRules)
+
+		// Validate exception_type_only_calendar_dates
+		validations.ExceptionTypeOnlyCalendarDatesValidation(&calendarDate, gtfs.HasTable("calendar"), i, &calendarDatesRules)
 
 		return nil
 	})
