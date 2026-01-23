@@ -22,7 +22,7 @@ If only the calendar_dates.txt file is used, this field must be set to 1.
 
 Valid options are:
 
-  - 1 - Service has been added for the specified date.~~
+  - 1 - Service has been added for the specified date.
 
 [calendar_dates.txt]: https://gtfs.org/schedule/reference/#calendar_datestxt
 */
