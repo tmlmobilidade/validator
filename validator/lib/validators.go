@@ -21,15 +21,6 @@ func ValidateUrl(u string) bool {
 	if u == "" {
 		return false
 	}
-	_, err := url.ParseRequestURI(u)
-	return err == nil
-}
-
-func ValidateUrlStrict(u string) bool {
-	u = strings.TrimSpace(u)
-	if u == "" {
-		return false
-	}
 
 	// URLs should not contain unencoded spaces
 	if strings.Contains(u, " ") {
