@@ -4,6 +4,7 @@ import (
 	"main/i18n"
 	"main/services"
 	"main/types"
+	"strconv"
 )
 
 /*
@@ -36,8 +37,8 @@ func FareNameValidation(fareMedia *types.FareMedia, row int, rules *types.FareMe
 	}
 
 	// Validate that fareMedia.FareMediaType is 2 (transit cards) or 4 (mobile apps)
-	if fareMedia.FareMediaType == "2" || fareMedia.FareMediaType == "4" {
-		if fareMedia.FareMediaName == "" {
+	if fareMedia.FareMediaType != nil && (strconv.Itoa(*fareMedia.FareMediaType) == "2" || strconv.Itoa(*fareMedia.FareMediaType) == "4") {
+		if fareMedia.FareMediaName == nil || *fareMedia.FareMediaName == "" {
 			addMessage(i18n.AppTranslator.Get("fare_name_validation.warning"))
 			return
 		}

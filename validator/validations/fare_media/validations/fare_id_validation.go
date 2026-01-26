@@ -36,13 +36,13 @@ func FareIdValidation(fareMedia *types.FareMedia, row int, gtfs *types.Gtfs, rul
 	}
 
 	// Validate presence
-	if fareMedia.FareMediaId == "" {
+	if fareMedia.FareMediaId == nil || *fareMedia.FareMediaId == "" {
 		addMessage(i18n.AppTranslator.Get("fare_id_validation.required"))
 		return
 	}
 
 	// Validate that fareMedia.FareMediaId exists in the fare_media.txt file
-	if !lib.GtfsIdMapKeyExists(gtfs, "fare_media", *&fareMedia.FareMediaId) {
+	if !lib.GtfsIdMapKeyExists(gtfs, "fare_media", *fareMedia.FareMediaId) {
 		addMessage(i18n.AppTranslator.Get("fare_id_validation.invalid"))
 		return
 	}

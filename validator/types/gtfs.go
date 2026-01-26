@@ -305,9 +305,9 @@ type RiderCategory struct {
 
 /* FARE MEDIA */
 type FareMedia struct {
-	FareMediaId   string `json:"fare_media_id"`
-	FareMediaName string `json:"fare_media_name"`
-	FareMediaType string `json:"fare_media_type"`
+	FareMediaId   *string `json:"fare_media_id"`
+	FareMediaName *string `json:"fare_media_name"`
+	FareMediaType *int    `json:"fare_media_type"`
 }
 
 /* FARE PRODUCT */

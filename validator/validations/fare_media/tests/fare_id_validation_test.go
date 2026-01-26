@@ -12,7 +12,7 @@ func TestFareIdValidation_MissingFareMediaId(t *testing.T) {
 	services.AppMessageService.Clear()
 
 	fareMedia := &types.FareMedia{
-		FareMediaId: "",
+		FareMediaId: nil,
 	}
 
 	gtfs := &types.Gtfs{}
@@ -34,7 +34,7 @@ func TestFareIdValidation_InvalidFareMediaId(t *testing.T) {
 	services.AppMessageService.Clear()
 
 	fareMedia := &types.FareMedia{
-		FareMediaId: "INVALID_ID",
+		FareMediaId: lib.Ptr("INVALID_ID"),
 	}
 
 	gtfs := &types.Gtfs{
@@ -60,7 +60,7 @@ func TestFareIdValidation_ValidFareMediaId(t *testing.T) {
 	services.AppMessageService.Clear()
 
 	fareMedia := &types.FareMedia{
-		FareMediaId: "VALID_ID",
+		FareMediaId: lib.Ptr("VALID_ID"),
 	}
 
 	gtfs := &types.Gtfs{

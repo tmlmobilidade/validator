@@ -13,8 +13,8 @@ func TestFareTypeValidation_MissingFareMediaType(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
 	fareMedia := &types.FareMedia{
-		FareMediaId:   "FM1",
-		FareMediaType: "",
+		FareMediaId:   lib.Ptr("FM1"),
+		FareMediaType: nil,
 	}
 	// Rules are optional now - validation uses hardcoded valid options
 	validations.FareTypeValidation(fareMedia, row, nil)
@@ -31,12 +31,12 @@ func TestFareTypeValidation_MissingFareMediaType(t *testing.T) {
 func TestFareTypeValidation_ValidTypes(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
-	validTypes := []string{"0", "1", "2", "3", "4"}
+	validTypes := []int{0, 1, 2, 3, 4}
 	// Rules are optional - validation uses hardcoded valid options
 	for _, fareMediaType := range validTypes {
 		fareMedia := &types.FareMedia{
-			FareMediaId:   "FM1",
-			FareMediaType: fareMediaType,
+			FareMediaId:   lib.Ptr("FM1"),
+			FareMediaType: lib.Ptr(fareMediaType),
 		}
 		validations.FareTypeValidation(fareMedia, row, nil)
 		assertion := lib.AssertionMessage{
@@ -55,8 +55,8 @@ func TestFareTypeValidation_InvalidType(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
 	fareMedia := &types.FareMedia{
-		FareMediaId:   "FM1",
-		FareMediaType: "99",
+		FareMediaId:   lib.Ptr("FM1"),
+		FareMediaType: lib.Ptr(99),
 	}
 	// Rules are optional - validation uses hardcoded valid options
 	validations.FareTypeValidation(fareMedia, row, nil)
@@ -74,8 +74,8 @@ func TestFareTypeValidation_WithRestrictedOptions_Allowed(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
 	fareMedia := &types.FareMedia{
-		FareMediaId:   "FM1",
-		FareMediaType: "2",
+		FareMediaId:   lib.Ptr("FM1"),
+		FareMediaType: lib.Ptr(2),
 	}
 	// Restricted to only allow "2" and "4"
 	restrictedOptions := []string{"2", "4"}
@@ -99,8 +99,8 @@ func TestFareTypeValidation_WithRestrictedOptions_NotAllowed(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
 	fareMedia := &types.FareMedia{
-		FareMediaId:   "FM1",
-		FareMediaType: "1",
+		FareMediaId:   lib.Ptr("FM1"),
+		FareMediaType: lib.Ptr(1),
 	}
 	// Restricted to only allow "2" and "4"
 	restrictedOptions := []string{"2", "4"}
@@ -125,8 +125,8 @@ func TestFareTypeValidation_WithAllOptions_InvalidType(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
 	fareMedia := &types.FareMedia{
-		FareMediaId:   "FM1",
-		FareMediaType: "99",
+		FareMediaId:   lib.Ptr("FM1"),
+		FareMediaType: lib.Ptr(99),
 	}
 	// ALL_OPTIONS in rules allows all valid types, but "99" is not a valid type
 	allOptions := []string{types.ALL_OPTIONS}
@@ -151,8 +151,8 @@ func TestFareTypeValidation_WithAllOptions_ValidType(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
 	fareMedia := &types.FareMedia{
-		FareMediaId:   "FM1",
-		FareMediaType: "2",
+		FareMediaId:   lib.Ptr("FM1"),
+		FareMediaType: lib.Ptr(2),
 	}
 	// ALL_OPTIONS in rules allows all valid types (from hardcoded list)
 	allOptions := []string{types.ALL_OPTIONS}
@@ -177,8 +177,8 @@ func TestFareTypeValidation_WithNilRules(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
 	fareMedia := &types.FareMedia{
-		FareMediaId:   "FM1",
-		FareMediaType: "2",
+		FareMediaId:   lib.Ptr("FM1"),
+		FareMediaType: lib.Ptr(2),
 	}
 	// Rules are now optional - validation uses hardcoded valid options
 	validations.FareTypeValidation(fareMedia, row, nil)
@@ -196,8 +196,8 @@ func TestFareTypeValidation_WithNilOptions(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
 	fareMedia := &types.FareMedia{
-		FareMediaId:   "FM1",
-		FareMediaType: "2",
+		FareMediaId:   lib.Ptr("FM1"),
+		FareMediaType: lib.Ptr(2),
 	}
 	rules := &types.FareMediaRules{
 		FareType: types.RuleConfig{
@@ -223,24 +223,23 @@ func TestFareTypeValidation_MultipleValidTypes(t *testing.T) {
 
 	testCases := []struct {
 		name          string
-		fareMediaType string
+		fareMediaType int
 		shouldError   bool
 	}{
-		{"Type 0 - None", "0", false},
-		{"Type 1 - Physical paper ticket", "1", false},
-		{"Type 2 - Physical transit card", "2", false},
-		{"Type 3 - cEMV", "3", false},
-		{"Type 4 - Mobile app", "4", false},
-		{"Invalid type", "5", true},
-		{"Invalid type", "99", true},
-		{"Invalid type", "abc", true},
+		{"Type 0 - None", 0, false},
+		{"Type 1 - Physical paper ticket", 1, false},
+		{"Type 2 - Physical transit card", 2, false},
+		{"Type 3 - cEMV", 3, false},
+		{"Type 4 - Mobile app", 4, false},
+		{"Invalid type", 5, true},
+		{"Invalid type", 99, true},
 	}
 
 	for _, tc := range testCases {
 		services.AppMessageService.Clear()
 		fareMedia := &types.FareMedia{
-			FareMediaId:   "FM1",
-			FareMediaType: tc.fareMediaType,
+			FareMediaId:   lib.Ptr("FM1"),
+			FareMediaType: lib.Ptr(tc.fareMediaType),
 		}
 		validations.FareTypeValidation(fareMedia, row, nil)
 		expectedErrors := 0

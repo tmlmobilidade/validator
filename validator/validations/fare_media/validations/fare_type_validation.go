@@ -5,6 +5,7 @@ import (
 	"main/services"
 	"main/types"
 	"slices"
+	"strconv"
 )
 
 /*
@@ -41,14 +42,14 @@ func FareTypeValidation(fareMedia *types.FareMedia, row int, rules *types.FareMe
 	}
 
 	// Validate presence
-	if fareMedia.FareMediaType == "" {
+	if fareMedia.FareMediaType == nil || strconv.Itoa(*fareMedia.FareMediaType) == "" {
 		addMessage(i18n.AppTranslator.Get("fare_type_validation.required"))
 		return
 	}
 
 	validTypeOptions := []string{"0", "1", "2", "3", "4"}
 	// Validate that fareMedia.FareMediaType is in the valid options
-	if !slices.Contains(validTypeOptions, fareMedia.FareMediaType) {
+	if !slices.Contains(validTypeOptions, strconv.Itoa(*fareMedia.FareMediaType)) {
 		addMessage(i18n.AppTranslator.Get("fare_type_validation.invalid", fareMedia.FareMediaType))
 		return
 	}
@@ -59,7 +60,7 @@ func FareTypeValidation(fareMedia *types.FareMedia, row int, rules *types.FareMe
 			return
 		}
 
-		if !slices.Contains(*rules.FareType.Options, fareMedia.FareMediaType) {
+		if !slices.Contains(*rules.FareType.Options, strconv.Itoa(*fareMedia.FareMediaType)) {
 			addMessage(i18n.AppTranslator.Get("fare_type_validation.not_allowed", fareMedia.FareMediaType))
 			return
 		}
