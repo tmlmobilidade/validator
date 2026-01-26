@@ -805,7 +805,7 @@ const rules: GtfsRules = {
             severity: "error",
         },
         fare_media_name:{
-            severity: "error",
+            severity: "warning",
         },
         fare_media_type: {
             severity: "error",
