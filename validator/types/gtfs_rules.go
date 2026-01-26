@@ -194,10 +194,19 @@ type FareRulesRules struct {
 }
 
 type FareMediaRules struct {
-	File 	 Severity   `json:"_file"`
-	FareId	 RuleConfig `json:"fare_id"`
+	File     Severity   `json:"_file"`
+	FareId   RuleConfig `json:"fare_id"`
 	FareName RuleConfig `json:"fare_Name"`
 	FareType RuleConfig `json:"fare_type"`
+}
+
+type FareProductRules struct {
+	File            Severity   `json:"_file"`
+	FareProductId   RuleConfig `json:"fare_product_id"`
+	FareProductName RuleConfig `json:"fare_product_name"`
+	RiderCategoryId RuleConfig `json:"rider_category_id"`
+	Currency        RuleConfig `json:"currency"`
+	Ammount         RuleConfig `json:"ammount"`
 }
 
 type ShapesRules struct {

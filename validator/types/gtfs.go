@@ -315,7 +315,7 @@ type FareProduct struct {
 	Ammount         float32 `json:"ammount"`
 	Currency        string  `json:"currency"`
 	FareMediaId     *string `json:"fare_media_id"`
-	FareProductId   string  `json:"fare_product_id"`
+	FareProductId   *string `json:"fare_product_id"`
 	FareProductName *string `json:"fare_product_name"`
 	RiderCategoryId *string `json:"rider_category_id"`
 }

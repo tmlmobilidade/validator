@@ -212,6 +212,15 @@
 			"options": ["0", "1", "2", "3", "4"]
 		}
 	},
+	"fare_products": {
+		"_file": "error",
+		"fare_product_id": {
+			"severity": "error"
+		},
+		"fare_product_name": {
+			"severity": "warning"
+		}
+	},
 	"feed_info": {
 		"_file": "error",
 		"default_lang": {
