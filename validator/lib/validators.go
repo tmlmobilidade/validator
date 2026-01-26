@@ -25,6 +25,33 @@ func ValidateUrl(u string) bool {
 	return err == nil
 }
 
+func ValidateUrlStrict(u string) bool {
+	u = strings.TrimSpace(u)
+	if u == "" {
+		return false
+	}
+
+	// URLs should not contain unencoded spaces
+	if strings.Contains(u, " ") {
+		return false
+	}
+
+	parsedUrl, err := url.ParseRequestURI(u)
+	if err != nil {
+		return false
+	}
+
+	if parsedUrl.Scheme != "http" && parsedUrl.Scheme != "https" {
+		return false
+	}
+
+	if parsedUrl.Host == "" && parsedUrl.Path == "" {
+		return false
+	}
+
+	return true
+}
+
 func ValidateEmail(e string) bool {
 	e = strings.TrimSpace(e)
 	if e == "" {

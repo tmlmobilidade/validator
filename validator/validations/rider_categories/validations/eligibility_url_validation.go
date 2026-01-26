@@ -40,7 +40,7 @@ func EligibilityUrlValidation(riderCategory *types.RiderCategory, row int, gtfs 
 	}
 
 	// Validate URL
-	if !lib.ValidateUrl(*riderCategory.EligibilityUrl) {
+	if !lib.ValidateUrlStrict(*riderCategory.EligibilityUrl) {
 		addMessage(i18n.AppTranslator.Get("eligibility_url_validation.invalid"))
 		return
 	}
