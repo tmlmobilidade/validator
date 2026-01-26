@@ -46,13 +46,9 @@ func FareTypeValidation(fareMedia *types.FareMedia, row int, rules *types.FareMe
 		return
 	}
 
-	if rules == nil || rules.FareType.Options == nil {
-		addMessage(i18n.AppTranslator.Get("fare_type_validation.invalid", fareMedia.FareMediaType))
-		return
-	}
-
+	validTypeOptions := []string{"0", "1", "2", "3", "4"}
 	// Validate that fareMedia.FareMediaType is in the valid options
-	if !slices.Contains(*rules.FareType.Options, fareMedia.FareMediaType) {
+	if !slices.Contains(validTypeOptions, fareMedia.FareMediaType) {
 		addMessage(i18n.AppTranslator.Get("fare_type_validation.invalid", fareMedia.FareMediaType))
 		return
 	}

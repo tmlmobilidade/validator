@@ -16,13 +16,8 @@ func TestFareTypeValidation_MissingFareMediaType(t *testing.T) {
 		FareMediaId:   "FM1",
 		FareMediaType: "",
 	}
-	validOptions := []string{"0", "1", "2", "3", "4"}
-	rules := &types.FareMediaRules{
-		FareType: types.RuleConfig{
-			Options: &validOptions,
-		},
-	}
-	validations.FareTypeValidation(fareMedia, row, rules)
+	// Rules are optional now - validation uses hardcoded valid options
+	validations.FareTypeValidation(fareMedia, row, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
@@ -37,18 +32,13 @@ func TestFareTypeValidation_ValidTypes(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
 	validTypes := []string{"0", "1", "2", "3", "4"}
-	validOptions := []string{"0", "1", "2", "3", "4"}
-	rules := &types.FareMediaRules{
-		FareType: types.RuleConfig{
-			Options: &validOptions,
-		},
-	}
+	// Rules are optional - validation uses hardcoded valid options
 	for _, fareMediaType := range validTypes {
 		fareMedia := &types.FareMedia{
 			FareMediaId:   "FM1",
 			FareMediaType: fareMediaType,
 		}
-		validations.FareTypeValidation(fareMedia, row, rules)
+		validations.FareTypeValidation(fareMedia, row, nil)
 		assertion := lib.AssertionMessage{
 			Expected: 0,
 			Actual:   services.AppMessageService.GetSummary().TotalErrors,
@@ -68,13 +58,8 @@ func TestFareTypeValidation_InvalidType(t *testing.T) {
 		FareMediaId:   "FM1",
 		FareMediaType: "99",
 	}
-	validOptions := []string{"0", "1", "2", "3", "4"}
-	rules := &types.FareMediaRules{
-		FareType: types.RuleConfig{
-			Options: &validOptions,
-		},
-	}
-	validations.FareTypeValidation(fareMedia, row, rules)
+	// Rules are optional - validation uses hardcoded valid options
+	validations.FareTypeValidation(fareMedia, row, nil)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
@@ -143,19 +128,19 @@ func TestFareTypeValidation_WithAllOptions_InvalidType(t *testing.T) {
 		FareMediaId:   "FM1",
 		FareMediaType: "99",
 	}
-	// Options contains valid types plus ALL_OPTIONS
-	allOptions := []string{"0", "1", "2", "3", "4", types.ALL_OPTIONS}
+	// ALL_OPTIONS in rules allows all valid types, but "99" is not a valid type
+	allOptions := []string{types.ALL_OPTIONS}
 	rules := &types.FareMediaRules{
 		FareType: types.RuleConfig{
 			Options: &allOptions,
 		},
 	}
 	validations.FareTypeValidation(fareMedia, row, rules)
-	// "99" is not in the valid options list, so it should error at step 2
+	// "99" is not in the hardcoded valid options list, so it should error
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid fare_media_type should error even with ALL_OPTIONS (must be in valid options first)",
+		Message:  "Invalid fare_media_type should error even with ALL_OPTIONS (must be in hardcoded valid options first)",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
@@ -169,15 +154,15 @@ func TestFareTypeValidation_WithAllOptions_ValidType(t *testing.T) {
 		FareMediaId:   "FM1",
 		FareMediaType: "2",
 	}
-	// Options contains valid types plus ALL_OPTIONS
-	allOptions := []string{"0", "1", "2", "3", "4", types.ALL_OPTIONS}
+	// ALL_OPTIONS in rules allows all valid types (from hardcoded list)
+	allOptions := []string{types.ALL_OPTIONS}
 	rules := &types.FareMediaRules{
 		FareType: types.RuleConfig{
 			Options: &allOptions,
 		},
 	}
 	validations.FareTypeValidation(fareMedia, row, rules)
-	// "2" is in valid options, and ALL_OPTIONS allows it, so should not error
+	// "2" is in hardcoded valid options, and ALL_OPTIONS allows it, so should not error
 	assertion := lib.AssertionMessage{
 		Expected: 0,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
@@ -195,12 +180,15 @@ func TestFareTypeValidation_WithNilRules(t *testing.T) {
 		FareMediaId:   "FM1",
 		FareMediaType: "2",
 	}
-	// This might cause a panic, but testing what happens
+	// Rules are now optional - validation uses hardcoded valid options
 	validations.FareTypeValidation(fareMedia, row, nil)
-	// If it doesn't panic, check if it errors (since rules.FareType.Options would be nil)
-	summary := services.AppMessageService.GetSummary()
-	if summary.TotalErrors == 0 {
-		t.Log("Validation with nil rules completed without error (may be expected behavior)")
+	assertion := lib.AssertionMessage{
+		Expected: 0,
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid fare_media_type with nil rules should not error (uses hardcoded valid options)",
+	}
+	if assert := lib.Assert(assertion); assert != "" {
+		t.Error(assert)
 	}
 }
 
@@ -216,24 +204,22 @@ func TestFareTypeValidation_WithNilOptions(t *testing.T) {
 			Options: nil,
 		},
 	}
-	// This might cause a panic, but testing what happens
+	// Rules with nil options are treated as no restrictions - uses hardcoded valid options
 	validations.FareTypeValidation(fareMedia, row, rules)
-	// If it doesn't panic, check if it errors
-	summary := services.AppMessageService.GetSummary()
-	if summary.TotalErrors == 0 {
-		t.Log("Validation with nil options completed without error (may be expected behavior)")
+	assertion := lib.AssertionMessage{
+		Expected: 0,
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Valid fare_media_type with nil options should not error (uses hardcoded valid options)",
+	}
+	if assert := lib.Assert(assertion); assert != "" {
+		t.Error(assert)
 	}
 }
 
 func TestFareTypeValidation_MultipleValidTypes(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
-	validOptions := []string{"0", "1", "2", "3", "4"}
-	rules := &types.FareMediaRules{
-		FareType: types.RuleConfig{
-			Options: &validOptions,
-		},
-	}
+	// Rules are optional - validation uses hardcoded valid options
 
 	testCases := []struct {
 		name          string
@@ -256,7 +242,7 @@ func TestFareTypeValidation_MultipleValidTypes(t *testing.T) {
 			FareMediaId:   "FM1",
 			FareMediaType: tc.fareMediaType,
 		}
-		validations.FareTypeValidation(fareMedia, row, rules)
+		validations.FareTypeValidation(fareMedia, row, nil)
 		expectedErrors := 0
 		if tc.shouldError {
 			expectedErrors = 1
