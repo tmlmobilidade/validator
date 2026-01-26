@@ -35,6 +35,7 @@ func FareNameValidation(fareMedia *types.FareMedia, row int, rules *types.FareMe
 		})
 	}
 
+	// Validate that fareMedia.FareMediaType is 2 (transit cards) or 4 (mobile apps)
 	if fareMedia.FareMediaType == "2" || fareMedia.FareMediaType == "4" {
 		if fareMedia.FareMediaName == "" {
 			addMessage(i18n.AppTranslator.Get("fare_name_validation.warning"))
