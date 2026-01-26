@@ -413,7 +413,7 @@ func TestRiderCategoryIdValidation_ValidIdWithOtherFields(t *testing.T) {
 		RiderCategoryId:       lib.Ptr("RC1"),
 		RiderCategoryName:     lib.Ptr("Student"),
 		EligibilityUrl:        lib.Ptr("https://example.com"),
-		IsDefaultFareCategory: lib.Ptr(true),
+		IsDefaultFareCategory: lib.Ptr(1),
 	}
 
 	gtfs := &types.Gtfs{
