@@ -1,4 +1,4 @@
-package RiderCategories_test
+package rider_categories_test
 
 import (
 	"fmt"

@@ -1,4 +1,4 @@
-package validations
+package rider_categories
 
 import (
 	"main/i18n"
