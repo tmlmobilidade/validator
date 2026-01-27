@@ -597,6 +597,7 @@
         "recommended": "Field \"pattern_id\" is recommended",
         "not_found": "Field \"pattern_id\" \"%s\" does not exist in patterns.txt",
         "not_allowed": "Field \"pattern_id\" \"%s\" is not allowed",
+        "invalid_pattern_id": "Field \"pattern_id\" must be in the format \"XXXX_X_X\", received: %s",
         "different_direction_id": "Different direction_id's found for the same pattern_id: %s",
         "different_route_id": "Different route_id's found for the same pattern_id: %s",
         "different_shape_id": "Different shape_id's found for the same pattern_id: %s",

@@ -21,8 +21,14 @@ Ensure the direction_id is consistent with the pattern_id (e.g., pattern_id "100
 */
 func DirectionPatternIdMatchValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
 	ctx := lib.NewValidationContext("direction_pattern_id_match", "trips.txt", "direction_pattern_id_match", row, services.AppMessageService)
-	if rules != nil && rules.DirectionPatternIdMatch.Severity != "" {
-		ctx.WithSeverity(rules.DirectionPatternIdMatch.Severity)
+
+	// Use DirectionPatternIdMatch severity if available, otherwise fallback to DirectionId severity
+	if rules != nil {
+		if rules.DirectionPatternIdMatch.Severity != "" {
+			ctx.WithSeverity(rules.DirectionPatternIdMatch.Severity)
+		} else if rules.DirectionId.Severity != "" {
+			ctx.WithSeverity(rules.DirectionId.Severity)
+		}
 	}
 
 	if ctx.ShouldSkip() {
@@ -35,10 +41,15 @@ func DirectionPatternIdMatchValidation(trip *types.Trip, row int, gtfs *types.Gt
 		return
 	}
 
-	// Split the pattern_id using underscore
-	// Must have three parts: routeId, directionId, variant
+	// Validate pattern_id format: XXXX_X_X (6 characters total: 4 chars + _ + 1 char + _ + 1 char)
 	patternIdParts := strings.Split(*trip.PatternId, "_")
-	if len(patternIdParts) != 3 {
+	if len(*trip.PatternId) != 8 || len(patternIdParts) != 3 {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("direction_pattern_id_match.invalid_pattern_id"))
+		return
+	}
+
+	// Validate each part: first part should be 4 characters, second and third should be 1 character each
+	if len(patternIdParts[0]) != 4 || len(patternIdParts[1]) != 1 || len(patternIdParts[2]) != 1 {
 		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("direction_pattern_id_match.invalid_pattern_id"))
 		return
 	}

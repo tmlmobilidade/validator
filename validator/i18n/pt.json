@@ -598,6 +598,7 @@
         "recommended": "O campo \"pattern_id\" é recomendado",
         "not_found": "O campo \"pattern_id\" \"%s\" não existe em patterns.txt",
         "not_allowed": "O campo \"pattern_id\" \"%s\" não é permitido",
+        "invalid_pattern_id": "O campo \"pattern_id\" deve estar no formato \"XXXX_X_X\", recebido: %s",
         "different_direction_id": "Encontrados direction_id's diferentes para o mesmo pattern_id: %s",
         "different_route_id": "Encontrados route_id's diferentes para o mesmo pattern_id: %s",
         "different_shape_id": "Encontrados shape_id's diferentes para o mesmo pattern_id: %s",
