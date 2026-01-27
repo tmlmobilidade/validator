@@ -1,4 +1,4 @@
-package lib
+package test_helpers
 
 import (
 	"main/types"
@@ -12,6 +12,19 @@ type TestMessageServiceInterface interface {
 	AddMessages(messages []types.Message)
 	GetSummary() types.Summary
 	Clear()
+}
+
+// CreateTestGtfsRules creates a test GtfsRules with default values
+func CreateTestGtfsRules() *types.GtfsRules {
+	return &types.GtfsRules{
+		Agency:        types.AgencyRules{},
+		Stops:         types.StopsRules{},
+		Routes:        types.RoutesRules{},
+		Trips:         types.TripsRules{},
+		StopTimes:     types.StopTimesRules{},
+		Calendar:      types.CalendarRules{},
+		CalendarDates: types.CalendarDatesRules{},
+	}
 }
 
 // AssertValidationError checks if the expected number of errors occurred
@@ -41,26 +54,13 @@ func AssertNoValidationIssues(t *testing.T, ms TestMessageServiceInterface, mess
 	}
 }
 
-// CreateTestGtfsRules creates a test GtfsRules with default values
-func CreateTestGtfsRules() *types.GtfsRules {
-	return &types.GtfsRules{
-		Agency:      types.AgencyRules{},
-		Stops:       types.StopsRules{},
-		Routes:      types.RoutesRules{},
-		Trips:       types.TripsRules{},
-		StopTimes:   types.StopTimesRules{},
-		Calendar:    types.CalendarRules{},
-		CalendarDates: types.CalendarDatesRules{},
-	}
-}
-
 // AssertMessageCount checks the total number of messages (errors + warnings)
 func AssertMessageCount(t *testing.T, ms TestMessageServiceInterface, expectedCount int, message string) {
 	t.Helper()
 	summary := ms.GetSummary()
 	total := summary.TotalErrors + summary.TotalWarnings
 	if total != expectedCount {
-		t.Errorf("%s: Expected %d total messages, got %d (errors: %d, warnings: %d)", 
+		t.Errorf("%s: Expected %d total messages, got %d (errors: %d, warnings: %d)",
 			message, expectedCount, total, summary.TotalErrors, summary.TotalWarnings)
 	}
 }
@@ -77,3 +77,35 @@ func AssertMessageContains(t *testing.T, ms TestMessageServiceInterface, contain
 	t.Errorf("%s: Expected to find message containing '%s', but no such message found", message, containsText)
 }
 
+// verifyIdMapStructure is a helper function to validate IdMap structure
+func verifyMapStructure(t *testing.T, gtfs *types.Gtfs, entityType, id string, expectedRows []int, funcName string) {
+	t.Helper()
+
+	if gtfs == nil || gtfs.IdMap == nil {
+		t.Errorf("%s: IdMap should not be nil", funcName)
+		return
+	}
+
+	entityMap, exists := gtfs.IdMap[entityType]
+	if !exists {
+		t.Errorf("%s: entityType '%s' should exist in IdMap", funcName, entityType)
+		return
+	}
+
+	rows, exists := entityMap[id]
+	if !exists {
+		t.Errorf("%s: id '%s' should exist in IdMap for entityType '%s'", funcName, id, entityType)
+		return
+	}
+
+	if len(rows) != len(expectedRows) {
+		t.Errorf("%s: expected %d row(s), got %d", funcName, len(expectedRows), len(rows))
+		return
+	}
+
+	for i, expectedRow := range expectedRows {
+		if rows[i] != expectedRow {
+			t.Errorf("%s: expected row %d at index %d, got %d", funcName, expectedRow, i, rows[i])
+		}
+	}
+}

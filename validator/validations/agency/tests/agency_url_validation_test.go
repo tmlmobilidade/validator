@@ -2,6 +2,7 @@ package agency
 
 import (
 	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/agency/validations"
@@ -16,8 +17,8 @@ func TestAgencyUrlValidation_Required(t *testing.T) {
 	// Assert
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency URL is required",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Agency URL is required",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
@@ -34,8 +35,8 @@ func TestAgencyUrlValidation_ValidUrl(t *testing.T) {
 	// Assert
 	assertion := lib.AssertionMessage{
 		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency URL is valid",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Agency URL is valid",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
@@ -51,13 +52,30 @@ func TestAgencyUrlValidation_InvalidUrl(t *testing.T) {
 	// Assert
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency URL is invalid",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Agency URL is invalid",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
-	
+
 	services.AppMessageService.Clear()
-} 
+}
+
+func TestAllUrlValidationHelpers(t *testing.T) {
+	for _, tc := range test_helpers.GetUrlTestCases() {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			validations.AgencyUrlValidation(tc.Agency, tc.Row, nil)
+			assertion := lib.AssertionMessage{
+				Expected: tc.ExpectedErrors,
+				Actual:   services.AppMessageService.GetSummary().TotalErrors,
+				Message:  tc.Name,
+			}
+			if assert := lib.Assert(assertion); assert != "" {
+				t.Error(assert)
+			}
+		})
+	}
+}
