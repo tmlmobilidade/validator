@@ -34,7 +34,7 @@ For a particular holiday, the [calendar_dates.txt] file could be used to add the
 
 [calendar_dates.txt]: https://gtfs.org/schedule/reference/#calendar_datestxt
 */
-func ExceptionTypeValidation(calendarDate *types.CalendarDates, row int, rules *types.CalendarDatesRules) {
+func ExceptionTypeValidation(calendarDate *types.CalendarDates, row int, gtfs types.Gtfs, rules *types.CalendarDatesRules) {
 
 	message := types.Message{
 		Field:        "exception_type",
@@ -48,6 +48,13 @@ func ExceptionTypeValidation(calendarDate *types.CalendarDates, row int, rules *
 
 	if !slices.Contains(validExceptionTypes, *calendarDate.ExceptionType) {
 		message.Message = fmt.Sprintf("Wrong exception_type value, must be 1 or 2, got %d", *calendarDate.ExceptionType)
+		services.AppMessageService.AddMessage(message)
+	}
+
+	// ISO-1033: If only calendar_dates.txt is used (no calendar.txt), exception_type must be 1
+	hasCalendar := gtfs.HasTable("calendar")
+	if !hasCalendar && *calendarDate.ExceptionType == 2 {
+		message.Message = "When only calendar_dates.txt is used (without calendar.txt), exception_type must be 1 (service added). Value 2 (service removed) requires a base calendar to remove from."
 		services.AppMessageService.AddMessage(message)
 	}
 

@@ -39,7 +39,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		validations.DateValidation(&calendarDate, i)
 
 		// Validate exception_type
-		validations.ExceptionTypeValidation(&calendarDate, i, &calendarDatesRules)
+		validations.ExceptionTypeValidation(&calendarDate, i, gtfs, &calendarDatesRules)
 
 		return nil
 	})
