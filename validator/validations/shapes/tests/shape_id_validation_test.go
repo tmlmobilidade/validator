@@ -2,25 +2,12 @@ package shapes
 
 import (
 	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/shapes/validations"
 	"testing"
 )
-
-func TestShapeIdValidation_MissingShapeId(t *testing.T) {
-	services.AppMessageService.Clear()
-	shape := &types.Shape{ShapeId: nil}
-	validations.ShapeIdValidation(shape, 1)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing shape_id should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
 
 func TestShapeIdValidation_EmptyShapeId(t *testing.T) {
 	services.AppMessageService.Clear()
@@ -29,25 +16,23 @@ func TestShapeIdValidation_EmptyShapeId(t *testing.T) {
 	validations.ShapeIdValidation(shape, 2)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Empty shape_id should error",
+		Actual:   services.AppMessageService.GetSummary().TotalErrors,
+		Message:  "Empty shape_id should error",
 	}
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
 }
 
-func TestShapeIdValidation_ValidShapeId(t *testing.T) {
-	services.AppMessageService.Clear()
-	valid := "SHP1"
-	shape := &types.Shape{ShapeId: &valid}
-	validations.ShapeIdValidation(shape, 3)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid shape_id should not error",
+func TestAllShapeIdValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericIdTestCases("shape_id") {
+		if tc.Name == "Duplicate_Id" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			validations.ShapeIdValidation(&types.Shape{ShapeId: tc.Id}, tc.Row)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-} 
+}
