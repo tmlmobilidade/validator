@@ -411,6 +411,30 @@ func GetExceptionTypeValidOptions() []int {
 	return []int{1, 2}
 }
 
+// GetShapeDistTraveledValidOptions returns valid shape_dist_traveled values
+func GetShapeDistTraveledValidOptions() []float64 {
+	return []float64{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0}
+}
+
+// GetShapePtLatValidOptions returns valid shape_pt_lat values
+func GetShapePtLatValidOptions() []float32 {
+	return []float32{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0}
+}
+
+// GetShapePtLngValidOptions returns valid shape_pt_lon values
+func GetShapePtLonValidOptions() []float32 {
+	return []float32{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0}
+}
+
+// GetDateValidOptions returns valid date values
+func GetDateValidOptions() []string {
+	return []string{
+		"20240101",
+		"20240102",
+		"20240103",
+	}
+}
+
 // ===============================================
 // COMMON TEST VALUE GENERATORS
 // ===============================================
