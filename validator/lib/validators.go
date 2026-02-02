@@ -16,13 +16,49 @@ func ValidateTimezone(timezone string) bool {
 	return err == nil
 }
 
+func isHex(c byte) bool {
+	return (c >= '0' && c <= '9') ||
+		(c >= 'a' && c <= 'f') ||
+		(c >= 'A' && c <= 'F')
+}
+
 func ValidateUrl(u string) bool {
 	u = strings.TrimSpace(u)
 	if u == "" {
 		return false
 	}
-	_, err := url.ParseRequestURI(u)
-	return err == nil
+
+	// Disallowed characters (RFC 3986 + common breakages)
+	if strings.ContainsAny(u, ` "<>%{}|"'\^`) {
+		return false
+	}
+
+	// Validate percent-encoding
+	for i := 0; i < len(u); i++ {
+		if u[i] == '%' {
+			if i+2 >= len(u) ||
+				!isHex(u[i+1]) ||
+				!isHex(u[i+2]) {
+				return false
+			}
+			i += 2
+		}
+	}
+
+	parsedUrl, err := url.ParseRequestURI(u)
+	if err != nil {
+		return false
+	}
+
+	if parsedUrl.Scheme != "http" && parsedUrl.Scheme != "https" {
+		return false
+	}
+
+	if parsedUrl.Host == "" {
+		return false
+	}
+
+	return true
 }
 
 func ValidateEmail(e string) bool {

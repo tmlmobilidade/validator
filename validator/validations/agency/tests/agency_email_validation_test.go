@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-func TestAllAgencyPhoneValidationTestCases(t *testing.T) {
-	fieldName := "agency_phone"
+func TestAllAgencyEmailTestCases(t *testing.T) {
+	fieldName := "agency_email"
 
 	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases(fieldName) {
 		t.Run(tc.Name, func(t *testing.T) {
@@ -22,15 +22,15 @@ func TestAllAgencyPhoneValidationTestCases(t *testing.T) {
 				severity = types.SEVERITY_WARNING
 			}
 
-			var agencyPhone *string
+			var agencyEmail *string
 			if tc.Name == "Valid_Present" {
-				value := test_helpers.GetValidPhoneNumbers()[0]
-				agencyPhone = &value
+				value := test_helpers.GetValidEmails()[0]
+				agencyEmail = &value
 			} else {
-				agencyPhone = tc.Value
+				agencyEmail = tc.Value
 			}
 
-			validations.AgencyPhoneValidation(&types.Agency{AgencyPhone: agencyPhone}, tc.Row, &types.AgencyRules{AgencyPhone: types.RuleConfig{Severity: severity}})
+			validations.AgencyEmailValidation(&types.Agency{AgencyEmail: agencyEmail}, tc.Row, &types.AgencyRules{AgencyEmail: types.RuleConfig{Severity: severity}})
 			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
 			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name)
 		})

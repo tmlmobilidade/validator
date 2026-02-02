@@ -9,58 +9,67 @@ import (
 	"testing"
 )
 
-func TestAgencyIdValidation_Required(t *testing.T) {
-	rules := &types.GtfsRules{Agency: types.AgencyRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_ERROR}}}
-	agency := &types.Agency{AgencyId: nil}
-	gtfs := types.Gtfs{Agency: []types.AgencyRaw{{}, {}}}
-	validations.AgencyIdValidation(agency, 1, gtfs, &rules.Agency)
+func TestAgencyIdValidation(t *testing.T) {
+	fieldName := "agency_id"
 
-	// Assert
+	for _, tc := range test_helpers.GetGenericIdTestCases(fieldName) {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+
+			agency := &types.Agency{AgencyId: tc.Id}
+
+			// Create a mock GTFS with the existing ID data
+			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"agency": tc.ExistingIds}}.ToGtfs()
+			validations.AgencyIdValidation(agency, tc.Row, gtfs, &types.AgencyRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, "Agency ID validation")
+		})
+	}
+}
+
+func TestAgencyIdValidationTableCountUpperThan2(t *testing.T) {
+	services.AppMessageService.Clear()
+	gtfs := test_helpers.MockGtfs{TableCounts: map[string]int{"agency": 2}}.ToGtfs()
+	validations.AgencyIdValidation(&types.Agency{AgencyId: nil}, 1, gtfs, &types.AgencyRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Agency ID is required when there is more than one agency",
+		Message:  "Agency ID is required",
 	}
 
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
-	services.AppMessageService.Clear()
 }
 
-func TestAgencyIdValidation_Recommended(t *testing.T) {
-	rules := &types.GtfsRules{Agency: types.AgencyRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_WARNING}}}
-	agency := &types.Agency{AgencyId: nil}
-	gtfs := types.Gtfs{Agency: []types.AgencyRaw{{}}}
-	validations.AgencyIdValidation(agency, 2, gtfs, &rules.Agency)
+func TestAgencyIdValidationTableCountEqual1(t *testing.T) {
+	services.AppMessageService.Clear()
 
-	// Assert
-	assertion := lib.AssertionMessage{
+	gtfs := test_helpers.MockGtfs{TableCounts: map[string]int{"agency": 1}}.ToGtfs()
+
+	validations.AgencyIdValidation(
+		&types.Agency{AgencyId: nil},
+		1,
+		gtfs,
+		&types.AgencyRules{
+			AgencyId: types.RuleConfig{Severity: types.SEVERITY_WARNING},
+		},
+	)
+
+	summary := services.AppMessageService.GetSummary()
+
+	if assert := lib.Assert(lib.AssertionMessage{
+		Expected: 0,
+		Actual:   summary.TotalErrors,
+		Message:  "Should not error when agency count == 1",
+	}); assert != "" {
+		t.Error(assert)
+	}
+
+	if assert := lib.Assert(lib.AssertionMessage{
 		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Agency ID is recomended",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
+		Actual:   summary.TotalWarnings,
+		Message:  "Should warn when agency count == 1",
+	}); assert != "" {
 		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestAllIdHelpers(t *testing.T) {
-	for _, tc := range test_helpers.GetIdTestCases() {
-		t.Run(tc.Name, func(t *testing.T) {
-			services.AppMessageService.Clear()
-			validations.AgencyIdValidation(tc.Agency, tc.Row, *tc.Gtfs, nil)
-
-			assertion := lib.AssertionMessage{
-				Expected: tc.ExpectedErrors,
-				Actual:   services.AppMessageService.GetSummary().TotalErrors,
-				Message:  tc.Name,
-			}
-			if assert := lib.Assert(assertion); assert != "" {
-				t.Error(assert)
-			}
-		})
 	}
 }

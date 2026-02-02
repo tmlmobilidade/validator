@@ -1,7 +1,6 @@
 package agency
 
 import (
-	"main/lib"
 	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
@@ -9,73 +8,22 @@ import (
 	"testing"
 )
 
-func TestAgencyUrlValidation_Required(t *testing.T) {
-	rules := &types.GtfsRules{Agency: types.AgencyRules{AgencyUrl: types.RuleConfig{Severity: types.SEVERITY_ERROR}}}
-	agency := &types.Agency{AgencyUrl: nil}
-	validations.AgencyUrlValidation(agency, 1, &rules.Agency)
+func TestAllAgencyUrlValidationTestCases(t *testing.T) {
+	fieldName := "agency_url"
 
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Agency URL is required",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-
-	services.AppMessageService.Clear()
-}
-
-func TestAgencyUrlValidation_ValidUrl(t *testing.T) {
-	agency := &types.Agency{AgencyUrl: lib.Ptr("https://example.com")}
-	validations.AgencyUrlValidation(agency, 2, nil)
-
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Agency URL is valid",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestAgencyUrlValidation_InvalidUrl(t *testing.T) {
-	agency := &types.Agency{AgencyUrl: lib.Ptr("invalid-url")}
-	validations.AgencyUrlValidation(agency, 3, nil)
-
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Agency URL is invalid",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-
-	services.AppMessageService.Clear()
-}
-
-func TestAllUrlValidationHelpers(t *testing.T) {
-	for _, tc := range test_helpers.GetUrlTestCases() {
+	for _, tc := range test_helpers.GetGenericUrlTestCases(fieldName) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
-			validations.AgencyUrlValidation(tc.Agency, tc.Row, nil)
-			assertion := lib.AssertionMessage{
-				Expected: tc.ExpectedErrors,
-				Actual:   services.AppMessageService.GetSummary().TotalErrors,
-				Message:  tc.Name,
+
+			var severity types.Severity
+			if tc.ExpectedCode == fieldName+"_required" {
+				severity = types.SEVERITY_ERROR
+			} else {
+				severity = types.SEVERITY_WARNING
 			}
-			if assert := lib.Assert(assertion); assert != "" {
-				t.Error(assert)
-			}
+
+			validations.AgencyUrlValidation(&types.Agency{AgencyUrl: tc.Url}, tc.Row, &types.AgencyRules{AgencyUrl: types.RuleConfig{Severity: severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
 		})
 	}
 }

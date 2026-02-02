@@ -40,7 +40,7 @@ func RouteShortNameValidation(route *types.Route, row int, rules *types.RoutesRu
 		return
 	}
 
-	if route.RouteShortName == nil {
+	if route.RouteShortName == nil || *route.RouteShortName == "" {
 		if !ctx.ShouldIgnore() {
 			message := ctx.GetRequiredMessage("route_short_name_validation.required", "route_short_name_validation.recommended")
 			ctx.AddMessageWithSeverity(message)

@@ -1,87 +1,43 @@
 package routes
 
 import (
-	"main/lib"
+	"fmt"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/routes/validations"
 	"testing"
 )
 
-func TestRouteTypeValidation_MissingType(t *testing.T) {
-	services.AppMessageService.Clear()
-	route := &types.Route{RouteType: nil}
-	validations.RouteTypeValidation(route, 1, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing route_type should error",
+func TestAllRouteTypeValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetRouteTypeValidOptions()
+	validOptionsStrings := make([]string, len(validOptions))
+	for i, opt := range validOptions {
+		validOptionsStrings[i] = fmt.Sprintf("%d", opt)
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+	for _, tc := range test_helpers.GetGenericEnumIntTestCases("route_type", validOptions) {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var severity types.Severity
+			if tc.ExpectedErrors > 0 {
+				severity = types.SEVERITY_ERROR
+			} else {
+				severity = types.SEVERITY_WARNING
+			}
 
-func TestRouteTypeValidation_InvalidType(t *testing.T) {
-	services.AppMessageService.Clear()
-	typeVal := 99
-	route := &types.Route{RouteType: &typeVal}
-	validations.RouteTypeValidation(route, 2, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid route_type should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+			var routeType *int
+			if tc.Value != nil {
+				if ptr, ok := tc.Value.(*int); ok && ptr != nil {
+					routeType = ptr
+				}
+			}
 
-func TestRouteTypeValidation_ValidType(t *testing.T) {
-	services.AppMessageService.Clear()
-	validTypes := []int{0, 1, 2, 3, 4, 5, 6, 7, 11, 12}
-	for i, v := range validTypes {
-		route := &types.Route{RouteType: &v}
-		validations.RouteTypeValidation(route, i+3, nil)
-		assertion := lib.AssertionMessage{
-			Expected: 0,
-			Actual:   services.AppMessageService.GetSummary().TotalErrors,
-			Message:  "Valid route_type should not error",
-		}
-		if assert := lib.Assert(assertion); assert != "" {
-			t.Errorf("route_type %d: %s", v, assert)
-		}
-		services.AppMessageService.Clear()
-	}
-}
-
-func TestRouteTypeValidation_SeverityError(t *testing.T) {
-	services.AppMessageService.Clear()
-	route := &types.Route{RouteType: nil}
-	severity := types.SEVERITY_ERROR
-	validations.RouteTypeValidation(route, 8, &types.RoutesRules{RouteType: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "No route_type should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-
-}
-
-func TestRouteTypeValidation_RuleOptions(t *testing.T) {
-	services.AppMessageService.Clear()
-	route := &types.Route{RouteType: lib.Ptr(3)}
-	validations.RouteTypeValidation(route, 9, &types.RoutesRules{RouteType: types.RuleConfig{Options: &[]string{"0", "1"}}})
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid route_type should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+			validations.RouteTypeValidation(&types.Route{RouteType: routeType}, tc.Row, &types.RoutesRules{RouteType: types.RuleConfig{Severity: severity, Options: &validOptionsStrings}})
+			if tc.ExpectedErrors > 0 {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
+			}
+		})
 	}
 }
