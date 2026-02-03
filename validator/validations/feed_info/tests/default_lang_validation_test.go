@@ -2,88 +2,45 @@ package feed_info
 
 import (
 	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/feed_info/validations"
 	"testing"
 )
 
-func TestDefaultLangValidation_MissingLang_ErrorSeverity(t *testing.T) {
-	services.AppMessageService.Clear()
-	severity := types.SEVERITY_ERROR
-	feedInfo := &types.FeedInfo{DefaultLang: nil}
-	validations.DefaultLangValidation(&severity, feedInfo, 1)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing default_lang with error severity should error",
+func TestAllDefaultLangValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetValidLanguageCodes()
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("default_lang") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var severity types.Severity
+			if tc.ExpectedErrors > 0 {
+				severity = types.SEVERITY_ERROR
+			} else {
+				severity = types.SEVERITY_WARNING
+			}
+			var defaultLang *string
+			if tc.Name == "Invalid_Value" {
+				defaultLang = lib.Ptr("notalang")
+			} else if tc.Value != nil {
+				defaultLang = lib.Ptr(validOptions[0])
+			} else {
+				defaultLang = nil
+			}
+			validations.DefaultLangValidation(&severity, &types.FeedInfo{DefaultLang: defaultLang}, tc.Row)
+			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
+			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestDefaultLangValidation_MissingLang_WarningSeverity(t *testing.T) {
-	services.AppMessageService.Clear()
-	
-	severity := types.SEVERITY_WARNING
-	feedInfo := &types.FeedInfo{DefaultLang: nil}
-	
-	validations.DefaultLangValidation(&severity, feedInfo, 1)
-	
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalWarnings,
-		Message: "Missing default_lang with warning severity should error (recommended)",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestDefaultLangValidation_MissingLang_IgnoreSeverity(t *testing.T) {
-	services.AppMessageService.Clear()
-	severity := types.SEVERITY_IGNORE
-	feedInfo := &types.FeedInfo{DefaultLang: nil}
-	validations.DefaultLangValidation(&severity, feedInfo, 1)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing default_lang with ignore severity should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("default_lang") {
+		if tc.Name != "Severity_Ignore_Missing" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			validations.DefaultLangValidation(&tc.Severity, &types.FeedInfo{DefaultLang: nil}, tc.Row)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+		})
 	}
 }
-
-func TestDefaultLangValidation_InvalidLang(t *testing.T) {
-	services.AppMessageService.Clear()
-	severity := types.SEVERITY_ERROR
-	invalid := "notalang"
-	feedInfo := &types.FeedInfo{DefaultLang: &invalid}
-	validations.DefaultLangValidation(&severity, feedInfo, 1)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Invalid default_lang should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestDefaultLangValidation_ValidLang(t *testing.T) {
-	services.AppMessageService.Clear()
-	severity := types.SEVERITY_ERROR
-	valid := "en"
-	feedInfo := &types.FeedInfo{DefaultLang: &valid}
-	validations.DefaultLangValidation(&severity, feedInfo, 1)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid default_lang should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-} 

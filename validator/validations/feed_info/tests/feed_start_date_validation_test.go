@@ -2,85 +2,48 @@ package feed_info
 
 import (
 	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/feed_info/validations"
 	"testing"
 )
 
-func TestFeedStartDateValidation_MissingDate_ErrorSeverity(t *testing.T) {
-	services.AppMessageService.Clear()
-	severity := types.SEVERITY_ERROR
-	feedInfo := &types.FeedInfo{FeedStartDate: nil}
-	validations.FeedStartDateValidation(&severity, feedInfo, 1)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing feed_start_date with error severity should error",
+func TestAllFeedStartDateValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetDateValidOptions()
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("feed_start_date") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var severity types.Severity
+			if tc.ExpectedCode == "feed_start_date_validation.required" {
+				severity = types.SEVERITY_ERROR
+			} else if tc.ExpectedCode == "feed_start_date_validation.recommended" {
+				severity = types.SEVERITY_WARNING
+			} else {
+				severity = types.SEVERITY_ERROR
+			}
+			var feedStartDate *string
+			if tc.Value != nil {
+				feedStartDate = lib.Ptr(validOptions[0])
+			}
+			if tc.Name == "Invalid_Value" {
+				feedStartDate = lib.Ptr("2023-01-01")
+			}
+			feedInfo := &types.FeedInfo{FeedStartDate: feedStartDate}
+			validations.FeedStartDateValidation(&severity, feedInfo, tc.Row)
+			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
+			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestFeedStartDateValidation_MissingDate_WarningSeverity(t *testing.T) {
-	services.AppMessageService.Clear()
-	severity := types.SEVERITY_WARNING
-	feedInfo := &types.FeedInfo{FeedStartDate: nil}
-	validations.FeedStartDateValidation(&severity, feedInfo, 1)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalWarnings,
-		Message: "Missing feed_start_date with warning severity should error (recommended)",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestFeedStartDateValidation_MissingDate_IgnoreSeverity(t *testing.T) {
-	services.AppMessageService.Clear()
-	severity := types.SEVERITY_IGNORE
-	feedInfo := &types.FeedInfo{FeedStartDate: nil}
-	validations.FeedStartDateValidation(&severity, feedInfo, 1)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing feed_start_date with ignore severity should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("feed_start_date") {
+		if tc.Name != "Severity_Ignore_Missing" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			feedInfo := &types.FeedInfo{FeedStartDate: nil}
+			validations.FeedStartDateValidation(&tc.Severity, feedInfo, tc.Row)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+		})
 	}
 }
-
-func TestFeedStartDateValidation_InvalidDate(t *testing.T) {
-	services.AppMessageService.Clear()
-	severity := types.SEVERITY_ERROR
-	invalid := "2023-01-01" // not in YYYYMMDD format
-	feedInfo := &types.FeedInfo{FeedStartDate: &invalid}
-	validations.FeedStartDateValidation(&severity, feedInfo, 1)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Invalid feed_start_date should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestFeedStartDateValidation_ValidDate(t *testing.T) {
-	services.AppMessageService.Clear()
-	severity := types.SEVERITY_ERROR
-	valid := "20240101"
-	feedInfo := &types.FeedInfo{FeedStartDate: &valid}
-	validations.FeedStartDateValidation(&severity, feedInfo, 1)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid feed_start_date should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-} 
