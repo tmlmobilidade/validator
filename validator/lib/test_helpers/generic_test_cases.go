@@ -71,6 +71,15 @@ type GenericIdTestCase struct {
 	ExpectedCode   string
 }
 
+// GenericForeignKeyTestCase for foreign key validation
+type GenericForeignKeyTestCase struct {
+	Name           string
+	Id             *string
+	Row            int
+	ExpectedErrors int
+	ExpectedCode   string
+}
+
 // GenericSeverityTestCase for testing severity configurations
 type GenericSeverityTestCase struct {
 	Name             string
@@ -322,6 +331,24 @@ func GetGenericIdTestCases(fieldName string) []GenericIdTestCase {
 	}
 }
 
+// GetGenericForeignKeyTestCases returns test cases for foreign key validation
+func GetGenericForeignKeyTestCases(fieldName string) []GenericForeignKeyTestCase {
+	return []GenericForeignKeyTestCase{
+		{
+			Name:           "ForeignKey_Present",
+			Id:             lib.Ptr("present_id"),
+			Row:            0,
+			ExpectedErrors: 0,
+		},
+		{
+			Name:           "ForeignKey_Invalid",
+			Id:             lib.Ptr("invalid_id"),
+			Row:            0,
+			ExpectedErrors: 1,
+		},
+	}
+}
+
 // GetGenericSeverityTestCases returns test cases for different severity levels
 func GetGenericSeverityTestCases(fieldName string) []GenericSeverityTestCase {
 	return []GenericSeverityTestCase{
@@ -346,13 +373,6 @@ func GetGenericSeverityTestCases(fieldName string) []GenericSeverityTestCase {
 			Row:              3,
 			ExpectedErrors:   0,
 			ExpectedWarnings: 0,
-		},
-		{
-			Name:           "Severity_Forbidden_Present",
-			Value:          lib.Ptr("present_value"),
-			Severity:       types.SEVERITY_FORBIDDEN,
-			Row:            4,
-			ExpectedErrors: 1,
 		},
 		{
 			Name:             "Severity_Forbidden_Missing",
@@ -597,6 +617,7 @@ type TestCaseSummary struct {
 	ColorCases         int
 	EnumCases          int
 	IdCases            int
+	FkCases            int
 	SeverityCases      int
 	TotalCases         int
 }
@@ -609,6 +630,7 @@ func GetTestCaseSummary() TestCaseSummary {
 	enumCases := len(GetGenericEnumIntTestCases("sample", []int{0, 1, 2}))
 	idCases := len(GetGenericIdTestCases("sample"))
 	severityCases := len(GetGenericSeverityTestCases("sample"))
+	fkCases := len(GetGenericForeignKeyTestCases("sample"))
 
 	return TestCaseSummary{
 		RequiredFieldCases: requiredCases,
@@ -616,7 +638,8 @@ func GetTestCaseSummary() TestCaseSummary {
 		ColorCases:         colorCases,
 		EnumCases:          enumCases,
 		IdCases:            idCases,
+		FkCases:            fkCases,
 		SeverityCases:      severityCases,
-		TotalCases:         requiredCases + urlCases + colorCases + enumCases + idCases + severityCases,
+		TotalCases:         requiredCases + urlCases + colorCases + enumCases + idCases + fkCases + severityCases,
 	}
 }

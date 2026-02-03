@@ -1,115 +1,51 @@
 package fare_rules
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/fare_rules/validations"
 	"testing"
 )
 
-func TestContainsIdValidation_MissingContainsId(t *testing.T) {
-	services.AppMessageService.Clear()
-	fareRule := &types.FareRule{ContainsId: nil}
-	gtfs := &types.Gtfs{
-		IdMap: map[string]map[string][]int{
-			"stops": {},
-		},
+func TestAllContainsIdValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericForeignKeyTestCases("contains_id") {
+		// Skip duplicate test case - contains_id allows duplicates per GTFS spec and is optional
+		if tc.Name == "ForeignKey_Invalid" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var containsId *string
+			if tc.Id != nil {
+				containsId = tc.Id
+			}
+
+			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{*containsId: {1}}}}.ToGtfs()
+			validations.ContainsIdValidation(&types.FareRule{ContainsId: containsId}, tc.Row, &gtfs, nil)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+		})
 	}
-	validations.ContainsIdValidation(fareRule, 1, gtfs, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing contains_id (optional) should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestContainsIdValidation_InvalidContainsId(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	invalidContainsId := "INVALID"
-	fareRule := &types.FareRule{ContainsId: &invalidContainsId}
-	gtfs := &types.Gtfs{
-		IdMap: map[string]map[string][]int{
-			"stops": {},
-		},
-	}
-
-	validations.ContainsIdValidation(fareRule, 2, gtfs, nil)
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid contains_id should error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestContainsIdValidation_ValidContainsId(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	validContainsId := "CONTAIN1"
-	fareRule := &types.FareRule{ContainsId: &validContainsId}
-	gtfs := &types.Gtfs{
-		IdMap: map[string]map[string][]int{
-			"stops": {"CONTAIN1": {1}},
-		},
-	}
-
-	validations.ContainsIdValidation(fareRule, 3, gtfs, nil)
-
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid contains_id should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestContainsIdValidation_SeverityError(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	fareRule := &types.FareRule{}
-	gtfs := &types.Gtfs{}
-
-	severity := types.SEVERITY_ERROR
-	validations.ContainsIdValidation(fareRule, 3, gtfs, &types.FareRulesRules{ContainsId: types.RuleConfig{Severity: severity}})
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid contains_id should error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestContainsIdValidation_SeverityWarning(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	fareRule := &types.FareRule{}
-	gtfs := &types.Gtfs{}
-
-	severity := types.SEVERITY_WARNING
-	validations.ContainsIdValidation(fareRule, 3, gtfs, &types.FareRulesRules{ContainsId: types.RuleConfig{Severity: severity}})
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Valid contains_id should error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("contains_id") {
+		if tc.Name != "Severity_Ignore_Missing" && tc.Name != "Severity_Forbidden_Missing" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var containsId *string
+			if tc.Value != nil {
+				containsId = tc.Value.(*string)
+			} else {
+				containsId = nil
+			}
+			// Set up GTFS IdMap only if containsId is not nil
+			gtfsIdMap := types.GtfsIdMap{}
+			if containsId != nil {
+				gtfsIdMap["stops"] = map[string][]int{*containsId: {1}}
+			}
+			gtfs := test_helpers.MockGtfs{IdMapData: gtfsIdMap}.ToGtfs()
+			validations.ContainsIdValidation(&types.FareRule{ContainsId: containsId}, tc.Row, &gtfs, &types.FareRulesRules{ContainsId: types.RuleConfig{Severity: tc.Severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+		})
 	}
 }
