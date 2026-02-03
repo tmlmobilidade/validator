@@ -386,7 +386,7 @@ func GetGenericSeverityTestCases(fieldName string) []GenericSeverityTestCase {
 }
 
 // ===============================================
-// GTFS-SPECIFIC COMMON TEST CASES
+// ARRAYS VALUE GENERATORS
 // ===============================================
 
 // GetRouteTypeValidOptions returns valid GTFS route_type values
@@ -445,7 +445,7 @@ func GetTransfersValidOptions() []int {
 }
 
 // ===============================================
-// TEST FLOAT VALUE GENERATORS
+// TEST NUMBERS VALUE GENERATORS
 // ===============================================
 
 // GetValidShapeOptions returns valid shape_pt_sequence values
@@ -453,7 +453,7 @@ func GetValidShapeOptions() []int {
 	return []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 }
 
-// GetValidShapeOptions returns valid shape_pt_sequence values
+// GetInvalidShapeOptions returns invalid shape_pt_sequence values
 func GetInvalidShapeOptions() []int {
 	return []int{-1, -2, -3, -4, -5, -6, -7, -8, -9, -10}
 }
@@ -476,6 +476,34 @@ func GetShapeFloat32ValidOptions() []float32 {
 // GetShapeFloat32InvalidOptions returns invalid float32 values
 func GetShapeFloat32InvalidOptions() []float32 {
 	return []float32{-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0, -10.0}
+}
+
+// ===============================================
+// TEST SPECIFICS VALUE GENERATORS
+// ===============================================
+
+// GetValidTimeOptions returns valid time values
+func GetValidTimeOptions() []string {
+	return []string{
+		"00:00:00",
+		"00:00:01",
+		"00:00:02",
+	}
+}
+
+// GetInvalidTimeOptions returns invalid time values
+func GetInvalidTimeOptions() []string {
+	return []string{
+		"25:00:00",
+		"00:60:00",
+		"00:00:60",
+		"00:00:000",
+		"00:00:0000",
+		"00:00:00000",
+		"00:00:000000",
+		"00:00:0000000",
+		"00:00:00000000",
+	}
 }
 
 // ===============================================
