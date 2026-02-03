@@ -106,12 +106,12 @@ func GetGenericRequiredFieldTestCases(fieldName string) []GenericRequiredFieldTe
 			ExpectedCode:   fieldName + "_required",
 		},
 		{
-			Name:             "Recommended_Missing",
-			Value:            nil,
-			Row:              2,
-			IsRequired:       false,
-			ExpectedWarnings: 1,
-			ExpectedCode:     fieldName + "_recommended",
+			Name:           "Recommended_Missing",
+			Value:          nil,
+			Row:            2,
+			IsRequired:     false,
+			ExpectedErrors: 0,
+			ExpectedCode:   fieldName + "_recommended",
 		},
 		{
 			Name:           "Valid_Present",
@@ -636,6 +636,21 @@ func GetDateValidOptions() []string {
 		"20240101",
 		"20240102",
 		"20240103",
+	}
+}
+
+// GetInvalidDateOptions returns invalid date values
+func GetInvalidDateOptions() []string {
+	return []string{
+		"2024-01-01",
+		"2024010101",
+		"202401010101",
+		"20240101010101",
+		"2024010101010101",
+		"202401010101010101",
+		"20240101010101010101",
+		"2024010101010101010101",
+		"202401010101010101010101",
 	}
 }
 

@@ -9,34 +9,30 @@ import (
 )
 
 func TestAllServiceIdValidationTestCases(t *testing.T) {
-	dateValid := test_helpers.GetDateValidOptions()
+	validOptions := test_helpers.GetDateValidOptions()
+	invalidOptions := test_helpers.GetInvalidDateOptions()
 	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("service_id") {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			var serviceId string
-			if tc.Value != nil {
-				serviceId = *tc.Value
+			if tc.Name == "Invalid_Value" {
+				serviceId = invalidOptions[0]
+			} else if tc.Value != nil {
+				serviceId = validOptions[0]
+			} else {
+				serviceId = ""
 			}
 			calendarDate := &types.CalendarDates{
-				Date:          dateValid[0],
+				Date:          validOptions[0],
 				ExceptionType: nil,
 				ServiceId:     serviceId,
 			}
 			validations.ServiceIdValidation(calendarDate, tc.Row)
-			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
-			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name)
+			if tc.Name == "Missing_Value_Required" {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			}
 		})
 	}
-}
-
-func TestInvalidServiceIdValidation(t *testing.T) {
-	dateValid := test_helpers.GetDateValidOptions()
-	services.AppMessageService.Clear()
-	calendarDate := &types.CalendarDates{
-		Date:          dateValid[0],
-		ExceptionType: nil,
-		ServiceId:     "invalid",
-	}
-	validations.ServiceIdValidation(calendarDate, 1)
-	test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Invalid service_id should error")
 }

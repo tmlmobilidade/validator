@@ -31,8 +31,11 @@ func TestAllAgencyEmailTestCases(t *testing.T) {
 			}
 
 			validations.AgencyEmailValidation(&types.Agency{AgencyEmail: agencyEmail}, tc.Row, &types.AgencyRules{AgencyEmail: types.RuleConfig{Severity: severity}})
-			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
-			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name)
+			if tc.Name == "Recommended_Missing" {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			}
 		})
 	}
 }

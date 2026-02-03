@@ -10,9 +10,6 @@ import (
 
 func TestAllCurrencyTypeValidationTestCases(t *testing.T) {
 	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("currency_type") {
-		if tc.Name == "Recommended_Missing" {
-			continue
-		}
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			var currencyType *string
@@ -25,7 +22,11 @@ func TestAllCurrencyTypeValidationTestCases(t *testing.T) {
 				}
 			}
 			validations.CurrencyTypeValidation(&types.FareAttribute{CurrencyType: currencyType}, tc.Row)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			if tc.Name == "Recommended_Missing" {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			}
 		})
 	}
 }

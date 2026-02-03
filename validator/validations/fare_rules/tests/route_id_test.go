@@ -10,7 +10,6 @@ import (
 
 func TestAllRouteIdValidationTestCases(t *testing.T) {
 	for _, tc := range test_helpers.GetGenericForeignKeyTestCases("route_id") {
-		// Skip duplicate test case - route_id allows duplicates per GTFS spec and is optional
 		if tc.Name == "ForeignKey_Invalid" {
 			continue
 		}

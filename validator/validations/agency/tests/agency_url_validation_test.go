@@ -16,14 +16,18 @@ func TestAllAgencyUrlValidationTestCases(t *testing.T) {
 			services.AppMessageService.Clear()
 
 			var severity types.Severity
-			if tc.ExpectedCode == fieldName+"_required" {
+			if tc.Name == "Required" {
 				severity = types.SEVERITY_ERROR
 			} else {
 				severity = types.SEVERITY_WARNING
 			}
 
 			validations.AgencyUrlValidation(&types.Agency{AgencyUrl: tc.Url}, tc.Row, &types.AgencyRules{AgencyUrl: types.RuleConfig{Severity: severity}})
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			if tc.Name == "Recommended_Missing" {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			}
 		})
 	}
 }

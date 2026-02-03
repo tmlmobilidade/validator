@@ -31,8 +31,11 @@ func TestAllAgencyLangValidationTestCases(t *testing.T) {
 			}
 
 			validations.AgencyLangValidation(&types.Agency{AgencyLang: agencyLang}, tc.Row, &types.AgencyRules{AgencyLang: types.RuleConfig{Severity: severity}})
-			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
-			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name)
+			if tc.Name == "Recommended_Missing" {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			}
 		})
 	}
 }

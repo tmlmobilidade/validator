@@ -10,7 +10,6 @@ import (
 
 func TestAllDestinationIdValidationTestCases(t *testing.T) {
 	for _, tc := range test_helpers.GetGenericForeignKeyTestCases("destination_id") {
-		// Skip duplicate test case - destination_id allows duplicates per GTFS spec and is optional
 		if tc.Name == "ForeignKey_Invalid" {
 			continue
 		}

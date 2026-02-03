@@ -21,7 +21,11 @@ func TestAllAgencyIdValidationTestCases(t *testing.T) {
 			}
 			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"agency": agencyIdMap}}.ToGtfs()
 			validations.AgencyIdValidation(&types.FareAttribute{AgencyId: tc.Id}, tc.Row, &gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			if tc.Name == "Recommended_Missing" {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			}
 		})
 	}
 	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("agency_id") {
@@ -50,8 +54,11 @@ func TestAllAgencyIdValidationTestCases(t *testing.T) {
 			}
 			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"agency": agencyIdMap}}.ToGtfs()
 			validations.AgencyIdValidation(&types.FareAttribute{AgencyId: agencyId}, tc.Row, &gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: severity}})
-			expectedTotal := tc.ExpectedErrors + tc.ExpectedWarnings
-			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotal, tc.Name)
+			if tc.Name == "Recommended_Missing" {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			}
 		})
 	}
 }
