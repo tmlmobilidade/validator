@@ -1,47 +1,42 @@
 package calendar_dates
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/calendar_dates/validations"
 	"testing"
 )
 
-func TestServiceIdValidation_Present(t *testing.T) {
-	services.AppMessageService.Clear()
-	row := 1
-	calendarDate := &types.CalendarDates{
-		Date:          "20240101",
-		ExceptionType: nil,
-		ServiceId:     "S1",
-	}
-	validations.ServiceIdValidation(calendarDate, row)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Present service_id should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+func TestAllServiceIdValidationTestCases(t *testing.T) {
+	dateValid := test_helpers.GetDateValidOptions()
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("service_id") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var serviceId string
+			if tc.Value != nil {
+				serviceId = *tc.Value
+			}
+			calendarDate := &types.CalendarDates{
+				Date:          dateValid[0],
+				ExceptionType: nil,
+				ServiceId:     serviceId,
+			}
+			validations.ServiceIdValidation(calendarDate, tc.Row)
+			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
+			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name)
+		})
 	}
 }
 
-func TestServiceIdValidation_Missing(t *testing.T) {
+func TestInvalidServiceIdValidation(t *testing.T) {
+	dateValid := test_helpers.GetDateValidOptions()
 	services.AppMessageService.Clear()
-	row := 1
 	calendarDate := &types.CalendarDates{
-		Date:          "20240101",
+		Date:          dateValid[0],
 		ExceptionType: nil,
-		ServiceId:     "",
+		ServiceId:     "invalid",
 	}
-	validations.ServiceIdValidation(calendarDate, row)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing service_id should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
+	validations.ServiceIdValidation(calendarDate, 1)
+	test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Invalid service_id should error")
 }

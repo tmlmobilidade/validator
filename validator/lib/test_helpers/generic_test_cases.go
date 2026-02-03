@@ -426,15 +426,6 @@ func GetShapePtLonValidOptions() []float32 {
 	return []float32{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0}
 }
 
-// GetDateValidOptions returns valid date values
-func GetDateValidOptions() []string {
-	return []string{
-		"20240101",
-		"20240102",
-		"20240103",
-	}
-}
-
 // ===============================================
 // COMMON TEST VALUE GENERATORS
 // ===============================================
@@ -549,6 +540,15 @@ func GetInvalidUrls() []string {
 		"example.com",
 		"https://",
 		"https://example.com/path with space",
+	}
+}
+
+// GetDateValidOptions returns valid date values
+func GetDateValidOptions() []string {
+	return []string{
+		"20240101",
+		"20240102",
+		"20240103",
 	}
 }
 
