@@ -448,29 +448,34 @@ func GetTransfersValidOptions() []int {
 // TEST FLOAT VALUE GENERATORS
 // ===============================================
 
-// GetShapeDistTraveledValidOptions returns valid shape_dist_traveled values
-func GetShapeDistTraveledValidOptions() []float64 {
-	return []float64{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0}
-}
-
-// GetShapePtLatValidOptions returns valid shape_pt_lat values
-func GetShapePtLatValidOptions() []float32 {
-	return []float32{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0}
-}
-
-// GetShapePtLngValidOptions returns valid shape_pt_lon values
-func GetShapePtLonValidOptions() []float32 {
-	return []float32{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0}
-}
-
-// GetPriceValidOptions returns valid price values
-func GetPriceValidOptions() []float64 {
-	return []float64{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0}
-}
-
-// GetTransferDurationValidOptions returns valid transfer_duration values
-func GetTransferDurationValidOptions() []int {
+// GetValidShapeOptions returns valid shape_pt_sequence values
+func GetValidShapeOptions() []int {
 	return []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+}
+
+// GetValidShapeOptions returns valid shape_pt_sequence values
+func GetInvalidShapeOptions() []int {
+	return []int{-1, -2, -3, -4, -5, -6, -7, -8, -9, -10}
+}
+
+// GetShapeFloat64ValidOptions returns valid float64 values
+func GetShapeFloat64ValidOptions() []float64 {
+	return []float64{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0}
+}
+
+// GetShapeFloat64InvalidOptions returns invalid float64 values
+func GetShapeFloat64InvalidOptions() []float64 {
+	return []float64{-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0, -10.0}
+}
+
+// GetShapeFloat32ValidOptions returns valid float32 values
+func GetShapeFloat32ValidOptions() []float32 {
+	return []float32{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0}
+}
+
+// GetShapeFloat32InvalidOptions returns invalid float32 values
+func GetShapeFloat32InvalidOptions() []float32 {
+	return []float32{-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0, -10.0}
 }
 
 // ===============================================

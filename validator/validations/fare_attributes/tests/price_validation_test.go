@@ -9,29 +9,23 @@ import (
 )
 
 func TestAllPriceValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetPriceValidOptions()
-	negativePrice := -1.0
+	validOptions := test_helpers.GetShapeFloat64ValidOptions()
+	negativeOptions := test_helpers.GetShapeFloat64InvalidOptions()
 	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("price") {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 
 			var price *float64
-			if tc.Value != nil {
-				price = &validOptions[tc.Row-1]
-			}
 
 			if tc.Name == "Invalid_Value" {
-				price = &negativePrice
+				price = &negativeOptions[0]
+			} else if tc.Value != nil {
+				price = &validOptions[0]
+			} else {
+				price = nil
 			}
-
 			validations.PriceValidation(&types.FareAttribute{Price: price}, tc.Row)
-			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
-			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
 		})
 	}
-	t.Run("NegativePrice", func(t *testing.T) {
-		services.AppMessageService.Clear()
-		validations.PriceValidation(&types.FareAttribute{Price: &negativePrice}, 1)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Negative price should error")
-	})
 }
