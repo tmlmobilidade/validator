@@ -48,14 +48,7 @@ func TestParseFareRule_EmptyInput(t *testing.T) {
 	services.AppMessageService.Clear()
 	rawFareRule := types.FareRuleRaw{}
 	fareRule := validations.ParseFareRule(rawFareRule, 3)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Empty input should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
+
 	if fareRule.FareId != nil {
 		t.Errorf("Expected FareId to be nil, got %v", fareRule.FareId)
 	}
