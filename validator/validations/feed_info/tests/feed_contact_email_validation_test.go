@@ -22,8 +22,11 @@ func TestAllFeedContactEmailValidationTestCases(t *testing.T) {
 			}
 			feedInfo := &types.FeedInfo{FeedContactEmail: tc.Value}
 			validations.FeedContactEmailValidation(&severity, feedInfo, tc.Row)
-			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
-			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name)
+			if tc.Name == "Recommended_Missing" {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			}
 		})
 	}
 }

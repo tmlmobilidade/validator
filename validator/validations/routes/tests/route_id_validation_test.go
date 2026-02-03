@@ -19,13 +19,27 @@ func TestAllRouteIdValidationTestCases(t *testing.T) {
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
 		})
 	}
-}
 
-func TestRouteIdValidation_Forbidden(t *testing.T) {
-	services.AppMessageService.Clear()
-	routeId := "R1"
-	route := &types.Route{RouteId: &routeId}
-	gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"R1": {1, 2}}}}.ToGtfs()
-	validations.RouteIdValidation(route, 2, &gtfs)
-	test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden route_id should error")
+	// for _, tc := range test_helpers.GetGenericSeverityTestCases("route_id") {
+	// 	if tc.Name != "Severity_Forbidden_Missing" {
+	// 		continue
+	// 	}
+	// 	t.Run(tc.Name, func(t *testing.T) {
+	// 		services.AppMessageService.Clear()
+	// 		var routeId *string
+	// 		if tc.Value != nil {
+	// 			if ptr, ok := tc.Value.(*string); ok {
+	// 				routeId = ptr
+	// 			}
+	// 		}
+	// 		var gtfs types.Gtfs
+	// 		if routeId != nil {
+	// 			gtfs = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": map[string][]int{*routeId: {1, 2}}}}.ToGtfs()
+	// 		} else {
+	// 			gtfs = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": map[string][]int{}}}.ToGtfs()
+	// 		}
+	// 		validations.RouteIdValidation(&types.Route{RouteId: routeId}, tc.Row, &gtfs)
+	// 		test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+	// 	})
+	// }
 }

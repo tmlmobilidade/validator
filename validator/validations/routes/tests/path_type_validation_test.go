@@ -18,6 +18,7 @@ func TestAllPathTypeValidationTestCases(t *testing.T) {
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("path_type", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
+
 			var severity types.Severity
 			if tc.ExpectedErrors > 0 {
 				severity = types.SEVERITY_ERROR

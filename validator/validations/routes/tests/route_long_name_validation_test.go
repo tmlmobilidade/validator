@@ -14,10 +14,11 @@ func TestAllRouteLongNameValidationTestCases(t *testing.T) {
 			services.AppMessageService.Clear()
 
 			var severity types.Severity
-			if tc.ExpectedErrors > 0 {
-				severity = types.SEVERITY_ERROR
-			} else {
+
+			if tc.Name == "Recommended_Missing" {
 				severity = types.SEVERITY_WARNING
+			} else {
+				severity = types.SEVERITY_ERROR
 			}
 
 			var routeLongName *string
@@ -26,15 +27,17 @@ func TestAllRouteLongNameValidationTestCases(t *testing.T) {
 			}
 
 			validations.RouteLongNameValidation(&types.Route{RouteLongName: routeLongName}, tc.Row, &types.RoutesRules{RouteLongName: types.RuleConfig{Severity: severity}})
-			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
-			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name)
+			if tc.Name == "Recommended_Missing" {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			}
 		})
 	}
-}
+	t.Run("Required_When_ShortName_Empty", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		validations.RouteLongNameValidation(&types.Route{RouteLongName: nil, RouteShortName: nil}, 1, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Required when short name is empty should error")
+	})
 
-func TestRouteLongNameValidation_MissingLongNameAndShortName(t *testing.T) {
-	services.AppMessageService.Clear()
-	route := &types.Route{RouteShortName: nil, RouteLongName: nil}
-	validations.RouteLongNameValidation(route, 1, nil)
-	test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Missing long name and short name should error")
 }

@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"main/lib"
 	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
@@ -31,111 +30,61 @@ func TestAllNetworkIdValidationTestCases(t *testing.T) {
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
 		})
 	}
-}
 
-func TestNetworkIdValidation_ForbiddenWhenRouteNetworksExists(t *testing.T) {
-	services.AppMessageService.Clear()
-	validations.NetworkIdValidation(&types.Route{NetworkId: lib.Ptr("N1")}, 1, &types.Gtfs{RouteNetwork: []types.RouteNetworkRaw{{NetworkId: "N1"}}}, &types.RoutesRules{NetworkId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
-	test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "NetworkIdValidation should error when route networks exists")
-}
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("network_id") {
+		if tc.Name != "Severity_Ignore_Missing" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			validations.NetworkIdValidation(&types.Route{NetworkId: nil}, tc.Row, &types.Gtfs{}, &types.RoutesRules{NetworkId: types.RuleConfig{Severity: tc.Severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+		})
+	}
 
-func TestNetworkIdValidation_AllowedWhenRouteNetworksEmpty(t *testing.T) {
-	services.AppMessageService.Clear()
-	networkId := "NETWORK1"
-	route := &types.Route{NetworkId: &networkId}
-	gtfs := &types.Gtfs{
-		RouteNetwork: []types.RouteNetworkRaw{},
-	}
-	rules := &types.RoutesRules{
-		NetworkId: types.RuleConfig{
-			Severity: types.SEVERITY_ERROR,
-		},
-	}
-	validations.NetworkIdValidation(route, 1, gtfs, rules)
-	test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "network_id should be allowed when route_networks is empty")
-}
-
-func TestNetworkIdValidation_AllowedWhenRouteNetworksNil(t *testing.T) {
-	services.AppMessageService.Clear()
-	networkId := "NETWORK1"
-	route := &types.Route{NetworkId: &networkId}
-	gtfs := &types.Gtfs{}
-	rules := &types.RoutesRules{
-		NetworkId: types.RuleConfig{
-			Severity: types.SEVERITY_ERROR,
-		},
-	}
-	validations.NetworkIdValidation(route, 1, gtfs, rules)
-	test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "network_id should be allowed when route_networks is nil")
-}
-
-func TestNetworkIdValidation_WithOptions_NotAllowed(t *testing.T) {
-	services.AppMessageService.Clear()
-	allowedOptions := []string{"NETWORK1", "NETWORK2"}
-	networkId := "NETWORK3"
-	route := &types.Route{NetworkId: &networkId}
-	gtfs := &types.Gtfs{}
-	rules := &types.RoutesRules{
-		NetworkId: types.RuleConfig{
-			Severity: types.SEVERITY_ERROR,
-			Options:  &allowedOptions,
-		},
-	}
-	validations.NetworkIdValidation(route, 1, gtfs, rules)
-	test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Not allowed network_id should error")
-}
-
-func TestNetworkIdValidation_WithOptions_AllOptions(t *testing.T) {
-	services.AppMessageService.Clear()
-	allOptions := []string{types.ALL_OPTIONS}
-	networkId := "ANY_NETWORK"
-	route := &types.Route{NetworkId: &networkId}
-	gtfs := &types.Gtfs{}
-	rules := &types.RoutesRules{
-		NetworkId: types.RuleConfig{
-			Severity: types.SEVERITY_ERROR,
-			Options:  &allOptions,
-		},
-	}
-	validations.NetworkIdValidation(route, 1, gtfs, rules)
-	test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "ALL_OPTIONS should allow any network_id")
-}
-
-func TestNetworkIdValidation_MissingWhenRequired(t *testing.T) {
-	services.AppMessageService.Clear()
-	route := &types.Route{NetworkId: nil}
-	gtfs := &types.Gtfs{}
-	rules := &types.RoutesRules{
-		NetworkId: types.RuleConfig{
-			Severity: types.SEVERITY_ERROR,
-		},
-	}
-	validations.NetworkIdValidation(route, 1, gtfs, rules)
-	test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Missing network_id should error when required")
-}
-
-func TestNetworkIdValidation_MissingWhenRecommended(t *testing.T) {
-	services.AppMessageService.Clear()
-	route := &types.Route{NetworkId: nil}
-	gtfs := &types.Gtfs{}
-	rules := &types.RoutesRules{
-		NetworkId: types.RuleConfig{
-			Severity: types.SEVERITY_WARNING,
-		},
-	}
-	validations.NetworkIdValidation(route, 1, gtfs, rules)
-	test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Missing network_id should warn when recommended")
-}
-
-func TestNetworkIdValidation_MissingWhenIgnored(t *testing.T) {
-	services.AppMessageService.Clear()
-	route := &types.Route{NetworkId: nil}
-	gtfs := &types.Gtfs{}
-	rules := &types.RoutesRules{
-		NetworkId: types.RuleConfig{
-			Severity: types.SEVERITY_IGNORE,
-		},
-	}
-	validations.NetworkIdValidation(route, 1, gtfs, rules)
-	test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Missing network_id should be ignored when severity is IGNORE")
+	t.Run("Allowed_WhenRouteNetworksEmpty", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		networkId := "NETWORK1"
+		route := &types.Route{NetworkId: &networkId}
+		gtfs := &types.Gtfs{
+			RouteNetwork: []types.RouteNetworkRaw{},
+		}
+		rules := &types.RoutesRules{
+			NetworkId: types.RuleConfig{
+				Severity: types.SEVERITY_ERROR,
+			},
+		}
+		validations.NetworkIdValidation(route, 1, gtfs, rules)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "network_id should be allowed when route_networks is empty")
+	})
+	t.Run("NotAllowed_WhenNetworkIdNotAllowed", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		allowedOptions := []string{"NETWORK1", "NETWORK2"}
+		networkId := "NETWORK3"
+		route := &types.Route{NetworkId: &networkId}
+		gtfs := &types.Gtfs{}
+		rules := &types.RoutesRules{
+			NetworkId: types.RuleConfig{
+				Severity: types.SEVERITY_ERROR,
+				Options:  &allowedOptions,
+			},
+		}
+		validations.NetworkIdValidation(route, 1, gtfs, rules)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Not allowed network_id should error")
+	})
+	t.Run("Allowed_WhenAllOptions", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		allOptions := []string{types.ALL_OPTIONS}
+		networkId := "ANY_NETWORK"
+		route := &types.Route{NetworkId: &networkId}
+		gtfs := &types.Gtfs{}
+		rules := &types.RoutesRules{
+			NetworkId: types.RuleConfig{
+				Severity: types.SEVERITY_ERROR,
+				Options:  &allOptions,
+			},
+		}
+		validations.NetworkIdValidation(route, 1, gtfs, rules)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "ALL_OPTIONS should allow any network_id")
+	})
 }

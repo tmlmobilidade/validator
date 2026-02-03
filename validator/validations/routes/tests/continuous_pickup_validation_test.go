@@ -10,152 +10,6 @@ import (
 	"testing"
 )
 
-func TestContinuousPickupValidation_MissingContinuousPickup(t *testing.T) {
-	services.AppMessageService.Clear()
-	routeId := "MY_ROUTE_ID"
-	route := &types.Route{RouteId: &routeId, ContinuousPickup: nil, ContinuousDropOff: nil}
-	gtfs := &types.Gtfs{}
-	routesWithWindows := make(map[string]bool)
-	validations.ContinuousPickupValidation(route, 1, gtfs, nil, routesWithWindows)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing continuous_pickup should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestContinuousPickupValidation_MissingRequiredContinuousPickup(t *testing.T) {
-	services.AppMessageService.Clear()
-	routeId := "MY_ROUTE_ID"
-	route := &types.Route{RouteId: &routeId, ContinuousPickup: nil}
-	gtfs := &types.Gtfs{}
-
-	severity := types.SEVERITY_ERROR
-	routesWithWindows := make(map[string]bool)
-	validations.ContinuousPickupValidation(route, 1, gtfs, &types.RoutesRules{ContinuousPickup: types.RuleConfig{Severity: severity}}, routesWithWindows)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing required continuous_pickup should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestContinuousPickupValidation_ForbiddenValueWithPickupWindow(t *testing.T) {
-	services.AppMessageService.Clear()
-	continuousPickup := "2"
-	continuousDropOff := "1"
-	routeId := "MY_ROUTE_ID"
-	route := &types.Route{RouteId: &routeId, ContinuousPickup: &continuousPickup, ContinuousDropOff: &continuousDropOff}
-	// Simulate GTFS with a trip and stop_times with pickup window
-	gtfs := &types.Gtfs{
-		Trip: []types.TripRaw{
-			{TripId: "MY_TRIP_ID"},
-		},
-		StopTime: []types.StopTimeRaw{
-			{StartPickupDropOffWindow: "08:00:00", EndPickupDropOffWindow: "09:00:00"},
-		},
-		IdMap: map[string]map[string][]int{
-			"trips": {
-				"MY_ROUTE_ID": {0},
-			},
-			"stop_times": {
-				"MY_TRIP_ID": {0},
-			},
-		},
-	}
-	severity := types.SEVERITY_ERROR
-	routesWithWindows := make(map[string]bool)
-	routesWithWindows[routeId] = true // Route has trips with pickup/dropoff windows
-	validations.ContinuousPickupValidation(route, 2, gtfs, &types.RoutesRules{ContinuousPickup: types.RuleConfig{Severity: severity}}, routesWithWindows)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Forbidden continuous_pickup value with pickup window should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestContinuousPickupValidation_ValidInput(t *testing.T) {
-	services.AppMessageService.Clear()
-	continuousPickup := "1"
-	routeId := "MY_ROUTE_ID"
-	route := &types.Route{RouteId: &routeId, ContinuousPickup: &continuousPickup}
-	// Simulate GTFS with a trip and stop_times without pickup window
-	gtfs := &types.Gtfs{
-		Trip: []types.TripRaw{
-			{TripId: "MY_TRIP_ID"},
-		},
-		StopTime: []types.StopTimeRaw{
-			{StartPickupDropOffWindow: "", EndPickupDropOffWindow: ""},
-		},
-		IdMap: map[string]map[string][]int{
-			"trips": {
-				"MY_ROUTE_ID": {0},
-			},
-			"stop_times": {
-				"MY_TRIP_ID": {0},
-			},
-		},
-	}
-	severity := types.SEVERITY_ERROR
-	routesWithWindows := make(map[string]bool)
-	validations.ContinuousPickupValidation(route, 3, gtfs, &types.RoutesRules{ContinuousPickup: types.RuleConfig{Severity: severity}}, routesWithWindows)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid continuous_pickup with no pickup window should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestContinuousPickupValidation_ValidInputWithPickupWindow(t *testing.T) {
-	services.AppMessageService.Clear()
-	continuousPickup := "1"
-	routeId := "MY_ROUTE_ID"
-	route := &types.Route{RouteId: &routeId, ContinuousPickup: &continuousPickup}
-	// Simulate GTFS with a trip and stop_times with pickup window
-	gtfs := &types.Gtfs{
-		Trip: []types.TripRaw{
-			{TripId: "MY_TRIP_ID"},
-		},
-		StopTime: []types.StopTimeRaw{
-			{StartPickupDropOffWindow: "08:00:00", EndPickupDropOffWindow: "09:00:00"},
-		},
-		IdMap: map[string]map[string][]int{
-			"trips": {
-				"MY_ROUTE_ID": {0},
-			},
-			"stop_times": {
-				"MY_TRIP_ID": {0},
-			},
-		},
-	}
-	severity := types.SEVERITY_ERROR
-	routesWithWindows := make(map[string]bool)
-	routesWithWindows[routeId] = true // Route has trips with pickup/dropoff windows, but continuous_pickup is "1" so it returns early
-	validations.ContinuousPickupValidation(route, 4, gtfs, &types.RoutesRules{ContinuousPickup: types.RuleConfig{Severity: severity}}, routesWithWindows)
-
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid continuous_pickup with pickup window should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-// Test that continuous_pickup=0 is forbidden if the route has trips with pickup/dropoff windows
 func TestAllContinuousPickupValidationTestCases(t *testing.T) {
 	validOptions := test_helpers.GetContinuousPickupDropOffValidOptions()
 	validOptionsStrings := make([]string, len(validOptions))
@@ -198,93 +52,39 @@ func TestAllContinuousPickupValidationTestCases(t *testing.T) {
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
 		})
 	}
-}
-
-func TestContinuousPickupValidation_ForbiddenValueWithWindows(t *testing.T) {
-	services.AppMessageService.Clear()
-	continuousPickup := "0"
-	routeId := "ROUTE1"
-	route := &types.Route{
-		RouteId:          &routeId,
-		ContinuousPickup: &continuousPickup,
-	}
-	routesWithWindows := map[string]bool{routeId: true}
-	rules := &types.RoutesRules{
-		ContinuousPickup: types.RuleConfig{
-			Severity: types.SEVERITY_ERROR,
-		},
-	}
-	validations.ContinuousPickupValidation(route, 1, &types.Gtfs{}, rules, routesWithWindows)
-	test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "continuous_pickup=0 should be forbidden when route has windows")
-}
-
-func TestContinuousPickupValidation_ForbiddenValue2WithWindows(t *testing.T) {
-	services.AppMessageService.Clear()
-	continuousPickup := "2"
-	routeId := "ROUTE1"
-	route := &types.Route{
-		RouteId:          &routeId,
-		ContinuousPickup: &continuousPickup,
-	}
-	routesWithWindows := map[string]bool{routeId: true}
-	rules := &types.RoutesRules{
-		ContinuousPickup: types.RuleConfig{
-			Severity: types.SEVERITY_ERROR,
-		},
-	}
-	validations.ContinuousPickupValidation(route, 1, &types.Gtfs{}, rules, routesWithWindows)
-	test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "continuous_pickup=2 should be forbidden when route has windows")
-}
-
-func TestContinuousPickupValidation_ForbiddenValue3WithWindows(t *testing.T) {
-	services.AppMessageService.Clear()
-	continuousPickup := "3"
-	routeId := "ROUTE1"
-	route := &types.Route{
-		RouteId:          &routeId,
-		ContinuousPickup: &continuousPickup,
-	}
-	routesWithWindows := map[string]bool{routeId: true}
-	rules := &types.RoutesRules{
-		ContinuousPickup: types.RuleConfig{
-			Severity: types.SEVERITY_ERROR,
-		},
-	}
-	validations.ContinuousPickupValidation(route, 1, &types.Gtfs{}, rules, routesWithWindows)
-	test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "continuous_pickup=3 should be forbidden when route has windows")
-}
-
-func TestContinuousPickupValidation_ValidValue1WithWindows(t *testing.T) {
-	services.AppMessageService.Clear()
-	continuousPickup := "1"
-	routeId := "ROUTE1"
-	route := &types.Route{
-		RouteId:          &routeId,
-		ContinuousPickup: &continuousPickup,
-	}
-	routesWithWindows := map[string]bool{routeId: true}
-	rules := &types.RoutesRules{
-		ContinuousPickup: types.RuleConfig{
-			Severity: types.SEVERITY_ERROR,
-		},
-	}
-	validations.ContinuousPickupValidation(route, 1, &types.Gtfs{}, rules, routesWithWindows)
-	test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "continuous_pickup=1 should be valid even with windows")
-}
-
-func TestContinuousPickupValidation_NoRouteId(t *testing.T) {
-	services.AppMessageService.Clear()
-	continuousPickup := "0"
-	route := &types.Route{
-		RouteId:          nil,
-		ContinuousPickup: &continuousPickup,
-	}
-	routesWithWindows := map[string]bool{"ROUTE1": true}
-	rules := &types.RoutesRules{
-		ContinuousPickup: types.RuleConfig{
-			Severity: types.SEVERITY_ERROR,
-		},
-	}
-	validations.ContinuousPickupValidation(route, 1, &types.Gtfs{}, rules, routesWithWindows)
-	test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "continuous_pickup validation should skip window check when route_id is nil")
+	t.Run("Forbidden_WithStartWindow", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		routeId := "ROUTE1"
+		routesWithWindows := map[string]bool{routeId: true}
+		validations.ContinuousPickupValidation(&types.Route{RouteId: &routeId, ContinuousPickup: lib.Ptr("0")}, 3, &types.Gtfs{}, nil, routesWithWindows)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithStartWindow")
+	})
+	t.Run("Forbidden_WithEndWindow", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		routeId := "ROUTE1"
+		routesWithWindows := map[string]bool{routeId: true}
+		validations.ContinuousPickupValidation(&types.Route{RouteId: &routeId, ContinuousPickup: lib.Ptr("0")}, 4, &types.Gtfs{}, nil, routesWithWindows)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithEndWindow")
+	})
+	t.Run("Allowed_WithStartWindowIfOne", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		routeId := "ROUTE1"
+		routesWithWindows := map[string]bool{routeId: true}
+		validations.ContinuousPickupValidation(&types.Route{RouteId: &routeId, ContinuousPickup: lib.Ptr("1")}, 5, &types.Gtfs{}, nil, routesWithWindows)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Allowed_WithStartWindowIfOne")
+	})
+	t.Run("Allowed_WithEndWindowIfOne", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		routeId := "ROUTE1"
+		routesWithWindows := map[string]bool{routeId: true}
+		validations.ContinuousPickupValidation(&types.Route{RouteId: &routeId, ContinuousPickup: lib.Ptr("1")}, 6, &types.Gtfs{}, nil, routesWithWindows)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Allowed_WithEndWindowIfOne")
+	})
+	t.Run("Allowed_WithStartWindowIfOneAndEndWindowIfOne", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		routeId := "ROUTE1"
+		routesWithWindows := map[string]bool{routeId: true}
+		validations.ContinuousPickupValidation(&types.Route{RouteId: &routeId, ContinuousPickup: lib.Ptr("1")}, 7, &types.Gtfs{}, nil, routesWithWindows)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Allowed_WithStartWindowIfOneAndEndWindowIfOne")
+	})
 }

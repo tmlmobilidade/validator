@@ -9,21 +9,6 @@ import (
 	"testing"
 )
 
-func TestShapeIdValidation_EmptyShapeId(t *testing.T) {
-	services.AppMessageService.Clear()
-	empty := ""
-	shape := &types.Shape{ShapeId: &empty}
-	validations.ShapeIdValidation(shape, 2)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Empty shape_id should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
 func TestAllShapeIdValidationTestCases(t *testing.T) {
 	for _, tc := range test_helpers.GetGenericIdTestCases("shape_id") {
 		if tc.Name == "Duplicate_Id" || tc.Name == "Valid_Unique" {
@@ -35,4 +20,9 @@ func TestAllShapeIdValidationTestCases(t *testing.T) {
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
 		})
 	}
+	t.Run("Empty_ShapeId", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		validations.ShapeIdValidation(&types.Shape{ShapeId: lib.Ptr("")}, 2)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Empty shape_id should error")
+	})
 }

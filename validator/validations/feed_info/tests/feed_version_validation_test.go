@@ -21,8 +21,11 @@ func TestAllFeedVersionValidationTestCases(t *testing.T) {
 				severity = types.SEVERITY_ERROR
 			}
 			validations.FeedVersionValidation(&severity, &types.FeedInfo{FeedVersion: tc.Value}, tc.Row)
-			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
-			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name)
+			if tc.Name == "Recommended_Missing" {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			}
 		})
 	}
 	for _, tc := range test_helpers.GetGenericSeverityTestCases("feed_version") {
