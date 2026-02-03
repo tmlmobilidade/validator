@@ -28,8 +28,23 @@ func FareIdValidation(fareAttribute *types.FareAttribute, row int, gtfs *types.G
 		return
 	}
 
-	rows, err := gtfs.GetRowsById("fare_rules", *fareAttribute.FareId)
-	if err == nil && len(rows) > 1 {
+	// Check if fare_id is Unique ID within fare_attributes table
+	rows, err := gtfs.GetRowsById("fare_attributes", *fareAttribute.FareId)
+	if err != nil {
+		// Fallback to in-memory IdMap if database is not available
+		if gtfs.IdMap != nil {
+			if fareAttributeRows, exists := gtfs.IdMap["fare_attributes"]; exists {
+				if indices, found := fareAttributeRows[*fareAttribute.FareId]; found {
+					if len(indices) > 1 {
+						ctx.AddError(ctx.GetTranslatedMessage("fare_id_validation.duplicate", *fareAttribute.FareId))
+						return
+					}
+				}
+			}
+		}
+		return
+	}
+	if len(rows) > 1 {
 		ctx.AddError(ctx.GetTranslatedMessage("fare_id_validation.duplicate", *fareAttribute.FareId))
 		return
 	}

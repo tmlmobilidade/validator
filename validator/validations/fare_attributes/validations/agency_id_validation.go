@@ -49,6 +49,20 @@ func AgencyIdValidation(fareAttribute *types.FareAttribute, row int, gtfs *types
 	// Check if agency_id exists in agencies.txt
 	if fareAttribute.AgencyId != nil {
 		rows, err := gtfs.GetRowsById("agency", *fareAttribute.AgencyId)
+		if err != nil {
+			// Fallback to in-memory IdMap if database is not available
+			if gtfs.IdMap != nil {
+				if agencyRows, exists := gtfs.IdMap["agency"]; exists {
+					if indices, found := agencyRows[*fareAttribute.AgencyId]; found {
+						if len(indices) > 1 {
+							ctx.AddError(ctx.GetTranslatedMessage("agency_id_validation.duplicate", *fareAttribute.AgencyId))
+							return
+						}
+					}
+				}
+			}
+			return
+		}
 		if err != nil || len(rows) == 0 {
 			ctx.AddError(ctx.GetTranslatedMessage("agency_id_validation.not_found"))
 		}

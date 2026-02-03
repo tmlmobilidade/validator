@@ -1,53 +1,37 @@
 package fare_attributes
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/fare_attributes/validations"
 	"testing"
 )
 
-func TestPriceValidation_MissingPrice(t *testing.T) {
-	services.AppMessageService.Clear()
-	fareAttribute := &types.FareAttribute{Price: nil}
-	validations.PriceValidation(fareAttribute, 1)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing price should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+func TestAllPriceValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetPriceValidOptions()
+	negativePrice := -1.0
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("price") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
 
-func TestPriceValidation_NegativePrice(t *testing.T) {
-	services.AppMessageService.Clear()
-	price := -1.0
-	fareAttribute := &types.FareAttribute{Price: &price}
-	validations.PriceValidation(fareAttribute, 2)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Negative price should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+			var price *float64
+			if tc.Value != nil {
+				price = &validOptions[tc.Row-1]
+			}
 
-func TestPriceValidation_ValidPrice(t *testing.T) {
-	services.AppMessageService.Clear()
-	price := 2.5
-	fareAttribute := &types.FareAttribute{Price: &price}
-	validations.PriceValidation(fareAttribute, 3)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid price should not error",
+			if tc.Name == "Invalid_Value" {
+				price = &negativePrice
+			}
+
+			validations.PriceValidation(&types.FareAttribute{Price: price}, tc.Row)
+			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
+			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-} 
+	t.Run("NegativePrice", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		validations.PriceValidation(&types.FareAttribute{Price: &negativePrice}, 1)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Negative price should error")
+	})
+}

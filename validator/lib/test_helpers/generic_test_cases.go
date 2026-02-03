@@ -111,6 +111,14 @@ func GetGenericRequiredFieldTestCases(fieldName string) []GenericRequiredFieldTe
 			IsRequired:     true,
 			ExpectedErrors: 0,
 		},
+		{
+			Name:           "Invalid_Value",
+			Value:          lib.Ptr(""),
+			Row:            1,
+			IsRequired:     true,
+			ExpectedErrors: 1,
+			ExpectedCode:   fieldName + "_required",
+		},
 	}
 }
 
@@ -411,6 +419,15 @@ func GetExceptionTypeValidOptions() []int {
 	return []int{1, 2}
 }
 
+// GetTransfersValidOptions returns valid transfers values
+func GetTransfersValidOptions() []int {
+	return []int{0, 1, 2}
+}
+
+// ===============================================
+// TEST FLOAT VALUE GENERATORS
+// ===============================================
+
 // GetShapeDistTraveledValidOptions returns valid shape_dist_traveled values
 func GetShapeDistTraveledValidOptions() []float64 {
 	return []float64{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0}
@@ -426,9 +443,28 @@ func GetShapePtLonValidOptions() []float32 {
 	return []float32{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0}
 }
 
+// GetPriceValidOptions returns valid price values
+func GetPriceValidOptions() []float64 {
+	return []float64{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0}
+}
+
+// GetTransferDurationValidOptions returns valid transfer_duration values
+func GetTransferDurationValidOptions() []int {
+	return []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+}
+
 // ===============================================
 // COMMON TEST VALUE GENERATORS
 // ===============================================
+
+// GetValidIds returns valid IDs for testing
+func GetValidIds() []string {
+	return []string{
+		"valid_id",
+		"valid_id_2",
+		"valid_id_3",
+	}
+}
 
 // ValidTimezones returns a list of valid IANA timezones for testing
 func GetValidTimezones() []string {
@@ -512,10 +548,8 @@ func GetInvalidEmails() []string {
 // GetValidPhoneNumbers returns sample phone numbers for testing
 func GetValidPhoneNumbers() []string {
 	return []string{
-		"123-456-7890",
-		"+1-234-567-8901",
-		"(555) 123-4567",
-		"+44 20 7946 0958",
+		"987-654-321",
+		"987654321",
 	}
 }
 
