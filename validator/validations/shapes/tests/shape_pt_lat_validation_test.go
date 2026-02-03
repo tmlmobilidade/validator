@@ -1,7 +1,6 @@
 package shapes
 
 import (
-	"main/lib"
 	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
@@ -9,23 +8,9 @@ import (
 	"testing"
 )
 
-func TestShapePtLatValidation_InvalidLatitude(t *testing.T) {
-	services.AppMessageService.Clear()
-	invalid := float32(1000000.0)
-	shape := &types.Shape{ShapePtLat: &invalid}
-	validations.ShapePtLatValidation(shape, 2)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid latitude should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
 func TestAllShapePtLatValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetShapePtLatValidOptions()
+	validOptions := test_helpers.GetShapeFloat32ValidOptions()
+	invalidOption := float32(100.0) // out of range
 	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("shape_pt_lat") {
 		if tc.Name == "Recommended_Missing" {
 			continue
@@ -34,7 +19,9 @@ func TestAllShapePtLatValidationTestCases(t *testing.T) {
 			services.AppMessageService.Clear()
 
 			var shapePtLat *float32
-			if tc.Value != nil {
+			if tc.Name == "Invalid_Value" {
+				shapePtLat = &invalidOption
+			} else if tc.Value != nil {
 				shapePtLat = &validOptions[0]
 			} else {
 				shapePtLat = nil

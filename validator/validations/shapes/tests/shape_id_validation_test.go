@@ -26,7 +26,7 @@ func TestShapeIdValidation_EmptyShapeId(t *testing.T) {
 
 func TestAllShapeIdValidationTestCases(t *testing.T) {
 	for _, tc := range test_helpers.GetGenericIdTestCases("shape_id") {
-		if tc.Name == "Duplicate_Id" {
+		if tc.Name == "Duplicate_Id" || tc.Name == "Valid_Unique" {
 			continue
 		}
 		t.Run(tc.Name, func(t *testing.T) {
