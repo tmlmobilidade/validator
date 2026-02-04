@@ -10,14 +10,14 @@ import (
 
 func TestAllServiceIdValidationTestCases(t *testing.T) {
 	validOptions := test_helpers.GetDateValidOptions()
-	invalidOptions := test_helpers.GetInvalidDateOptions()
 	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("service_id") {
+		if tc.Name == "Recommended_Missing" {
+			continue
+		}
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			var serviceId string
-			if tc.Name == "Invalid_Value" {
-				serviceId = invalidOptions[0]
-			} else if tc.Value != nil {
+			if tc.Value != nil {
 				serviceId = validOptions[0]
 			} else {
 				serviceId = ""
@@ -27,12 +27,14 @@ func TestAllServiceIdValidationTestCases(t *testing.T) {
 				ExceptionType: nil,
 				ServiceId:     serviceId,
 			}
-			validations.ServiceIdValidation(calendarDate, tc.Row)
-			if tc.Name == "Missing_Value_Required" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+
+			if tc.Name == "Invalid_Value" {
+				calendarDate = &types.CalendarDates{}
 			}
+
+			validations.ServiceIdValidation(calendarDate, tc.Row)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }

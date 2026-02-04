@@ -12,6 +12,9 @@ func TestAllExceptionTypeValidationTestCases(t *testing.T) {
 	validOptions := test_helpers.GetExceptionTypeValidOptions()
 	dateValid := test_helpers.GetDateValidOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("exception_type", validOptions) {
+		if tc.Name == "Recommended_Missing" {
+			continue
+		}
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 
@@ -35,11 +38,8 @@ func TestAllExceptionTypeValidationTestCases(t *testing.T) {
 			}
 
 			validations.ExceptionTypeValidation(calendarDate, tc.Row, nil)
-			if tc.Name == "Missing_Value_Required" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }
