@@ -22,31 +22,33 @@ func TestAllContinuousPickupValidationTestCases(t *testing.T) {
 			}
 
 			var rules *types.StopTimesRules
+			var severity types.Severity
 			if tc.Name == "Missing_Value_Required" {
-				rules = &types.StopTimesRules{ContinuousPickup: types.RuleConfig{Severity: types.SEVERITY_ERROR}}
+				severity = types.SEVERITY_ERROR
 			} else if tc.Row == 2 {
-				rules = &types.StopTimesRules{ContinuousPickup: types.RuleConfig{Severity: types.SEVERITY_WARNING}}
+				severity = types.SEVERITY_WARNING
 			}
 
+			rules = &types.StopTimesRules{ContinuousPickup: types.RuleConfig{Severity: severity}}
 			stopTime := &types.StopTime{ContinuousPickup: continuousPickup}
 			validations.ContinuousPickupValidation(stopTime, tc.Row, rules)
-			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
-			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 	t.Run("Forbidden_WithStartWindow", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		validations.ContinuousPickupValidation(&types.StopTime{ContinuousPickup: lib.Ptr(0), StartPickupDropOffWindow: lib.Ptr("07:00:00")}, 3, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithStartWindow")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithStartWindow", types.SEVERITY_ERROR)
 	})
 	t.Run("Forbidden_WithEndWindow", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		validations.ContinuousPickupValidation(&types.StopTime{ContinuousPickup: lib.Ptr(2), EndPickupDropOffWindow: lib.Ptr("10:00:00")}, 4, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithEndWindow")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithEndWindow", types.SEVERITY_ERROR)
 	})
 	t.Run("Allowed_WithStartWindowIfOne", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		validations.ContinuousPickupValidation(&types.StopTime{ContinuousPickup: lib.Ptr(1), StartPickupDropOffWindow: lib.Ptr("07:00:00")}, 5, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Allowed_WithStartWindowIfOne")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Allowed_WithStartWindowIfOne", types.SEVERITY_ERROR)
 	})
 }

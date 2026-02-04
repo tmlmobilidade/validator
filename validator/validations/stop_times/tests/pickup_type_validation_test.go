@@ -30,7 +30,8 @@ func TestAllPickupTypeValidationTestCases(t *testing.T) {
 			stopTime := &types.StopTime{PickupType: pickupType}
 			validations.PickupTypeValidation(stopTime, tc.Row, rules)
 			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
-			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 	t.Run("Forbidden_WithStartWindow", func(t *testing.T) {
@@ -39,7 +40,7 @@ func TestAllPickupTypeValidationTestCases(t *testing.T) {
 		startWindow := "07:00:00"
 		stopTime := &types.StopTime{PickupType: &pt, StartPickupDropOffWindow: &startWindow}
 		validations.PickupTypeValidation(stopTime, 1, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithStartWindow")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithStartWindow", types.SEVERITY_ERROR)
 	})
 	t.Run("Forbidden_WithEndWindow", func(t *testing.T) {
 		services.AppMessageService.Clear()
@@ -47,7 +48,7 @@ func TestAllPickupTypeValidationTestCases(t *testing.T) {
 		endWindow := "10:00:00"
 		stopTime := &types.StopTime{PickupType: &pt, EndPickupDropOffWindow: &endWindow}
 		validations.PickupTypeValidation(stopTime, 2, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithEndWindow")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithEndWindow", types.SEVERITY_ERROR)
 	})
 
 	t.Run("Allowed_WithStartWindowIfOne", func(t *testing.T) {
@@ -56,7 +57,7 @@ func TestAllPickupTypeValidationTestCases(t *testing.T) {
 		startWindow := "07:00:00"
 		stopTime := &types.StopTime{PickupType: &pt, StartPickupDropOffWindow: &startWindow}
 		validations.PickupTypeValidation(stopTime, 3, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Allowed_WithStartWindowIfOne")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Allowed_WithStartWindowIfOne", types.SEVERITY_ERROR)
 	})
 	t.Run("Allowed_WithEndWindowIfOne", func(t *testing.T) {
 		services.AppMessageService.Clear()
@@ -64,6 +65,6 @@ func TestAllPickupTypeValidationTestCases(t *testing.T) {
 		endWindow := "10:00:00"
 		stopTime := &types.StopTime{PickupType: &pt, EndPickupDropOffWindow: &endWindow}
 		validations.PickupTypeValidation(stopTime, 4, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Allowed_WithEndWindowIfOne")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Allowed_WithEndWindowIfOne", types.SEVERITY_ERROR)
 	})
 }

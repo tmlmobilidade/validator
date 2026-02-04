@@ -25,25 +25,22 @@ func TestAllPickupBookingRuleIdValidationTestCases(t *testing.T) {
 				gtfs = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"booking_rules": {}}}.ToGtfs()
 			}
 			validations.PickupBookingRuleIdValidation(&types.StopTime{PickupBookingRuleId: pickupBookingRuleId}, tc.Row, &gtfs, nil)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
 	for _, tc := range test_helpers.GetGenericSeverityTestCases("pickup_booking_rule_id") {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			validations.PickupBookingRuleIdValidation(&types.StopTime{}, tc.Row, &types.Gtfs{}, &types.StopTimesRules{PickupBookingRuleId: types.RuleConfig{Severity: tc.Severity}})
-			if tc.Name == "Severity_Warning_Missing" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 
 	t.Run("Optional_NotPresent", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		validations.PickupBookingRuleIdValidation(&types.StopTime{}, 4, &types.Gtfs{}, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Optional_NotPresent")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Optional_NotPresent", types.SEVERITY_ERROR)
 	})
 
 	t.Run("Missing_BookingRulesIndex", func(t *testing.T) {
@@ -51,6 +48,6 @@ func TestAllPickupBookingRuleIdValidationTestCases(t *testing.T) {
 		stopTime := &types.StopTime{PickupBookingRuleId: lib.Ptr("BR1")}
 		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"booking_rules": {"BR1": {1}}}}.ToGtfs()
 		validations.PickupBookingRuleIdValidation(stopTime, 1, &gtfs, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Missing_BookingRulesIndex")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Missing_BookingRulesIndex", types.SEVERITY_ERROR)
 	})
 }

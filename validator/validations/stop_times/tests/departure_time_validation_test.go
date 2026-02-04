@@ -25,7 +25,7 @@ func TestAllDepartureTimeValidationTestCases(t *testing.T) {
 			}
 
 			var rules *types.StopTimesRules
-			if tc.Name == "Recommended_Missing" {
+			if tc.ExpectedWarnings > 0 {
 				rules = &types.StopTimesRules{DepartureTime: types.RuleConfig{Severity: types.SEVERITY_WARNING}}
 			} else {
 				rules = &types.StopTimesRules{DepartureTime: types.RuleConfig{Severity: types.SEVERITY_ERROR}}
@@ -33,32 +33,29 @@ func TestAllDepartureTimeValidationTestCases(t *testing.T) {
 
 			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stop_times": map[string][]int{"trip_id": []int{1}}}}.ToGtfs()
 			validations.DepartureTimeValidation(&types.StopTime{DepartureTime: departureTime}, tc.Row, &gtfs, rules)
-			if tc.Name == "Recommended_Missing" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 	t.Run("Required_Timepoint1", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stop_times": map[string][]int{"trip_id": []int{1}}}}.ToGtfs()
 		validations.DepartureTimeValidation(&types.StopTime{DepartureTime: nil, Timepoint: lib.Ptr(1)}, 1, &gtfs, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Missing departure_time for timepoint=1 should error")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Missing departure_time for timepoint=1 should error", types.SEVERITY_ERROR)
 	})
 
 	t.Run("Forbidden_WithStartWindow", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stop_times": map[string][]int{"trip_id": []int{1}}}}.ToGtfs()
 		validations.DepartureTimeValidation(&types.StopTime{DepartureTime: lib.Ptr("07:00:00"), StartPickupDropOffWindow: lib.Ptr("07:00:00")}, 3, &gtfs, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithStartWindow")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithStartWindow", types.SEVERITY_ERROR)
 	})
 
 	t.Run("Forbidden_WithEndWindow", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stop_times": map[string][]int{"trip_id": []int{1}}}}.ToGtfs()
 		validations.DepartureTimeValidation(&types.StopTime{DepartureTime: lib.Ptr("07:00:00"), EndPickupDropOffWindow: lib.Ptr("07:00:00")}, 3, &gtfs, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithEndWindow")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithEndWindow", types.SEVERITY_ERROR)
 	})
 
 }

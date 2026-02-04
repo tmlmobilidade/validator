@@ -21,18 +21,17 @@ func TestAllTimepointValidationTestCases(t *testing.T) {
 			}
 
 			var rules *types.StopTimesRules
-			if tc.ExpectedErrors > 0 {
-				rules = &types.StopTimesRules{Timepoint: types.RuleConfig{Severity: types.SEVERITY_ERROR}}
+			var severity types.Severity
+			if tc.ExpectedWarnings > 0 {
+				severity = types.SEVERITY_WARNING
 			} else {
-				rules = &types.StopTimesRules{Timepoint: types.RuleConfig{Severity: types.SEVERITY_WARNING}}
+				severity = types.SEVERITY_ERROR
 			}
+			rules = &types.StopTimesRules{Timepoint: types.RuleConfig{Severity: severity}}
 			stopTime := &types.StopTime{Timepoint: timepoint}
 			validations.TimepointValidation(stopTime, tc.Row, rules)
-			if tc.ExpectedWarnings > 0 {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }

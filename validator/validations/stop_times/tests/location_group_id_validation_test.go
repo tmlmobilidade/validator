@@ -27,7 +27,7 @@ func TestAllLocationGroupIdValidationTestCases(t *testing.T) {
 				gtfs = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"location_groups": {}}}.ToGtfs()
 			}
 			validations.LocationGroupIdValidation(stopTime, tc.Row, &gtfs)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
 	for _, tc := range test_helpers.GetGenericSeverityTestCases("location_group_id") {
@@ -38,7 +38,7 @@ func TestAllLocationGroupIdValidationTestCases(t *testing.T) {
 			services.AppMessageService.Clear()
 			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"location_groups": {}}}.ToGtfs()
 			validations.LocationGroupIdValidation(&types.StopTime{}, tc.Row, &gtfs)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
 
@@ -47,6 +47,6 @@ func TestAllLocationGroupIdValidationTestCases(t *testing.T) {
 		stopTime := &types.StopTime{LocationGroupId: lib.Ptr("LG1")}
 		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"location_groups": {"LG1": {1}}}}.ToGtfs()
 		validations.LocationGroupIdValidation(stopTime, 1, &gtfs)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Missing_LocationGroupsIndex")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Missing_LocationGroupsIndex", types.SEVERITY_ERROR)
 	})
 }

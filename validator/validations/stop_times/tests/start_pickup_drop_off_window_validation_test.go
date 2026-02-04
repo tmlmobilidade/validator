@@ -23,13 +23,14 @@ func TestAllStartPickupDropOffWindowValidationTestCases(t *testing.T) {
 				startPickupDropOffWindow = nil
 			}
 
-			var rules *types.StopTimesRules
+			var severity types.Severity
 			if tc.ExpectedWarnings > 0 {
-				rules = &types.StopTimesRules{StartPickupDropOffWindow: types.RuleConfig{Severity: types.SEVERITY_WARNING}}
+				severity = types.SEVERITY_WARNING
 			} else {
-				rules = &types.StopTimesRules{StartPickupDropOffWindow: types.RuleConfig{Severity: types.SEVERITY_ERROR}}
+				severity = types.SEVERITY_ERROR
 			}
 
+			rules := &types.StopTimesRules{StartPickupDropOffWindow: types.RuleConfig{Severity: severity}}
 			if tc.Name == "Invalid_Value" {
 				stopTime := &types.StopTime{}
 				validations.StartPickupDropOffWindowValidation(stopTime, tc.Row, rules)
@@ -37,38 +38,34 @@ func TestAllStartPickupDropOffWindowValidationTestCases(t *testing.T) {
 				stopTime := &types.StopTime{StartPickupDropOffWindow: startPickupDropOffWindow}
 				validations.StartPickupDropOffWindowValidation(stopTime, tc.Row, rules)
 			}
-
-			if tc.ExpectedWarnings > 0 {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 
 	t.Run("Required_LocationGroupId", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		validations.StartPickupDropOffWindowValidation(&types.StopTime{LocationGroupId: lib.Ptr("LG1")}, 1, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Required_LocationGroupId")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Required_LocationGroupId", types.SEVERITY_ERROR)
 	})
 	t.Run("Required_LocationId", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		validations.StartPickupDropOffWindowValidation(&types.StopTime{LocationId: lib.Ptr("L1")}, 2, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Required_LocationId")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Required_LocationId", types.SEVERITY_ERROR)
 	})
 	t.Run("Required_EndPickupDropOffWindow", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		validations.StartPickupDropOffWindowValidation(&types.StopTime{EndPickupDropOffWindow: lib.Ptr("10:00:00")}, 3, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Required_EndPickupDropOffWindow")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Required_EndPickupDropOffWindow", types.SEVERITY_ERROR)
 	})
 	t.Run("Forbidden_ArrivalTime", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		validations.StartPickupDropOffWindowValidation(&types.StopTime{ArrivalTime: lib.Ptr("08:00:00"), StartPickupDropOffWindow: lib.Ptr("10:00:00")}, 4, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_ArrivalTime")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_ArrivalTime", types.SEVERITY_ERROR)
 	})
 	t.Run("Forbidden_DepartureTime", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		validations.StartPickupDropOffWindowValidation(&types.StopTime{DepartureTime: lib.Ptr("09:00:00"), StartPickupDropOffWindow: lib.Ptr("10:00:00")}, 5, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_DepartureTime")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_DepartureTime", types.SEVERITY_ERROR)
 	})
 }

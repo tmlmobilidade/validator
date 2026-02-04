@@ -22,7 +22,7 @@ func TestAllStopIdValidationTestCases(t *testing.T) {
 
 			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{*tc.Id: {1}}}}.ToGtfs()
 			validations.StopIdValidation(stopTime, tc.Row, &gtfs, nil)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
 	t.Run("InvalidLocationType", func(t *testing.T) {
@@ -33,17 +33,8 @@ func TestAllStopIdValidationTestCases(t *testing.T) {
 			StopId: &stopId,
 		}
 
-		gtfs := &types.Gtfs{
-			IdMap: map[string]map[string][]int{
-				"stops": {"S2": {0}},
-			},
-			Stop: []types.StopRaw{
-				{StopId: "S2", LocationType: "1"},
-			},
-		}
-
-		stopLocationTypeCache := map[string]string{"S2": "1"}
-		validations.StopIdValidation(stopTime, 5, gtfs, stopLocationTypeCache)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "stop_id with invalid location_type should error")
+		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{}}.ToGtfs()
+		validations.StopIdValidation(stopTime, 5, &gtfs, map[string]string{"S2": "1"})
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "stop_id with invalid location_type should error", types.SEVERITY_ERROR)
 	})
 }

@@ -37,11 +37,8 @@ func TestAllStopHeadsignValidationTestCases(t *testing.T) {
 				validations.StopHeadsignValidation(stopTime, tc.Row, rules)
 			}
 
-			if tc.ExpectedWarnings > 0 {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 
@@ -50,11 +47,8 @@ func TestAllStopHeadsignValidationTestCases(t *testing.T) {
 			services.AppMessageService.Clear()
 			stopTime := &types.StopTime{StopHeadsign: tc.Value.(*string)}
 			validations.StopHeadsignValidation(stopTime, tc.Row, &types.StopTimesRules{StopHeadsign: types.RuleConfig{Severity: tc.Severity}})
-			if tc.ExpectedErrors > 0 {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }
