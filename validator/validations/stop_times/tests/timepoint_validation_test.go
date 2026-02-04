@@ -1,84 +1,38 @@
 package stop_times
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/stop_times/validations"
 	"testing"
 )
 
-func TestTimepointValidation_ValidValues(t *testing.T) {
-	services.AppMessageService.Clear()
-	for _, val := range []int{0, 1} {
-		stopTime := &types.StopTime{Timepoint: &val}
-		validations.TimepointValidation(stopTime, 1, nil)
-	}
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid enum values should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+func TestAllTimepointValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetTimepointValidOptions()
+	for _, tc := range test_helpers.GetGenericEnumIntTestCases("timepoint", validOptions) {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var timepoint *int
+			if tc.Value != nil {
+				if ptr, ok := tc.Value.(*int); ok {
+					timepoint = ptr
+				}
+			}
 
-func TestTimepointValidation_InvalidEnum(t *testing.T) {
-	services.AppMessageService.Clear()
-	val := 2
-	stopTime := &types.StopTime{Timepoint: &val}
-	validations.TimepointValidation(stopTime, 2, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid enum value should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestTimepointValidation_OptionalNotPresent(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{}
-	validations.TimepointValidation(stopTime, 3, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Optional timepoint not present should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestTimepointValidation_SeverityError(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{}
-	severity := types.SEVERITY_ERROR
-	validations.TimepointValidation(stopTime, 4, &types.StopTimesRules{Timepoint: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "timepoint missing with severity error should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestTimepointValidation_SeverityWarning(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{}
-	severity := types.SEVERITY_WARNING
-	validations.TimepointValidation(stopTime, 5, &types.StopTimesRules{Timepoint: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "timepoint missing with severity warning should warn",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+			var rules *types.StopTimesRules
+			if tc.ExpectedErrors > 0 {
+				rules = &types.StopTimesRules{Timepoint: types.RuleConfig{Severity: types.SEVERITY_ERROR}}
+			} else {
+				rules = &types.StopTimesRules{Timepoint: types.RuleConfig{Severity: types.SEVERITY_WARNING}}
+			}
+			stopTime := &types.StopTime{Timepoint: timepoint}
+			validations.TimepointValidation(stopTime, tc.Row, rules)
+			if tc.ExpectedWarnings > 0 {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			}
+		})
 	}
 }
