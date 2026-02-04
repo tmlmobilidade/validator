@@ -15,7 +15,7 @@ func TestAllShapeDistTraveledValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			var severity types.Severity
-			if tc.Name == "Recommended_Missing" {
+			if tc.ExpectedWarnings > 0 {
 				severity = types.SEVERITY_WARNING
 			} else {
 				severity = types.SEVERITY_ERROR
@@ -30,11 +30,8 @@ func TestAllShapeDistTraveledValidationTestCases(t *testing.T) {
 				shapeDistTraveled = nil
 			}
 			validations.ShapeDistTraveledValidation(&types.Shape{ShapeDistTraveled: shapeDistTraveled}, tc.Row, &types.ShapesRules{ShapeDistTraveled: types.RuleConfig{Severity: severity}})
-			if tc.Name == "Recommended_Missing" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }

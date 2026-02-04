@@ -17,12 +17,12 @@ func TestAllShapeIdValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			validations.ShapeIdValidation(&types.Shape{ShapeId: tc.Id}, tc.Row)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
 	t.Run("Empty_ShapeId", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		validations.ShapeIdValidation(&types.Shape{ShapeId: lib.Ptr("")}, 2)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Empty shape_id should error")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Empty shape_id should error", types.SEVERITY_ERROR)
 	})
 }

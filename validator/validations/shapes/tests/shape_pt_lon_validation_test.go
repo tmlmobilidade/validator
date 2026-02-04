@@ -26,7 +26,8 @@ func TestAllShapePtLonValidationTestCases(t *testing.T) {
 				shapePtLon = nil
 			}
 			validations.ShapePtLonValidation(&types.Shape{ShapePtLon: shapePtLon}, tc.Row)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }

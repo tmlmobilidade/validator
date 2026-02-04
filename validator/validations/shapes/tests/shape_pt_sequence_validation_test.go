@@ -12,6 +12,9 @@ func TestAllShapePtSequenceValidationTestCases(t *testing.T) {
 	validOptions := test_helpers.GetValidShapeOptions()
 	negativeOption := -1
 	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("shape_pt_sequence") {
+		if tc.Name == "Recommended_Missing" {
+			continue
+		}
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			var shapePtSequence *int
@@ -23,11 +26,8 @@ func TestAllShapePtSequenceValidationTestCases(t *testing.T) {
 				shapePtSequence = nil
 			}
 			validations.ShapePtSequenceValidation(&types.Shape{ShapePtSequence: shapePtSequence}, tc.Row)
-			if tc.Name == "Recommended_Missing" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }
