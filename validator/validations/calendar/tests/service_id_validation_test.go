@@ -19,7 +19,7 @@ func TestAllServiceIdValidationTestCases(t *testing.T) {
 			calendar := &types.Calendar{ServiceId: serviceId}
 			gtfs := &types.Gtfs{IdMap: map[string]map[string][]int{"calendar": tc.ExistingIds}}
 			validations.ServiceIdValidation(calendar, tc.Row, gtfs)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
 }
