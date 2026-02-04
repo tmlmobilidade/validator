@@ -49,22 +49,18 @@ func TestAllRouteSortOrderValidationTestCases(t *testing.T) {
 			var severity types.Severity
 			var rules *types.RoutesRules
 			if tc.Name == "Recommended_Missing" {
-				// For optional fields, Recommended_Missing shouldn't generate messages
-				// Don't set severity, so it defaults to IGNORE
 				rules = nil
 			} else {
-				if tc.ExpectedErrors > 0 {
-					severity = types.SEVERITY_ERROR
-				} else {
+				if tc.ExpectedWarnings > 0 {
 					severity = types.SEVERITY_WARNING
+				} else {
+					severity = types.SEVERITY_ERROR
 				}
 				rules = &types.RoutesRules{RouteSortOrder: types.RuleConfig{Severity: severity}}
 			}
 
 			var routeSortOrder *int
 			if tc.Value != nil {
-				// Convert string pointer to int pointer if value is set
-				// For "Valid_Present" case, use a valid integer value
 				if tc.Name == "Valid_Present" {
 					val := 1
 					routeSortOrder = &val
@@ -79,9 +75,9 @@ func TestAllRouteSortOrderValidationTestCases(t *testing.T) {
 
 			validations.RouteSortOrderValidation(&types.Route{RouteSortOrder: routeSortOrder}, tc.Row, rules)
 			if tc.Name == "Recommended_Missing" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 			}
 		})
 	}
@@ -98,11 +94,8 @@ func TestAllRouteSortOrderValidationTestCases(t *testing.T) {
 			}
 
 			validations.RouteSortOrderValidation(&types.Route{RouteSortOrder: routeSortOrder}, tc.Row, &types.RoutesRules{RouteSortOrder: types.RuleConfig{Severity: tc.Severity}})
-			if tc.ExpectedErrors > 0 {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }

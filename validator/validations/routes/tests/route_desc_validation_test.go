@@ -18,18 +18,15 @@ func TestAllRouteDescValidationTestCases(t *testing.T) {
 			}
 
 			var severity types.Severity
-			if tc.ExpectedErrors > 0 {
-				severity = types.SEVERITY_ERROR
-			} else {
+			if tc.ExpectedWarnings > 0 {
 				severity = types.SEVERITY_WARNING
+			} else {
+				severity = types.SEVERITY_ERROR
 			}
 
 			validations.RouteDescValidation(&types.Route{RouteDesc: routeDesc}, tc.Row, &types.RoutesRules{RouteDesc: types.RuleConfig{Severity: severity}})
-			if tc.Name == "Recommended_Missing" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 
@@ -43,11 +40,8 @@ func TestAllRouteDescValidationTestCases(t *testing.T) {
 				}
 			}
 			validations.RouteDescValidation(&types.Route{RouteDesc: routeDesc}, tc.Row, &types.RoutesRules{RouteDesc: types.RuleConfig{Severity: tc.Severity}})
-			if tc.Name == "Severity_Ignore_Missing" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, 0, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 
@@ -60,7 +54,7 @@ func TestAllRouteDescValidationTestCases(t *testing.T) {
 			RouteShortName: &shortName,
 		}
 		validations.RouteDescValidation(route, 1, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Duplicate short name should warn")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Duplicate short name should warn", types.SEVERITY_WARNING)
 	})
 	t.Run("Duplicate_Both_Short_And_Long_Name", func(t *testing.T) {
 		services.AppMessageService.Clear()
@@ -73,7 +67,7 @@ func TestAllRouteDescValidationTestCases(t *testing.T) {
 			RouteLongName:  &longName,
 		}
 		validations.RouteDescValidation(route, 1, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 2, "Duplicate both short and long name should warn")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 2, "Duplicate both short and long name should warn", types.SEVERITY_WARNING)
 	})
 	t.Run("Unique_Route_Desc", func(t *testing.T) {
 		services.AppMessageService.Clear()
@@ -82,7 +76,7 @@ func TestAllRouteDescValidationTestCases(t *testing.T) {
 			RouteDesc: &desc,
 		}
 		validations.RouteDescValidation(route, 1, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Unique route_desc should not warn")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Unique route_desc should not warn", types.SEVERITY_WARNING)
 	})
 	t.Run("Required_When_ShortName_Empty", func(t *testing.T) {
 		services.AppMessageService.Clear()
@@ -91,7 +85,7 @@ func TestAllRouteDescValidationTestCases(t *testing.T) {
 			RouteShortName: nil,
 		}
 		validations.RouteDescValidation(route, 1, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Required when short name is empty should error")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Required when short name is empty should error", types.SEVERITY_ERROR)
 	})
 
 	t.Run("NotAllowed_WithOptions", func(t *testing.T) {
@@ -102,6 +96,6 @@ func TestAllRouteDescValidationTestCases(t *testing.T) {
 			RouteDesc: &desc,
 		}
 		validations.RouteDescValidation(route, 1, &types.RoutesRules{RouteDesc: types.RuleConfig{Options: &allowedOptions}})
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Not allowed route_desc should error")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Not allowed route_desc should error", types.SEVERITY_ERROR)
 	})
 }

@@ -20,10 +20,10 @@ func TestAllPathTypeValidationTestCases(t *testing.T) {
 			services.AppMessageService.Clear()
 
 			var severity types.Severity
-			if tc.ExpectedErrors > 0 {
-				severity = types.SEVERITY_ERROR
-			} else {
+			if tc.ExpectedWarnings > 0 {
 				severity = types.SEVERITY_WARNING
+			} else {
+				severity = types.SEVERITY_ERROR
 			}
 
 			var pathType *string
@@ -34,7 +34,8 @@ func TestAllPathTypeValidationTestCases(t *testing.T) {
 				}
 			}
 			validations.PathTypeValidation(&types.Route{PathType: pathType}, tc.Row, &types.RoutesRules{PathType: types.RuleConfig{Severity: severity, Options: &validOptionsStrings}})
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }

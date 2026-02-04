@@ -19,10 +19,10 @@ func TestAllRouteTypeValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			var severity types.Severity
-			if tc.ExpectedErrors > 0 {
-				severity = types.SEVERITY_ERROR
-			} else {
+			if tc.ExpectedWarnings > 0 {
 				severity = types.SEVERITY_WARNING
+			} else {
+				severity = types.SEVERITY_ERROR
 			}
 
 			var routeType *int
@@ -33,11 +33,8 @@ func TestAllRouteTypeValidationTestCases(t *testing.T) {
 			}
 
 			validations.RouteTypeValidation(&types.Route{RouteType: routeType}, tc.Row, &types.RoutesRules{RouteType: types.RuleConfig{Severity: severity, Options: &validOptionsStrings}})
-			if tc.ExpectedErrors > 0 {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }

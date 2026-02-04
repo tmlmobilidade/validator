@@ -14,13 +14,11 @@ func TestAllRouteColorValidationTestCases(t *testing.T) {
 			services.AppMessageService.Clear()
 
 			var rules *types.RoutesRules
-			// For Nil_Color_Optional, don't pass rules (field is truly optional)
-			// For other cases, set severity based on expected errors
 			var severity types.Severity
-			if tc.ExpectedErrors > 0 {
-				severity = types.SEVERITY_ERROR
-			} else {
+			if tc.ExpectedWarnings > 0 {
 				severity = types.SEVERITY_WARNING
+			} else {
+				severity = types.SEVERITY_ERROR
 			}
 
 			if tc.Name == "Nil_Color_Optional" {
@@ -29,12 +27,8 @@ func TestAllRouteColorValidationTestCases(t *testing.T) {
 				rules = &types.RoutesRules{RouteColor: types.RuleConfig{Severity: severity}}
 			}
 			validations.RouteColorValidation(&types.Route{RouteColor: tc.Color}, tc.Row, rules)
-
-			if tc.Name == "Nil_Color_Optional" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, 0, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }

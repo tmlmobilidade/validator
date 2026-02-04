@@ -19,15 +19,8 @@ func TestAllNetworkIdValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 
-			var severity types.Severity
-			if tc.ExpectedErrors > 0 {
-				severity = types.SEVERITY_ERROR
-			} else {
-				severity = types.SEVERITY_WARNING
-			}
-
-			validations.NetworkIdValidation(&types.Route{NetworkId: tc.Id}, tc.Row, &types.Gtfs{}, &types.RoutesRules{NetworkId: types.RuleConfig{Severity: severity}})
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			validations.NetworkIdValidation(&types.Route{NetworkId: tc.Id}, tc.Row, &types.Gtfs{}, &types.RoutesRules{NetworkId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
 
@@ -38,7 +31,8 @@ func TestAllNetworkIdValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			validations.NetworkIdValidation(&types.Route{NetworkId: nil}, tc.Row, &types.Gtfs{}, &types.RoutesRules{NetworkId: types.RuleConfig{Severity: tc.Severity}})
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 
@@ -55,7 +49,7 @@ func TestAllNetworkIdValidationTestCases(t *testing.T) {
 			},
 		}
 		validations.NetworkIdValidation(route, 1, gtfs, rules)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "network_id should be allowed when route_networks is empty")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "network_id should be allowed when route_networks is empty", types.SEVERITY_WARNING)
 	})
 	t.Run("NotAllowed_WhenNetworkIdNotAllowed", func(t *testing.T) {
 		services.AppMessageService.Clear()
@@ -70,7 +64,7 @@ func TestAllNetworkIdValidationTestCases(t *testing.T) {
 			},
 		}
 		validations.NetworkIdValidation(route, 1, gtfs, rules)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Not allowed network_id should error")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Not allowed network_id should error", types.SEVERITY_ERROR)
 	})
 	t.Run("Allowed_WhenAllOptions", func(t *testing.T) {
 		services.AppMessageService.Clear()
@@ -85,6 +79,6 @@ func TestAllNetworkIdValidationTestCases(t *testing.T) {
 			},
 		}
 		validations.NetworkIdValidation(route, 1, gtfs, rules)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "ALL_OPTIONS should allow any network_id")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "ALL_OPTIONS should allow any network_id", types.SEVERITY_WARNING)
 	})
 }

@@ -27,17 +27,14 @@ func TestAllRouteLongNameValidationTestCases(t *testing.T) {
 			}
 
 			validations.RouteLongNameValidation(&types.Route{RouteLongName: routeLongName}, tc.Row, &types.RoutesRules{RouteLongName: types.RuleConfig{Severity: severity}})
-			if tc.Name == "Recommended_Missing" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 	t.Run("Required_When_ShortName_Empty", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		validations.RouteLongNameValidation(&types.Route{RouteLongName: nil, RouteShortName: nil}, 1, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Required when short name is empty should error")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Required when short name is empty should error", types.SEVERITY_ERROR)
 	})
 
 }
