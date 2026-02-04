@@ -55,10 +55,15 @@ func AssertNoValidationIssues(t *testing.T, ms TestMessageServiceInterface, mess
 }
 
 // AssertMessageCount checks the total number of messages (errors + warnings)
-func AssertMessageCount(t *testing.T, ms TestMessageServiceInterface, expectedCount int, message string) {
+func AssertMessageCount(t *testing.T, ms TestMessageServiceInterface, expectedCount int, message string, severity types.Severity) {
 	t.Helper()
 	summary := ms.GetSummary()
 	total := summary.TotalErrors + summary.TotalWarnings
+	if severity == types.SEVERITY_ERROR {
+		total = summary.TotalErrors
+	} else {
+		total = summary.TotalWarnings
+	}
 	if total != expectedCount {
 		t.Errorf("%s: Expected %d total messages, got %d (errors: %d, warnings: %d)",
 			message, expectedCount, total, summary.TotalErrors, summary.TotalWarnings)

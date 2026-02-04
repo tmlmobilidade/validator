@@ -1,6 +1,7 @@
 package agency
 
 import (
+	"main/lib"
 	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
@@ -9,10 +10,10 @@ import (
 )
 
 func TestAllAgencyTimezoneValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetValidTimezones()
 	fieldName := "agency_timezone"
 
 	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases(fieldName) {
-		// Skip Recommended_Missing - agency_timezone is always required per GTFS spec
 		if tc.Name == "Recommended_Missing" {
 			continue
 		}
@@ -27,20 +28,16 @@ func TestAllAgencyTimezoneValidationTestCases(t *testing.T) {
 				severity = types.SEVERITY_WARNING
 			}
 
-			var agencyTimezone *string
-			if tc.Name == "Valid_Present" {
-				value := test_helpers.GetValidTimezones()[0]
-				agencyTimezone = &value
-			} else {
-				agencyTimezone = tc.Value
+			agency := &types.Agency{}
+			if tc.Name == "Invalid_Value" {
+				agency = &types.Agency{}
+			} else if tc.Value != nil {
+				agency = &types.Agency{AgencyTimezone: lib.Ptr(validOptions[0])}
 			}
 
-			validations.AgencyTimezoneValidation(&types.Agency{AgencyTimezone: agencyTimezone}, tc.Row, &types.AgencyRules{AgencyTimezone: types.RuleConfig{Severity: severity}})
-			if tc.Name == "Recommended_Missing" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			validations.AgencyTimezoneValidation(agency, tc.Row, &types.AgencyRules{AgencyTimezone: types.RuleConfig{Severity: severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }

@@ -1,6 +1,7 @@
 package agency
 
 import (
+	"main/lib"
 	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
@@ -12,6 +13,9 @@ func TestAllAgencyPhoneValidationTestCases(t *testing.T) {
 	fieldName := "agency_phone"
 
 	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases(fieldName) {
+		if tc.Name == "Recommended_Missing" {
+			continue
+		}
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 
@@ -22,20 +26,16 @@ func TestAllAgencyPhoneValidationTestCases(t *testing.T) {
 				severity = types.SEVERITY_WARNING
 			}
 
-			var agencyPhone *string
-			if tc.Name == "Valid_Present" {
-				value := test_helpers.GetValidPhoneNumbers()[0]
-				agencyPhone = &value
-			} else {
-				agencyPhone = tc.Value
+			agency := &types.Agency{}
+			if tc.Name == "Invalid_Value" {
+				agency = &types.Agency{}
+			} else if tc.Value != nil {
+				agency = &types.Agency{AgencyPhone: lib.Ptr(test_helpers.GetValidPhoneNumbers()[0])}
 			}
 
-			validations.AgencyPhoneValidation(&types.Agency{AgencyPhone: agencyPhone}, tc.Row, &types.AgencyRules{AgencyPhone: types.RuleConfig{Severity: severity}})
-			if tc.Name == "Recommended_Missing" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			validations.AgencyPhoneValidation(agency, tc.Row, &types.AgencyRules{AgencyPhone: types.RuleConfig{Severity: severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }

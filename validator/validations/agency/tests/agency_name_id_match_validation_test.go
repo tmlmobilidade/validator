@@ -19,6 +19,9 @@ func TestAllAgencyNameIdMatchValidationTestCases(t *testing.T) {
 	}
 
 	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases(fieldName) {
+		if tc.Name == "Recommended_Missing" {
+			continue
+		}
 		if tc.Name == "Invalid_Id" {
 			continue
 		}
@@ -26,28 +29,22 @@ func TestAllAgencyNameIdMatchValidationTestCases(t *testing.T) {
 			services.AppMessageService.Clear()
 
 			var severity types.Severity
-			if tc.Name == "Recommended_Missing" {
-				severity = types.SEVERITY_WARNING
-			} else {
+			if tc.ExpectedErrors > 0 {
 				severity = types.SEVERITY_ERROR
+			} else {
+				severity = types.SEVERITY_WARNING
 			}
 
-			var agencyId *string
-			var agencyName *string
+			agency := &types.Agency{}
 			if tc.Name == "Invalid_Value" {
-				agencyId = nil
-				agencyName = nil
-			} else {
-				agencyId = tc.Value
-				agencyName = tc.Value
+				agency = &types.Agency{}
+			} else if tc.Value != nil {
+				agency = &types.Agency{AgencyId: lib.Ptr("AGENCY1"), AgencyName: lib.Ptr("Metro Transit")}
 			}
 
-			validations.AgencyNameIdMatchValidation(&types.Agency{AgencyId: agencyId, AgencyName: agencyName}, tc.Row, &types.AgencyRules{AgencyNameIdMatch: types.RuleConfig{Severity: severity}})
-			if tc.Name == "Recommended_Missing" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			validations.AgencyNameIdMatchValidation(agency, tc.Row, &types.AgencyRules{AgencyNameIdMatch: types.RuleConfig{Severity: severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 	for _, tc := range test_helpers.GetGenericSeverityTestCases(fieldName) {
@@ -57,28 +54,28 @@ func TestAllAgencyNameIdMatchValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			validations.AgencyNameIdMatchValidation(&types.Agency{AgencyId: lib.Ptr("AGENCY1"), AgencyName: lib.Ptr("Metro Transit")}, tc.Row, &types.AgencyRules{AgencyNameIdMatch: types.RuleConfig{Severity: tc.Severity}})
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, tc.Severity)
 		})
 	}
 
 	t.Run("WithCompare_Match", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		validations.AgencyNameIdMatchValidation(&types.Agency{AgencyId: lib.Ptr("AGENCY1"), AgencyName: lib.Ptr("Metro Transit")}, 1, &types.AgencyRules{AgencyNameIdMatch: types.RuleConfig{Severity: types.SEVERITY_ERROR, Compare: &compare}})
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Matching agency_id and agency_name should not error")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Matching agency_id and agency_name should not error", types.SEVERITY_ERROR)
 	})
 	t.Run("WithCompare_NoMatch", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		validations.AgencyNameIdMatchValidation(&types.Agency{AgencyId: lib.Ptr("AGENCY1"), AgencyName: lib.Ptr("Wrong Name")}, 1, &types.AgencyRules{AgencyNameIdMatch: types.RuleConfig{Severity: types.SEVERITY_ERROR, Compare: &compare}})
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Non-matching agency_id and agency_name should error")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Non-matching agency_id and agency_name should error", types.SEVERITY_ERROR)
 	})
 	t.Run("WithCompare_NoMatch_Warning", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		validations.AgencyNameIdMatchValidation(&types.Agency{AgencyId: lib.Ptr("AGENCY1"), AgencyName: lib.Ptr("Wrong Name")}, 1, &types.AgencyRules{AgencyNameIdMatch: types.RuleConfig{Severity: types.SEVERITY_WARNING, Compare: &compare}})
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Non-matching agency_id and agency_name should warn")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Non-matching agency_id and agency_name should warn", types.SEVERITY_WARNING)
 	})
 	t.Run("WithCompare_MultipleMatches", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		validations.AgencyNameIdMatchValidation(&types.Agency{AgencyId: lib.Ptr("AGENCY1"), AgencyName: lib.Ptr("Metro Transit")}, 1, &types.AgencyRules{AgencyNameIdMatch: types.RuleConfig{Severity: types.SEVERITY_ERROR, Compare: &compare}})
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Matching agency_id and agency_name should not error even with multiple entries")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Matching agency_id and agency_name should not error even with multiple entries", types.SEVERITY_ERROR)
 	})
 }

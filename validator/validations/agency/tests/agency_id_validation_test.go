@@ -20,19 +20,19 @@ func TestAgencyIdValidation(t *testing.T) {
 			// Create a mock GTFS with the existing ID data
 			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"agency": tc.ExistingIds}}.ToGtfs()
 			validations.AgencyIdValidation(agency, tc.Row, gtfs, &types.AgencyRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, "Agency ID validation")
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
 	t.Run("TableCountUpperThan2", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		gtfs := test_helpers.MockGtfs{TableCounts: map[string]int{"agency": 2}}.ToGtfs()
 		validations.AgencyIdValidation(&types.Agency{AgencyId: nil}, 1, gtfs, &types.AgencyRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Agency ID validation")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "TableCountUpperThan2", types.SEVERITY_ERROR)
 	})
 	t.Run("TableCountEqual1", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		gtfs := test_helpers.MockGtfs{TableCounts: map[string]int{"agency": 1}}.ToGtfs()
 		validations.AgencyIdValidation(&types.Agency{AgencyId: nil}, 1, gtfs, &types.AgencyRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_WARNING}})
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Agency ID validation")
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "TableCountEqual1", types.SEVERITY_WARNING)
 	})
 }

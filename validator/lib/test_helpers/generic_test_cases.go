@@ -445,6 +445,41 @@ func GetTransfersValidOptions() []int {
 	return []int{0, 1, 2}
 }
 
+// GetHasBenchValidOptions returns valid has_bench values
+func GetHasBenchValidOptions() []int {
+	return []int{0, 1, 2, 3}
+}
+
+// GetHasNetworkMapValidOptions returns valid has_network_map values
+func GetHasNetworkMapValidOptions() []int {
+	return []int{0, 1, 2, 3}
+}
+
+// GetHasPipRealTimeValidOptions returns valid has_pip_real_time values
+func GetHasPipRealTimeValidOptions() []int {
+	return []int{0, 1, 2}
+}
+
+// GetHasSchedulesValidOptions returns valid has_schedules values
+func GetHasSchedulesValidOptions() []int {
+	return []int{0, 1}
+}
+
+// GetHasShelterValidOptions returns valid has_shelter values
+func GetHasShelterValidOptions() []int {
+	return []int{0, 1}
+}
+
+// GetHasStopSignValidOptions returns valid has_stop_sign values
+func GetHasStopSignValidOptions() []int {
+	return []int{0, 1, 2, 3}
+}
+
+// GetHasTariffsInformationValidOptions returns valid has_tariffs_information values
+func GetHasTariffsInformationValidOptions() []int {
+	return []int{0, 1}
+}
+
 // ===============================================
 // TEST NUMBERS VALUE GENERATORS
 // ===============================================
