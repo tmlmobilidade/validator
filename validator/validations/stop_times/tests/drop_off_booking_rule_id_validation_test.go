@@ -2,115 +2,62 @@ package stop_times
 
 import (
 	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/stop_times/validations"
 	"testing"
 )
 
-func TestDropOffBookingRuleIdValidation_ValidForeignKey(t *testing.T) {
-	services.AppMessageService.Clear()
-	id := "BR1"
-	stopTime := &types.StopTime{DropOffBookingRuleId: &id}
-	gtfs := &types.Gtfs{
-		IdMap: map[string]map[string][]int{
-			"booking_rules": {
-				"BR1": {0},
-			},
-		},
-	}
-	validations.DropOffBookingRuleIdValidation(stopTime, 1, gtfs, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid drop_off_booking_rule_id should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+func TestAllDropOffBookingRuleIdValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericForeignKeyTestCases("drop_off_booking_rule_id") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
 
-func TestDropOffBookingRuleIdValidation_InvalidForeignKey(t *testing.T) {
-	services.AppMessageService.Clear()
-	id := "INVALID"
-	stopTime := &types.StopTime{DropOffBookingRuleId: &id}
-	gtfs := &types.Gtfs{
-		IdMap: map[string]map[string][]int{
-			"booking_rules": {},
-		},
-	}
-	validations.DropOffBookingRuleIdValidation(stopTime, 2, gtfs, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid drop_off_booking_rule_id foreign key should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+			var severity types.Severity
+			if tc.Name == "Severity_Error_Missing" {
+				severity = types.SEVERITY_ERROR
+			} else if tc.Name == "Severity_Warning_Missing" {
+				severity = types.SEVERITY_WARNING
+			}
+			dropOffBookingRuleId := tc.Id
 
-func TestDropOffBookingRuleIdValidation_MissingBookingRulesIndex(t *testing.T) {
-	services.AppMessageService.Clear()
-	id := "BR1"
-	stopTime := &types.StopTime{DropOffBookingRuleId: &id}
-	gtfs := &types.Gtfs{
-		IdMap: map[string]map[string][]int{},
+			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"booking_rules": {}}}.ToGtfs()
+			if tc.Name == "ForeignKey_Present" {
+				gtfs = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"booking_rules": {*dropOffBookingRuleId: {1}}}}.ToGtfs()
+			}
+			validations.DropOffBookingRuleIdValidation(&types.StopTime{DropOffBookingRuleId: dropOffBookingRuleId}, tc.Row, &gtfs, &types.StopTimesRules{DropOffBookingRuleId: types.RuleConfig{Severity: severity}})
+			if tc.Name == "Severity_Error_Missing" {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			}
+		})
 	}
-	validations.DropOffBookingRuleIdValidation(stopTime, 3, gtfs, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing booking_rules index should error",
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("drop_off_booking_rule_id") {
+		if tc.Name != "Severity_Error_Missing" && tc.Name != "Severity_Warning_Missing" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			validations.DropOffBookingRuleIdValidation(&types.StopTime{}, tc.Row, &types.Gtfs{}, &types.StopTimesRules{DropOffBookingRuleId: types.RuleConfig{Severity: tc.Severity}})
+			if tc.Name == "Severity_Warning_Missing" {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			}
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
 
-func TestDropOffBookingRuleIdValidation_OptionalNotPresent(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{}
-	gtfs := &types.Gtfs{}
-	validations.DropOffBookingRuleIdValidation(stopTime, 4, gtfs, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Optional drop_off_booking_rule_id not present should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+	t.Run("Optional_NotPresent", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		validations.DropOffBookingRuleIdValidation(&types.StopTime{}, 4, &types.Gtfs{}, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Optional_NotPresent")
+	})
 
-func TestDropOffBookingRuleIdValidation_SeverityError(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{}
-	gtfs := &types.Gtfs{}
-	severity := types.SEVERITY_ERROR
-	validations.DropOffBookingRuleIdValidation(stopTime, 5, gtfs, &types.StopTimesRules{DropOffBookingRuleId: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "drop_off_booking_rule_id missing with severity error should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestDropOffBookingRuleIdValidation_SeverityWarning(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{}
-	gtfs := &types.Gtfs{}
-	severity := types.SEVERITY_WARNING
-	validations.DropOffBookingRuleIdValidation(stopTime, 6, gtfs, &types.StopTimesRules{DropOffBookingRuleId: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "drop_off_booking_rule_id missing with severity warning should warn",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
+	t.Run("Missing_BookingRulesIndex", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		validations.DropOffBookingRuleIdValidation(&types.StopTime{DropOffBookingRuleId: lib.Ptr("BR1")}, 3, &types.Gtfs{}, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "MissingBookingRulesIndex")
+	})
 }

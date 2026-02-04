@@ -2,169 +2,63 @@ package stop_times
 
 import (
 	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/stop_times/validations"
 	"testing"
 )
 
-func TestDepartureTimeValidation_MissingForTimepoint1(t *testing.T) {
-	services.AppMessageService.Clear()
+func TestAllDepartureTimeValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetValidTimeOptions()
+	invalidOptions := lib.Ptr("") //test_helpers.GetInvalidTimeOptions() because dont verify invalid time for value all time is valid
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("departure_time") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var departureTime *string
+			if tc.Name == "Invalid_Value" {
+				departureTime = invalidOptions
+			} else if tc.Value != nil {
+				departureTime = &validOptions[0]
+			} else {
+				departureTime = nil
+			}
 
-	timepoint := 1
-	stopTime := &types.StopTime{
-		Timepoint:     &timepoint,
-		DepartureTime: nil,
+			var rules *types.StopTimesRules
+			if tc.Name == "Recommended_Missing" {
+				rules = &types.StopTimesRules{DepartureTime: types.RuleConfig{Severity: types.SEVERITY_WARNING}}
+			} else {
+				rules = &types.StopTimesRules{DepartureTime: types.RuleConfig{Severity: types.SEVERITY_ERROR}}
+			}
+
+			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stop_times": map[string][]int{"trip_id": []int{1}}}}.ToGtfs()
+			validations.DepartureTimeValidation(&types.StopTime{DepartureTime: departureTime}, tc.Row, &gtfs, rules)
+			if tc.Name == "Recommended_Missing" {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			}
+		})
 	}
-	gtfs := &types.Gtfs{}
+	t.Run("Required_Timepoint1", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stop_times": map[string][]int{"trip_id": []int{1}}}}.ToGtfs()
+		validations.DepartureTimeValidation(&types.StopTime{DepartureTime: nil, Timepoint: lib.Ptr(1)}, 1, &gtfs, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Missing departure_time for timepoint=1 should error")
+	})
 
-	validations.DepartureTimeValidation(stopTime, 1, gtfs, nil)
+	t.Run("Forbidden_WithStartWindow", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stop_times": map[string][]int{"trip_id": []int{1}}}}.ToGtfs()
+		validations.DepartureTimeValidation(&types.StopTime{DepartureTime: lib.Ptr("07:00:00"), StartPickupDropOffWindow: lib.Ptr("07:00:00")}, 3, &gtfs, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithStartWindow")
+	})
 
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing departure_time for timepoint=1 should error",
-	}
+	t.Run("Forbidden_WithEndWindow", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stop_times": map[string][]int{"trip_id": []int{1}}}}.ToGtfs()
+		validations.DepartureTimeValidation(&types.StopTime{DepartureTime: lib.Ptr("07:00:00"), EndPickupDropOffWindow: lib.Ptr("07:00:00")}, 3, &gtfs, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithEndWindow")
+	})
 
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestDepartureTimeValidation_ForbiddenWithPickupDropOffWindow(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	startWindow := "08:00:00"
-	departure := "09:00:00"
-
-	stopTime := &types.StopTime{
-		StartPickupDropOffWindow: &startWindow,
-		DepartureTime:            &departure,
-	}
-
-	gtfs := &types.Gtfs{}
-
-	validations.DepartureTimeValidation(stopTime, 2, gtfs, nil)
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "departure_time is forbidden when start_pickup_drop_off_window is defined",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestDepartureTimeValidation_ValidInput(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	stopSeq := 2
-	tripId := "trip1"
-	departure := "10:00:00"
-	stopTime := &types.StopTime{
-		StopSequence:  &stopSeq,
-		TripId:        &tripId,
-		DepartureTime: &departure,
-	}
-
-	gtfs := &types.Gtfs{
-		StopTime: []types.StopTimeRaw{
-			{StopSequence: "1"},
-			{StopSequence: "2"},
-			{StopSequence: "5"},
-		},
-		IdMap: map[string]map[string][]int{
-			"stop_times": {
-				"trip1": {0, 1, 2},
-			},
-		},
-	}
-
-	validations.DepartureTimeValidation(stopTime, 6, gtfs, nil)
-
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid input should not error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestDepartureTimeValidation_InvalidTime(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	stopSeq := 1
-	tripId := "trip1"
-	departure := "INVALID"
-	stopTime := &types.StopTime{
-		StopSequence:  &stopSeq,
-		TripId:        &tripId,
-		DepartureTime: &departure,
-	}
-
-	gtfs := &types.Gtfs{
-		StopTime: []types.StopTimeRaw{
-			{StopSequence: "1"},
-			{StopSequence: "2"},
-			{StopSequence: "5"},
-		},
-		IdMap: map[string]map[string][]int{
-			"stop_times": {
-				"trip1": {0, 1, 2},
-			},
-		},
-	}
-
-	validations.DepartureTimeValidation(stopTime, 8, gtfs, nil)
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid time should error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestDepartureTimeValidation_SeverityError(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{}
-
-	severity := types.SEVERITY_ERROR
-	validations.DepartureTimeValidation(stopTime, 1, &types.Gtfs{}, &types.StopTimesRules{DepartureTime: types.RuleConfig{Severity: severity}})
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Severity error should error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestDepartureTimeValidation_SeverityWarning(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{}
-
-	severity := types.SEVERITY_WARNING
-	validations.DepartureTimeValidation(stopTime, 1, &types.Gtfs{}, &types.StopTimesRules{DepartureTime: types.RuleConfig{Severity: severity}})
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Severity warning should not error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
 }

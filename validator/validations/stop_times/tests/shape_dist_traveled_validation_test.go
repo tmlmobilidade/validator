@@ -1,88 +1,42 @@
 package stop_times
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/stop_times/validations"
 	"testing"
 )
 
-func TestShapeDistTraveledValidation_ValidNonNegative(t *testing.T) {
-	services.AppMessageService.Clear()
-	val := 5.25
-	stopTime := &types.StopTime{ShapeDistTraveled: &val}
+func TestAllShapeDistTraveledValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetShapeFloat64ValidOptions()
+	negativeOptions := test_helpers.GetShapeFloat64InvalidOptions()
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("shape_dist_traveled") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var shapeDistTraveled *float64
+			if tc.Name == "Invalid_Value" {
+				shapeDistTraveled = &negativeOptions[0]
+			} else if tc.Value != nil {
+				shapeDistTraveled = &validOptions[0]
+			} else {
+				shapeDistTraveled = nil
+			}
 
-	validations.ShapeDistTraveledValidation(stopTime, 1, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid non-negative shape_dist_traveled should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+			var rules *types.StopTimesRules
+			if tc.Name == "Recommended_Missing" {
+				rules = &types.StopTimesRules{ShapeDistTraveled: types.RuleConfig{Severity: types.SEVERITY_WARNING}}
+			} else {
+				rules = &types.StopTimesRules{ShapeDistTraveled: types.RuleConfig{Severity: types.SEVERITY_ERROR}}
+			}
 
-func TestShapeDistTraveledValidation_NegativeValue(t *testing.T) {
-	services.AppMessageService.Clear()
-	val := -1.0
-	stopTime := &types.StopTime{ShapeDistTraveled: &val}
+			validations.ShapeDistTraveledValidation(&types.StopTime{ShapeDistTraveled: shapeDistTraveled}, tc.Row, rules)
+			if tc.Name == "Recommended_Missing" {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			}
+		})
+	}
 
-	validations.ShapeDistTraveledValidation(stopTime, 2, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Negative shape_dist_traveled should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestShapeDistTraveledValidation_OptionalNotPresent(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{}
-
-	validations.ShapeDistTraveledValidation(stopTime, 3, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Optional shape_dist_traveled not present should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestShapeDistTraveledValidation_SeverityError(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{}
-
-	severity := types.SEVERITY_ERROR
-	validations.ShapeDistTraveledValidation(stopTime, 4, &types.StopTimesRules{ShapeDistTraveled: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "shape_dist_traveled missing with severity error should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestShapeDistTraveledValidation_SeverityWarning(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{}
-
-	severity := types.SEVERITY_WARNING
-	validations.ShapeDistTraveledValidation(stopTime, 5, &types.StopTimesRules{ShapeDistTraveled: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "shape_dist_traveled missing with severity warning should warn",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
 }

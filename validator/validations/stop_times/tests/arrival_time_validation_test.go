@@ -2,323 +2,87 @@ package stop_times
 
 import (
 	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/stop_times/validations"
 	"testing"
 )
 
-func TestArrivalTimeValidation_MissingForTimepoint1(t *testing.T) {
-	services.AppMessageService.Clear()
+func TestAllArrivalTimeValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetValidTimeOptions()
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("arrival_time") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
 
-	timepoint := 1
-	stopTime := &types.StopTime{
-		Timepoint:   &timepoint,
-		ArrivalTime: nil,
+			var arrivalTime *string
+			if tc.Name == "Invalid_Value" {
+				arrivalTime = lib.Ptr("")
+			} else if tc.Value != nil {
+				arrivalTime = &validOptions[0]
+			} else {
+				arrivalTime = nil
+			}
+
+			var rules *types.StopTimesRules
+			if tc.ExpectedWarnings > 0 {
+				rules = &types.StopTimesRules{ArrivalTime: types.RuleConfig{Severity: types.SEVERITY_WARNING}}
+			} else {
+				rules = &types.StopTimesRules{ArrivalTime: types.RuleConfig{Severity: types.SEVERITY_ERROR}}
+			}
+
+			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stop_times": map[string][]int{"trip_id": []int{1}}}}.ToGtfs()
+			validations.ArrivalTimeValidation(&types.StopTime{ArrivalTime: arrivalTime}, tc.Row, &gtfs, rules, make(map[string]types.TripStopSequence))
+			if tc.ExpectedWarnings > 0 {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			}
+		})
 	}
-
-	validations.ArrivalTimeValidation(stopTime, 1, &types.Gtfs{}, nil, make(map[string]types.TripStopSequence))
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing arrival_time for timepoint=1 should error",
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("arrival_time") {
+		if tc.Name == "Severity_Forbidden_Missing" { // because forbidden is present but its right to be present
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stop_times": map[string][]int{"trip_id": []int{1}}}}.ToGtfs()
+			validations.ArrivalTimeValidation(&types.StopTime{}, tc.Row, &gtfs, &types.StopTimesRules{ArrivalTime: types.RuleConfig{Severity: tc.Severity}}, make(map[string]types.TripStopSequence))
+			if tc.ExpectedWarnings > 0 {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			}
+		})
 	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestArrivalTimeValidation_ForbiddenWithPickupDropOffWindow(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	startWindow := "08:00:00"
-	arrival := "09:00:00"
-
-	stopTime := &types.StopTime{
-		StartPickupDropOffWindow: &startWindow,
-		ArrivalTime:              &arrival,
-	}
-
-	gtfs := &types.Gtfs{}
-
-	validations.ArrivalTimeValidation(stopTime, 2, gtfs, nil, make(map[string]types.TripStopSequence))
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "arrival_time is forbidden when start_pickup_drop_off_window is defined",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestArrivalTimeValidation_MissingForFirstStop(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	stopSeq := 1
-	tripId := "trip1"
-	stopTime := &types.StopTime{
-		StopSequence: &stopSeq,
-		TripId:       &tripId,
-		ArrivalTime:  nil,
-	}
-
-	gtfs := &types.Gtfs{
-		StopTime: []types.StopTimeRaw{
-			{StopSequence: "1", TripId: "trip1"},
-			{StopSequence: "5", TripId: "trip1"},
-		},
-		IdMap: map[string]map[string][]int{
-			"stop_times": {
-				"trip1": {0, 1},
-			},
-		},
-	}
-
-	tripStopSequences := map[string]types.TripStopSequence{
-		"trip1": {Min: 1, Max: 5},
-	}
-	validations.ArrivalTimeValidation(stopTime, 3, gtfs, nil, tripStopSequences)
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing arrival_time for first stop in trip should error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestArrivalTimeValidation_MissingForLastStop(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	stopSeq := 5
-	tripId := "trip1"
-	stopTime := &types.StopTime{
-		StopSequence: &stopSeq,
-		TripId:       &tripId,
-		ArrivalTime:  nil,
-	}
-
-	gtfs := &types.Gtfs{
-		StopTime: []types.StopTimeRaw{
-			{StopSequence: "1"},
-			{StopSequence: "5"},
-		},
-		IdMap: map[string]map[string][]int{
-			"stop_times": {
-				"trip1": {0, 1},
-			},
-		},
-	}
-
-	tripStopSequences := map[string]types.TripStopSequence{
-		"trip1": {Min: 1, Max: 5},
-	}
-	validations.ArrivalTimeValidation(stopTime, 4, gtfs, nil, tripStopSequences)
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing arrival_time for last stop in trip should error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestArrivalTimeValidation_InvalidTripId(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	stopSeq := 1
-	tripId := "invalid_trip"
-	stopTime := &types.StopTime{
-		StopSequence: &stopSeq,
-		TripId:       &tripId,
-		ArrivalTime:  nil,
-	}
-
-	gtfs := &types.Gtfs{
-		StopTime: []types.StopTimeRaw{},
-		IdMap: map[string]map[string][]int{
-			"stop_times": {},
-		},
-	}
-
-	validations.ArrivalTimeValidation(stopTime, 5, gtfs, nil, make(map[string]types.TripStopSequence))
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid trip_id should error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestArrivalTimeValidation_ValidInput(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	stopSeq := 2
-	tripId := "trip1"
-	arrival := "10:00:00"
-	stopTime := &types.StopTime{
-		StopSequence: &stopSeq,
-		TripId:       &tripId,
-		ArrivalTime:  &arrival,
-	}
-
-	gtfs := &types.Gtfs{
-		StopTime: []types.StopTimeRaw{
-			{StopSequence: "1"},
-			{StopSequence: "2"},
-			{StopSequence: "5"},
-		},
-		IdMap: map[string]map[string][]int{
-			"stop_times": {
-				"trip1": {0, 1, 2},
-			},
-		},
-	}
-
-	tripStopSequences := map[string]types.TripStopSequence{
-		"trip1": {Min: 1, Max: 5},
-	}
-	validations.ArrivalTimeValidation(stopTime, 6, gtfs, nil, tripStopSequences)
-
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid input should not error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestArrivalTimeValidation_InvalidStopSequence(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	stopSeq := 1
-	tripId := "trip1"
-	stopTime := &types.StopTime{
-		StopSequence: &stopSeq,
-		TripId:       &tripId,
-		ArrivalTime:  nil,
-	}
-
-	gtfs := &types.Gtfs{
-		StopTime: []types.StopTimeRaw{
-			{StopSequence: "INVALID"},
-			{StopSequence: "2"},
-			{StopSequence: "5"},
-		},
-		IdMap: map[string]map[string][]int{
-			"stop_times": {
-				"trip1": {0, 1, 2},
-			},
-		},
-	}
-
-	tripStopSequences := map[string]types.TripStopSequence{
-		"trip1": {Min: 1, Max: 5},
-	}
-	validations.ArrivalTimeValidation(stopTime, 7, gtfs, nil, tripStopSequences)
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid stop_sequence should error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestArrivalTimeValidation_InvalidTime(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	stopSeq := 1
-	tripId := "trip1"
-	arrival := "INVALID"
-	stopTime := &types.StopTime{
-		StopSequence: &stopSeq,
-		TripId:       &tripId,
-		ArrivalTime:  &arrival,
-	}
-
-	gtfs := &types.Gtfs{
-		StopTime: []types.StopTimeRaw{
-			{StopSequence: "1"},
-			{StopSequence: "2"},
-			{StopSequence: "5"},
-		},
-		IdMap: map[string]map[string][]int{
-			"stop_times": {
-				"trip1": {0, 1, 2},
-			},
-		},
-	}
-
-	tripStopSequences := map[string]types.TripStopSequence{
-		"trip1": {Min: 1, Max: 5},
-	}
-	validations.ArrivalTimeValidation(stopTime, 8, gtfs, nil, tripStopSequences)
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid time should error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestArrivalTimeValidation_SeverityError(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{}
-
-	severity := types.SEVERITY_ERROR
-	validations.ArrivalTimeValidation(stopTime, 1, &types.Gtfs{}, &types.StopTimesRules{ArrivalTime: types.RuleConfig{Severity: severity}}, make(map[string]types.TripStopSequence))
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Severity error should error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestArrivalTimeValidation_SeverityWarning(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{}
-
-	severity := types.SEVERITY_WARNING
-	validations.ArrivalTimeValidation(stopTime, 1, &types.Gtfs{}, &types.StopTimesRules{ArrivalTime: types.RuleConfig{Severity: severity}}, make(map[string]types.TripStopSequence))
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Severity warning should not error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
+	t.Run("Required_Timepoint1", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stop_times": map[string][]int{"trip_id": []int{1}}}}.ToGtfs()
+		validations.ArrivalTimeValidation(&types.StopTime{Timepoint: lib.Ptr(1)}, 1, &gtfs, nil, make(map[string]types.TripStopSequence))
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Required_Timepoint1")
+	})
+	t.Run("Required_FirstStop", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stop_times": map[string][]int{"trip_id": []int{1}}}}.ToGtfs()
+		validations.ArrivalTimeValidation(&types.StopTime{StopSequence: lib.Ptr(1), TripId: lib.Ptr("trip1")}, 1, &gtfs, nil, make(map[string]types.TripStopSequence))
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Required_FirstStop")
+	})
+	t.Run("Required_LastStop", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stop_times": map[string][]int{"trip_id": []int{1}}}}.ToGtfs()
+		validations.ArrivalTimeValidation(&types.StopTime{StopSequence: lib.Ptr(5), TripId: lib.Ptr("trip1")}, 1, &gtfs, nil, make(map[string]types.TripStopSequence))
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Required_LastStop")
+	})
+	t.Run("Forbidden_WithStartWindow", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stop_times": map[string][]int{"trip_id": []int{1}}}}.ToGtfs()
+		validations.ArrivalTimeValidation(&types.StopTime{ArrivalTime: lib.Ptr("07:00:00"), StartPickupDropOffWindow: lib.Ptr("07:00:00")}, 3, &gtfs, nil, make(map[string]types.TripStopSequence))
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithStartWindow")
+	})
+	t.Run("Forbidden_WithEndWindow", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stop_times": map[string][]int{"trip_id": []int{1}}}}.ToGtfs()
+		validations.ArrivalTimeValidation(&types.StopTime{ArrivalTime: lib.Ptr("10:00:00"), EndPickupDropOffWindow: lib.Ptr("10:00:00")}, 4, &gtfs, nil, make(map[string]types.TripStopSequence))
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithEndWindow")
+	})
 }
