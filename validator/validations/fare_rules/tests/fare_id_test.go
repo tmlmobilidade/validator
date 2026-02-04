@@ -25,7 +25,7 @@ func TestAllFareIdValidationTestCases(t *testing.T) {
 			}
 			gtfs := test_helpers.MockGtfs{IdMapData: gtfsIdMap}.ToGtfs()
 			validations.FareIdValidation(&types.FareRule{FareId: fareId}, tc.Row, &gtfs, nil)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
 }

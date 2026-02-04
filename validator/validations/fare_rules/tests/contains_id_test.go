@@ -22,7 +22,7 @@ func TestAllContainsIdValidationTestCases(t *testing.T) {
 
 			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{*containsId: {1}}}}.ToGtfs()
 			validations.ContainsIdValidation(&types.FareRule{ContainsId: containsId}, tc.Row, &gtfs, nil)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
 	for _, tc := range test_helpers.GetGenericSeverityTestCases("contains_id") {
@@ -44,7 +44,8 @@ func TestAllContainsIdValidationTestCases(t *testing.T) {
 			}
 			gtfs := test_helpers.MockGtfs{IdMapData: gtfsIdMap}.ToGtfs()
 			validations.ContainsIdValidation(&types.FareRule{ContainsId: containsId}, tc.Row, &gtfs, &types.FareRulesRules{ContainsId: types.RuleConfig{Severity: tc.Severity}})
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }

@@ -21,7 +21,7 @@ func TestAllOriginIdValidationTestCases(t *testing.T) {
 			}
 			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{*originId: {1}}}}.ToGtfs()
 			validations.OriginIdValidation(&types.FareRule{OriginId: originId}, tc.Row, &gtfs, nil)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
 	for _, tc := range test_helpers.GetGenericSeverityTestCases("origin_id") {
@@ -32,7 +32,8 @@ func TestAllOriginIdValidationTestCases(t *testing.T) {
 			services.AppMessageService.Clear()
 			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": {"MY_STOP_ID": {1}}}}.ToGtfs()
 			validations.OriginIdValidation(&types.FareRule{OriginId: tc.Value.(*string)}, tc.Row, &gtfs, &types.FareRulesRules{OriginId: types.RuleConfig{Severity: tc.Severity}})
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }
