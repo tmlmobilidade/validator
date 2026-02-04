@@ -19,7 +19,7 @@ func TestAllFareIdValidationTestCases(t *testing.T) {
 			}
 			fareAttribute := &types.FareAttribute{FareId: fareId}
 			validations.FareIdValidation(fareAttribute, tc.Row, &gtfs)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
 }

@@ -27,7 +27,8 @@ func TestAllTransfersValidationTestCases(t *testing.T) {
 				tc.ExpectedErrors = 0
 			}
 			validations.TransfersValidation(&types.FareAttribute{Transfers: transfers}, tc.Row, nil)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }

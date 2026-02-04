@@ -36,7 +36,8 @@ func TestAllTransferDurationValidationTestCases(t *testing.T) {
 
 			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"fare_attributes": map[string][]int{"transfer_duration": []int{1}}}}.ToGtfs()
 			validations.TransferDurationValidation(&types.FareAttribute{TransferDuration: transferDuration}, tc.Row, &gtfs, rules)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 
@@ -49,7 +50,8 @@ func TestAllTransferDurationValidationTestCases(t *testing.T) {
 			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"fare_attributes": map[string][]int{"transfer_duration": []int{1}}}}.ToGtfs()
 			validations.TransferDurationValidation(&types.FareAttribute{TransferDuration: &validOptions[tc.Row-1]}, tc.Row, &gtfs, nil)
 			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
-			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }

@@ -21,11 +21,7 @@ func TestAllAgencyIdValidationTestCases(t *testing.T) {
 			}
 			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"agency": agencyIdMap}}.ToGtfs()
 			validations.AgencyIdValidation(&types.FareAttribute{AgencyId: tc.Id}, tc.Row, &gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
-			if tc.Name == "Recommended_Missing" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
 	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("agency_id") {
@@ -33,19 +29,16 @@ func TestAllAgencyIdValidationTestCases(t *testing.T) {
 			services.AppMessageService.Clear()
 
 			var severity types.Severity
-			if tc.Name == "Recommended_Missing" {
-				severity = types.SEVERITY_ERROR
-			} else {
+			if tc.ExpectedWarnings > 0 {
 				severity = types.SEVERITY_WARNING
+			} else {
+				severity = types.SEVERITY_ERROR
 			}
 
-			var agencyId *string
-			if tc.Value != nil {
-				agencyId = tc.Value
-			}
+			agencyId := &types.FareAttribute{AgencyId: tc.Value}
 
 			if tc.Name == "Invalid_Value" {
-				agencyId = nil
+				agencyId = &types.FareAttribute{}
 			}
 
 			agencyIdMap := make(map[string][]int)
@@ -53,12 +46,9 @@ func TestAllAgencyIdValidationTestCases(t *testing.T) {
 				agencyIdMap[*tc.Value] = []int{1}
 			}
 			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"agency": agencyIdMap}}.ToGtfs()
-			validations.AgencyIdValidation(&types.FareAttribute{AgencyId: agencyId}, tc.Row, &gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: severity}})
-			if tc.Name == "Recommended_Missing" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			validations.AgencyIdValidation(agencyId, tc.Row, &gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }
