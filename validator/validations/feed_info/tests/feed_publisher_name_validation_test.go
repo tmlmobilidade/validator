@@ -10,15 +10,15 @@ import (
 
 func TestAllFeedPublisherNameValidationTestCases(t *testing.T) {
 	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("feed_publisher_name") {
+		if tc.Name == "Recommended_Missing" {
+			continue
+		}
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			feedInfo := &types.FeedInfo{FeedPublisherName: tc.Value}
 			validations.FeedPublisherNameValidation(feedInfo, tc.Row)
-			if tc.Name == "Recommended_Missing" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }

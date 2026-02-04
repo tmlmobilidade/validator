@@ -13,20 +13,15 @@ func TestAllFeedContactUrlValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			var severity types.Severity
-			if tc.ExpectedCode == "feed_contact_url_validation.required" {
-				severity = types.SEVERITY_ERROR
-			} else if tc.ExpectedCode == "feed_contact_url_validation.recommended" {
+			if tc.ExpectedWarnings > 0 {
 				severity = types.SEVERITY_WARNING
 			} else {
 				severity = types.SEVERITY_ERROR
 			}
 			feedInfo := &types.FeedInfo{FeedContactUrl: tc.Url}
 			validations.FeedContactUrlValidation(&severity, feedInfo, tc.Row)
-			if tc.Name == "Recommended_Missing" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }

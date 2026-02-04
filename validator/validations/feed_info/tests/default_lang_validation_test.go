@@ -15,11 +15,12 @@ func TestAllDefaultLangValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			var severity types.Severity
-			if tc.ExpectedErrors > 0 {
-				severity = types.SEVERITY_ERROR
-			} else {
+			if tc.ExpectedWarnings > 0 {
 				severity = types.SEVERITY_WARNING
+			} else {
+				severity = types.SEVERITY_ERROR
 			}
+
 			var defaultLang *string
 			if tc.Name == "Invalid_Value" {
 				defaultLang = lib.Ptr("notalang")
@@ -28,12 +29,10 @@ func TestAllDefaultLangValidationTestCases(t *testing.T) {
 			} else {
 				defaultLang = nil
 			}
+
 			validations.DefaultLangValidation(&severity, &types.FeedInfo{DefaultLang: defaultLang}, tc.Row)
-			if tc.Name == "Recommended_Missing" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 	for _, tc := range test_helpers.GetGenericSeverityTestCases("default_lang") {
@@ -43,7 +42,8 @@ func TestAllDefaultLangValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			validations.DefaultLangValidation(&tc.Severity, &types.FeedInfo{DefaultLang: nil}, tc.Row)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }

@@ -15,13 +15,12 @@ func TestAllFeedStartDateValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			var severity types.Severity
-			if tc.ExpectedCode == "feed_start_date_validation.required" {
-				severity = types.SEVERITY_ERROR
-			} else if tc.ExpectedCode == "feed_start_date_validation.recommended" {
+			if tc.ExpectedWarnings > 0 {
 				severity = types.SEVERITY_WARNING
 			} else {
 				severity = types.SEVERITY_ERROR
 			}
+
 			var feedStartDate *string
 			if tc.Value != nil {
 				feedStartDate = lib.Ptr(validOptions[0])
@@ -31,11 +30,8 @@ func TestAllFeedStartDateValidationTestCases(t *testing.T) {
 			}
 			feedInfo := &types.FeedInfo{FeedStartDate: feedStartDate}
 			validations.FeedStartDateValidation(&severity, feedInfo, tc.Row)
-			if tc.Name == "Recommended_Missing" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
-			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
-			}
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 	for _, tc := range test_helpers.GetGenericSeverityTestCases("feed_start_date") {
@@ -46,7 +42,8 @@ func TestAllFeedStartDateValidationTestCases(t *testing.T) {
 			services.AppMessageService.Clear()
 			feedInfo := &types.FeedInfo{FeedStartDate: nil}
 			validations.FeedStartDateValidation(&tc.Severity, feedInfo, tc.Row)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }

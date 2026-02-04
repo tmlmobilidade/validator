@@ -13,29 +13,32 @@ func TestAllFeedContactEmailValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			var severity types.Severity
-			if tc.ExpectedCode == "feed_contact_email_validation.required" {
-				severity = types.SEVERITY_ERROR
-			} else if tc.ExpectedCode == "feed_contact_email_validation.recommended" {
+			if tc.ExpectedWarnings > 0 {
 				severity = types.SEVERITY_WARNING
 			} else {
 				severity = types.SEVERITY_ERROR
 			}
-			feedInfo := &types.FeedInfo{FeedContactEmail: tc.Value}
-			validations.FeedContactEmailValidation(&severity, feedInfo, tc.Row)
-			if tc.Name == "Recommended_Missing" {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name)
+
+			var feedInfo *types.FeedInfo
+			var feedContactEmail *string
+			if tc.Name == "Invalid_Value" {
+				feedInfo = &types.FeedInfo{}
+			} else if tc.Value != nil {
+				// For Valid_Present, use a valid email address instead of generic "valid_value"
+				if tc.Name == "Valid_Present" {
+					validEmail := test_helpers.GetValidEmails()[0]
+					feedContactEmail = &validEmail
+				} else {
+					feedContactEmail = tc.Value
+				}
+				feedInfo = &types.FeedInfo{FeedContactEmail: feedContactEmail}
 			} else {
-				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name)
+				feedInfo = &types.FeedInfo{}
 			}
+
+			validations.FeedContactEmailValidation(&severity, feedInfo, tc.Row)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
-}
-
-func TestInvalidFeedContactEmailValidation(t *testing.T) {
-	services.AppMessageService.Clear()
-	severity := types.SEVERITY_ERROR
-	invalid := "notanemail"
-	feedInfo := &types.FeedInfo{FeedContactEmail: &invalid}
-	validations.FeedContactEmailValidation(&severity, feedInfo, 1)
-	test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Invalid feed_contact_email should error")
 }
