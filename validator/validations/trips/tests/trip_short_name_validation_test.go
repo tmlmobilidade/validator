@@ -1,82 +1,41 @@
 package trips
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/trips/validations"
 	"testing"
 )
 
-func TestTripShortNameValidation_Required(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	trip := &types.Trip{TripShortName: nil}
-	gtfs := &types.Gtfs{}
-	validations.TripShortNameValidation(trip, 1, gtfs, &types.TripsRules{TripShortName: types.RuleConfig{Severity: severity}})
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Trip short name is required",
+func TestAllTripShortNameValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("trip_short_name") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var severity types.Severity
+			if tc.ExpectedErrors > 0 {
+				severity = types.SEVERITY_ERROR
+			} else {
+				severity = types.SEVERITY_WARNING
+			}
+			trip := &types.Trip{TripShortName: tc.Value}
+			if tc.Name == "Invalid_Value" {
+				trip = &types.Trip{}
+			}
+			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"trips": {}}}.ToGtfs()
+			validations.TripShortNameValidation(trip, tc.Row, &gtfs, &types.TripsRules{TripShortName: types.RuleConfig{Severity: severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("trip_short_name") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			trip := &types.Trip{TripShortName: nil}
+			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"trips": {}}}.ToGtfs()
+			validations.TripShortNameValidation(trip, tc.Row, &gtfs, &types.TripsRules{TripShortName: types.RuleConfig{Severity: tc.Severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-	services.AppMessageService.Clear()
-}
-
-func TestTripShortNameValidation_Recommended(t *testing.T) {
-	severity := types.SEVERITY_WARNING
-	trip := &types.Trip{TripShortName: nil}
-	gtfs := &types.Gtfs{}
-	validations.TripShortNameValidation(trip, 2, gtfs, &types.TripsRules{TripShortName: types.RuleConfig{Severity: severity}})
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Trip short name is recommended",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestTripShortNameValidation_Ignore(t *testing.T) {
-	severity := types.SEVERITY_IGNORE
-	trip := &types.Trip{TripShortName: nil}
-	gtfs := &types.Gtfs{}
-	validations.TripShortNameValidation(trip, 3, gtfs, &types.TripsRules{TripShortName: types.RuleConfig{Severity: severity}})
-
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors + services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Trip short name is ignored, no error or warning should be reported",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestTripShortNameValidation_Present(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	short := "T123"
-	trip := &types.Trip{TripShortName: &short}
-	gtfs := &types.Gtfs{}
-	validations.TripShortNameValidation(trip, 4, gtfs, &types.TripsRules{TripShortName: types.RuleConfig{Severity: severity}})
-
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors + services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Trip short name present, no error or warning should be reported",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
 }

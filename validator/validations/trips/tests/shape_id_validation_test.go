@@ -2,6 +2,7 @@ package trips
 
 import (
 	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/trips/validations"
@@ -84,5 +85,50 @@ func TestShapeIdValidation_DoesNotExist(t *testing.T) {
 
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
+	}
+}
+
+func TestAllShapeIdValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericForeignKeyTestCases("shape_id") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var shapeId *string
+			if tc.Id != nil {
+				shapeId = tc.Id
+			}
+
+			trip := &types.Trip{
+				RouteId: lib.Ptr("route1"),
+				TripId:  lib.Ptr("trip1"),
+				ShapeId: shapeId,
+			}
+
+			var gtfs *types.Gtfs
+			if tc.Name == "ForeignKey_Present" && tc.Id != nil {
+				gtfsVal := test_helpers.MockGtfs{
+					IdMapData: types.GtfsIdMap{
+						"shapes": {*tc.Id: []int{1}},
+						"routes": {"route1": []int{1}},
+					},
+				}.ToGtfs()
+				gtfs = &gtfsVal
+			} else {
+				gtfsVal := test_helpers.MockGtfs{}.ToGtfs()
+				gtfs = &gtfsVal
+			}
+
+			validations.ShapeIdValidation(trip, tc.Row, gtfs, &types.TripsRules{ShapeId: types.RuleConfig{Severity: types.SEVERITY_ERROR}}, make(map[string][]types.StopTimeRaw))
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+		})
+	}
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("shape_id") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			trip := &types.Trip{ShapeId: nil}
+			gtfsVal := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"shapes": {}}}.ToGtfs()
+			gtfs := &gtfsVal
+			validations.ShapeIdValidation(trip, tc.Row, gtfs, &types.TripsRules{ShapeId: types.RuleConfig{Severity: tc.Severity}}, make(map[string][]types.StopTimeRaw))
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, tc.Severity)
+		})
 	}
 }

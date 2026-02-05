@@ -1,92 +1,42 @@
 package trips
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/trips/validations"
 	"testing"
 )
 
-func TestWheelchairAccessibleValidation_ValidValues(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	for _, val := range []int{0, 1, 2} {
-		trip := &types.Trip{WheelchairAccessible: &val}
-		gtfs := &types.Gtfs{}
-		validations.WheelchairAccessibleValidation(trip, 1, gtfs, &types.TripsRules{WheelchairAccessible: types.RuleConfig{Severity: severity}})
-		assertion := lib.AssertionMessage{
-			Expected: 0,
-			Actual:   services.AppMessageService.GetSummary().TotalErrors,
-			Message:  "Valid wheelchair_accessible value should not error",
-		}
-		if assert := lib.Assert(assertion); assert != "" {
-			t.Error(assert)
-		}
-		services.AppMessageService.Clear()
-	}
-}
+func TestAllWheelchairAccessibleValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetWheelchairBoardingValidOptions()
+	for _, tc := range test_helpers.GetGenericEnumIntTestCases("wheelchair_accessible", validOptions) {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
 
-func TestWheelchairAccessibleValidation_InvalidValue(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	invalid := 3
-	trip := &types.Trip{WheelchairAccessible: &invalid}
-	gtfs := &types.Gtfs{}
-	validations.WheelchairAccessibleValidation(trip, 2, gtfs, &types.TripsRules{WheelchairAccessible: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid wheelchair_accessible value should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
+			var wheelchairAccessible *int
+			if tc.Value != nil {
+				if ptr, ok := tc.Value.(*int); ok {
+					wheelchairAccessible = ptr
+				}
+			}
 
-func TestWheelchairAccessibleValidation_Required(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	trip := &types.Trip{WheelchairAccessible: nil}
-	gtfs := &types.Gtfs{}
-	validations.WheelchairAccessibleValidation(trip, 3, gtfs, &types.TripsRules{WheelchairAccessible: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "wheelchair_accessible is required",
+			trip := &types.Trip{WheelchairAccessible: wheelchairAccessible}
+			gtfs := &types.Gtfs{}
+			validations.WheelchairAccessibleValidation(trip, tc.Row, gtfs, &types.TripsRules{WheelchairAccessible: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
+			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name, types.SEVERITY_ERROR)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
 
-func TestWheelchairAccessibleValidation_Recommended(t *testing.T) {
-	severity := types.SEVERITY_WARNING
-	trip := &types.Trip{WheelchairAccessible: nil}
-	gtfs := &types.Gtfs{}
-	validations.WheelchairAccessibleValidation(trip, 4, gtfs, &types.TripsRules{WheelchairAccessible: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "wheelchair_accessible is recommended",
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("wheelchair_accessible") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			trip := &types.Trip{WheelchairAccessible: nil}
+			gtfs := &types.Gtfs{}
+			validations.WheelchairAccessibleValidation(trip, tc.Row, gtfs, &types.TripsRules{WheelchairAccessible: types.RuleConfig{Severity: tc.Severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestWheelchairAccessibleValidation_Ignore(t *testing.T) {
-	severity := types.SEVERITY_IGNORE
-	trip := &types.Trip{WheelchairAccessible: nil}
-	gtfs := &types.Gtfs{}
-	validations.WheelchairAccessibleValidation(trip, 5, gtfs, &types.TripsRules{WheelchairAccessible: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors + services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "wheelchair_accessible is ignored, no error or warning should be reported",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
 }

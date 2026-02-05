@@ -1,92 +1,42 @@
 package trips
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/trips/validations"
 	"testing"
 )
 
-func TestBikesAllowedValidation_ValidValues(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	for _, val := range []int{0, 1, 2} {
-		trip := &types.Trip{BikesAllowed: &val}
-		gtfs := &types.Gtfs{}
-		validations.BikesAllowedValidation(trip, 1, gtfs, &types.TripsRules{BikesAllowed: types.RuleConfig{Severity: severity}})
-		assertion := lib.AssertionMessage{
-			Expected: 0,
-			Actual:   services.AppMessageService.GetSummary().TotalErrors,
-			Message:  "Valid bikes_allowed value should not error",
-		}
-		if assert := lib.Assert(assertion); assert != "" {
-			t.Error(assert)
-		}
-		services.AppMessageService.Clear()
-	}
-}
+func TestAllBikesAllowedValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetBikesAllowedValidOptions()
+	for _, tc := range test_helpers.GetGenericEnumIntTestCases("bikes_allowed", validOptions) {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
 
-func TestBikesAllowedValidation_InvalidValue(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	invalid := 3
-	trip := &types.Trip{BikesAllowed: &invalid}
-	gtfs := &types.Gtfs{}
-	validations.BikesAllowedValidation(trip, 2, gtfs, &types.TripsRules{BikesAllowed: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid bikes_allowed value should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
+			var bikesAllowed *int
+			if tc.Value != nil {
+				if ptr, ok := tc.Value.(*int); ok {
+					bikesAllowed = ptr
+				}
+			}
 
-func TestBikesAllowedValidation_Required(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	trip := &types.Trip{BikesAllowed: nil}
-	gtfs := &types.Gtfs{}
-	validations.BikesAllowedValidation(trip, 3, gtfs, &types.TripsRules{BikesAllowed: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "bikes_allowed is required",
+			trip := &types.Trip{BikesAllowed: bikesAllowed}
+			gtfs := &types.Gtfs{}
+			validations.BikesAllowedValidation(trip, tc.Row, gtfs, &types.TripsRules{BikesAllowed: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
+			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name, types.SEVERITY_ERROR)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
 
-func TestBikesAllowedValidation_Recommended(t *testing.T) {
-	severity := types.SEVERITY_WARNING
-	trip := &types.Trip{BikesAllowed: nil}
-	gtfs := &types.Gtfs{}
-	validations.BikesAllowedValidation(trip, 4, gtfs, &types.TripsRules{BikesAllowed: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "bikes_allowed is recommended",
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("bikes_allowed") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			trip := &types.Trip{BikesAllowed: nil}
+			gtfs := &types.Gtfs{}
+			validations.BikesAllowedValidation(trip, tc.Row, gtfs, &types.TripsRules{BikesAllowed: types.RuleConfig{Severity: tc.Severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestBikesAllowedValidation_Ignore(t *testing.T) {
-	severity := types.SEVERITY_IGNORE
-	trip := &types.Trip{BikesAllowed: nil}
-	gtfs := &types.Gtfs{}
-	validations.BikesAllowedValidation(trip, 5, gtfs, &types.TripsRules{BikesAllowed: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors + services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "bikes_allowed is ignored, no error or warning should be reported",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
 }

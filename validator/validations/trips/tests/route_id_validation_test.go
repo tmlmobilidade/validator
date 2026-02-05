@@ -1,60 +1,33 @@
 package trips
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/trips/validations"
 	"testing"
 )
 
-func TestRouteIdValidation_Required(t *testing.T) {
-	trip := &types.Trip{RouteId: nil}
-	gtfs := &types.Gtfs{}
-	validations.RouteIdValidation(trip, 1, gtfs)
+func TestAllRouteIdValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericForeignKeyTestCases("route_id") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var routeId *string
+			if tc.Id != nil {
+				routeId = tc.Id
+			}
+			trip := &types.Trip{RouteId: routeId}
 
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Route ID is required",
+			var gtfs *types.Gtfs
+			if tc.Name == "ForeignKey_Invalid" {
+				gtfsVal := test_helpers.MockGtfs{}.ToGtfs()
+				gtfs = &gtfsVal
+			} else {
+				gtfsVal := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {*tc.Id: []int{1}}}}.ToGtfs()
+				gtfs = &gtfsVal
+			}
+			validations.RouteIdValidation(trip, tc.Row, gtfs)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+		})
 	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
 }
-
-func TestRouteIdValidation_ValidForeignKey(t *testing.T) {
-	trip := &types.Trip{RouteId: lib.Ptr("route1")}
-	gtfs := &types.Gtfs{IdMap: map[string]map[string][]int{"routes": {"route1": {1}}}}
-	validations.RouteIdValidation(trip, 2, gtfs)
-
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Route ID references a valid route_id, should not error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestRouteIdValidation_InvalidForeignKey(t *testing.T) {
-	trip := &types.Trip{RouteId: lib.Ptr("invalid")}
-	gtfs := &types.Gtfs{IdMap: map[string]map[string][]int{"routes": {}}}
-	validations.RouteIdValidation(trip, 3, gtfs)
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Route ID must reference a valid route_id from routes.txt.",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-} 

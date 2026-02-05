@@ -1,92 +1,41 @@
 package trips
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/trips/validations"
 	"testing"
 )
 
-func TestDirectionIdValidation_ValidValues(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	for _, val := range []int{0, 1} {
-		trip := &types.Trip{DirectionId: &val}
-		gtfs := &types.Gtfs{}
-		validations.DirectionIdValidation(trip, 1, gtfs, &types.TripsRules{DirectionId: types.RuleConfig{Severity: severity}})
-		assertion := lib.AssertionMessage{
-			Expected: 0,
-			Actual:   services.AppMessageService.GetSummary().TotalErrors,
-			Message:  "Valid direction_id value should not error",
-		}
-		if assert := lib.Assert(assertion); assert != "" {
-			t.Error(assert)
-		}
-		services.AppMessageService.Clear()
-	}
-}
+func TestAllDirectionIdValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetDirectionIdValidOptions()
+	for _, tc := range test_helpers.GetGenericEnumIntTestCases("direction_id", validOptions) {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
 
-func TestDirectionIdValidation_InvalidValue(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	invalid := 2
-	trip := &types.Trip{DirectionId: &invalid}
-	gtfs := &types.Gtfs{}
-	validations.DirectionIdValidation(trip, 2, gtfs, &types.TripsRules{DirectionId: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid direction_id value should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
+			var directionId *int
+			if tc.Value != nil {
+				if ptr, ok := tc.Value.(*int); ok {
+					directionId = ptr
+				}
+			}
 
-func TestDirectionIdValidation_Required(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	trip := &types.Trip{DirectionId: nil}
-	gtfs := &types.Gtfs{}
-	validations.DirectionIdValidation(trip, 3, gtfs, &types.TripsRules{DirectionId: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Direction ID is required",
+			trip := &types.Trip{DirectionId: directionId}
+			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"MY_ROUTE_ID": []int{1}}}}.ToGtfs()
+			validations.DirectionIdValidation(trip, tc.Row, &gtfs, &types.TripsRules{DirectionId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
 
-func TestDirectionIdValidation_Recommended(t *testing.T) {
-	severity := types.SEVERITY_WARNING
-	trip := &types.Trip{DirectionId: nil}
-	gtfs := &types.Gtfs{}
-	validations.DirectionIdValidation(trip, 4, gtfs, &types.TripsRules{DirectionId: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Direction ID is recommended",
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("direction_id") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			trip := &types.Trip{DirectionId: nil}
+			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"MY_ROUTE_ID": []int{1}}}}.ToGtfs()
+			validations.DirectionIdValidation(trip, tc.Row, &gtfs, &types.TripsRules{DirectionId: types.RuleConfig{Severity: tc.Severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestDirectionIdValidation_Ignore(t *testing.T) {
-	severity := types.SEVERITY_IGNORE
-	trip := &types.Trip{DirectionId: nil}
-	gtfs := &types.Gtfs{}
-	validations.DirectionIdValidation(trip, 5, gtfs, &types.TripsRules{DirectionId: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors + services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Direction ID is ignored, no error or warning should be reported",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
 }

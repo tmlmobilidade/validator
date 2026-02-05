@@ -38,4 +38,12 @@ func ServiceIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 		return
 	}
 	ctx.AddError(ctx.GetTranslatedMessage("service_id_validation.not_found", map[string]interface{}{"service_id": *trip.ServiceId}))
+
+	// if lib.GtfsIdMapKeyExists(gtfs, "calendar", *trip.ServiceId) {
+	// 	return
+	// }
+	// if lib.GtfsIdMapKeyExists(gtfs, "calendar_dates", *trip.ServiceId) {
+	// 	return
+	// }
+	// ctx.AddError(ctx.GetTranslatedMessage("service_id_validation.not_found", map[string]interface{}{"service_id": *trip.ServiceId}))
 }
