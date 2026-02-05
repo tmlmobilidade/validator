@@ -29,7 +29,7 @@ func ValidateUrl(u string) bool {
 	}
 
 	// Disallowed characters (RFC 3986 + common breakages)
-	if strings.ContainsAny(u, ` "<>%{}|"'\^`) {
+	if strings.ContainsAny(u, ` "<>{}|"'\^`) {
 		return false
 	}
 
