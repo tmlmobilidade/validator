@@ -48,6 +48,17 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 		hasContinuousPickupDropoff = true
 	}
 
+	// // First check if route exists using IdMap (works with MockGtfs)
+	// if lib.GtfsIdMapKeyExists(gtfs, "routes", *trip.RouteId) {
+	// 	routeRows, err := gtfs.GetRowsById("routes", *trip.RouteId)
+	// 	if err == nil && len(routeRows) > 0 {
+	// 		routeRaw, err := gtfs.GetRoute(routeRows[0])
+	// 		if err == nil && routeRaw.ContinuousPickup != "" {
+	// 			hasContinuousPickupDropoff = true
+	// 		}
+	// 	}
+	// }
+
 	// Check if the stop_times have continuous pickup/dropoff behavior
 	// Use cached stop_times data instead of querying database
 	stopTimesRaw, exists := tripStopTimesCache[*trip.TripId]
