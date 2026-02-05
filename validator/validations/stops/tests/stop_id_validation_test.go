@@ -1,95 +1,52 @@
 package stops
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/stops/validations"
 	"testing"
 )
 
-func TestStopIdValidation_MissingStopId(t *testing.T) {
-	services.AppMessageService.Clear()
-	empty := ""
-	gtfs := &types.Gtfs{
-		IdMap: map[string]map[string][]int{
-			"stops": {},
-		},
+func TestAllStopIdValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericIdTestCases("stop_id") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var stopId *string
+			if tc.Id != nil {
+				stopId = tc.Id
+			}
+			gtfsVal := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": {}}}.ToGtfs()
+			if tc.ExistingIds != nil {
+				gtfsVal = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": tc.ExistingIds}}.ToGtfs()
+			}
+			gtfs := &gtfsVal
+			stop := &types.Stop{StopId: stopId}
+			validations.StopIdValidation(stop, tc.Row, gtfs, nil)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+		})
 	}
-	stop := &types.Stop{StopId: &empty}
-	validations.StopIdValidation(stop, 1, gtfs, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing stop_id should error",
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("stop_id") {
+		if tc.Name == "Severity_Warning_Missing" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			stop := &types.Stop{StopId: nil}
+			gtfsVal := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": {}}}.ToGtfs()
+			gtfs := &gtfsVal
+			validations.StopIdValidation(stop, tc.Row, gtfs, &types.StopsRules{StopId: types.RuleConfig{Severity: tc.Severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, tc.Severity)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
 
-func TestStopIdValidation_DuplicateStopId_Error(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopId := "S1"
-	gtfs := &types.Gtfs{
-		IdMap: map[string]map[string][]int{
-			"stops": {
-				stopId: {1, 1},
-			},
-		},
-	}
-	stop := &types.Stop{StopId: &stopId}
-	validations.StopIdValidation(stop, 1, gtfs, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Duplicate stop_id should not error, because it is not a duplicate in different rows",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestStopIdValidation_DuplicateStopId(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopId := "S1"
-	gtfs := &types.Gtfs{
-		IdMap: map[string]map[string][]int{
-			"stops": {
-				stopId: {1, 2},
-			},
-		},
-	}
-	stop := &types.Stop{StopId: &stopId}
-	validations.StopIdValidation(stop, 1, gtfs, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Duplicate stop_id should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestStopIdValidation_ValidInput(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopId := "S1"
-	gtfs := &types.Gtfs{
-		IdMap: map[string]map[string][]int{
-			"stops": {
-				stopId: {1},
-			},
-		},
-	}
-	stop := &types.Stop{StopId: &stopId}
-	validations.StopIdValidation(stop, 1, gtfs, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid stop_id should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
+	t.Run("EmptyStopId", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		empty := ""
+		gtfsVal := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": {}}}.ToGtfs()
+		gtfs := &gtfsVal
+		stop := &types.Stop{StopId: &empty}
+		validations.StopIdValidation(stop, 1, gtfs, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "EmptyStopId", types.SEVERITY_ERROR)
+	})
 }

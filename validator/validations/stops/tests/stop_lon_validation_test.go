@@ -2,135 +2,76 @@ package stops
 
 import (
 	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/stops/validations"
 	"testing"
 )
 
-func TestStopLonValidation_MissingRequiredStopLon(t *testing.T) {
-	services.AppMessageService.Clear()
-	lt := 0 // stop
-	stop := &types.Stop{
-		LocationType: &lt,
-		StopLon:      nil,
+func TestAllStopLonValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetFloat32ValidOptions()
+	invalidOption := float32(100.0) // out of range
+	locationTypeOptions := test_helpers.GetLocationTypeValidOptions()
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("stop_lon") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			stop := &types.Stop{StopLon: lib.Ptr(validOptions[0])}
+			if tc.Name == "Invalid_Value" {
+				stop = &types.Stop{StopLon: &invalidOption, LocationType: &locationTypeOptions[0]}
+			}
+			if tc.Name == "Required" {
+				locationType := locationTypeOptions[0]
+				stop = &types.Stop{StopLon: nil, LocationType: &locationType}
+			}
+			validations.StopLonValidation(stop, tc.Row, nil)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+		})
 	}
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("stop_lon") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			stop := &types.Stop{StopLon: nil}
+			validations.StopLonValidation(stop, tc.Row, &types.StopsRules{StopLon: types.RuleConfig{Severity: tc.Severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
+	}
+	t.Run("DefaultSeverity", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		stop := &types.Stop{StopLon: nil}
+		validations.StopLonValidation(stop, 1, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "DefaultSeverity", types.SEVERITY_ERROR)
+	})
 
-	validations.StopLonValidation(stop, 1, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing stop_lon should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-
-	// Now test with severity ERROR
-	services.AppMessageService.Clear()
-	severity := types.SEVERITY_ERROR
-	validations.StopLonValidation(stop, 2, &types.StopsRules{StopLon: types.RuleConfig{Severity: severity}})
-	assertion = lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing stop_lon with severity ERROR should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestStopLonValidation_OptionalStopLon(t *testing.T) {
-	services.AppMessageService.Clear()
-	lt := 3 // generic node
-	stop := &types.Stop{
-		LocationType: &lt,
-		StopLon:      nil,
-	}
-	validations.StopLonValidation(stop, 3, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing stop_lon for optional location_type should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestStopLonValidation_ValidInput(t *testing.T) {
-	services.AppMessageService.Clear()
-	lt := 1 // station
-	lat := float32(40.1234)
-	stop := &types.Stop{
-		LocationType: &lt,
-		StopLon:      &lat,
-	}
-	validations.StopLonValidation(stop, 4, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid stop_lon should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestStopLonValidation_OutOfRange(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	lt := 2               // entrance/exit
-	lat := float32(200.0) // out of range
-	stop := &types.Stop{
-		LocationType: &lt,
-		StopLon:      &lat,
-	}
-	validations.StopLonValidation(stop, 5, nil)
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Out-of-range stop_lon should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestStopLonValidation_SeverityError(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	stop := &types.Stop{}
-	severity := types.SEVERITY_ERROR
-
-	validations.StopLonValidation(stop, 6, &types.StopsRules{StopLon: types.RuleConfig{Severity: severity}})
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Out-of-range stop_lon with severity ERROR should error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestStopLonValidation_SeverityWarning(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	stop := &types.Stop{}
-	severity := types.SEVERITY_WARNING
-
-	validations.StopLonValidation(stop, 7, &types.StopsRules{StopLon: types.RuleConfig{Severity: severity}})
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Out-of-range stop_lon with severity WARNING should warn",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
+	t.Run("LocationType_0", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		stop := &types.Stop{StopLon: nil, LocationType: &locationTypeOptions[0]}
+		validations.StopLonValidation(stop, 1, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "LocationType_0", types.SEVERITY_ERROR)
+	})
+	t.Run("LocationType_1", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		stop := &types.Stop{StopLon: nil, LocationType: &locationTypeOptions[1]}
+		validations.StopLonValidation(stop, 1, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "LocationType_1", types.SEVERITY_ERROR)
+	})
+	t.Run("LocationType_2", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		stop := &types.Stop{StopLon: nil, LocationType: &locationTypeOptions[2]}
+		validations.StopLonValidation(stop, 1, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "LocationType_2", types.SEVERITY_ERROR)
+	})
+	t.Run("LocationType_3", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		stop := &types.Stop{StopLon: &validOptions[0], LocationType: &locationTypeOptions[3]}
+		validations.StopLonValidation(stop, 1, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "LocationType_3", types.SEVERITY_ERROR)
+	})
+	t.Run("LocationType_4", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		stop := &types.Stop{StopLon: &validOptions[0], LocationType: &locationTypeOptions[4]}
+		validations.StopLonValidation(stop, 1, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "LocationType_4", types.SEVERITY_ERROR)
+	})
 }

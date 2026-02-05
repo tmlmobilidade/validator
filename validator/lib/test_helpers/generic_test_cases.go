@@ -504,13 +504,13 @@ func GetShapeFloat64InvalidOptions() []float64 {
 	return []float64{-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0, -10.0}
 }
 
-// GetShapeFloat32ValidOptions returns valid float32 values
-func GetShapeFloat32ValidOptions() []float32 {
+// GetFloat32ValidOptions returns valid float32 values
+func GetFloat32ValidOptions() []float32 {
 	return []float32{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0}
 }
 
-// GetShapeFloat32InvalidOptions returns invalid float32 values
-func GetShapeFloat32InvalidOptions() []float32 {
+// GetFloat32InvalidOptions returns invalid float32 values
+func GetFloat32InvalidOptions() []float32 {
 	return []float32{-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0, -10.0}
 }
 

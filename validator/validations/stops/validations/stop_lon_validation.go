@@ -58,4 +58,26 @@ func StopLonValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		ctx.AddError(ctx.GetTranslatedMessage("stop_lon_validation.invalid", *stop.StopLon))
 		return
 	}
+
+	// if stop.StopLon == nil {
+	// 	// For required fields, always validate regardless of severity
+	// 	if isRequired {
+	// 		ctx.AddError(ctx.GetTranslatedMessage("stop_lon_validation.required_location_type"))
+	// 		return
+	// 	}
+
+	// 	// For optional fields, respect severity settings
+	// 	if ctx.ShouldSkip() {
+	// 		return
+	// 	}
+
+	// 	message := ctx.GetRequiredMessage("stop_lon_validation.required", "stop_lon_validation.recommended")
+	// 	ctx.AddMessageWithSeverity(message)
+	// 	return
+	// }
+
+	// if !lib.ValidateLongitude(*stop.StopLon) {
+	// 	ctx.AddError(ctx.GetTranslatedMessage("stop_lon_validation.invalid", *stop.StopLon))
+	// 	return
+	// }
 }

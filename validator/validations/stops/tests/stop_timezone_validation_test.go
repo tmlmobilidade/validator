@@ -1,83 +1,61 @@
 package stops
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/stops/validations"
 	"testing"
 )
 
-func TestStopTimezoneValidation_MissingStopTimezone_DefaultSeverity(t *testing.T) {
-	services.AppMessageService.Clear()
-	stop := &types.Stop{StopTimezone: nil}
-	validations.StopTimezoneValidation(stop, 1, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0, // Default severity is IGNORE, so should not error
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing stop_timezone with default severity should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+func TestAllStopTimezoneValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetValidTimezones()
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("stop_timezone") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var stopTimezone *string
+			if tc.Value != nil {
+				stopTimezone = &validOptions[0]
+			}
+			var severity types.Severity
+			if tc.ExpectedErrors > 0 {
+				severity = types.SEVERITY_ERROR
+			} else {
+				severity = types.SEVERITY_WARNING
+			}
 
-func TestStopTimezoneValidation_MissingStopTimezone_SeverityError(t *testing.T) {
-	services.AppMessageService.Clear()
-	stop := &types.Stop{StopTimezone: nil}
-	severity := types.SEVERITY_ERROR
-	validations.StopTimezoneValidation(stop, 2, &types.StopsRules{StopTimezone: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing stop_timezone with severity ERROR should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+			stop := &types.Stop{StopTimezone: stopTimezone}
+			if tc.Name == "Invalid_Value" {
+				stop = &types.Stop{}
+			}
 
-func TestStopTimezoneValidation_MissingStopTimezone_SeverityWarning(t *testing.T) {
-	services.AppMessageService.Clear()
-	stop := &types.Stop{StopTimezone: nil}
-	severity := types.SEVERITY_WARNING
-	validations.StopTimezoneValidation(stop, 3, &types.StopsRules{StopTimezone: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Missing stop_timezone with severity WARNING should warn",
+			validations.StopTimezoneValidation(stop, tc.Row, &types.StopsRules{StopTimezone: types.RuleConfig{Severity: severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("stop_timezone") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			stop := &types.Stop{StopTimezone: nil}
+			validations.StopTimezoneValidation(stop, tc.Row, &types.StopsRules{StopTimezone: types.RuleConfig{Severity: tc.Severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-}
 
-func TestStopTimezoneValidation_ValidInput(t *testing.T) {
-	services.AppMessageService.Clear()
-	tz := "Europe/Lisbon"
-	stop := &types.Stop{StopTimezone: &tz}
-	validations.StopTimezoneValidation(stop, 4, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid stop_timezone should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+	t.Run("DefaultSeverity", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		stop := &types.Stop{StopTimezone: nil}
+		validations.StopTimezoneValidation(stop, 1, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "DefaultSeverity", types.SEVERITY_ERROR)
+	})
 
-func TestStopTimezoneValidation_InvalidTimezone(t *testing.T) {
-	services.AppMessageService.Clear()
-	tz := "Invalid/Timezone"
-	stop := &types.Stop{StopTimezone: &tz}
-	validations.StopTimezoneValidation(stop, 5, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid stop_timezone should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
+	t.Run("InvalidTimezone", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		tz := "Invalid/Timezone"
+		stop := &types.Stop{StopTimezone: &tz}
+		validations.StopTimezoneValidation(stop, 5, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "InvalidTimezone", types.SEVERITY_ERROR)
+	})
 }

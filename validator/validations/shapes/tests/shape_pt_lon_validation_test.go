@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllShapePtLonValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetShapeFloat32ValidOptions()
+	validOptions := test_helpers.GetFloat32ValidOptions()
 	invalidOption := float32(200.0) // out of range
 	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("shape_pt_lon") {
 		if tc.Name == "Recommended_Missing" {
