@@ -13,10 +13,11 @@ func TestAllTripIdValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			trip := &types.Trip{TripId: tc.Id}
-			if tc.Name == "Invalid_Value" {
-				trip = &types.Trip{}
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"trips": tc.ExistingIds}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
 			}
-			gtfs := &types.Gtfs{}
+			defer cleanup()
 			validations.TripIdValidation(trip, tc.Row, gtfs)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})

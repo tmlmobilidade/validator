@@ -326,7 +326,7 @@ func GetGenericIdTestCases(fieldName string) []GenericIdTestCase {
 			Name:           "Duplicate_Id",
 			Id:             lib.Ptr("dup_id"),
 			Row:            2,
-			ExistingIds:    map[string][]int{"dup_id": {0, 1}},
+			ExistingIds:    map[string][]int{"dup_id": {0, 2}},
 			ExpectedErrors: 1,
 		},
 	}

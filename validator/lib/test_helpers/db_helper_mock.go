@@ -1,8 +1,11 @@
 package test_helpers
 
 import (
+	"database/sql"
 	"fmt"
 	"main/types"
+
+	_ "modernc.org/sqlite"
 )
 
 // MockGtfs is a generic mock implementation of types.Gtfs for testing.
@@ -91,6 +94,121 @@ func (m MockGtfs) ToGtfs() types.Gtfs {
 	}
 
 	return gtfs
+}
+
+// ToGtfsWithDB converts the MockGtfs to a types.Gtfs struct with an in-memory SQLite database.
+// This is useful for testing validations that use GetRowsById() which requires a database connection.
+// Returns the Gtfs pointer, a cleanup function to close the database, and any error.
+func (m MockGtfs) ToGtfsWithDB() (*types.Gtfs, func(), error) {
+	// Create in-memory SQLite database
+	db, err := sql.Open("sqlite", ":memory:")
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to open in-memory database: %w", err)
+	}
+
+	cleanup := func() {
+		db.Close()
+	}
+
+	// Create id_map table (same schema as gtfs_sqlite.go)
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS id_map (
+			file TEXT NOT NULL,
+			key TEXT NOT NULL,
+			row_index INTEGER NOT NULL,
+			PRIMARY KEY (file, key, row_index)
+		)
+	`)
+	if err != nil {
+		cleanup()
+		return nil, nil, fmt.Errorf("failed to create id_map table: %w", err)
+	}
+
+	// Insert IdMapData into id_map table
+	if m.IdMapData != nil {
+		stmt, err := db.Prepare("INSERT INTO id_map (file, key, row_index) VALUES (?, ?, ?)")
+		if err != nil {
+			cleanup()
+			return nil, nil, fmt.Errorf("failed to prepare insert statement: %w", err)
+		}
+		defer stmt.Close()
+
+		for table, ids := range m.IdMapData {
+			for id, rows := range ids {
+				for _, rowIdx := range rows {
+					_, err := stmt.Exec(table, id, rowIdx)
+					if err != nil {
+						cleanup()
+						return nil, nil, fmt.Errorf("failed to insert id_map row: %w", err)
+					}
+				}
+			}
+		}
+	}
+
+	// Build IdMap copy for backward compatibility
+	idMap := make(types.GtfsIdMap)
+	if m.IdMapData != nil {
+		for table, ids := range m.IdMapData {
+			idMap[table] = make(map[string][]int)
+			for id, rows := range ids {
+				idMap[table][id] = make([]int, len(rows))
+				copy(idMap[table][id], rows)
+			}
+		}
+	}
+
+	// Create Gtfs struct with SQLite connection
+	gtfs := types.NewGtfsFromSQLite(db, ":memory:")
+	gtfs.IdMap = idMap
+
+	// Set slice fields based on table counts (same as ToGtfs)
+	tableCounts := make(map[string]int)
+	if m.TableCounts != nil {
+		for table, count := range m.TableCounts {
+			tableCounts[table] = count
+		}
+	}
+	if m.IdMapData != nil {
+		for table, ids := range m.IdMapData {
+			if _, exists := tableCounts[table]; !exists {
+				uniqueRows := make(map[int]bool)
+				for _, rows := range ids {
+					for _, row := range rows {
+						uniqueRows[row] = true
+					}
+				}
+				tableCounts[table] = len(uniqueRows)
+			}
+		}
+	}
+
+	if count, ok := tableCounts["agency"]; ok {
+		gtfs.Agency = make([]types.AgencyRaw, count)
+	}
+	if count, ok := tableCounts["routes"]; ok {
+		gtfs.Route = make([]types.RouteRaw, count)
+	}
+	if count, ok := tableCounts["stops"]; ok {
+		gtfs.Stop = make([]types.StopRaw, count)
+	}
+	if count, ok := tableCounts["trips"]; ok {
+		gtfs.Trip = make([]types.TripRaw, count)
+	}
+	if count, ok := tableCounts["stop_times"]; ok {
+		gtfs.StopTime = make([]types.StopTimeRaw, count)
+	}
+	if count, ok := tableCounts["calendar"]; ok {
+		gtfs.Calendar = make([]types.CalendarRaw, count)
+	}
+	if count, ok := tableCounts["calendar_dates"]; ok {
+		gtfs.CalendarDates = make([]types.CalendarDatesRaw, count)
+	}
+	if count, ok := tableCounts["route_networks"]; ok {
+		gtfs.RouteNetwork = make([]types.RouteNetworkRaw, count)
+	}
+
+	return gtfs, cleanup, nil
 }
 
 // GetTableCount returns the number of rows in a table.
