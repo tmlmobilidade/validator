@@ -47,8 +47,14 @@ func TestAllDirectionPatternIdMatchValidationTestCases(t *testing.T) {
 				if tc.Name == "Invalid_Value" {
 					trip = &types.Trip{}
 				}
-				gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"MY_ROUTE_ID": []int{1}}}}.ToGtfs()
-				validations.DirectionPatternIdMatchValidation(trip, tc.Row, &gtfs, &types.TripsRules{DirectionPatternIdMatch: types.RuleConfig{Severity: severity}})
+
+				gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"MY_ROUTE_ID": []int{1}}}}.ToGtfsWithDB()
+				if err != nil {
+					t.Fatalf("failed to create mock gtfs: %v", err)
+				}
+				defer cleanup()
+
+				validations.DirectionPatternIdMatchValidation(trip, tc.Row, gtfs, &types.TripsRules{DirectionPatternIdMatch: types.RuleConfig{Severity: severity}})
 				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 			})
@@ -59,8 +65,12 @@ func TestAllDirectionPatternIdMatchValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			trip := &types.Trip{DirectionId: nil}
-			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"MY_ROUTE_ID": []int{1}}}}.ToGtfs()
-			validations.DirectionPatternIdMatchValidation(trip, tc.Row, &gtfs, &types.TripsRules{DirectionPatternIdMatch: types.RuleConfig{Severity: tc.Severity}})
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"MY_ROUTE_ID": []int{1}}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.DirectionPatternIdMatchValidation(trip, tc.Row, gtfs, &types.TripsRules{DirectionPatternIdMatch: types.RuleConfig{Severity: tc.Severity}})
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
@@ -69,40 +79,60 @@ func TestAllDirectionPatternIdMatchValidationTestCases(t *testing.T) {
 	t.Run("Invalid_Pattern_Id", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		trip := &types.Trip{PatternId: lib.Ptr("1001_2_1"), DirectionId: lib.Ptr(0)}
-		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"MY_ROUTE_ID": []int{1}}}}.ToGtfs()
-		validations.DirectionPatternIdMatchValidation(trip, 1, &gtfs, &types.TripsRules{DirectionPatternIdMatch: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"MY_ROUTE_ID": []int{1}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.DirectionPatternIdMatchValidation(trip, 1, gtfs, &types.TripsRules{DirectionPatternIdMatch: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Invalid_Pattern_Id", types.SEVERITY_ERROR)
 	})
 
 	t.Run("Invalid_Direction_Id", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		trip := &types.Trip{PatternId: lib.Ptr("1001_0_1"), DirectionId: lib.Ptr(2)}
-		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"MY_ROUTE_ID": []int{1}}}}.ToGtfs()
-		validations.DirectionPatternIdMatchValidation(trip, 1, &gtfs, &types.TripsRules{DirectionPatternIdMatch: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"MY_ROUTE_ID": []int{1}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.DirectionPatternIdMatchValidation(trip, 1, gtfs, &types.TripsRules{DirectionPatternIdMatch: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Invalid_Direction_Id", types.SEVERITY_ERROR)
 	})
 
 	t.Run("Not_Matching_Direction_Id", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		trip := &types.Trip{PatternId: lib.Ptr("1001_0_1"), DirectionId: lib.Ptr(1)}
-		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"MY_ROUTE_ID": []int{1}}}}.ToGtfs()
-		validations.DirectionPatternIdMatchValidation(trip, 1, &gtfs, &types.TripsRules{DirectionPatternIdMatch: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"MY_ROUTE_ID": []int{1}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.DirectionPatternIdMatchValidation(trip, 1, gtfs, &types.TripsRules{DirectionPatternIdMatch: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Not_Matching_Direction_Id", types.SEVERITY_ERROR)
 	})
 
 	t.Run("Not_Matching_Direction_Id", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		trip := &types.Trip{PatternId: lib.Ptr("1001_1_2"), DirectionId: lib.Ptr(0)}
-		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"MY_ROUTE_ID": []int{1}}}}.ToGtfs()
-		validations.DirectionPatternIdMatchValidation(trip, 1, &gtfs, &types.TripsRules{DirectionPatternIdMatch: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"MY_ROUTE_ID": []int{1}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.DirectionPatternIdMatchValidation(trip, 1, gtfs, &types.TripsRules{DirectionPatternIdMatch: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Not_Matching_Direction_Id", types.SEVERITY_ERROR)
 	})
 
 	t.Run("Not_Matching_Direction_Id", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		trip := &types.Trip{PatternId: lib.Ptr("1001_0_1"), DirectionId: lib.Ptr(1)}
-		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"MY_ROUTE_ID": []int{1}}}}.ToGtfs()
-		validations.DirectionPatternIdMatchValidation(trip, 1, &gtfs, &types.TripsRules{DirectionPatternIdMatch: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"MY_ROUTE_ID": []int{1}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.DirectionPatternIdMatchValidation(trip, 1, gtfs, &types.TripsRules{DirectionPatternIdMatch: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Not_Matching_Direction_Id", types.SEVERITY_ERROR)
 	})
 }

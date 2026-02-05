@@ -17,15 +17,15 @@ func TestAllRouteIdValidationTestCases(t *testing.T) {
 				routeId = tc.Id
 			}
 			trip := &types.Trip{RouteId: routeId}
-
-			var gtfs *types.Gtfs
 			if tc.Name == "ForeignKey_Invalid" {
-				gtfsVal := test_helpers.MockGtfs{}.ToGtfs()
-				gtfs = &gtfsVal
-			} else {
-				gtfsVal := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {*tc.Id: []int{1}}}}.ToGtfs()
-				gtfs = &gtfsVal
+				trip = &types.Trip{}
 			}
+
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {*tc.Id: []int{1}}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
 			validations.RouteIdValidation(trip, tc.Row, gtfs)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})

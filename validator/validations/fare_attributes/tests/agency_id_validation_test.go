@@ -19,8 +19,12 @@ func TestAllAgencyIdValidationTestCases(t *testing.T) {
 			if tc.ExistingIds != nil {
 				agencyIdMap = tc.ExistingIds
 			}
-			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"agency": agencyIdMap}}.ToGtfs()
-			validations.AgencyIdValidation(&types.FareAttribute{AgencyId: tc.Id}, tc.Row, &gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"agency": agencyIdMap}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.AgencyIdValidation(&types.FareAttribute{AgencyId: tc.Id}, tc.Row, gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
@@ -45,8 +49,12 @@ func TestAllAgencyIdValidationTestCases(t *testing.T) {
 			if tc.Value != nil && *tc.Value != "" {
 				agencyIdMap[*tc.Value] = []int{1}
 			}
-			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"agency": agencyIdMap}}.ToGtfs()
-			validations.AgencyIdValidation(agencyId, tc.Row, &gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: severity}})
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"agency": agencyIdMap}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.AgencyIdValidation(agencyId, tc.Row, gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: severity}})
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})

@@ -21,27 +21,43 @@ func TestAllTripIdValidationTestCases(t *testing.T) {
 				stopTime = &types.StopTime{}
 			}
 
-			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"trips": {*tc.Id: {1}}}}.ToGtfs()
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"trips": {*tc.Id: {1}}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
 			if tc.Name == "ForeignKey_Invalid" {
-				gtfs = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"trips": {}}}.ToGtfs()
+				gtfs, cleanup, err = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"trips": {}}}.ToGtfsWithDB()
+				if err != nil {
+					t.Fatalf("failed to create mock gtfs: %v", err)
+				}
+				defer cleanup()
 			}
 
-			validations.TripIdValidation(stopTime, tc.Row, &gtfs)
+			validations.TripIdValidation(stopTime, tc.Row, gtfs)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
 	t.Run("Missing_TripsIndex", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		stopTime := &types.StopTime{TripId: lib.Ptr("T1")}
-		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"trips": {"T1": {1}}}}.ToGtfs()
-		validations.TripIdValidation(stopTime, 1, &gtfs)
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"trips": {"T1": {1}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.TripIdValidation(stopTime, 1, gtfs)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Missing_TripsIndex", types.SEVERITY_ERROR)
 	})
 	t.Run("Empty_TripId", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		stopTime := &types.StopTime{TripId: nil}
-		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"trips": {"T1": {1}}}}.ToGtfs()
-		validations.TripIdValidation(stopTime, 1, &gtfs)
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"trips": {"T1": {1}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.TripIdValidation(stopTime, 1, gtfs)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Empty_TripId", types.SEVERITY_ERROR)
 	})
 }

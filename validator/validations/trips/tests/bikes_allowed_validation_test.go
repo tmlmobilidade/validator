@@ -14,6 +14,13 @@ func TestAllBikesAllowedValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 
+			var severity types.Severity
+			if tc.ExpectedWarnings > 0 {
+				severity = types.SEVERITY_WARNING
+			} else {
+				severity = types.SEVERITY_ERROR
+			}
+
 			var bikesAllowed *int
 			if tc.Value != nil {
 				if ptr, ok := tc.Value.(*int); ok {
@@ -23,9 +30,9 @@ func TestAllBikesAllowedValidationTestCases(t *testing.T) {
 
 			trip := &types.Trip{BikesAllowed: bikesAllowed}
 			gtfs := &types.Gtfs{}
-			validations.BikesAllowedValidation(trip, tc.Row, gtfs, &types.TripsRules{BikesAllowed: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
-			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
-			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name, types.SEVERITY_ERROR)
+			validations.BikesAllowedValidation(trip, tc.Row, gtfs, &types.TripsRules{BikesAllowed: types.RuleConfig{Severity: severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 

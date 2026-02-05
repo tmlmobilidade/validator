@@ -10,9 +10,6 @@ import (
 
 func TestAllContainsIdValidationTestCases(t *testing.T) {
 	for _, tc := range test_helpers.GetGenericForeignKeyTestCases("contains_id") {
-		if tc.Name == "ForeignKey_Invalid" {
-			continue
-		}
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			var containsId *string
@@ -20,15 +17,27 @@ func TestAllContainsIdValidationTestCases(t *testing.T) {
 				containsId = tc.Id
 			}
 
-			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{*containsId: {1}}}}.ToGtfs()
-			validations.ContainsIdValidation(&types.FareRule{ContainsId: containsId}, tc.Row, &gtfs, nil)
+			if tc.Name == "ForeignKey_Invalid" {
+				gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{*containsId: {}}}}.ToGtfsWithDB()
+				if err != nil {
+					t.Fatalf("failed to create mock gtfs: %v", err)
+				}
+				defer cleanup()
+				validations.ContainsIdValidation(&types.FareRule{ContainsId: containsId}, tc.Row, gtfs, nil)
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+				return
+			}
+
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{*containsId: {1}}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.ContainsIdValidation(&types.FareRule{ContainsId: containsId}, tc.Row, gtfs, nil)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
 	for _, tc := range test_helpers.GetGenericSeverityTestCases("contains_id") {
-		if tc.Name != "Severity_Ignore_Missing" && tc.Name != "Severity_Forbidden_Missing" {
-			continue
-		}
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			var containsId *string
@@ -42,8 +51,12 @@ func TestAllContainsIdValidationTestCases(t *testing.T) {
 			if containsId != nil {
 				gtfsIdMap["stops"] = map[string][]int{*containsId: {1}}
 			}
-			gtfs := test_helpers.MockGtfs{IdMapData: gtfsIdMap}.ToGtfs()
-			validations.ContainsIdValidation(&types.FareRule{ContainsId: containsId}, tc.Row, &gtfs, &types.FareRulesRules{ContainsId: types.RuleConfig{Severity: tc.Severity}})
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: gtfsIdMap}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.ContainsIdValidation(&types.FareRule{ContainsId: containsId}, tc.Row, gtfs, &types.FareRulesRules{ContainsId: types.RuleConfig{Severity: tc.Severity}})
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})

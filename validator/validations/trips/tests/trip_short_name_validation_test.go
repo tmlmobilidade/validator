@@ -22,8 +22,8 @@ func TestAllTripShortNameValidationTestCases(t *testing.T) {
 			if tc.Name == "Invalid_Value" {
 				trip = &types.Trip{}
 			}
-			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"trips": {}}}.ToGtfs()
-			validations.TripShortNameValidation(trip, tc.Row, &gtfs, &types.TripsRules{TripShortName: types.RuleConfig{Severity: severity}})
+
+			validations.TripShortNameValidation(trip, tc.Row, nil, &types.TripsRules{TripShortName: types.RuleConfig{Severity: severity}})
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
@@ -32,8 +32,8 @@ func TestAllTripShortNameValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			trip := &types.Trip{TripShortName: nil}
-			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"trips": {}}}.ToGtfs()
-			validations.TripShortNameValidation(trip, tc.Row, &gtfs, &types.TripsRules{TripShortName: types.RuleConfig{Severity: tc.Severity}})
+
+			validations.TripShortNameValidation(trip, tc.Row, nil, &types.TripsRules{TripShortName: types.RuleConfig{Severity: tc.Severity}})
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})

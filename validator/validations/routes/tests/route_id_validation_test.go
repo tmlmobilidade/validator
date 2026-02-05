@@ -14,16 +14,17 @@ func TestAllRouteIdValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 
-			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": tc.ExistingIds}}.ToGtfs()
-			validations.RouteIdValidation(&types.Route{RouteId: tc.Id}, tc.Row, &gtfs)
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": tc.ExistingIds}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.RouteIdValidation(&types.Route{RouteId: tc.Id}, tc.Row, gtfs)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
 
 	for _, tc := range test_helpers.GetGenericSeverityTestCases("route_id") {
-		if tc.Name != "Severity_Forbidden_Missing" {
-			continue
-		}
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			var routeId *string
@@ -32,14 +33,20 @@ func TestAllRouteIdValidationTestCases(t *testing.T) {
 					routeId = ptr
 				}
 			}
-			var gtfs types.Gtfs
+
+			gtfsIdMap := types.GtfsIdMap{}
 			if routeId != nil {
-				gtfs = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": map[string][]int{*routeId: {1, 2}}}}.ToGtfs()
-			} else {
-				gtfs = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": map[string][]int{}}}.ToGtfs()
+				gtfsIdMap["routes"] = map[string][]int{*routeId: {1, 2}}
 			}
-			validations.RouteIdValidation(&types.Route{RouteId: routeId}, tc.Row, &gtfs)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: gtfsIdMap}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+
+			validations.RouteIdValidation(&types.Route{RouteId: routeId}, tc.Row, gtfs)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, tc.Severity)
 		})
 	}
 }

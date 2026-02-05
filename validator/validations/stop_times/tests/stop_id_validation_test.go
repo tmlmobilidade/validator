@@ -20,8 +20,12 @@ func TestAllStopIdValidationTestCases(t *testing.T) {
 				stopTime = &types.StopTime{StopId: tc.Id}
 			}
 
-			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{*tc.Id: {1}}}}.ToGtfs()
-			validations.StopIdValidation(stopTime, tc.Row, &gtfs, nil)
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{*tc.Id: {1}}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.StopIdValidation(stopTime, tc.Row, gtfs, nil)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
@@ -33,8 +37,12 @@ func TestAllStopIdValidationTestCases(t *testing.T) {
 			StopId: &stopId,
 		}
 
-		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{}}.ToGtfs()
-		validations.StopIdValidation(stopTime, 5, &gtfs, map[string]string{"S2": "1"})
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.StopIdValidation(stopTime, 5, gtfs, map[string]string{"S2": "1"})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "stop_id with invalid location_type should error", types.SEVERITY_ERROR)
 	})
 }

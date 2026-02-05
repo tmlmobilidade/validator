@@ -18,27 +18,43 @@ func TestAllLevelIdValidationTestCases(t *testing.T) {
 				levelId = tc.Id
 			}
 
-			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"levels": {*tc.Id: {1}}}}.ToGtfs()
-			if tc.Name == "ForeignKey_Invalid" {
-				gtfs = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"levels": {*tc.Id: {}}}}.ToGtfs()
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"levels": {*tc.Id: {1}}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
 			}
-			validations.LevelIdValidation(&types.Stop{LevelId: levelId}, tc.Row, gtfs, &types.StopsRules{LevelId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+			defer cleanup()
+			if tc.Name == "ForeignKey_Invalid" {
+				gtfs, cleanup, err = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"levels": {*tc.Id: {}}}}.ToGtfsWithDB()
+				if err != nil {
+					t.Fatalf("failed to create mock gtfs: %v", err)
+				}
+				defer cleanup()
+			}
+			validations.LevelIdValidation(&types.Stop{LevelId: levelId}, tc.Row, *gtfs, &types.StopsRules{LevelId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
 	for _, tc := range test_helpers.GetGenericSeverityTestCases("level_id") {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
-			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"levels": {"LEVEL1": {1}}}}.ToGtfs()
-			validations.LevelIdValidation(&types.Stop{}, tc.Row, gtfs, &types.StopsRules{LevelId: types.RuleConfig{Severity: tc.Severity}})
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"levels": {"LEVEL1": {1}}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.LevelIdValidation(&types.Stop{}, tc.Row, *gtfs, &types.StopsRules{LevelId: types.RuleConfig{Severity: tc.Severity}})
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 	t.Run("Default_Severity", func(t *testing.T) {
 		services.AppMessageService.Clear()
-		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"levels": {"LEVEL1": {}}}}.ToGtfs()
-		validations.LevelIdValidation(&types.Stop{}, 1, gtfs, nil)
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"levels": {"LEVEL1": {}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.LevelIdValidation(&types.Stop{}, 1, *gtfs, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Default severity should not error", types.SEVERITY_ERROR)
 	})
 }

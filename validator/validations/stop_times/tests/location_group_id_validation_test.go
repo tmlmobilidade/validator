@@ -21,12 +21,20 @@ func TestAllLocationGroupIdValidationTestCases(t *testing.T) {
 				stopTime = &types.StopTime{}
 			}
 
-			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"location_groups": {*tc.Id: {1}}}}.ToGtfs()
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"location_groups": {*tc.Id: {1}}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
 
 			if tc.Name == "ForeignKey_Invalid" {
-				gtfs = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"location_groups": {}}}.ToGtfs()
+				gtfs, cleanup, err = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"location_groups": {}}}.ToGtfsWithDB()
+				if err != nil {
+					t.Fatalf("failed to create mock gtfs: %v", err)
+				}
+				defer cleanup()
 			}
-			validations.LocationGroupIdValidation(stopTime, tc.Row, &gtfs)
+			validations.LocationGroupIdValidation(stopTime, tc.Row, gtfs)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
@@ -36,8 +44,12 @@ func TestAllLocationGroupIdValidationTestCases(t *testing.T) {
 		}
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
-			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"location_groups": {}}}.ToGtfs()
-			validations.LocationGroupIdValidation(&types.StopTime{}, tc.Row, &gtfs)
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"location_groups": {}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.LocationGroupIdValidation(&types.StopTime{}, tc.Row, gtfs)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
@@ -45,8 +57,12 @@ func TestAllLocationGroupIdValidationTestCases(t *testing.T) {
 	t.Run("Missing_BookingRulesIndex", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		stopTime := &types.StopTime{LocationGroupId: lib.Ptr("LG1")}
-		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"location_groups": {"LG1": {1}}}}.ToGtfs()
-		validations.LocationGroupIdValidation(stopTime, 1, &gtfs)
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"location_groups": {"LG1": {1}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.LocationGroupIdValidation(stopTime, 1, gtfs)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Missing_LocationGroupsIndex", types.SEVERITY_ERROR)
 	})
 }

@@ -22,21 +22,24 @@ func TestAllServiceIdValidationTestCases(t *testing.T) {
 				trip = &types.Trip{}
 			}
 
-			var gtfs types.Gtfs
-			if tc.Name == "ForeignKey_Present" && tc.Id != nil {
-				gtfs = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"calendar": {*tc.Id: {1}}, "calendar_dates": {}}}.ToGtfs()
-			} else {
-				gtfs = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"calendar": {}, "calendar_dates": {}}}.ToGtfs()
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"calendar": {*tc.Id: {1}}, "calendar_dates": {}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
 			}
-			validations.ServiceIdValidation(trip, tc.Row, &gtfs)
+			defer cleanup()
+			validations.ServiceIdValidation(trip, tc.Row, gtfs)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
 	t.Run("Required_Missing", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		trip := &types.Trip{ServiceId: nil}
-		gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"calendar": {"service1": {1}}, "calendar_dates": {}}}.ToGtfs()
-		validations.ServiceIdValidation(trip, 1, &gtfs)
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"calendar": {"service1": {1}}, "calendar_dates": {}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.ServiceIdValidation(trip, 1, gtfs)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Service ID is required", types.SEVERITY_ERROR)
 	})
 }

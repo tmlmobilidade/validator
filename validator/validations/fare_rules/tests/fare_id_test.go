@@ -18,13 +18,16 @@ func TestAllFareIdValidationTestCases(t *testing.T) {
 				fareId = tc.Id
 			}
 
-			// Set up GTFS IdMap: only add fareId to fare_attributes if it's a valid foreign key test case
 			gtfsIdMap := types.GtfsIdMap{}
 			if tc.Name == "ForeignKey_Present" && fareId != nil {
 				gtfsIdMap["fare_attributes"] = map[string][]int{*fareId: {1}}
 			}
-			gtfs := test_helpers.MockGtfs{IdMapData: gtfsIdMap}.ToGtfs()
-			validations.FareIdValidation(&types.FareRule{FareId: fareId}, tc.Row, &gtfs, nil)
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: gtfsIdMap}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.FareIdValidation(&types.FareRule{FareId: fareId}, tc.Row, gtfs, nil)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
