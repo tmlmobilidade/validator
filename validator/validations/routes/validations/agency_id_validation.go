@@ -56,12 +56,4 @@ func AgencyIdValidation(route *types.Route, row int, gtfs types.Gtfs, rules *typ
 		message := ctx.GetRequiredMessage("agency_id_validation.required", "agency_id_validation.recommended")
 		ctx.AddMessageWithSeverity(message)
 	}
-	// } else if route.AgencyId == nil {
-	// 	// When there's only 1 agency, agency_id is optional and shouldn't generate messages
-	// 	// unless severity is explicitly set to ERROR
-	// 	if rules != nil && rules.AgencyId.Severity == types.SEVERITY_ERROR {
-	// 		message := ctx.GetRequiredMessage("agency_id_validation.required", "agency_id_validation.recommended")
-	// 		ctx.AddMessageWithSeverity(message)
-	// 	}
-	// 	// Otherwise, it's optional - no message needed
 }

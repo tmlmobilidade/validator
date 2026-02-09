@@ -56,34 +56,20 @@ func AgencyIdValidation(agency *types.Agency, row int, gtfs types.Gtfs, rules *t
 	if agency.AgencyId != nil {
 		// Check if agency_id is Unique ID
 		rows, err := gtfs.GetRowsById("agency", *agency.AgencyId)
-		if err != nil {
-			// Fallback to in-memory IdMap if database is not available
-			if gtfs.IdMap != nil {
-				if agencyRows, exists := gtfs.IdMap["agency"]; exists {
-					if indices, found := agencyRows[*agency.AgencyId]; found {
-						if len(indices) > 1 {
-							ctx.AddError(ctx.GetTranslatedMessage("agency_id_validation.duplicate", *agency.AgencyId))
-							return
-						}
-					}
-				}
+		if err == nil && len(rows) > 1 {
+			ctx.AddError(ctx.GetTranslatedMessage("agency_id_validation.duplicate"))
+		}
+
+		// Validate rules
+		if rules != nil && rules.AgencyId.Options != nil {
+			if slices.Contains(*rules.AgencyId.Options, types.ALL_OPTIONS) {
+				return
 			}
-			return
-		}
-		if len(rows) > 1 {
-			ctx.AddError(ctx.GetTranslatedMessage("agency_id_validation.duplicate", *agency.AgencyId))
-			return
-		}
-	}
 
-	if rules != nil && rules.AgencyId.Options != nil {
-		if slices.Contains(*rules.AgencyId.Options, types.ALL_OPTIONS) {
-			return
-		}
-
-		if !slices.Contains(*rules.AgencyId.Options, *agency.AgencyId) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("agency_id_validation.not_allowed", *agency.AgencyId))
-			return
+			if !slices.Contains(*rules.AgencyId.Options, *agency.AgencyId) {
+				ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("agency_id_validation.not_allowed", *agency.AgencyId))
+				return
+			}
 		}
 	}
 }

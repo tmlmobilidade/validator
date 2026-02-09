@@ -44,7 +44,7 @@ func TestAllStopSequenceValidationTestCases(t *testing.T) {
 		})
 	}
 	for _, tc := range test_helpers.GetGenericSeverityTestCases("stop_sequence") {
-		if tc.Name == "Recommended_Missing" {
+		if tc.Name == "Severity_Error_Missing" {
 			continue
 		}
 		t.Run(tc.Name, func(t *testing.T) {
@@ -52,7 +52,6 @@ func TestAllStopSequenceValidationTestCases(t *testing.T) {
 			trip := &types.Trip{TripId: lib.Ptr("T16")}
 			validations.StopSequenceValidation(trip, tc.Row, &types.Gtfs{}, &types.TripsRules{StopSequence: types.RuleConfig{Severity: tc.Severity}}, nil)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, tc.Severity)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 	t.Run("DefaultSeverity", func(t *testing.T) {

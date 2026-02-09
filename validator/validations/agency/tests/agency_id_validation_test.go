@@ -9,9 +9,7 @@ import (
 )
 
 func TestAgencyIdValidation(t *testing.T) {
-	fieldName := "agency_id"
-
-	for _, tc := range test_helpers.GetGenericIdTestCases(fieldName) {
+	for _, tc := range test_helpers.GetGenericIdTestCases("agency_id") {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 
