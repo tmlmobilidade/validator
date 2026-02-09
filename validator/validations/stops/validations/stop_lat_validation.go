@@ -40,12 +40,12 @@ func StopLatValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	isRequired := locationType == 0 || locationType == 1 || locationType == 2
 
 	if stop.StopLat == nil {
-		if ctx.ShouldIgnore() || (ctx.IsForbidden() && !isRequired) {
+		if isRequired {
+			ctx.AddError(ctx.GetTranslatedMessage("stop_lat_validation.required_location_type"))
 			return
 		}
 
-		if isRequired {
-			ctx.AddError(ctx.GetTranslatedMessage("stop_lat_validation.required_location_type"))
+		if ctx.ShouldSkip() {
 			return
 		}
 

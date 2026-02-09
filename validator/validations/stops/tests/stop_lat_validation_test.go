@@ -11,14 +11,14 @@ import (
 
 func TestAllStopLatValidationTestCases(t *testing.T) {
 	validOptions := test_helpers.GetFloat32ValidOptions()
-	invalidOption := float32(100.0) // out of range
+	invalidOption := float32(200.0) // out of range
 
 	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("stop_lat") {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			stop := &types.Stop{StopLat: lib.Ptr(validOptions[0]), LocationType: lib.Ptr(0)}
 			if tc.Name == "Invalid_Value" {
-				stop = &types.Stop{StopLat: &invalidOption}
+				stop = &types.Stop{StopLat: &invalidOption, LocationType: lib.Ptr(0)}
 			}
 			if tc.Name == "Required" {
 				stop = &types.Stop{StopLat: nil, LocationType: lib.Ptr(0)}
@@ -32,7 +32,7 @@ func TestAllStopLatValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			stop := &types.Stop{StopLat: nil}
-			validations.StopLatValidation(stop, tc.Row, &types.StopsRules{StopLat: types.RuleConfig{Severity: tc.Severity}, LocationType: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+			validations.StopLatValidation(stop, tc.Row, &types.StopsRules{StopLat: types.RuleConfig{Severity: tc.Severity}})
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
@@ -40,7 +40,7 @@ func TestAllStopLatValidationTestCases(t *testing.T) {
 
 	t.Run("DefaultSeverity", func(t *testing.T) {
 		services.AppMessageService.Clear()
-		stop := &types.Stop{StopLat: nil, LocationType: lib.Ptr(3)}
+		stop := &types.Stop{StopLat: nil, LocationType: lib.Ptr(4)}
 		validations.StopLatValidation(stop, 1, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "DefaultSeverity", types.SEVERITY_ERROR)
 	})
