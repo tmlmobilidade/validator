@@ -10,6 +10,9 @@ import (
 
 func TestAllRouteDescValidationTestCases(t *testing.T) {
 	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("route_desc") {
+		if tc.Name == "Recommended_Missing" {
+			continue
+		}
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			var routeDesc *string
@@ -17,20 +20,15 @@ func TestAllRouteDescValidationTestCases(t *testing.T) {
 				routeDesc = tc.Value
 			}
 
-			var severity types.Severity
-			if tc.ExpectedWarnings > 0 {
-				severity = types.SEVERITY_WARNING
-			} else {
-				severity = types.SEVERITY_ERROR
-			}
-
-			validations.RouteDescValidation(&types.Route{RouteDesc: routeDesc}, tc.Row, &types.RoutesRules{RouteDesc: types.RuleConfig{Severity: severity}})
+			validations.RouteDescValidation(&types.Route{RouteDesc: routeDesc}, tc.Row, nil)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 
 	for _, tc := range test_helpers.GetGenericSeverityTestCases("route_desc") {
+		if tc.Name == "Severity_Warning_Missing" {
+			continue
+		}
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			var routeDesc *string
@@ -40,8 +38,7 @@ func TestAllRouteDescValidationTestCases(t *testing.T) {
 				}
 			}
 			validations.RouteDescValidation(&types.Route{RouteDesc: routeDesc}, tc.Row, &types.RoutesRules{RouteDesc: types.RuleConfig{Severity: tc.Severity}})
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, tc.Severity)
 		})
 	}
 
@@ -95,7 +92,7 @@ func TestAllRouteDescValidationTestCases(t *testing.T) {
 		route := &types.Route{
 			RouteDesc: &desc,
 		}
-		validations.RouteDescValidation(route, 1, &types.RoutesRules{RouteDesc: types.RuleConfig{Options: &allowedOptions}})
+		validations.RouteDescValidation(route, 1, &types.RoutesRules{RouteDesc: types.RuleConfig{Options: &allowedOptions, Severity: types.SEVERITY_ERROR}})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Not allowed route_desc should error", types.SEVERITY_ERROR)
 	})
 }

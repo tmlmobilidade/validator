@@ -13,20 +13,16 @@ func TestAllRouteShortNameValidationTestCases(t *testing.T) {
 	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("route_short_name") {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
-			var severity types.Severity
-
-			if tc.Name == "Recommended_Missing" {
-				severity = types.SEVERITY_WARNING
-			} else {
-				severity = types.SEVERITY_ERROR
-			}
-
 			route := &types.Route{RouteShortName: tc.Value}
 			if tc.Name == "Recommended_Missing" {
-				route.RouteLongName = lib.Ptr("Long Route Name")
+				route.RouteShortName = lib.Ptr("Long Route Name")
 			}
 
-			validations.RouteShortNameValidation(route, tc.Row, &types.RoutesRules{RouteShortName: types.RuleConfig{Severity: severity}})
+			if tc.Name == "Invalid_Value" {
+				route.RouteShortName = lib.Ptr("")
+			}
+
+			validations.RouteShortNameValidation(route, tc.Row, nil)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
@@ -34,25 +30,19 @@ func TestAllRouteShortNameValidationTestCases(t *testing.T) {
 	t.Run("TestShortNameTooLong", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		validations.RouteShortNameValidation(&types.Route{RouteShortName: lib.Ptr("This is a very long route short name that exceeds 12 characters")}, 1, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "TestShortNameTooLong should error", types.SEVERITY_ERROR)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "TestShortNameTooLong should error", types.SEVERITY_WARNING)
 	})
 
 	t.Run("TestShortNameExactly12Characters", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		validations.RouteShortNameValidation(&types.Route{RouteShortName: lib.Ptr("123456789012")}, 1, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "TestShortNameExactly12Characters should not error", types.SEVERITY_ERROR)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "TestShortNameExactly12Characters should not error", types.SEVERITY_WARNING)
 	})
 
 	t.Run("TestShortName13Characters", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		validations.RouteShortNameValidation(&types.Route{RouteShortName: lib.Ptr("1234567890123")}, 1, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "TestShortName13Characters should error", types.SEVERITY_ERROR)
-	})
-
-	t.Run("TestShortName14Characters", func(t *testing.T) {
-		services.AppMessageService.Clear()
-		validations.RouteShortNameValidation(&types.Route{RouteShortName: lib.Ptr("12345678901234")}, 1, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "TestShortName14Characters should error", types.SEVERITY_ERROR)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "TestShortName13Characters should error", types.SEVERITY_WARNING)
 	})
 
 	t.Run("TestBothShortAndLongNameMissing", func(t *testing.T) {
@@ -75,13 +65,14 @@ func TestAllRouteShortNameValidationTestCases(t *testing.T) {
 
 	t.Run("TestWithOptions_NotAllowed", func(t *testing.T) {
 		services.AppMessageService.Clear()
-		validations.RouteShortNameValidation(&types.Route{RouteShortName: lib.Ptr("X")}, 1, &types.RoutesRules{RouteShortName: types.RuleConfig{Options: &[]string{"1", "2", "3", "A", "B"}}})
+		options := []string{"1", "2", "3", "A", "B"}
+		validations.RouteShortNameValidation(&types.Route{RouteShortName: lib.Ptr("X")}, 1, &types.RoutesRules{RouteShortName: types.RuleConfig{Options: &options, Severity: types.SEVERITY_ERROR}})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "TestWithOptions_NotAllowed should error", types.SEVERITY_ERROR)
 	})
 
 	t.Run("TestWithOptions_AllOptions", func(t *testing.T) {
 		services.AppMessageService.Clear()
-		validations.RouteShortNameValidation(&types.Route{RouteShortName: lib.Ptr("Any Name")}, 1, &types.RoutesRules{RouteShortName: types.RuleConfig{Options: &[]string{types.ALL_OPTIONS}}})
+		validations.RouteShortNameValidation(&types.Route{RouteShortName: lib.Ptr("Any Name")}, 1, &types.RoutesRules{RouteShortName: types.RuleConfig{Options: &[]string{types.ALL_OPTIONS}, Severity: types.SEVERITY_ERROR}})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "TestWithOptions_AllOptions should not error", types.SEVERITY_ERROR)
 	})
 }

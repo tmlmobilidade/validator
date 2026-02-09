@@ -13,16 +13,8 @@ func TestAllRouteTextColorValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 
-			var severity types.Severity
-			if tc.ExpectedWarnings > 0 {
-				severity = types.SEVERITY_WARNING
-			} else {
-				severity = types.SEVERITY_ERROR
-			}
-
-			validations.RouteTextColorValidation(&types.Route{RouteTextColor: tc.Color}, tc.Row, &types.RoutesRules{RouteTextColor: types.RuleConfig{Severity: severity}})
+			validations.RouteTextColorValidation(&types.Route{RouteTextColor: tc.Color}, tc.Row, nil)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
 }

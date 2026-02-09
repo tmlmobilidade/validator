@@ -36,22 +36,21 @@ func RouteDescValidation(route *types.Route, row int, rules *types.RoutesRules) 
 	}
 
 	// Check if route_short_name is empty - if so, route_desc is required
-	routeShortNameEmpty := route.RouteShortName == nil || *route.RouteShortName == ""
-	routeDescEmpty := route.RouteDesc == nil || *route.RouteDesc == ""
+	isRouteShortNameEmpty := route.RouteShortName == nil || *route.RouteShortName == ""
+	isRouteDescEmpty := route.RouteDesc == nil || *route.RouteDesc == ""
 
 	// Conditionally Required: Required if routes.route_short_name is empty
-	if routeShortNameEmpty && routeDescEmpty {
-		if ctx.ShouldSkip() {
-			return
-		}
-
-		message := ctx.GetRequiredMessage("route_desc_validation.required", "route_desc_validation.recommended")
-		ctx.AddMessageWithSeverity(message)
+	if isRouteShortNameEmpty && isRouteDescEmpty {
+		ctx.AddError(ctx.GetTranslatedMessage("route_desc_validation.required"))
 		return
 	}
 
 	// If route_desc is empty but route_short_name is present, it's optional - no error
-	if route.RouteDesc == nil || *route.RouteDesc == "" {
+	if isRouteDescEmpty {
+		if !isRouteShortNameEmpty {
+			return
+		}
+		ctx.AddError(ctx.GetTranslatedMessage("route_desc_validation.required"))
 		return
 	}
 
