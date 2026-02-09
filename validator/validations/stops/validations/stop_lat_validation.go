@@ -59,25 +59,4 @@ func StopLatValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		return
 	}
 
-	// if stop.StopLat == nil {
-	// 	// For required fields, always validate regardless of severity
-	// 	if isRequired {
-	// 		ctx.AddError(ctx.GetTranslatedMessage("stop_lat_validation.required_location_type"))
-	// 		return
-	// 	}
-
-	// 	// For optional fields, respect severity settings
-	// 	if ctx.ShouldSkip() {
-	// 		return
-	// 	}
-
-	// 	message := ctx.GetRequiredMessage("stop_lat_validation.required", "stop_lat_validation.recommended")
-	// 	ctx.AddMessageWithSeverity(message)
-	// 	return
-	// }
-
-	// if !lib.ValidateLatitude(*stop.StopLat) {
-	// 	ctx.AddError(ctx.GetTranslatedMessage("stop_lat_validation.invalid", *stop.StopLat))
-	// 	return
-	// }
 }

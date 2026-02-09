@@ -14,23 +14,42 @@ func TestAllDropOffBookingRuleIdValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 
-			dropOffBookingRuleId := tc.Id
-
-			gtfs := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"booking_rules": {}}}.ToGtfs()
-			if tc.Name == "ForeignKey_Present" {
-				gtfs = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"booking_rules": {*dropOffBookingRuleId: {1}}}}.ToGtfs()
+			var dropOffBookingRuleId *string
+			if tc.Id != nil {
+				dropOffBookingRuleId = tc.Id
 			}
-			validations.DropOffBookingRuleIdValidation(&types.StopTime{DropOffBookingRuleId: dropOffBookingRuleId}, tc.Row, &gtfs, &types.StopTimesRules{DropOffBookingRuleId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"booking_rules": {*dropOffBookingRuleId: {1}}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+
+			if tc.Name == "ForeignKey_Invalid" {
+				gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"booking_rules": {}}}.ToGtfsWithDB()
+				if err != nil {
+					t.Fatalf("failed to create mock gtfs: %v", err)
+				}
+				defer cleanup()
+				validations.DropOffBookingRuleIdValidation(&types.StopTime{DropOffBookingRuleId: dropOffBookingRuleId}, tc.Row, gtfs, &types.StopTimesRules{DropOffBookingRuleId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+				return
+			}
+
+			validations.DropOffBookingRuleIdValidation(&types.StopTime{DropOffBookingRuleId: dropOffBookingRuleId}, tc.Row, gtfs, &types.StopTimesRules{DropOffBookingRuleId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
+
 	for _, tc := range test_helpers.GetGenericSeverityTestCases("drop_off_booking_rule_id") {
-		if tc.Name == "Severity_Forbidden_Missing" {
-			continue
-		}
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
-			validations.DropOffBookingRuleIdValidation(&types.StopTime{}, tc.Row, &types.Gtfs{}, &types.StopTimesRules{DropOffBookingRuleId: types.RuleConfig{Severity: tc.Severity}})
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"booking_rules": {}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.DropOffBookingRuleIdValidation(&types.StopTime{}, tc.Row, gtfs, &types.StopTimesRules{DropOffBookingRuleId: types.RuleConfig{Severity: tc.Severity}})
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})

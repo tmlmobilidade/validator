@@ -12,65 +12,66 @@ import (
 func TestAllStopLatValidationTestCases(t *testing.T) {
 	validOptions := test_helpers.GetFloat32ValidOptions()
 	invalidOption := float32(100.0) // out of range
-	locationTypeOptions := test_helpers.GetLocationTypeValidOptions()
+
 	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("stop_lat") {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
-			stop := &types.Stop{StopLat: lib.Ptr(validOptions[0])}
+			stop := &types.Stop{StopLat: lib.Ptr(validOptions[0]), LocationType: lib.Ptr(0)}
 			if tc.Name == "Invalid_Value" {
-				stop = &types.Stop{StopLat: &invalidOption, LocationType: &locationTypeOptions[0]}
+				stop = &types.Stop{StopLat: &invalidOption}
 			}
 			if tc.Name == "Required" {
-				locationType := locationTypeOptions[0]
-				stop = &types.Stop{StopLat: nil, LocationType: &locationType}
+				stop = &types.Stop{StopLat: nil, LocationType: lib.Ptr(0)}
 			}
 			validations.StopLatValidation(stop, tc.Row, nil)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
+
 	for _, tc := range test_helpers.GetGenericSeverityTestCases("stop_lat") {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			stop := &types.Stop{StopLat: nil}
-			validations.StopLatValidation(stop, tc.Row, &types.StopsRules{StopLat: types.RuleConfig{Severity: tc.Severity}})
+			validations.StopLatValidation(stop, tc.Row, &types.StopsRules{StopLat: types.RuleConfig{Severity: tc.Severity}, LocationType: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
+
 	t.Run("DefaultSeverity", func(t *testing.T) {
 		services.AppMessageService.Clear()
-		stop := &types.Stop{StopLat: nil}
+		stop := &types.Stop{StopLat: nil, LocationType: lib.Ptr(3)}
 		validations.StopLatValidation(stop, 1, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "DefaultSeverity", types.SEVERITY_ERROR)
 	})
 
 	t.Run("LocationType_0", func(t *testing.T) {
 		services.AppMessageService.Clear()
-		stop := &types.Stop{StopLat: nil, LocationType: &locationTypeOptions[0]}
+		stop := &types.Stop{StopLat: nil, LocationType: lib.Ptr(0)}
 		validations.StopLatValidation(stop, 1, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "LocationType_0", types.SEVERITY_ERROR)
 	})
 	t.Run("LocationType_1", func(t *testing.T) {
 		services.AppMessageService.Clear()
-		stop := &types.Stop{StopLat: nil, LocationType: &locationTypeOptions[1]}
+		stop := &types.Stop{StopLat: nil, LocationType: lib.Ptr(1)}
 		validations.StopLatValidation(stop, 1, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "LocationType_1", types.SEVERITY_ERROR)
 	})
 	t.Run("LocationType_2", func(t *testing.T) {
 		services.AppMessageService.Clear()
-		stop := &types.Stop{StopLat: nil, LocationType: &locationTypeOptions[2]}
+		stop := &types.Stop{StopLat: nil, LocationType: lib.Ptr(2)}
 		validations.StopLatValidation(stop, 1, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "LocationType_2", types.SEVERITY_ERROR)
 	})
 	t.Run("LocationType_3", func(t *testing.T) {
 		services.AppMessageService.Clear()
-		stop := &types.Stop{StopLat: &validOptions[0], LocationType: &locationTypeOptions[3]}
+		stop := &types.Stop{StopLat: nil, LocationType: lib.Ptr(3)}
 		validations.StopLatValidation(stop, 1, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "LocationType_3", types.SEVERITY_ERROR)
 	})
 	t.Run("LocationType_4", func(t *testing.T) {
 		services.AppMessageService.Clear()
-		stop := &types.Stop{StopLat: &validOptions[0], LocationType: &locationTypeOptions[4]}
+		stop := &types.Stop{StopLat: nil, LocationType: lib.Ptr(4)}
 		validations.StopLatValidation(stop, 1, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "LocationType_4", types.SEVERITY_ERROR)
 	})
