@@ -51,31 +51,13 @@ func RouteUrlValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *ty
 	if route.AgencyId != nil {
 		agencyId := *route.AgencyId
 		agencyRows, err := gtfs.GetRowsById("agency", agencyId)
-		var agencyUrl string
-
-		if err != nil {
-			// Fallback to in-memory data if database is not available
-			if gtfs.IdMap != nil {
-				if agencyMap, exists := gtfs.IdMap["agency"]; exists {
-					if indices, found := agencyMap[agencyId]; found && len(indices) > 0 {
-						// Find agency in in-memory slice
-						for _, agency := range gtfs.Agency {
-							if agency.AgencyId == agencyId {
-								agencyUrl = agency.AgencyUrl
-								break
-							}
-						}
-					}
-				}
-			}
-		} else if len(agencyRows) > 0 {
-			agencyRaw, err := gtfs.GetAgency(agencyRows[0])
-			if err == nil {
-				agencyUrl = agencyRaw.AgencyUrl
-			}
+		if err == nil && len(agencyRows) > 1 {
+			ctx.AddError(ctx.GetTranslatedMessage("route_url_validation.duplicate"))
+			return
 		}
 
-		if agencyUrl != "" && *route.RouteUrl == agencyUrl {
+		agencyRaw, err := gtfs.GetAgency(agencyRows[0])
+		if err == nil && agencyRaw.AgencyUrl != "" && *route.RouteUrl == agencyRaw.AgencyUrl {
 			ctx.AddWarning(ctx.GetTranslatedMessage("route_url_validation.same_as_agency_url"))
 		}
 	}

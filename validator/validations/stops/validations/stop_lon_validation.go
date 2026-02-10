@@ -40,12 +40,12 @@ func StopLonValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	isRequired := locationType == 0 || locationType == 1 || locationType == 2
 
 	if stop.StopLon == nil {
-		if ctx.ShouldIgnore() || (ctx.IsForbidden() && !isRequired) {
+		if isRequired {
+			ctx.AddError(ctx.GetTranslatedMessage("stop_lon_validation.required_location_type"))
 			return
 		}
 
-		if isRequired {
-			ctx.AddError(ctx.GetTranslatedMessage("stop_lon_validation.required_location_type"))
+		if ctx.ShouldSkip() {
 			return
 		}
 
@@ -54,7 +54,7 @@ func StopLonValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		return
 	}
 
-	if !lib.ValidateLongitude(*stop.StopLon) {
+	if !lib.ValidateLongitude(*stop.StopLon) || stop.StopLon == nil {
 		ctx.AddError(ctx.GetTranslatedMessage("stop_lon_validation.invalid", *stop.StopLon))
 		return
 	}

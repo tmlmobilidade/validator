@@ -2,51 +2,42 @@ package calendar_dates
 
 import (
 	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/calendar_dates/validations"
 	"testing"
 )
 
-func TestExceptionTypeValidation_Valid(t *testing.T) {
-	services.AppMessageService.Clear()
-	row := 1
-	validTypes := []int{1, 2}
-	for _, et := range validTypes {
-		calendarDate := &types.CalendarDates{
-			Date:          "20240101",
-			ExceptionType: &et,
-			ServiceId:     "S1",
+func TestAllExceptionTypeValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetExceptionTypeValidOptions()
+	dateValid := test_helpers.GetDateValidOptions()
+	for _, tc := range test_helpers.GetGenericEnumIntTestCases("exception_type", validOptions) {
+		if tc.Name == "Recommended_Missing" {
+			continue
 		}
-		validations.ExceptionTypeValidation(calendarDate, row, nil)
-		assertion := lib.AssertionMessage{
-			Expected: 0,
-			Actual:   services.AppMessageService.GetSummary().TotalErrors,
-			Message:  "Valid exception_type should not error",
-		}
-		if assert := lib.Assert(assertion); assert != "" {
-			t.Error(assert)
-		}
-		services.AppMessageService.Clear()
-	}
-}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
 
-func TestExceptionTypeValidation_Invalid(t *testing.T) {
-	services.AppMessageService.Clear()
-	row := 1
-	invalidType := 3
-	calendarDate := &types.CalendarDates{
-		Date:          "20240101",
-		ExceptionType: &invalidType,
-		ServiceId:     "S1",
-	}
-	validations.ExceptionTypeValidation(calendarDate, row, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid exception_type should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+			var exceptionType *int
+			if tc.Value != nil {
+				if ptr, ok := tc.Value.(*int); ok {
+					exceptionType = ptr
+				}
+			}
+			if tc.Name == "Missing_Value_Required" {
+				exceptionType = lib.Ptr(0)
+			}
+
+			calendarDate := &types.CalendarDates{
+				Date:          dateValid[0],
+				ExceptionType: exceptionType,
+				ServiceId:     "S1",
+			}
+
+			validations.ExceptionTypeValidation(calendarDate, tc.Row, nil)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
 }

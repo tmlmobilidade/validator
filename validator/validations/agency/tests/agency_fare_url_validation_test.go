@@ -1,83 +1,41 @@
 package agency
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/agency/validations"
 	"testing"
 )
 
-func TestAgencyFareUrlValidation_Required(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	agency := &types.Agency{AgencyFareUrl: nil}
-	validations.AgencyFareUrlValidation(agency, 1, &types.AgencyRules{AgencyFare: types.RuleConfig{Severity: severity}})
+func TestAllAgencyFareUrlValidationTestCases(t *testing.T) {
+	fieldName := "agency_fare_url"
 
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency fare URL is required",
-	}
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases(fieldName) {
+		if tc.Name == "Recommended_Missing" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
 
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+			var severity types.Severity
+			if tc.ExpectedErrors > 0 {
+				severity = types.SEVERITY_ERROR
+			} else {
+				severity = types.SEVERITY_WARNING
+			}
+
+			var agencyFareUrl *string
+			if tc.Name == "Valid_Present" {
+				value := test_helpers.GetValidUrls()[0]
+				agencyFareUrl = &value
+			} else {
+				agencyFareUrl = tc.Value
+			}
+
+			validations.AgencyFareUrlValidation(&types.Agency{AgencyFareUrl: agencyFareUrl}, tc.Row, &types.AgencyRules{AgencyFare: types.RuleConfig{Severity: severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-	services.AppMessageService.Clear()
 }
-
-func TestAgencyFareUrlValidation_Recommended(t *testing.T) {
-	severity := types.SEVERITY_WARNING
-	agency := &types.Agency{AgencyFareUrl: nil}
-	validations.AgencyFareUrlValidation(agency, 2, &types.AgencyRules{AgencyFare: types.RuleConfig{Severity: severity}})
-
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalWarnings,
-		Message: "Agency fare URL is recommended",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestAgencyFareUrlValidation_ValidUrl(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	url := "https://example.com/fare"
-	agency := &types.Agency{AgencyFareUrl: &url}
-	validations.AgencyFareUrlValidation(agency, 3, &types.AgencyRules{AgencyFare: types.RuleConfig{Severity: severity}})
-
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency fare URL is valid",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestAgencyFareUrlValidation_InvalidUrl(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	url := "invalid-url"
-	agency := &types.Agency{AgencyFareUrl: &url}
-	validations.AgencyFareUrlValidation(agency, 4, &types.AgencyRules{AgencyFare: types.RuleConfig{Severity: severity}})
-
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency fare URL is invalid",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-} 

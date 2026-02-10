@@ -1,63 +1,47 @@
 package stops
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/stops/validations"
 	"testing"
 )
 
-func TestPlatformCodeValidation_MissingPlatformCode_DefaultSeverity(t *testing.T) {
-	services.AppMessageService.Clear()
-	stop := &types.Stop{PlatformCode: nil}
-	validations.PlatformCodeValidation(stop, 1, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0, // Default severity is IGNORE, so should not error
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing platform_code with default severity should not error",
+func TestAllPlatformCodeValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("platform_code") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var platformCode *string
+			if tc.Value != nil {
+				platformCode = tc.Value
+			}
+			stop := &types.Stop{PlatformCode: platformCode}
+			var severity types.Severity
+			if tc.ExpectedErrors > 0 {
+				severity = types.SEVERITY_ERROR
+			} else {
+				severity = types.SEVERITY_WARNING
+			}
+			validations.PlatformCodeValidation(stop, tc.Row, &types.StopsRules{PlatformCode: types.RuleConfig{Severity: severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("platform_code") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			stop := &types.Stop{PlatformCode: nil}
+			validations.PlatformCodeValidation(stop, tc.Row, &types.StopsRules{PlatformCode: types.RuleConfig{Severity: tc.Severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-}
 
-func TestPlatformCodeValidation_MissingPlatformCode_SeverityError(t *testing.T) {
-	services.AppMessageService.Clear()
-	stop := &types.Stop{PlatformCode: nil}
-	severity := types.SEVERITY_ERROR
-	validations.PlatformCodeValidation(stop, 2, &types.StopsRules{PlatformCode: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing platform_code with severity ERROR should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestPlatformCodeValidation_MissingPlatformCode_SeverityWarning(t *testing.T) {
-	services.AppMessageService.Clear()
-	stop := &types.Stop{PlatformCode: nil}
-	severity := types.SEVERITY_WARNING
-	validations.PlatformCodeValidation(stop, 3, &types.StopsRules{PlatformCode: types.RuleConfig{Severity: severity}})
-	if services.AppMessageService.GetSummary().TotalWarnings != 1 {
-		t.Error("Missing platform_code with severity WARNING should warn")
-	}
-}
-
-func TestPlatformCodeValidation_ValidInput(t *testing.T) {
-	services.AppMessageService.Clear()
-	val := "3"
-	stop := &types.Stop{PlatformCode: &val}
-	validations.PlatformCodeValidation(stop, 4, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid platform_code should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
+	t.Run("DefaultSeverity", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		stop := &types.Stop{PlatformCode: nil}
+		validations.PlatformCodeValidation(stop, 1, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "DefaultSeverity", types.SEVERITY_ERROR)
+	})
 }

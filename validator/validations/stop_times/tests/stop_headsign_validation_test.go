@@ -2,69 +2,53 @@ package stop_times
 
 import (
 	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/stop_times/validations"
 	"testing"
 )
 
-func TestStopHeadsignValidation_MissingStopHeadsign_SeverityError(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{StopHeadsign: nil}
-	severity := types.SEVERITY_ERROR
-	validations.StopHeadsignValidation(stopTime, 1, &types.StopTimesRules{StopHeadsign: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing stop_headsign with severity error should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+func TestAllStopHeadsignValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("stop_headsign") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var stopHeadsign *string
+			if tc.Value != nil {
+				stopHeadsign = lib.Ptr(*tc.Value)
+			} else {
+				stopHeadsign = nil
+			}
 
-func TestStopHeadsignValidation_MissingStopHeadsign_SeverityWarning(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{StopHeadsign: nil}
-	severity := types.SEVERITY_WARNING
-	validations.StopHeadsignValidation(stopTime, 2, &types.StopTimesRules{StopHeadsign: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Missing stop_headsign with severity warning should warn",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+			var severity types.Severity
+			if tc.ExpectedWarnings > 0 {
+				severity = types.SEVERITY_WARNING
+			} else {
+				severity = types.SEVERITY_ERROR
+			}
 
-func TestStopHeadsignValidation_MissingStopHeadsign_SeverityIgnore(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{StopHeadsign: nil}
-	severity := types.SEVERITY_IGNORE
-	validations.StopHeadsignValidation(stopTime, 3, &types.StopTimesRules{StopHeadsign: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors + services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Missing stop_headsign with severity ignore should not error or warn",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+			rules := &types.StopTimesRules{StopHeadsign: types.RuleConfig{Severity: severity}}
 
-func TestStopHeadsignValidation_PresentStopHeadsign(t *testing.T) {
-	services.AppMessageService.Clear()
-	headsign := "Downtown"
-	stopTime := &types.StopTime{StopHeadsign: &headsign}
+			if tc.Name == "Invalid_Value" {
+				stopTime := &types.StopTime{}
+				validations.StopHeadsignValidation(stopTime, tc.Row, rules)
+			} else {
+				stopTime := &types.StopTime{StopHeadsign: stopHeadsign}
+				validations.StopHeadsignValidation(stopTime, tc.Row, rules)
+			}
 
-	validations.StopHeadsignValidation(stopTime, 4, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors + services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Present stop_headsign should not error or warn",
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("stop_headsign") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			stopTime := &types.StopTime{StopHeadsign: tc.Value.(*string)}
+			validations.StopHeadsignValidation(stopTime, tc.Row, &types.StopTimesRules{StopHeadsign: types.RuleConfig{Severity: tc.Severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
 }

@@ -1,6 +1,7 @@
 package calendar_dates
 
 import (
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -22,18 +23,12 @@ If a service_id value appears in both [calendar.txt] and [calendar_dates.txt], t
 [calendar.txt]: https://gtfs.org/schedule/reference/#calendartxt
 */
 func ServiceIdValidation(calendarDate *types.CalendarDates, row int) {
-	message := types.Message{
-		Field:        "service_id",
-		FileName:     "calendar_dates.txt",
-		Rows:         []int{row},
-		Severity:     types.SEVERITY_ERROR,
-		ValidationID: "service_id_validation",
-	}
+	ctx := lib.NewValidationContext("service_id", "calendar_dates.txt", "service_id_validation", row, services.AppMessageService)
 
 	serviceId := calendarDate.ServiceId
 
 	if serviceId == "" {
-		message.Message = "service_id is required"
-		services.AppMessageService.AddMessage(message)
+		ctx.AddError(ctx.GetTranslatedMessage("service_id_validation.required"))
+		return
 	}
 }

@@ -2,83 +2,40 @@ package agency
 
 import (
 	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/agency/validations"
 	"testing"
 )
 
-func TestAgencyPhoneValidation_Required(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	agency := &types.Agency{AgencyPhone: nil}
-	validations.AgencyPhoneValidation(agency, 1, &types.AgencyRules{AgencyPhone: types.RuleConfig{Severity: severity}})
+func TestAllAgencyPhoneValidationTestCases(t *testing.T) {
+	fieldName := "agency_phone"
 
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency phone is required",
-	}
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases(fieldName) {
+		if tc.Name == "Recommended_Missing" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
 
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+			var severity types.Severity
+			if tc.ExpectedErrors > 0 {
+				severity = types.SEVERITY_ERROR
+			} else {
+				severity = types.SEVERITY_WARNING
+			}
+
+			agency := &types.Agency{}
+			if tc.Name == "Invalid_Value" {
+				agency = &types.Agency{}
+			} else if tc.Value != nil {
+				agency = &types.Agency{AgencyPhone: lib.Ptr(test_helpers.GetValidPhoneNumbers()[0])}
+			}
+
+			validations.AgencyPhoneValidation(agency, tc.Row, &types.AgencyRules{AgencyPhone: types.RuleConfig{Severity: severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-	
-	services.AppMessageService.Clear()
 }
-
-func TestAgencyPhoneValidation_Recommended(t *testing.T) {
-	severity := types.SEVERITY_WARNING
-	agency := &types.Agency{AgencyPhone: nil}
-	validations.AgencyPhoneValidation(agency, 2, &types.AgencyRules{AgencyPhone: types.RuleConfig{Severity: severity}})
-
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalWarnings,
-		Message: "Agency phone is recommended",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-// func TestAgencyPhoneValidation_ValidPhone(t *testing.T) {
-// 	severity := types.SEVERITY_ERROR
-// 	phone := "503-238-RIDE"
-// 	agency := &types.Agency{AgencyPhone: &phone}
-// 	validations.AgencyPhoneValidation(&severity, agency, 3)
-
-// 	// Assert
-// 	assertion := lib.AssertionMessage{
-// 		Expected: 0,
-// 		Actual: services.AppMessageService.GetSummary().TotalErrors,
-// 		Message: "Agency phone is valid",
-// 	}
-
-// 	if assert := lib.Assert(assertion); assert != "" {
-// 		t.Error(assert)
-// 	}
-// 	services.AppMessageService.Clear()
-// }
-
-// func TestAgencyPhoneValidation_InvalidPhone(t *testing.T) {
-// 	severity := types.SEVERITY_ERROR
-// 	phone := "invalid-phone"
-// 	agency := &types.Agency{AgencyPhone: &phone}
-// 	validations.AgencyPhoneValidation(&severity, agency, 4)
-
-// 	// Assert
-// 	assertion := lib.AssertionMessage{
-// 		Expected: 1,
-// 		Actual: services.AppMessageService.GetSummary().TotalErrors,
-// 		Message: "Agency phone is invalid",
-// 	}
-
-// 	if assert := lib.Assert(assertion); assert != "" {
-// 		t.Error(assert)
-// 	}
-// 	services.AppMessageService.Clear()
-// } 

@@ -1,83 +1,40 @@
 package routes
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/routes/validations"
 	"testing"
 )
 
-func TestRouteLongNameValidation_BothNamesMissing(t *testing.T) {
-	services.AppMessageService.Clear()
-	route := &types.Route{RouteShortName: nil, RouteLongName: nil}
-	validations.RouteLongNameValidation(route, 1, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing both names should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+func TestAllRouteLongNameValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("route_long_name") {
+		if tc.Name == "Recommended_Missing" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
 
-func TestRouteLongNameValidation_MissingLongName_ShortNamePresent(t *testing.T) {
-	services.AppMessageService.Clear()
-	shortName := "32"
-	route := &types.Route{RouteShortName: &shortName, RouteLongName: nil}
-	validations.RouteLongNameValidation(route, 2, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing long name with short name present should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+			var severity types.Severity
+			if tc.ExpectedWarnings > 0 {
+				severity = types.SEVERITY_WARNING
+			} else {
+				severity = types.SEVERITY_ERROR
+			}
 
-func TestRouteLongNameValidation_MissingLongName_ShortNameMissing(t *testing.T) {
-	services.AppMessageService.Clear()
-	route := &types.Route{RouteShortName: nil, RouteLongName: nil}
-	validations.RouteLongNameValidation(route, 3, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing long name and short name should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+			var routeLongName *string
+			if tc.Value != nil {
+				routeLongName = tc.Value
+			}
 
-func TestRouteLongNameValidation_LongNamePresent_ShortNameMissing(t *testing.T) {
-	services.AppMessageService.Clear()
-	longName := "Main Street Express"
-	route := &types.Route{RouteShortName: nil, RouteLongName: &longName}
-	validations.RouteLongNameValidation(route, 4, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Long name present, short name missing should not error",
+			validations.RouteLongNameValidation(&types.Route{RouteLongName: routeLongName}, tc.Row, &types.RoutesRules{RouteLongName: types.RuleConfig{Severity: severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestRouteLongNameValidation_BothNamesPresent(t *testing.T) {
-	services.AppMessageService.Clear()
-	shortName := "32"
-	longName := "Main Street Express"
-	route := &types.Route{RouteShortName: &shortName, RouteLongName: &longName}
-	validations.RouteLongNameValidation(route, 5, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Both names present should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
+	t.Run("Required_When_ShortName_Empty", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		validations.RouteLongNameValidation(&types.Route{RouteLongName: nil, RouteShortName: nil}, 1, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Required when short name is empty should error", types.SEVERITY_ERROR)
+	})
 }

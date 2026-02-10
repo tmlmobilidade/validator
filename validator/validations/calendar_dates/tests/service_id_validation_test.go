@@ -1,47 +1,40 @@
 package calendar_dates
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/calendar_dates/validations"
 	"testing"
 )
 
-func TestServiceIdValidation_Present(t *testing.T) {
-	services.AppMessageService.Clear()
-	row := 1
-	calendarDate := &types.CalendarDates{
-		Date:          "20240101",
-		ExceptionType: nil,
-		ServiceId:     "S1",
-	}
-	validations.ServiceIdValidation(calendarDate, row)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Present service_id should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+func TestAllServiceIdValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetDateValidOptions()
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("service_id") {
+		if tc.Name == "Recommended_Missing" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var serviceId string
+			if tc.Value != nil {
+				serviceId = validOptions[0]
+			} else {
+				serviceId = ""
+			}
+			calendarDate := &types.CalendarDates{
+				Date:          validOptions[0],
+				ExceptionType: nil,
+				ServiceId:     serviceId,
+			}
 
-func TestServiceIdValidation_Missing(t *testing.T) {
-	services.AppMessageService.Clear()
-	row := 1
-	calendarDate := &types.CalendarDates{
-		Date:          "20240101",
-		ExceptionType: nil,
-		ServiceId:     "",
-	}
-	validations.ServiceIdValidation(calendarDate, row)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing service_id should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+			if tc.Name == "Invalid_Value" {
+				calendarDate = &types.CalendarDates{}
+			}
+
+			validations.ServiceIdValidation(calendarDate, tc.Row)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
 }

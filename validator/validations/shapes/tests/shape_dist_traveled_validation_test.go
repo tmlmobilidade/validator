@@ -1,91 +1,37 @@
 package shapes
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/shapes/validations"
 	"testing"
 )
 
-func TestShapeDistTraveledValidation_Missing(t *testing.T) {
-	services.AppMessageService.Clear()
-	shape := &types.Shape{ShapeDistTraveled: nil}
-	validations.ShapeDistTraveledValidation(shape, 1, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing shape_dist_traveled should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+func TestAllShapeDistTraveledValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetShapeFloat64ValidOptions()
+	invalidOptions := test_helpers.GetShapeFloat64InvalidOptions()
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("shape_dist_traveled") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var severity types.Severity
+			if tc.ExpectedWarnings > 0 {
+				severity = types.SEVERITY_WARNING
+			} else {
+				severity = types.SEVERITY_ERROR
+			}
 
-func TestShapeDistTraveledValidation_Negative(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	neg := -1.0
-	shape := &types.Shape{ShapeDistTraveled: &neg}
-	validations.ShapeDistTraveledValidation(shape, 2, nil)
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Negative shape_dist_traveled should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestShapeDistTraveledValidation_Valid(t *testing.T) {
-	services.AppMessageService.Clear()
-	val := 6.8310
-	shape := &types.Shape{ShapeDistTraveled: &val}
-	validations.ShapeDistTraveledValidation(shape, 3, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid shape_dist_traveled should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestShapeDistTraveledValidation_SeverityError(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	shape := &types.Shape{}
-	severity := types.SEVERITY_ERROR
-	validations.ShapeDistTraveledValidation(shape, 4, &types.ShapesRules{ShapeDistTraveled: types.RuleConfig{Severity: severity}})
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Severity error should error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestShapeDistTraveledValidation_SeverityWarning(t *testing.T) {
-	services.AppMessageService.Clear()
-
-	shape := &types.Shape{}
-	severity := types.SEVERITY_WARNING
-	validations.ShapeDistTraveledValidation(shape, 4, &types.ShapesRules{ShapeDistTraveled: types.RuleConfig{Severity: severity}})
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Severity warning should warn",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+			var shapeDistTraveled *float64
+			if tc.Name == "Invalid_Value" {
+				shapeDistTraveled = &invalidOptions[0]
+			} else if tc.Value != nil {
+				shapeDistTraveled = &validOptions[tc.Row-1]
+			} else {
+				shapeDistTraveled = nil
+			}
+			validations.ShapeDistTraveledValidation(&types.Shape{ShapeDistTraveled: shapeDistTraveled}, tc.Row, &types.ShapesRules{ShapeDistTraveled: types.RuleConfig{Severity: severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
 }
