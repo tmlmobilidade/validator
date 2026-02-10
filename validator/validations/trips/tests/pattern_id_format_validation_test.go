@@ -41,6 +41,6 @@ func TestAllPatternIdFormatValidationTestCases(t *testing.T) {
 		}
 		defer cleanup()
 		validations.PatternIdFormatValidation(trip, 1, gtfs, &types.TripsRules{PatternIdFormat: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Nil_Pattern_ID", types.SEVERITY_ERROR)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Required_Missing", types.SEVERITY_ERROR)
 	})
 }
