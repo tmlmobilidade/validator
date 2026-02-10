@@ -36,5 +36,6 @@ func PatternIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *typ
 		ctx.AddMessageWithSeverity(message)
 		return false
 	}
+
 	return true
 }
