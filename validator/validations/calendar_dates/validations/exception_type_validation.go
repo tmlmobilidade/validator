@@ -47,7 +47,7 @@ func ExceptionTypeValidation(calendarDate *types.CalendarDates, row int, rules *
 	validExceptionTypes := []int{1, 2}
 
 	if calendarDate.ExceptionType == nil {
-		message.Message = "exception_type is required"
+		message.Message = fmt.Sprintf("exception_type is required")
 		services.AppMessageService.AddMessage(message)
 		return
 	}
