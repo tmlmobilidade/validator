@@ -101,6 +101,7 @@
         "invalid": "Field \"service_id\" \"%s\" is not a valid service_id from calendar.txt or calendar_dates.txt"
     },
     "exception_type_validation": {
+        "required": "Field \"exception_type\" is required",
         "forbidden": "ield \"exception_type\" must forbidden",
         "invalid": "Field \"exception_type\" must be 1 or 2. Got \"%s\"",
         "not_allowed": "Field \"exception_type\" \"%s\" is not allowed"
