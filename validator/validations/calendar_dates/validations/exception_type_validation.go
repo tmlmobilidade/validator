@@ -1,7 +1,7 @@
 package calendar_dates
 
 import (
-	"fmt"
+	"main/lib"
 	"main/services"
 	"main/types"
 	"slices"
@@ -35,26 +35,20 @@ For a particular holiday, the [calendar_dates.txt] file could be used to add the
 [calendar_dates.txt]: https://gtfs.org/schedule/reference/#calendar_datestxt
 */
 func ExceptionTypeValidation(calendarDate *types.CalendarDates, row int, rules *types.CalendarDatesRules) {
-
-	message := types.Message{
-		Field:        "exception_type",
-		FileName:     "calendar_dates.txt",
-		Rows:         []int{row},
-		Severity:     types.SEVERITY_ERROR,
-		ValidationID: "exception_type_validation",
+	ctx := lib.NewValidationContext("exception_type", "calendar_dates.txt", "exception_type_validation", row, services.AppMessageService)
+	if rules != nil && rules.ExceptionType.Severity != types.SEVERITY_IGNORE {
+		ctx.WithSeverity(rules.ExceptionType.Severity)
 	}
 
 	validExceptionTypes := []int{1, 2}
 
 	if calendarDate.ExceptionType == nil {
-		message.Message = fmt.Sprintf("exception_type is required", *calendarDate.ExceptionType)
-		services.AppMessageService.AddMessage(message)
+		ctx.AddError(ctx.GetTranslatedMessage("exception_type_validation.required"))
 		return
 	}
 
 	if !slices.Contains(validExceptionTypes, *calendarDate.ExceptionType) {
-		message.Message = fmt.Sprintf("Wrong exception_type value, must be 1 or 2, got %d", *calendarDate.ExceptionType)
-		services.AppMessageService.AddMessage(message)
+		ctx.AddError(ctx.GetTranslatedMessage("exception_type_validation.invalid", *calendarDate.ExceptionType))
 		return
 	}
 
@@ -65,12 +59,10 @@ func ExceptionTypeValidation(calendarDate *types.CalendarDates, row int, rules *
 		}
 
 		if !slices.Contains(*rules.ExceptionType.Options, strconv.Itoa(*calendarDate.ExceptionType)) {
-			message.Message = fmt.Sprintf("Exception type \"%d\" is not allowed", *calendarDate.ExceptionType)
-			services.AppMessageService.AddMessage(message)
+			ctx.AddError(ctx.GetTranslatedMessage("exception_type_validation.not_allowed", *calendarDate.ExceptionType))
 		}
 
-		message.Message = fmt.Sprintf("Exception type \"%d\" is not allowed", *calendarDate.ExceptionType)
-		services.AppMessageService.AddMessage(message)
+		ctx.AddError(ctx.GetTranslatedMessage("exception_type_validation.not_allowed", *calendarDate.ExceptionType))
 		return
 	}
 }

@@ -81,6 +81,7 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 
 	if trip.ShapeId == nil {
 		if ctx.ShouldSkip() {
+			lib.AppLogger.Accent("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 			return
 		}
 
