@@ -512,9 +512,6 @@ const rules: GtfsRules = {
         trip_id: {
             severity: "error",
         },
-        trip_id_limit_characters: {
-            severity: "error",
-        },
         trip_headsign: {
             severity: "error",
         },
@@ -540,6 +537,9 @@ const rules: GtfsRules = {
             severity: "error",
         },
         direction_pattern_id_match: {
+            severity: "error",
+        },
+        trip_id_limit_characters: {
             severity: "error",
         }
     },

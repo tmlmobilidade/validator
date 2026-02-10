@@ -81,9 +81,6 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// Validate bikes_allowed
 		validations.BikesAllowedValidation(&trip, i, &gtfs, tripRules)
 
-		// Validate trip_id_limit_characters
-		validations.TripIdLimitCharactersValidation(&trip, i, tripRules)
-
 		// Validate stop_times.stop_sequence (pass cached stop_times data)
 		groupHash := validations.StopSequenceValidation(&trip, i, &gtfs, tripRules, tripStopTimesCache)
 
@@ -102,6 +99,9 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 		// Validate direction_id matches pattern_id
 		validations.DirectionPatternIdMatchValidation(&trip, i, &gtfs, tripRules)
+
+		// Validate trip_id_limit_characters
+		validations.TripIdLimitCharactersValidation(&trip, i, tripRules)
 
 		return nil
 	})

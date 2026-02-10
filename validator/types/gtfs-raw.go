@@ -77,19 +77,18 @@ type RouteRaw struct {
 /* TRIP */
 
 type TripRaw struct {
-	BikesAllowed          string `gtfs:"bikes_allowed"`
-	BlockId               string `gtfs:"block_id"`
-	CalendarDesc          string `gtfs:"calendar_desc"`
-	DirectionId           string `gtfs:"direction_id"`
-	PatternId             string `gtfs:"pattern_id"`
-	RouteId               string `gtfs:"route_id"`
-	ServiceId             string `gtfs:"service_id"`
-	ShapeId               string `gtfs:"shape_id"`
-	TripHeadsign          string `gtfs:"trip_headsign"`
-	TripIdLimitCharacters string `gtfs:"trip_id_limit_characters"`
-	TripId                string `gtfs:"trip_id"`
-	TripShortName         string `gtfs:"trip_short_name"`
-	WheelchairAccessible  string `gtfs:"wheelchair_accessible"`
+	BikesAllowed         string `gtfs:"bikes_allowed"`
+	BlockId              string `gtfs:"block_id"`
+	CalendarDesc         string `gtfs:"calendar_desc"`
+	DirectionId          string `gtfs:"direction_id"`
+	PatternId            string `gtfs:"pattern_id"`
+	RouteId              string `gtfs:"route_id"`
+	ServiceId            string `gtfs:"service_id"`
+	ShapeId              string `gtfs:"shape_id"`
+	TripHeadsign         string `gtfs:"trip_headsign"`
+	TripId               string `gtfs:"trip_id"`
+	TripShortName        string `gtfs:"trip_short_name"`
+	WheelchairAccessible string `gtfs:"wheelchair_accessible"`
 }
 
 /* STOP TIME */

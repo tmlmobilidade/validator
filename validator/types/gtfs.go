@@ -109,20 +109,19 @@ type Route struct {
 /* TRIP */
 
 type Trip struct {
-	BikesAllowed          *int    `json:"bikes_allowed"`
-	BlockId               *string `json:"block_id"`
-	CalendarDesc          *string `json:"calendar_desc"`
-	DirectionId           *int    `json:"direction_id"`
-	PatternId             *string `json:"pattern_id"`
-	RouteId               *string `json:"route_id"`
-	ServiceId             *string `json:"service_id"`
-	ShapeId               *string `json:"shape_id"`
-	TripHeadsign          *string `json:"trip_headsign"`
-	TripIdLimitCharacters *string `json:"trip_id_limit_characters"`
-	TripId                *string `json:"trip_id"`
-	TripShortName         *string `json:"trip_short_name"`
-	WheelchairAccessible  *int    `json:"wheelchair_accessible"`
-	Row                   int
+	BikesAllowed         *int    `json:"bikes_allowed"`
+	BlockId              *string `json:"block_id"`
+	CalendarDesc         *string `json:"calendar_desc"`
+	DirectionId          *int    `json:"direction_id"`
+	PatternId            *string `json:"pattern_id"`
+	RouteId              *string `json:"route_id"`
+	ServiceId            *string `json:"service_id"`
+	ShapeId              *string `json:"shape_id"`
+	TripHeadsign         *string `json:"trip_headsign"`
+	TripId               *string `json:"trip_id"`
+	TripShortName        *string `json:"trip_short_name"`
+	WheelchairAccessible *int    `json:"wheelchair_accessible"`
+	Row                  int
 }
 
 type TripGroupedByPattern map[string]struct {

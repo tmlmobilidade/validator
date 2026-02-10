@@ -611,14 +611,14 @@
 		"trip_id": {
 			"severity": "error"
 		},
-		"trip_id_limit_characters": {
-			"severity": "error"
-		},
 		"trip_short_name": {
 			"severity": "ignore"
 		},
 		"wheelchair_accessible": {
 			"severity": "warning"
+		},
+		"trip_id_limit_characters": {
+			"severity": "error"
 		}
 	},
 	"vehicles": {
