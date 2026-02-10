@@ -123,16 +123,4 @@ func TestAllDirectionPatternIdMatchValidationTestCases(t *testing.T) {
 		validations.DirectionPatternIdMatchValidation(trip, 1, gtfs, &types.TripsRules{DirectionPatternIdMatch: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Not_Matching_Direction_Id", types.SEVERITY_ERROR)
 	})
-
-	t.Run("Not_Matching_Direction_Id", func(t *testing.T) {
-		services.AppMessageService.Clear()
-		trip := &types.Trip{PatternId: lib.Ptr("1001_0_1"), DirectionId: lib.Ptr(1)}
-		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"MY_ROUTE_ID": []int{1}}}}.ToGtfsWithDB()
-		if err != nil {
-			t.Fatalf("failed to create mock gtfs: %v", err)
-		}
-		defer cleanup()
-		validations.DirectionPatternIdMatchValidation(trip, 1, gtfs, &types.TripsRules{DirectionPatternIdMatch: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Not_Matching_Direction_Id", types.SEVERITY_ERROR)
-	})
 }
