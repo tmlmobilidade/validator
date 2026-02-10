@@ -26,7 +26,7 @@ func TestAllTripIdLimitCharactersValidationTestCases(t *testing.T) {
 
 	t.Run("Boundary_Exactly_32", func(t *testing.T) {
 		services.AppMessageService.Clear()
-		trip := &types.Trip{TripId: lib.Ptr("12345678901234567890123456789012")}
+		trip := &types.Trip{TripId: lib.Ptr("1234567890123456789012345678901")}
 		validations.TripIdLimitCharactersValidation(trip, 1, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Boundary_Exactly_32", types.SEVERITY_ERROR)
 	})
