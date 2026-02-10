@@ -1,0 +1,37 @@
+package trips
+
+import (
+	"main/lib"
+	"main/services"
+	"main/types"
+)
+
+/*
+# Attributes
+  - File: [trips.txt]
+  - Field: trip_id
+  - Presence: Required
+  - Type: Foreign ID referencing trips.trip_id
+
+# Description
+
+Ensures the trip_id is less than or equal to 32 characters.
+
+[trips.txt]: https://gtfs.org/schedule/reference/#trips
+*/
+
+func TripIdLimitCharactersValidation(trip *types.Trip, row int, rules *types.TripsRules) {
+	ctx := lib.NewValidationContext("trip_id_limit_characters", "trips.txt", "trip_id_limit_characters_validation", row, services.AppMessageService)
+	if rules != nil && rules.TripIdLimitCharacters.Severity != "" {
+		ctx.WithSeverity(rules.TripIdLimitCharacters.Severity)
+	}
+
+	if trip.TripId == nil {
+		return
+	}
+
+	if len(*trip.TripId) > 32 {
+		ctx.AddError(ctx.GetTranslatedMessage("trip_id_limit_characters_validation.too_long"))
+		return
+	}
+}

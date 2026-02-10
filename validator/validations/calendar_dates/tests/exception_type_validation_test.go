@@ -25,7 +25,6 @@ func TestAllExceptionTypeValidationTestCases(t *testing.T) {
 					exceptionType = ptr
 				}
 			}
-
 			if tc.Name == "Missing_Value_Required" {
 				exceptionType = lib.Ptr(0)
 			}

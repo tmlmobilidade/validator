@@ -75,7 +75,7 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 	}
 
 	if hasContinuousPickupDropoff && trip.ShapeId == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.required_with_continuous"))
+		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.continuous_pickup_dropoff"))
 		return
 	}
 
