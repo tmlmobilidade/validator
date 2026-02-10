@@ -4,6 +4,7 @@ import (
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 )
 
 /*
@@ -33,5 +34,17 @@ func TripIdLimitCharactersValidation(trip *types.Trip, row int, rules *types.Tri
 	if len(*trip.TripId) > 31 {
 		ctx.AddError(ctx.GetTranslatedMessage("trip_id_limit_characters_validation.too_long"))
 		return
+	}
+
+	// Validate rules
+	if rules != nil && rules.TripIdLimitCharacters.Options != nil {
+		if slices.Contains(*rules.TripIdLimitCharacters.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.TripIdLimitCharacters.Options, *trip.TripId) {
+			ctx.AddError(ctx.GetTranslatedMessage("trip_id_limit_characters_validation.not_allowed", *trip.TripId))
+			return
+		}
 	}
 }
