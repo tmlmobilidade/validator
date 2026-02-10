@@ -1,6 +1,7 @@
 package calendar_dates
 
 import (
+	"main/lib"
 	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
@@ -19,16 +20,14 @@ func TestAllExceptionTypeValidationTestCases(t *testing.T) {
 			services.AppMessageService.Clear()
 
 			var exceptionType *int
-			if tc.Name == "Invalid_Value" {
-				exceptionType = nil
-			} else if tc.Value != nil {
+			if tc.Value != nil {
 				if ptr, ok := tc.Value.(*int); ok {
 					exceptionType = ptr
-				} else {
-					exceptionType = tc.Value.(*int)
 				}
-			} else {
-				exceptionType = nil
+			}
+
+			if tc.Name == "Missing_Value_Required" {
+				exceptionType = lib.Ptr(0)
 			}
 
 			calendarDate := &types.CalendarDates{

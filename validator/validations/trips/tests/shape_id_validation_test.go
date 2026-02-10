@@ -54,4 +54,26 @@ func TestAllShapeIdValidationTestCases(t *testing.T) {
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
 	}
+	t.Run("Valid_Cache", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		trip := &types.Trip{RouteId: lib.Ptr("route1"), TripId: lib.Ptr("trip1"), ShapeId: nil}
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"route1": {1}}, "stop_times": {"trip1": {1}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.ShapeIdValidation(trip, 1, gtfs, nil, make(map[string][]types.StopTimeRaw))
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Shape ID is required", types.SEVERITY_ERROR)
+	})
+	t.Run("Invalid_Cache", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		trip := &types.Trip{RouteId: lib.Ptr("route1"), TripId: lib.Ptr("trip1"), ShapeId: nil}
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {"route1": {1}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.ShapeIdValidation(trip, 1, gtfs, &types.TripsRules{ShapeId: types.RuleConfig{Severity: types.SEVERITY_ERROR}}, make(map[string][]types.StopTimeRaw))
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Shape ID is required", types.SEVERITY_ERROR)
+	})
 }

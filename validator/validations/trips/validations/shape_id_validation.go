@@ -47,6 +47,33 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 		hasContinuousPickupDropoff = true
 	}
 
+	// Check if the stop_times have continuous pickup/dropoff behavior
+	// Use cached stop_times data instead of querying database
+	stopTimesRaw, exists := tripStopTimesCache[*trip.TripId]
+	if exists && !hasContinuousPickupDropoff {
+		for _, stopTimeRaw := range stopTimesRaw {
+			if continuousPickup := stopTimeRaw.ContinuousPickup; continuousPickup != "" {
+				hasContinuousPickupDropoff = true
+				break // Exit early once we find a continuous pickup
+			}
+		}
+	} else if !exists {
+		// Fallback to database query if not in cache (shouldn't happen)
+		stopTimeRows, err := gtfs.GetRowsById("stop_times", *trip.TripId)
+		if err == nil && len(stopTimeRows) > 0 && !hasContinuousPickupDropoff {
+			for _, rowIndex := range stopTimeRows {
+				stopTimeRaw, err := gtfs.GetStopTime(rowIndex)
+				if err != nil {
+					continue
+				}
+				if continuousPickup := stopTimeRaw.ContinuousPickup; continuousPickup != "" {
+					hasContinuousPickupDropoff = true
+					break // Exit early once we find a continuous pickup
+				}
+			}
+		}
+	}
+
 	if hasContinuousPickupDropoff && trip.ShapeId == nil {
 		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.required_with_continuous"))
 		return
