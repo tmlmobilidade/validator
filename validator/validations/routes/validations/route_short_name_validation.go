@@ -30,21 +30,21 @@ func RouteShortNameValidation(route *types.Route, row int, rules *types.RoutesRu
 	ctx := lib.NewValidationContext("route_short_name", "routes.txt", "route_short_name_validation", row, services.AppMessageService)
 	if rules != nil && rules.RouteShortName.Severity != "" {
 		ctx.WithSeverity(rules.RouteShortName.Severity)
-	} else {
-		ctx.WithSeverity(types.SEVERITY_WARNING)
 	}
 
-	// Extract values with nil checks
-	if route.RouteShortName == nil && route.RouteLongName == nil {
+	isRouteShortNameEmpty := route.RouteShortName == nil || *route.RouteShortName == ""
+	isRouteLongNameEmpty := route.RouteLongName == nil || *route.RouteLongName == ""
+
+	if isRouteShortNameEmpty && isRouteLongNameEmpty {
 		ctx.AddError(ctx.GetTranslatedMessage("route_short_name_validation.required_if_long_name_empty"))
 		return
 	}
 
-	if route.RouteShortName == nil {
-		if !ctx.ShouldIgnore() {
-			message := ctx.GetRequiredMessage("route_short_name_validation.required", "route_short_name_validation.recommended")
-			ctx.AddMessageWithSeverity(message)
+	if isRouteShortNameEmpty {
+		if !isRouteLongNameEmpty {
+			return
 		}
+		ctx.AddError(ctx.GetTranslatedMessage("route_short_name_validation.required"))
 		return
 	}
 

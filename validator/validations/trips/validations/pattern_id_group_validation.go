@@ -31,6 +31,21 @@ func PatternIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, 
 		for _, trip := range group.Trips {
 			ctx := lib.NewValidationContext("pattern_id", "trips.txt", "pattern_id_validation", trip.Row, services.AppMessageService)
 
+			if trip.ShapeId == nil {
+				ctx.AddError(ctx.GetTranslatedMessage("pattern_id_validation.shape_id_not_found"))
+				continue
+			}
+
+			if trip.RouteId == nil {
+				ctx.AddError(ctx.GetTranslatedMessage("pattern_id_validation.route_id_not_found"))
+				continue
+			}
+
+			if trip.DirectionId == nil {
+				ctx.AddError(ctx.GetTranslatedMessage("pattern_id_validation.direction_id_not_found"))
+				continue
+			}
+
 			//check if route_id is the same
 			if *trip.RouteId != *routeId {
 				ctx.AddError(ctx.GetTranslatedMessage("pattern_id_validation.different_route_id", patternId))

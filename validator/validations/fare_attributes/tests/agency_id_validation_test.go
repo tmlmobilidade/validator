@@ -1,107 +1,62 @@
 package fare_attributes
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/fare_attributes/validations"
 	"testing"
 )
 
-func TestAgencyIdValidation_Required(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	fareAttribute := &types.FareAttribute{AgencyId: nil}
-	gtfs := &types.Gtfs{}
-	validations.AgencyIdValidation(fareAttribute, 1, gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: severity}})
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "AgencyId is required",
+func TestAllAgencyIdValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericIdTestCases("agency_id") {
+		if tc.Name == "Duplicate_Id" || tc.Name == "Valid_Unique" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			agencyIdMap := make(map[string][]int)
+			if tc.ExistingIds != nil {
+				agencyIdMap = tc.ExistingIds
+			}
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"agency": agencyIdMap}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.AgencyIdValidation(&types.FareAttribute{AgencyId: tc.Id}, tc.Row, gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+		})
 	}
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("agency_id") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
 
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+			var severity types.Severity
+			if tc.ExpectedWarnings > 0 {
+				severity = types.SEVERITY_WARNING
+			} else {
+				severity = types.SEVERITY_ERROR
+			}
+
+			agencyId := &types.FareAttribute{AgencyId: tc.Value}
+
+			if tc.Name == "Invalid_Value" {
+				agencyId = &types.FareAttribute{}
+			}
+
+			agencyIdMap := make(map[string][]int)
+			if tc.Value != nil && *tc.Value != "" {
+				agencyIdMap[*tc.Value] = []int{1}
+			}
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"agency": agencyIdMap}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.AgencyIdValidation(agencyId, tc.Row, gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-	services.AppMessageService.Clear()
-}
-
-func TestAgencyIdValidation_Recommended(t *testing.T) {
-	severity := types.SEVERITY_WARNING
-	fareAttribute := &types.FareAttribute{AgencyId: nil}
-	gtfs := &types.Gtfs{}
-	validations.AgencyIdValidation(fareAttribute, 2, gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: severity}})
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "AgencyId is recommended",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestAgencyIdValidation_Ignore(t *testing.T) {
-	severity := types.SEVERITY_IGNORE
-	fareAttribute := &types.FareAttribute{AgencyId: nil}
-	gtfs := &types.Gtfs{}
-	validations.AgencyIdValidation(fareAttribute, 3, gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: severity}})
-
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "AgencyId is ignored",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestAgencyIdValidation_ValidAgencyId(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	agencyId := "MY_AGENCY_ID"
-	fareAttribute := &types.FareAttribute{AgencyId: &agencyId}
-	gtfs := &types.Gtfs{
-		IdMap: types.GtfsIdMap{
-			"agency": {
-				"MY_AGENCY_ID": []int{1},
-			},
-		},
-	}
-	validations.AgencyIdValidation(fareAttribute, 4, gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: severity}})
-
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "AgencyId is valid",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestAgencyIdValidation_InvalidAgencyId(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	agencyId := "INVALID_AGENCY_ID"
-	fareAttribute := &types.FareAttribute{AgencyId: &agencyId}
-	gtfs := &types.Gtfs{}
-	validations.AgencyIdValidation(fareAttribute, 5, gtfs, &types.FareAttributesRules{AgencyId: types.RuleConfig{Severity: severity}})
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "AgencyId is invalid",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
 }

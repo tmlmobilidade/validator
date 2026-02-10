@@ -1,98 +1,41 @@
 package stops
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/stops/validations"
 	"testing"
 )
 
-func TestPublicVisibleValidation_MissingPublicVisible_DefaultSeverity(t *testing.T) {
-	services.AppMessageService.Clear()
-	stop := &types.Stop{PublicVisible: nil}
-	validations.PublicVisibleValidation(stop, 1, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0, // Default severity is IGNORE, so should not error
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing has_TarrifsPublicVisible with default severity should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+func TestAllPublicVisibleValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericEnumIntTestCases("public_visible", []int{0, 1}) {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var publicVisible *int
+			if tc.Value != nil {
+				publicVisible = tc.Value.(*int)
+			}
+			stop := &types.Stop{PublicVisible: publicVisible}
+			var severity types.Severity
+			if tc.ExpectedErrors > 0 {
+				severity = types.SEVERITY_ERROR
+			} else {
+				severity = types.SEVERITY_WARNING
+			}
 
-func TestPublicVisibleValidation_MissingPublicVisible_SeverityError(t *testing.T) {
-	services.AppMessageService.Clear()
-	stop := &types.Stop{PublicVisible: nil}
-	severity := types.SEVERITY_ERROR
-	validations.PublicVisibleValidation(stop, 2, &types.StopsRules{PublicVisible: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing has_TarrifsPublicVisible with severity ERROR should error",
+			validations.PublicVisibleValidation(stop, tc.Row, &types.StopsRules{PublicVisible: types.RuleConfig{Severity: severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestPublicVisibleValidation_MissingPublicVisible_SeverityWarning(t *testing.T) {
-	services.AppMessageService.Clear()
-	stop := &types.Stop{PublicVisible: nil}
-	severity := types.SEVERITY_WARNING
-	validations.PublicVisibleValidation(stop, 3, &types.StopsRules{PublicVisible: types.RuleConfig{Severity: severity}})
-	if services.AppMessageService.GetSummary().TotalWarnings != 1 {
-		t.Error("Missing has_TarrifsPublicVisible with severity WARNING should warn")
-	}
-}
-
-func TestPublicVisibleValidation_ValidInput(t *testing.T) {
-	services.AppMessageService.Clear()
-	val := 1
-	stop := &types.Stop{PublicVisible: &val}
-	validations.PublicVisibleValidation(stop, 4, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid has_TarrifsPublicVisible should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestPublicVisibleValidation_InvalidInput_SeverityError(t *testing.T) {
-	services.AppMessageService.Clear()
-	val := 9999
-	stop := &types.Stop{PublicVisible: &val}
-	severity := types.SEVERITY_ERROR
-	validations.PublicVisibleValidation(stop, 5, &types.StopsRules{PublicVisible: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid has_TarrifsPublicVisible should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestPublicVisibleValidation_ValidInput_WithOptions_InvalidOption(t *testing.T) {
-	services.AppMessageService.Clear()
-	val := 5
-	stop := &types.Stop{PublicVisible: &val}
-	severity := types.SEVERITY_ERROR
-	validations.PublicVisibleValidation(stop, 7, &types.StopsRules{PublicVisible: types.RuleConfig{Severity: severity, Options: &[]string{"1", "2"}}})
-	if services.AppMessageService.GetSummary().TotalErrors != 1 {
-		t.Error("Valid has_TarrifsPublicVisible with severity ERROR should error")
-	}
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid has_TarrifsPublicVisible with severity ERROR should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("public_visible") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			stop := &types.Stop{PublicVisible: nil}
+			validations.PublicVisibleValidation(stop, tc.Row, &types.StopsRules{PublicVisible: types.RuleConfig{Severity: tc.Severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
 }

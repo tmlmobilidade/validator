@@ -101,6 +101,7 @@
         "invalid": "Field \"service_id\" \"%s\" is not a valid service_id from calendar.txt or calendar_dates.txt"
     },
     "exception_type_validation": {
+        "required": "Field \"exception_type\" is required",
         "forbidden": "ield \"exception_type\" must forbidden",
         "invalid": "Field \"exception_type\" must be 1 or 2. Got \"%s\"",
         "not_allowed": "Field \"exception_type\" \"%s\" is not allowed"
@@ -596,6 +597,9 @@
         "required": "Field \"pattern_id\" is required",
         "recommended": "Field \"pattern_id\" is recommended",
         "not_found": "Field \"pattern_id\" \"%s\" does not exist in patterns.txt",
+        "shape_id_not_found": "Field \"shape_id\" not found",
+        "route_id_not_found": "Field \"route_id\" not found",
+        "direction_id_not_found": "Field \"direction_id\" not found",
         "not_allowed": "Field \"pattern_id\" \"%s\" is not allowed",
         "invalid_pattern_id": "Field \"pattern_id\" must be in the format \"XXXX_X_X\", received: %s",
         "different_direction_id": "Different direction_id's found for the same pattern_id: %s",

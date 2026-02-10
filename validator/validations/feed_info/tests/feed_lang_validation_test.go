@@ -2,53 +2,32 @@ package feed_info
 
 import (
 	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/feed_info/validations"
 	"testing"
 )
 
-
-func TestFeedLangValidation_MissingFeedLang(t *testing.T) {
-	services.AppMessageService.Clear()
-	feedInfo := &types.FeedInfo{FeedLang: nil}
-	validations.FeedLangValidation(feedInfo, 1)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing feed_lang should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestFeedLangValidation_InvalidFeedLang(t *testing.T) {
-	services.AppMessageService.Clear()
-	invalid := "xx"
-	feedInfo := &types.FeedInfo{FeedLang: &invalid}
-	validations.FeedLangValidation(feedInfo, 2)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Invalid feed_lang should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestFeedLangValidation_ValidFeedLang(t *testing.T) {
-	services.AppMessageService.Clear()
-	valid := "en"
-	feedInfo := &types.FeedInfo{FeedLang: &valid}
-	validations.FeedLangValidation(feedInfo, 3)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid feed_lang should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+func TestAllFeedLangValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetValidLanguageCodes()
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("feed_lang") {
+		if tc.Name == "Recommended_Missing" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var feedLang *string
+			if tc.Name == "Invalid_Value" {
+				feedLang = lib.Ptr("notalang")
+			} else if tc.Value != nil {
+				feedLang = lib.Ptr(validOptions[0])
+			} else {
+				feedLang = nil
+			}
+			validations.FeedLangValidation(&types.FeedInfo{FeedLang: feedLang}, tc.Row)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
 }

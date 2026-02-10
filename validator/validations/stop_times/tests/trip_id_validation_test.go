@@ -2,81 +2,62 @@ package stop_times
 
 import (
 	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/stop_times/validations"
 	"testing"
 )
 
-func TestTripIdValidation_MissingTripId(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{TripId: nil}
-	gtfs := &types.Gtfs{}
-	validations.TripIdValidation(stopTime, 1, gtfs)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing trip_id should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+func TestAllTripIdValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericForeignKeyTestCases("trip_id") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
 
-func TestTripIdValidation_EmptyTripId(t *testing.T) {
-	services.AppMessageService.Clear()
-	empty := ""
-	stopTime := &types.StopTime{TripId: &empty}
-	gtfs := &types.Gtfs{}
-	validations.TripIdValidation(stopTime, 2, gtfs)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Empty trip_id should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+			var stopTime *types.StopTime
+			if tc.Id != nil {
+				stopTime = &types.StopTime{TripId: tc.Id}
+			} else {
+				stopTime = &types.StopTime{}
+			}
 
-func TestTripIdValidation_InvalidForeignKey(t *testing.T) {
-	services.AppMessageService.Clear()
-	tripId := "invalid_trip"
-	stopTime := &types.StopTime{TripId: &tripId}
-	gtfs := &types.Gtfs{
-		IdMap: map[string]map[string][]int{
-			"trips": {},
-		},
-	}
-	validations.TripIdValidation(stopTime, 3, gtfs)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Invalid trip_id foreign key should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"trips": {*tc.Id: {1}}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			if tc.Name == "ForeignKey_Invalid" {
+				gtfs, cleanup, err = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"trips": {}}}.ToGtfsWithDB()
+				if err != nil {
+					t.Fatalf("failed to create mock gtfs: %v", err)
+				}
+				defer cleanup()
+			}
 
-func TestTripIdValidation_ValidInput(t *testing.T) {
-	services.AppMessageService.Clear()
-	tripId := "valid_trip"
-	stopTime := &types.StopTime{TripId: &tripId}
-	gtfs := &types.Gtfs{
-		IdMap: map[string]map[string][]int{
-			"trips": {
-				"valid_trip": {0},
-			},
-		},
+			validations.TripIdValidation(stopTime, tc.Row, gtfs)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+		})
 	}
-	validations.TripIdValidation(stopTime, 4, gtfs)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid trip_id should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-} 
+	t.Run("Missing_TripsIndex", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		stopTime := &types.StopTime{TripId: lib.Ptr("T1")}
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"trips": {"T1": {1}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.TripIdValidation(stopTime, 1, gtfs)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Missing_TripsIndex", types.SEVERITY_ERROR)
+	})
+	t.Run("Empty_TripId", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		stopTime := &types.StopTime{TripId: nil}
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"trips": {"T1": {1}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.TripIdValidation(stopTime, 1, gtfs)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Empty_TripId", types.SEVERITY_ERROR)
+	})
+}

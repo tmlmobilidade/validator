@@ -1,7 +1,6 @@
 package trips
 
 import (
-	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -38,8 +37,8 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 
 	// Check if the route has continuous pickup/dropoff behavior
 	routeRows, err := gtfs.GetRowsById("routes", *trip.RouteId)
-	if err != nil || len(routeRows) == 0 {
-		fmt.Println("Route not found", *trip.RouteId)
+	if err != nil || len(routeRows) > 1 {
+		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.not_found", map[string]interface{}{"shape_id": *trip.ShapeId}))
 		return
 	}
 
@@ -76,7 +75,7 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 	}
 
 	if hasContinuousPickupDropoff && trip.ShapeId == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.required_with_continuous"))
+		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.continuous_pickup_dropoff"))
 		return
 	}
 

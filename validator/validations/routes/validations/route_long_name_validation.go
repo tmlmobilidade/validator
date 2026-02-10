@@ -33,18 +33,19 @@ func RouteLongNameValidation(route *types.Route, row int, rules *types.RoutesRul
 		ctx.WithSeverity(rules.RouteLongName.Severity)
 	}
 
-	if (route.RouteLongName == nil || *route.RouteLongName == "") && (route.RouteShortName == nil || *route.RouteShortName == "") {
+	isRouteLongNameEmpty := route.RouteLongName == nil || *route.RouteLongName == ""
+	isRouteShortNameEmpty := route.RouteShortName == nil || *route.RouteShortName == ""
+
+	if isRouteLongNameEmpty && isRouteShortNameEmpty {
 		ctx.AddError(ctx.GetTranslatedMessage("route_long_name_validation.required_if_short_name_empty"))
 		return
 	}
 
-	if route.RouteLongName == nil || *route.RouteLongName == "" {
-		if ctx.ShouldSkip() {
+	if isRouteLongNameEmpty {
+		if !isRouteShortNameEmpty {
 			return
 		}
-
-		message := ctx.GetRequiredMessage("route_long_name_validation.required", "route_long_name_validation.recommended")
-		ctx.AddMessageWithSeverity(message)
+		ctx.AddError(ctx.GetTranslatedMessage("route_long_name_validation.required"))
 		return
 	}
 

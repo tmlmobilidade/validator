@@ -13,7 +13,7 @@ func TestParseRoutes_InvalidTypes(t *testing.T) {
 	row := 2
 	// route_type should be int, but is given as string
 	input := types.RouteRaw{
-		RouteId: "R1",
+		RouteId:   "R1",
 		RouteType: "not_an_int",
 	}
 	_ = validations.ParseRoutes(input, row)
@@ -31,14 +31,14 @@ func TestParseRoutes_ValidInput(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 3
 	input := types.RouteRaw{
-		RouteId: "R1",
-		RouteType: "3",
-		AgencyId: "A1",
+		RouteId:        "R1",
+		RouteType:      "3",
+		AgencyId:       "A1",
 		RouteShortName: "10A",
-		RouteLongName: "Main Street",
-		RouteColor: "FFFFFF",
+		RouteLongName:  "Main Street",
+		RouteColor:     "FFFFFF",
 		RouteTextColor: "000000",
-		RouteUrl: "http://example.com",
+		RouteUrl:       "http://example.com",
 		RouteSortOrder: "1",
 	}
 	route := validations.ParseRoutes(input, row)
@@ -63,4 +63,4 @@ func TestParseRoutes_ValidInput(t *testing.T) {
 	if route.RouteShortName == nil || *route.RouteShortName != "10A" {
 		t.Error("route_short_name not parsed correctly")
 	}
-} 
+}

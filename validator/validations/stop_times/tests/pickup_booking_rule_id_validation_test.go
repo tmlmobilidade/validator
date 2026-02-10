@@ -2,115 +2,74 @@ package stop_times
 
 import (
 	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/stop_times/validations"
 	"testing"
 )
 
-func TestPickupBookingRuleIdValidation_ValidForeignKey(t *testing.T) {
-	services.AppMessageService.Clear()
-	id := "BR1"
-	stopTime := &types.StopTime{PickupBookingRuleId: &id}
-	gtfs := &types.Gtfs{
-		IdMap: map[string]map[string][]int{
-			"booking_rules": {
-				"BR1": {0},
-			},
-		},
-	}
-	validations.PickupBookingRuleIdValidation(stopTime, 1, gtfs, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid pickup_booking_rule_id should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+func TestAllPickupBookingRuleIdValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericForeignKeyTestCases("pickup_booking_rule_id") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var pickupBookingRuleId *string
+			if tc.Id != nil {
+				pickupBookingRuleId = tc.Id
+			} else {
+				pickupBookingRuleId = nil
+			}
 
-func TestPickupBookingRuleIdValidation_InvalidForeignKey(t *testing.T) {
-	services.AppMessageService.Clear()
-	id := "INVALID"
-	stopTime := &types.StopTime{PickupBookingRuleId: &id}
-	gtfs := &types.Gtfs{
-		IdMap: map[string]map[string][]int{
-			"booking_rules": {},
-		},
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"booking_rules": {*pickupBookingRuleId: {1}}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			if tc.Name == "ForeignKey_Invalid" {
+				gtfs, cleanup, err = test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"booking_rules": {}}}.ToGtfsWithDB()
+				if err != nil {
+					t.Fatalf("failed to create mock gtfs: %v", err)
+				}
+				defer cleanup()
+			}
+			validations.PickupBookingRuleIdValidation(&types.StopTime{PickupBookingRuleId: pickupBookingRuleId}, tc.Row, gtfs, nil)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+		})
 	}
-	validations.PickupBookingRuleIdValidation(stopTime, 2, gtfs, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid pickup_booking_rule_id foreign key should error",
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("pickup_booking_rule_id") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"booking_rules": {}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.PickupBookingRuleIdValidation(&types.StopTime{}, tc.Row, gtfs, &types.StopTimesRules{PickupBookingRuleId: types.RuleConfig{Severity: tc.Severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
 
-func TestPickupBookingRuleIdValidation_MissingBookingRulesIndex(t *testing.T) {
-	services.AppMessageService.Clear()
-	id := "BR1"
-	stopTime := &types.StopTime{PickupBookingRuleId: &id}
-	gtfs := &types.Gtfs{
-		IdMap: map[string]map[string][]int{},
-	}
-	validations.PickupBookingRuleIdValidation(stopTime, 3, gtfs, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing booking_rules index should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+	t.Run("Optional_NotPresent", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"booking_rules": {}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.PickupBookingRuleIdValidation(&types.StopTime{}, 4, gtfs, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Optional_NotPresent", types.SEVERITY_ERROR)
+	})
 
-func TestPickupBookingRuleIdValidation_OptionalNotPresent(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{}
-	gtfs := &types.Gtfs{}
-	validations.PickupBookingRuleIdValidation(stopTime, 4, gtfs, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Optional pickup_booking_rule_id not present should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestPickupBookingRuleIdValidation_SeverityError(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{}
-	gtfs := &types.Gtfs{}
-	severity := types.SEVERITY_ERROR
-	validations.PickupBookingRuleIdValidation(stopTime, 5, gtfs, &types.StopTimesRules{PickupBookingRuleId: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "pickup_booking_rule_id missing with severity error should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestPickupBookingRuleIdValidation_SeverityWarning(t *testing.T) {
-	services.AppMessageService.Clear()
-	stopTime := &types.StopTime{}
-	gtfs := &types.Gtfs{}
-	severity := types.SEVERITY_WARNING
-	validations.PickupBookingRuleIdValidation(stopTime, 6, gtfs, &types.StopTimesRules{PickupBookingRuleId: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "pickup_booking_rule_id missing with severity warning should warn",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
+	t.Run("Missing_BookingRulesIndex", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		stopTime := &types.StopTime{PickupBookingRuleId: lib.Ptr("BR1")}
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"booking_rules": {"BR1": {1}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.PickupBookingRuleIdValidation(stopTime, 1, gtfs, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Missing_BookingRulesIndex", types.SEVERITY_ERROR)
+	})
 }
