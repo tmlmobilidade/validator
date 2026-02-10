@@ -85,7 +85,6 @@ type GtfsRules = {
         route_id: RuleConfig;
         pattern_id: RuleConfig;
         service_id: RuleConfig;
-        trip_id_limit_characters: RuleConfig;
         trip_id: RuleConfig;
         trip_headsign: RuleConfig;
         trip_short_name: RuleConfig;
@@ -96,6 +95,7 @@ type GtfsRules = {
         bikes_allowed: RuleConfig;
         stop_sequence: RuleConfig;
         direction_pattern_id_match: RuleConfig;
+        trip_id_limit_characters: RuleConfig;
     }
     stop_times: {
         _file: Severity;
