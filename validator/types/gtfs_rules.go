@@ -98,6 +98,7 @@ type TripsRules struct {
 	BikesAllowed            RuleConfig `json:"bikes_allowed"`
 	StopSequence            RuleConfig `json:"stop_sequence"`
 	DirectionPatternIdMatch RuleConfig `json:"direction_pattern_id_match"`
+	PatternIdFormat         RuleConfig `json:"pattern_id_format"`
 }
 
 type StopTimesRules struct {

@@ -95,6 +95,7 @@ type GtfsRules = {
         bikes_allowed: RuleConfig;
         stop_sequence: RuleConfig;
         direction_pattern_id_match: RuleConfig;
+        pattern_id_format: RuleConfig;
     }
     stop_times: {
         _file: Severity;
@@ -536,6 +537,9 @@ const rules: GtfsRules = {
             severity: "error",
         },
         direction_pattern_id_match: {
+            severity: "error",
+        },
+        pattern_id_format: {
             severity: "error",
         }
     },

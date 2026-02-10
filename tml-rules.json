@@ -616,6 +616,9 @@
 		},
 		"wheelchair_accessible": {
 			"severity": "warning"
+		},
+		"pattern_id_format": {
+			"severity": "error"
 		}
 	},
 	"vehicles": {
