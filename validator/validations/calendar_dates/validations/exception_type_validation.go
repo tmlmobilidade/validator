@@ -60,7 +60,6 @@ func ExceptionTypeValidation(calendarDate *types.CalendarDates, row int, rules *
 
 		if !slices.Contains(*rules.ExceptionType.Options, strconv.Itoa(*calendarDate.ExceptionType)) {
 			ctx.AddError(ctx.GetTranslatedMessage("exception_type_validation.not_allowed", *calendarDate.ExceptionType))
-			return
 		}
 
 		ctx.AddError(ctx.GetTranslatedMessage("exception_type_validation.not_allowed", *calendarDate.ExceptionType))
