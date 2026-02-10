@@ -662,5 +662,8 @@
         "invalid_direction_id": "O campo \"direction_id\" deve ser um número inteiro entre 0 e 1, recebido: %s",
         "not_matching": "O campo \"direction_id\" \"%s\" não corresponde do pattern_id \"%s\"",
         "required": "Os campos \"pattern_id\" e \"direction_id\" são obrigatórios para validar a correspondência"
+    },
+    "trip_id_limit_characters_validation": {
+        "too_long": "O campo \"trip_id\" deve ter no máximo 32 caracteres"
     }
 }

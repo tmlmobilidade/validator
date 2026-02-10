@@ -10,8 +10,8 @@ import (
 # Attributes
   - File: [trips.txt]
   - Field: trip_id
-  - Presence: Required
-  - Type: Foreign ID referencing trips.trip_id
+  - Presence: Required (TML Rule)
+  - Type: Foreign Key referencing trips.trip_id
 
 # Description
 
@@ -21,7 +21,7 @@ Ensures the trip_id is less than or equal to 32 characters.
 */
 
 func TripIdLimitCharactersValidation(trip *types.Trip, row int, rules *types.TripsRules) {
-	ctx := lib.NewValidationContext("trip_id_limit_characters", "trips.txt", "trip_id_limit_characters_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("trip_id", "trips.txt", "trip_id_limit_characters_validation", row, services.AppMessageService)
 	if rules != nil && rules.TripIdLimitCharacters.Severity != "" {
 		ctx.WithSeverity(rules.TripIdLimitCharacters.Severity)
 	}

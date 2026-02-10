@@ -33,9 +33,4 @@ func TripIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 		ctx.AddError(ctx.GetTranslatedMessage("trip_id_validation.duplicate", map[string]interface{}{"trip_id": *trip.TripId}))
 		return
 	}
-
-	if len(*trip.TripId) > 32 {
-		ctx.AddError(ctx.GetTranslatedMessage("trip_id_validation.too_long"))
-		return
-	}
 }

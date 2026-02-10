@@ -89,6 +89,7 @@ type TripsRules struct {
 	PatternId               RuleConfig `json:"pattern_id"`
 	ServiceId               RuleConfig `json:"service_id"`
 	TripId                  RuleConfig `json:"trip_id"`
+	TripIdLimitCharacters   RuleConfig `json:"trip_id_limit_characters"`
 	TripHeadsign            RuleConfig `json:"trip_headsign"`
 	TripShortName           RuleConfig `json:"trip_short_name"`
 	DirectionId             RuleConfig `json:"direction_id"`

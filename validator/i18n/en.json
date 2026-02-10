@@ -661,5 +661,8 @@
         "invalid_direction_id": "Field \"direction_id\" must be an integer between 0 and 1, received: %s",
         "not_matching": "Field \"direction_id\" \"%s\" does not match the pattern_id \"%s\"",
         "required": "Fields \"pattern_id\" and \"direction_id\" are required to validate the match"
+    },
+    "trip_id_limit_characters_validation": {
+        "too_long": "Field \"trip_id\" must be less than or equal to 32 characters"
     }
 }
