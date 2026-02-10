@@ -663,6 +663,7 @@
         "required": "Fields \"pattern_id\" and \"direction_id\" are required to validate the match"
     },
     "trip_id_limit_characters_validation": {
-        "too_long": "Field \"trip_id\" must be less than or equal to 32 characters"
+        "too_long": "Field \"trip_id\" must be less than or equal to 32 characters",
+        "not_allowed": "Field \"trip_id\" \"%s\" is not allowed"
     }
 }

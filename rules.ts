@@ -85,6 +85,7 @@ type GtfsRules = {
         route_id: RuleConfig;
         pattern_id: RuleConfig;
         service_id: RuleConfig;
+        trip_id_limit_characters: RuleConfig;
         trip_id: RuleConfig;
         trip_headsign: RuleConfig;
         trip_short_name: RuleConfig;
@@ -509,6 +510,9 @@ const rules: GtfsRules = {
             severity: "error",
         },
         trip_id: {
+            severity: "error",
+        },
+        trip_id_limit_characters: {
             severity: "error",
         },
         trip_headsign: {
