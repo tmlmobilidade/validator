@@ -40,7 +40,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		validations.FareMediaNameValidation(&fareMedia, i, fareMediaRules)
 
 		// Validate fare_media_type
-		validations.FareMediaTypeValidation(&fareMedia, i, fareMediaRules)
+		validations.FareMediaTypeValidation(&fareMedia, i, &gtfs, fareMediaRules)
 
 		return nil
 	})

@@ -29,7 +29,7 @@ The type of fare media. Valid options are:
 [fare_media.txt]: https://gtfs.org/schedule/reference/#fare_mediatxt
 */
 
-func FareMediaTypeValidation(fareMedia *types.FareMedia, row int, rules *types.FareMediaRules) {
+func FareMediaTypeValidation(fareMedia *types.FareMedia, row int, gtfs *types.Gtfs, rules *types.FareMediaRules) {
 	ctx := lib.NewValidationContext("fare_media_type", "fare_media.txt", "fare_media_type_validation", row, services.AppMessageService)
 	if rules != nil && rules.FareMediaType.Severity != "" {
 		ctx.WithSeverity(rules.FareMediaType.Severity)
