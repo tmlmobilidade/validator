@@ -1,153 +1,119 @@
 package routes
 
 import (
+	"fmt"
 	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/routes/validations"
 	"testing"
 )
 
-func TestContinuousDropOffValidation_MissingContinuousDropOff(t *testing.T) {
-	services.AppMessageService.Clear()
-	routeId := "MY_ROUTE_ID"
-	route := &types.Route{RouteId: &routeId, ContinuousDropOff: nil}
-	gtfs := &types.Gtfs{}
-	routesWithWindows := make(map[string]bool)
-	validations.ContinuousDropOffValidation(route, 1, gtfs, nil, routesWithWindows)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing continuous_pickup should not error",
+func TestAllContinuousDropOffValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetContinuousPickupDropOffValidOptions()
+	validOptionsStrings := make([]string, len(validOptions))
+	for i, opt := range validOptions {
+		validOptionsStrings[i] = fmt.Sprintf("%d", opt)
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+	for _, tc := range test_helpers.GetGenericEnumIntTestCases("continuous_drop_off", validOptions) {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
 
-func TestContinuousDropOffValidation_MissingRequiredContinuousDropOff(t *testing.T) {
-	services.AppMessageService.Clear()
-	routeId := "MY_ROUTE_ID"
-	route := &types.Route{RouteId: &routeId, ContinuousDropOff: nil}
-	gtfs := &types.Gtfs{}
+			var severity types.Severity
+			if tc.ExpectedWarnings > 0 {
+				severity = types.SEVERITY_WARNING
+			} else {
+				severity = types.SEVERITY_ERROR
+			}
 
-	severity := types.SEVERITY_ERROR
-	routesWithWindows := make(map[string]bool)
-	validations.ContinuousDropOffValidation(route, 1, gtfs, &types.RoutesRules{ContinuousDropOff: types.RuleConfig{Severity: severity}}, routesWithWindows)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing required continuous_pickup should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+			var continuousDropOff *string
+			if tc.Value != nil {
+				if ptr, ok := tc.Value.(*int); ok && ptr != nil {
+					valStr := fmt.Sprintf("%d", *ptr)
+					continuousDropOff = &valStr
+				}
+			}
 
-func TestContinuousDropOffValidation_ForbiddenValueWithDropOffWindow(t *testing.T) {
-	services.AppMessageService.Clear()
-	continuousDropOff := "2"
-	routeId := "MY_ROUTE_ID"
-	route := &types.Route{RouteId: &routeId, ContinuousDropOff: &continuousDropOff}
-	// Simulate GTFS with a trip and stop_times with pickup window
-	gtfs := &types.Gtfs{
-		Trip: []types.TripRaw{
-			{TripId: "MY_TRIP_ID"},
-		},
-		StopTime: []types.StopTimeRaw{
-			{StartPickupDropOffWindow: "08:00:00", EndPickupDropOffWindow: "09:00:00"},
-		},
-		IdMap: map[string]map[string][]int{
-			"trips": {
-				"MY_ROUTE_ID": {0},
-			},
-			"stop_times": {
-				"MY_TRIP_ID": {0},
-			},
-		},
+			routesWithWindows := make(map[string]bool)
+			validations.ContinuousDropOffValidation(
+				&types.Route{ContinuousDropOff: continuousDropOff},
+				tc.Row,
+				&types.Gtfs{},
+				&types.RoutesRules{
+					ContinuousDropOff: types.RuleConfig{
+						Severity: severity,
+						Options:  &validOptionsStrings,
+					},
+				},
+				routesWithWindows,
+			)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-	severity := types.SEVERITY_ERROR
-	routesWithWindows := make(map[string]bool)
-	routesWithWindows[routeId] = true // Route has trips with pickup/dropoff windows
-	validations.ContinuousDropOffValidation(route, 2, gtfs, &types.RoutesRules{ContinuousDropOff: types.RuleConfig{Severity: severity}}, routesWithWindows)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Forbidden continuous_pickup value with pickup window should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
 
-func TestContinuousDropOffValidation_ValidInput(t *testing.T) {
-	services.AppMessageService.Clear()
-	continuousDropOff := "1"
-	routeId := "MY_ROUTE_ID"
-	route := &types.Route{RouteId: &routeId, ContinuousDropOff: &continuousDropOff}
-	// Simulate GTFS with a trip and stop_times without pickup window
-	gtfs := &types.Gtfs{
-		Trip: []types.TripRaw{
-			{TripId: "MY_TRIP_ID"},
-		},
-		StopTime: []types.StopTimeRaw{
-			{StartPickupDropOffWindow: "", EndPickupDropOffWindow: ""},
-		},
-		IdMap: map[string]map[string][]int{
-			"trips": {
-				"MY_ROUTE_ID": {0},
-			},
-			"stop_times": {
-				"MY_TRIP_ID": {0},
-			},
-		},
-	}
-	severity := types.SEVERITY_ERROR
-	routesWithWindows := make(map[string]bool)
-	validations.ContinuousDropOffValidation(route, 3, gtfs, &types.RoutesRules{ContinuousDropOff: types.RuleConfig{Severity: severity}}, routesWithWindows)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid continuous_pickup with no pickup window should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("continuous_drop_off") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
 
-func TestContinuousDropOffValidation_ValidInputWithDropOffWindow(t *testing.T) {
-	services.AppMessageService.Clear()
-	continuousDropOff := "1"
-	routeId := "MY_ROUTE_ID"
-	route := &types.Route{RouteId: &routeId, ContinuousDropOff: &continuousDropOff}
-	// Simulate GTFS with a trip and stop_times with pickup window
-	gtfs := &types.Gtfs{
-		Trip: []types.TripRaw{
-			{TripId: "MY_TRIP_ID"},
-		},
-		StopTime: []types.StopTimeRaw{
-			{StartPickupDropOffWindow: "08:00:00", EndPickupDropOffWindow: "09:00:00"},
-		},
-		IdMap: map[string]map[string][]int{
-			"trips": {
-				"MY_ROUTE_ID": {0},
-			},
-			"stop_times": {
-				"MY_TRIP_ID": {0},
-			},
-		},
-	}
-	severity := types.SEVERITY_ERROR
-	routesWithWindows := make(map[string]bool)
-	routesWithWindows[routeId] = true // Route has trips with pickup/dropoff windows, but continuous_drop_off is "1" so it returns early
-	validations.ContinuousDropOffValidation(route, 4, gtfs, &types.RoutesRules{ContinuousDropOff: types.RuleConfig{Severity: severity}}, routesWithWindows)
+			var continuousDropOff *string
+			if tc.Value != nil {
+				if ptr, ok := tc.Value.(*string); ok && ptr != nil {
+					continuousDropOff = ptr
+				}
+			}
 
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid continuous_pickup with pickup window should not error",
+			routesWithWindows := make(map[string]bool)
+			validations.ContinuousDropOffValidation(
+				&types.Route{ContinuousDropOff: continuousDropOff},
+				tc.Row,
+				&types.Gtfs{},
+				&types.RoutesRules{
+					ContinuousDropOff: types.RuleConfig{
+						Severity: tc.Severity,
+						Options:  &validOptionsStrings,
+					},
+				},
+				routesWithWindows,
+			)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
+	t.Run("Forbidden_WithStartWindow", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		routeId := "ROUTE1"
+		routesWithWindows := map[string]bool{routeId: true}
+		validations.ContinuousDropOffValidation(&types.Route{RouteId: &routeId, ContinuousDropOff: lib.Ptr("0")}, 3, &types.Gtfs{}, nil, routesWithWindows)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithStartWindow", types.SEVERITY_ERROR)
+	})
+	t.Run("Forbidden_WithEndWindow", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		routeId := "ROUTE1"
+		routesWithWindows := map[string]bool{routeId: true}
+		validations.ContinuousDropOffValidation(&types.Route{RouteId: &routeId, ContinuousDropOff: lib.Ptr("2")}, 4, &types.Gtfs{}, nil, routesWithWindows)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Forbidden_WithEndWindow", types.SEVERITY_ERROR)
+	})
+	t.Run("Allowed_WithStartWindowIfOne", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		routeId := "ROUTE1"
+		routesWithWindows := map[string]bool{routeId: true}
+		validations.ContinuousDropOffValidation(&types.Route{RouteId: &routeId, ContinuousDropOff: lib.Ptr("1")}, 5, &types.Gtfs{}, nil, routesWithWindows)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Allowed_WithStartWindowIfOne", types.SEVERITY_WARNING)
+	})
+	t.Run("Allowed_WithEndWindowIfOne", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		routeId := "ROUTE1"
+		routesWithWindows := map[string]bool{routeId: true}
+		validations.ContinuousDropOffValidation(&types.Route{RouteId: &routeId, ContinuousDropOff: lib.Ptr("1")}, 6, &types.Gtfs{}, nil, routesWithWindows)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Allowed_WithEndWindowIfOne", types.SEVERITY_WARNING)
+	})
+	t.Run("Allowed_WithStartWindowIfOneAndEndWindowIfOne", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		routeId := "ROUTE1"
+		routesWithWindows := map[string]bool{routeId: true}
+		validations.ContinuousDropOffValidation(&types.Route{RouteId: &routeId, ContinuousDropOff: lib.Ptr("1")}, 7, &types.Gtfs{}, nil, routesWithWindows)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Allowed_WithStartWindowIfOneAndEndWindowIfOne", types.SEVERITY_WARNING)
+	})
 }

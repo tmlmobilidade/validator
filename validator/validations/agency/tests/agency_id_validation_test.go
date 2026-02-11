@@ -1,85 +1,48 @@
 package agency
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/agency/validations"
 	"testing"
 )
 
-func TestAgencyIdValidation_Required(t *testing.T) {
-	rules := &types.GtfsRules{Agency: types.AgencyRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_ERROR}}}
-	agency := &types.Agency{AgencyId: nil}
-	gtfs := types.Gtfs{Agency: []types.AgencyRaw{{}, {}}}
-	validations.AgencyIdValidation(agency, 1, gtfs, &rules.Agency)
+func TestAgencyIdValidation(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericIdTestCases("agency_id") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
 
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency ID is required when there is more than one agency",
-	}
+			agency := &types.Agency{AgencyId: tc.Id}
 
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"agency": tc.ExistingIds}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+
+			validations.AgencyIdValidation(agency, tc.Row, *gtfs, &types.AgencyRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+		})
 	}
-	services.AppMessageService.Clear()
+	t.Run("TableCountUpperThan2", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		gtfs, cleanup, err := test_helpers.MockGtfs{TableCounts: map[string]int{"agency": 2}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.AgencyIdValidation(&types.Agency{AgencyId: nil}, 1, *gtfs, &types.AgencyRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "TableCountUpperThan2", types.SEVERITY_ERROR)
+	})
+	t.Run("TableCountEqual1", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		gtfs, cleanup, err := test_helpers.MockGtfs{TableCounts: map[string]int{"agency": 1}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.AgencyIdValidation(&types.Agency{AgencyId: nil}, 1, *gtfs, &types.AgencyRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_WARNING}})
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "TableCountEqual1", types.SEVERITY_WARNING)
+	})
 }
-
-func TestAgencyIdValidation_Recommended(t *testing.T) {
-	rules := &types.GtfsRules{Agency: types.AgencyRules{AgencyId: types.RuleConfig{Severity: types.SEVERITY_WARNING}}}
-	agency := &types.Agency{AgencyId: nil}
-	gtfs := types.Gtfs{Agency: []types.AgencyRaw{{}}}
-	validations.AgencyIdValidation(agency, 2, gtfs, &rules.Agency)
-
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalWarnings,
-		Message: "Agency ID is recomended",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestAgencyIdValidation_Unique(t *testing.T) {
-	id := "unique"
-	agency := &types.Agency{AgencyId: &id}
-	gtfs := types.Gtfs{IdMap: map[string]map[string][]int{"agency": {"unique": {1}}}}
-	validations.AgencyIdValidation(agency, 3, gtfs, nil)
-
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency ID should be unique",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestAgencyIdValidation_Duplicate(t *testing.T) {
-	id := "duplicate"
-	agency := &types.Agency{AgencyId: &id}
-	gtfs := types.Gtfs{IdMap: map[string]map[string][]int{"agency": {"duplicate": {1, 2}}}}
-	validations.AgencyIdValidation(agency, 4, gtfs, nil)
-
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency ID should be duplicate",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-} 

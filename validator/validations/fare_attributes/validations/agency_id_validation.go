@@ -46,11 +46,9 @@ func AgencyIdValidation(fareAttribute *types.FareAttribute, row int, gtfs *types
 		return
 	}
 
-	// Check if agency_id exists in agencies.txt
-	if fareAttribute.AgencyId != nil {
-		rows, err := gtfs.GetRowsById("agency", *fareAttribute.AgencyId)
-		if err != nil || len(rows) == 0 {
-			ctx.AddError(ctx.GetTranslatedMessage("agency_id_validation.not_found"))
-		}
+	// Check Foreign Key
+	if !lib.GtfsIdMapKeyExists(gtfs, "agency", *fareAttribute.AgencyId) {
+		ctx.AddError(ctx.GetTranslatedMessage("agency_id_validation.not_found"))
+		return
 	}
 }

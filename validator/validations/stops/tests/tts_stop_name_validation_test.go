@@ -1,68 +1,47 @@
 package stops
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/stops/validations"
 	"testing"
 )
 
-func TestTtsStopNameValidation_MissingTtsStopName_DefaultSeverity(t *testing.T) {
-	services.AppMessageService.Clear()
-	stop := &types.Stop{TtsStopName: nil}
-	validations.TtsStopNameValidation(stop, 1, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0, // Default severity is IGNORE, so should not error
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing tts_stop_name with default severity should not error",
+func TestAllTtsStopNameValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("tts_stop_name") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var ttsStopName *string
+			if tc.Value != nil {
+				ttsStopName = tc.Value
+			}
+			stop := &types.Stop{TtsStopName: ttsStopName}
+			var severity types.Severity
+			if tc.ExpectedErrors > 0 {
+				severity = types.SEVERITY_ERROR
+			} else {
+				severity = types.SEVERITY_WARNING
+			}
+			validations.TtsStopNameValidation(stop, tc.Row, &types.StopsRules{TtsStopName: types.RuleConfig{Severity: severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("tts_stop_name") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			stop := &types.Stop{TtsStopName: nil}
+			validations.TtsStopNameValidation(stop, tc.Row, &types.StopsRules{TtsStopName: types.RuleConfig{Severity: tc.Severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-}
 
-func TestTtsStopNameValidation_MissingTtsStopName_SeverityError(t *testing.T) {
-	services.AppMessageService.Clear()
-	stop := &types.Stop{TtsStopName: nil}
-	severity := types.SEVERITY_ERROR
-	validations.TtsStopNameValidation(stop, 2, &types.StopsRules{TtsStopName: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing tts_stop_name with severity ERROR should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestTtsStopNameValidation_MissingTtsStopName_SeverityWarning(t *testing.T) {
-	services.AppMessageService.Clear()
-	stop := &types.Stop{TtsStopName: nil}
-	severity := types.SEVERITY_WARNING
-	validations.TtsStopNameValidation(stop, 3, &types.StopsRules{TtsStopName: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Missing tts_stop_name with severity WARNING should warn",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestTtsStopNameValidation_ValidInput(t *testing.T) {
-	services.AppMessageService.Clear()
-	val := "Main St"
-	stop := &types.Stop{TtsStopName: &val}
-	validations.TtsStopNameValidation(stop, 4, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid tts_stop_name should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
+	t.Run("DefaultSeverity", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		stop := &types.Stop{TtsStopName: nil}
+		validations.TtsStopNameValidation(stop, 1, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "DefaultSeverity", types.SEVERITY_ERROR)
+	})
 }

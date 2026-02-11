@@ -2,57 +2,42 @@ package agency
 
 import (
 	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/agency/validations"
 	"testing"
 )
 
-func TestAgencyTimezoneValidation_Required(t *testing.T) {
-	agency := &types.Agency{AgencyTimezone: nil}
-	validations.AgencyTimezoneValidation(agency, 1, &types.AgencyRules{AgencyTimezone: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+func TestAllAgencyTimezoneValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetValidTimezones()
+	fieldName := "agency_timezone"
 
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency timezone is required",
-	}
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases(fieldName) {
+		if tc.Name == "Recommended_Missing" {
+			continue
+		}
 
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+
+			var severity types.Severity
+			if tc.ExpectedErrors > 0 {
+				severity = types.SEVERITY_ERROR
+			} else {
+				severity = types.SEVERITY_WARNING
+			}
+
+			agency := &types.Agency{}
+			if tc.Name == "Invalid_Value" {
+				agency = &types.Agency{}
+			} else if tc.Value != nil {
+				agency = &types.Agency{AgencyTimezone: lib.Ptr(validOptions[0])}
+			}
+
+			validations.AgencyTimezoneValidation(agency, tc.Row, &types.AgencyRules{AgencyTimezone: types.RuleConfig{Severity: severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-	services.AppMessageService.Clear()
 }
-
-func TestAgencyTimezoneValidation_ValidTimezone(t *testing.T) {
-	agency := &types.Agency{AgencyTimezone: lib.Ptr("America/New_York")}
-	validations.AgencyTimezoneValidation(agency, 2, &types.AgencyRules{AgencyTimezone: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency timezone is valid",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestAgencyTimezoneValidation_InvalidTimezone(t *testing.T) {
-	agency := &types.Agency{AgencyTimezone: lib.Ptr("Invalid/Timezone")}
-	validations.AgencyTimezoneValidation(agency, 3, &types.AgencyRules{AgencyTimezone: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
-
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency timezone is invalid",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-} 

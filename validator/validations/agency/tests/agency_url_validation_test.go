@@ -1,63 +1,33 @@
 package agency
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/agency/validations"
 	"testing"
 )
 
-func TestAgencyUrlValidation_Required(t *testing.T) {
-	rules := &types.GtfsRules{Agency: types.AgencyRules{AgencyUrl: types.RuleConfig{Severity: types.SEVERITY_ERROR}}}
-	agency := &types.Agency{AgencyUrl: nil}
-	validations.AgencyUrlValidation(agency, 1, &rules.Agency)
+func TestAllAgencyUrlValidationTestCases(t *testing.T) {
+	fieldName := "agency_url"
 
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency URL is required",
+	for _, tc := range test_helpers.GetGenericUrlTestCases(fieldName) {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+
+			var severity types.Severity
+			if tc.Name == "Required" {
+				severity = types.SEVERITY_ERROR
+			} else {
+				severity = types.SEVERITY_WARNING
+			}
+
+			validations.AgencyUrlValidation(&types.Agency{AgencyUrl: tc.Url}, tc.Row, &types.AgencyRules{AgencyUrl: types.RuleConfig{Severity: severity}})
+			if tc.Name == "Recommended_Missing" {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, 1, tc.Name, types.SEVERITY_WARNING)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			}
+		})
 	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-
-	services.AppMessageService.Clear()
 }
-
-func TestAgencyUrlValidation_ValidUrl(t *testing.T) {
-	agency := &types.Agency{AgencyUrl: lib.Ptr("https://example.com")}
-	validations.AgencyUrlValidation(agency, 2, nil)
-
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency URL is valid",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestAgencyUrlValidation_InvalidUrl(t *testing.T) {
-	agency := &types.Agency{AgencyUrl: lib.Ptr("invalid-url")}
-	validations.AgencyUrlValidation(agency, 3, nil)
-
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency URL is invalid",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	
-	services.AppMessageService.Clear()
-} 

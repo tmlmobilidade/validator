@@ -35,13 +35,22 @@ func RouteDescValidation(route *types.Route, row int, rules *types.RoutesRules) 
 		ctx.WithSeverity(rules.RouteDesc.Severity)
 	}
 
-	if route.RouteDesc == nil || *route.RouteDesc == "" {
-		if ctx.ShouldSkip() {
+	// Check if route_short_name is empty - if so, route_desc is required
+	isRouteShortNameEmpty := route.RouteShortName == nil || *route.RouteShortName == ""
+	isRouteDescEmpty := route.RouteDesc == nil || *route.RouteDesc == ""
+
+	// Conditionally Required: Required if routes.route_short_name is empty
+	if isRouteShortNameEmpty && isRouteDescEmpty {
+		ctx.AddError(ctx.GetTranslatedMessage("route_desc_validation.required"))
+		return
+	}
+
+	// If route_desc is empty but route_short_name is present, it's optional - no error
+	if isRouteDescEmpty {
+		if !isRouteShortNameEmpty {
 			return
 		}
-
-		message := ctx.GetRequiredMessage("route_desc_validation.required", "route_desc_validation.recommended")
-		ctx.AddMessageWithSeverity(message)
+		ctx.AddError(ctx.GetTranslatedMessage("route_desc_validation.required"))
 		return
 	}
 

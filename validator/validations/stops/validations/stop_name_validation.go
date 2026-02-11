@@ -49,7 +49,7 @@ func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	}
 
 	if locationType == 0 || locationType == 1 || locationType == 2 {
-		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("stop_short_name_validation.required_location_type"))
+		ctx.AddError(ctx.GetTranslatedMessage("stop_short_name_validation.required_location_type"))
 		return
 	}
 
@@ -67,7 +67,7 @@ func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		}
 
 		if !slices.Contains(*rules.StopName.Options, *stop.StopName) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("stop_short_name_validation.not_allowed", *stop.StopName))
+			ctx.AddError(ctx.GetTranslatedMessage("stop_short_name_validation.not_allowed", *stop.StopName))
 			return
 		}
 	}
