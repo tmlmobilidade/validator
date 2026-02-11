@@ -1,82 +1,98 @@
 package routes
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/routes/validations"
 	"testing"
 )
 
-func TestRouteDescValidation_MissingDesc(t *testing.T) {
-	services.AppMessageService.Clear()
-	route := &types.Route{RouteDesc: nil}
-	validations.RouteDescValidation(route, 1, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Missing route_desc should not warn",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+func TestAllRouteDescValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("route_desc") {
+		if tc.Name == "Recommended_Missing" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var routeDesc *string
+			if tc.Value != nil {
+				routeDesc = tc.Value
+			}
 
-func TestRouteDescValidation_DuplicateShortName(t *testing.T) {
-	services.AppMessageService.Clear()
-	desc := "32"
-	shortName := "32"
-	route := &types.Route{RouteDesc: &desc, RouteShortName: &shortName}
-	validations.RouteDescValidation(route, 2, nil)
-	if services.AppMessageService.GetSummary().TotalWarnings != 1 {
-		t.Error("route_desc duplicating route_short_name should warn")
+			validations.RouteDescValidation(&types.Route{RouteDesc: routeDesc}, tc.Row, nil)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+		})
 	}
-}
 
-func TestRouteDescValidation_DuplicateLongName(t *testing.T) {
-	services.AppMessageService.Clear()
-	desc := "Main Street Express"
-	longName := "Main Street Express"
-	route := &types.Route{RouteDesc: &desc, RouteLongName: &longName}
-	validations.RouteDescValidation(route, 3, nil)
-	if services.AppMessageService.GetSummary().TotalWarnings != 1 {
-		t.Error("route_desc duplicating route_long_name should warn")
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("route_desc") {
+		if tc.Name == "Severity_Warning_Missing" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var routeDesc *string
+			if tc.Value != nil {
+				if ptr, ok := tc.Value.(*string); ok && ptr != nil {
+					routeDesc = ptr
+				}
+			}
+			validations.RouteDescValidation(&types.Route{RouteDesc: routeDesc}, tc.Row, &types.RoutesRules{RouteDesc: types.RuleConfig{Severity: tc.Severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, tc.Severity)
+		})
 	}
-}
 
-func TestRouteDescValidation_UniqueDesc(t *testing.T) {
-	services.AppMessageService.Clear()
-	desc := "A trains operate between Inwood-207 St and Far Rockaway."
-	shortName := "A"
-	longName := "Inwood-Far Rockaway"
-	route := &types.Route{RouteDesc: &desc, RouteShortName: &shortName, RouteLongName: &longName}
-	validations.RouteDescValidation(route, 4, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Unique route_desc should not warn",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+	t.Run("Duplicate_ShortName", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		desc := "Route A"
+		shortName := "Route A"
+		route := &types.Route{
+			RouteDesc:      &desc,
+			RouteShortName: &shortName,
+		}
+		validations.RouteDescValidation(route, 1, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Duplicate short name should warn", types.SEVERITY_WARNING)
+	})
+	t.Run("Duplicate_Both_Short_And_Long_Name", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		desc := "Route A"
+		shortName := "Route A"
+		longName := "Route A"
+		route := &types.Route{
+			RouteDesc:      &desc,
+			RouteShortName: &shortName,
+			RouteLongName:  &longName,
+		}
+		validations.RouteDescValidation(route, 1, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 2, "Duplicate both short and long name should warn", types.SEVERITY_WARNING)
+	})
+	t.Run("Unique_Route_Desc", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		desc := "Route A"
+		route := &types.Route{
+			RouteDesc: &desc,
+		}
+		validations.RouteDescValidation(route, 1, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Unique route_desc should not warn", types.SEVERITY_WARNING)
+	})
+	t.Run("Required_When_ShortName_Empty", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		route := &types.Route{
+			RouteDesc:      nil,
+			RouteShortName: nil,
+		}
+		validations.RouteDescValidation(route, 1, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Required when short name is empty should error", types.SEVERITY_ERROR)
+	})
 
-func TestRouteDescValidation_MissingDesc_SeverityWarning(t *testing.T) {
-	services.AppMessageService.Clear()
-	route := &types.Route{RouteDesc: nil}
-	severity := types.SEVERITY_WARNING
-	validations.RouteDescValidation(route, 5, &types.RoutesRules{RouteDesc: types.RuleConfig{Severity: severity}})
-	if services.AppMessageService.GetSummary().TotalWarnings != 1 {
-		t.Error("Missing route_desc should warn")
-	}
-}
-
-func TestRouteDescValidation_MissingDesc_SeverityError(t *testing.T) {
-	services.AppMessageService.Clear()
-	route := &types.Route{RouteDesc: nil}
-	severity := types.SEVERITY_ERROR
-	validations.RouteDescValidation(route, 6, &types.RoutesRules{RouteDesc: types.RuleConfig{Severity: severity}})
-	if services.AppMessageService.GetSummary().TotalErrors != 1 {
-		t.Error("Missing route_desc should error")
-	}
+	t.Run("NotAllowed_WithOptions", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		allowedOptions := []string{"Description 1", "Description 2"}
+		desc := "Invalid Description"
+		route := &types.Route{
+			RouteDesc: &desc,
+		}
+		validations.RouteDescValidation(route, 1, &types.RoutesRules{RouteDesc: types.RuleConfig{Options: &allowedOptions, Severity: types.SEVERITY_ERROR}})
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Not allowed route_desc should error", types.SEVERITY_ERROR)
+	})
 }

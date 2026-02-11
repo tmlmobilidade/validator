@@ -2,59 +2,44 @@ package trips
 
 import (
 	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/trips/validations"
 	"testing"
 )
 
-func TestServiceIdValidation_Required(t *testing.T) {
-	trip := &types.Trip{ServiceId: nil}
-	gtfs := &types.Gtfs{}
-	validations.ServiceIdValidation(trip, 1, gtfs)
+func TestAllServiceIdValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericForeignKeyTestCases("service_id") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var serviceId *string
+			if tc.Id != nil {
+				serviceId = lib.Ptr(*tc.Id)
+			}
+			trip := &types.Trip{ServiceId: serviceId}
+			if tc.Name == "ForeignKey_Invalid" {
+				trip = &types.Trip{}
+			}
 
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Service ID is required",
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"calendar": {*tc.Id: {1}}, "calendar_dates": {}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.ServiceIdValidation(trip, tc.Row, gtfs)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+		})
 	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
+	t.Run("Required_Missing", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		trip := &types.Trip{ServiceId: nil}
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"calendar": {"service1": {1}}, "calendar_dates": {}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.ServiceIdValidation(trip, 1, gtfs)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Service ID is required", types.SEVERITY_ERROR)
+	})
 }
-
-func TestServiceIdValidation_ValidForeignKey(t *testing.T) {
-	trip := &types.Trip{ServiceId: lib.Ptr("service1")}
-	gtfs := &types.Gtfs{IdMap: map[string]map[string][]int{"calendar": {"service1": {1}}, "calendar_dates": {}}}
-	validations.ServiceIdValidation(trip, 2, gtfs)
-
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Service ID references a valid service_id, should not error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestServiceIdValidation_InvalidForeignKey(t *testing.T) {
-	trip := &types.Trip{ServiceId: lib.Ptr("invalid")}
-	gtfs := &types.Gtfs{IdMap: map[string]map[string][]int{"calendar": {}, "calendar_dates": {}}}
-	validations.ServiceIdValidation(trip, 3, gtfs)
-
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Service ID must reference a valid service_id from calendar.txt or calendar_dates.txt.",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-} 

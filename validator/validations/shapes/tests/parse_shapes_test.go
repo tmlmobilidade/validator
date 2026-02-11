@@ -11,10 +11,10 @@ func TestParseShape_ValidInput(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 1
 	raw := types.ShapeRaw{
-		ShapeId: "SHP1",
-		ShapePtLat: "37.61956",
-		ShapePtLon: "-122.48161",
-		ShapePtSequence: "0",
+		ShapeId:           "SHP1",
+		ShapePtLat:        "37.61956",
+		ShapePtLon:        "-122.48161",
+		ShapePtSequence:   "0",
 		ShapeDistTraveled: "0.0",
 	}
 	shape := validations.ParseShape(raw, row)
@@ -40,10 +40,10 @@ func TestParseShape_InvalidFloatField(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 2
 	raw := types.ShapeRaw{
-		ShapeId: "SHP2",
-		ShapePtLat: "not_a_float",
-		ShapePtLon: "-122.48161",
-		ShapePtSequence: "1",
+		ShapeId:           "SHP2",
+		ShapePtLat:        "not_a_float",
+		ShapePtLon:        "-122.48161",
+		ShapePtSequence:   "1",
 		ShapeDistTraveled: "1.5",
 	}
 	shape := validations.ParseShape(raw, row)
@@ -60,10 +60,10 @@ func TestParseShape_InvalidIntField(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 3
 	raw := types.ShapeRaw{
-		ShapeId: "SHP3",
-		ShapePtLat: "37.61956",
-		ShapePtLon: "-122.48161",
-		ShapePtSequence: "not_an_int",
+		ShapeId:           "SHP3",
+		ShapePtLat:        "37.61956",
+		ShapePtLon:        "-122.48161",
+		ShapePtSequence:   "not_an_int",
 		ShapeDistTraveled: "2.5",
 	}
 	shape := validations.ParseShape(raw, row)
@@ -80,10 +80,10 @@ func TestParseShape_OptionalFieldsEmpty(t *testing.T) {
 	services.AppMessageService.Clear()
 	row := 4
 	raw := types.ShapeRaw{
-		ShapeId: "SHP4",
-		ShapePtLat: "37.61956",
-		ShapePtLon: "-122.48161",
-		ShapePtSequence: "2",
+		ShapeId:           "SHP4",
+		ShapePtLat:        "37.61956",
+		ShapePtLon:        "-122.48161",
+		ShapePtSequence:   "2",
 		ShapeDistTraveled: "",
 	}
 	shape := validations.ParseShape(raw, row)
@@ -103,4 +103,4 @@ func TestParseShape_OptionalFieldsEmpty(t *testing.T) {
 	if shape.ShapeDistTraveled != nil {
 		t.Errorf("Expected ShapeDistTraveled nil, got '%v'", shape.ShapeDistTraveled)
 	}
-} 
+}

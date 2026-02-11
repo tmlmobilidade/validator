@@ -69,6 +69,8 @@ func (ms *MessageService) AddMessage(message types.Message) {
 	switch message.Severity {
 	case types.SEVERITY_ERROR:
 		ms.errorCount++
+	case types.SEVERITY_FORBIDDEN:
+		ms.errorCount++
 	case types.SEVERITY_WARNING:
 		ms.warningCount++
 	}

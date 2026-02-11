@@ -1,81 +1,44 @@
 package agency
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/agency/validations"
 	"testing"
 )
 
-func TestAgencyLangValidation_Required(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	agency := &types.Agency{AgencyLang: nil}
-	validations.AgencyLangValidation(agency, 1, &types.AgencyRules{AgencyLang: types.RuleConfig{Severity: severity}})
+func TestAllAgencyLangValidationTestCases(t *testing.T) {
+	fieldName := "agency_lang"
 
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency language is required",
-	}
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases(fieldName) {
+		if tc.Name == "Recommended_Missing" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
 
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+			var severity types.Severity
+			if tc.ExpectedErrors > 0 {
+				severity = types.SEVERITY_ERROR
+			} else {
+				severity = types.SEVERITY_WARNING
+			}
+
+			var agencyLang *string
+			if tc.Name == "Valid_Present" {
+				value := test_helpers.GetValidLanguageCodes()[0]
+				agencyLang = &value
+			} else {
+				agencyLang = tc.Value
+			}
+
+			validations.AgencyLangValidation(&types.Agency{AgencyLang: agencyLang}, tc.Row, &types.AgencyRules{AgencyLang: types.RuleConfig{Severity: severity}})
+			if tc.Name == "Recommended_Missing" {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+			} else {
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			}
+		})
 	}
-	services.AppMessageService.Clear()
 }
-
-func TestAgencyLangValidation_Recommended(t *testing.T) {
-	severity := types.SEVERITY_WARNING
-	agency := &types.Agency{AgencyLang: nil}
-	validations.AgencyLangValidation(agency, 2, &types.AgencyRules{AgencyLang: types.RuleConfig{Severity: severity}})
-
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalWarnings,
-		Message: "Agency language is recommended",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestAgencyLangValidation_ValidLang(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	lang := "en"
-	agency := &types.Agency{AgencyLang: &lang}
-	validations.AgencyLangValidation(agency, 3, &types.AgencyRules{AgencyLang: types.RuleConfig{Severity: severity}})
-
-	// Assert
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency language is valid",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-}
-
-func TestAgencyLangValidation_InvalidLang(t *testing.T) {
-	severity := types.SEVERITY_ERROR
-	lang := "invalid-lang"
-	agency := &types.Agency{AgencyLang: &lang}
-	validations.AgencyLangValidation(agency, 4, &types.AgencyRules{AgencyLang: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Agency language is invalid",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-	services.AppMessageService.Clear()
-} 

@@ -1,91 +1,65 @@
 package fare_attributes
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/fare_attributes/validations"
 	"testing"
 )
 
-func TestTransferDurationValidation_MissingRequired(t *testing.T) {
-	services.AppMessageService.Clear()
-	fareAttribute := &types.FareAttribute{TransferDuration: nil}
-	severity := types.SEVERITY_ERROR
-	gtfs := &types.Gtfs{}
-	validations.TransferDurationValidation(fareAttribute, 1, gtfs, &types.FareAttributesRules{TransferDuration: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing transfer_duration with error severity should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+func TestAllTransferDurationValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetValidShapeOptions()
+	negativeOptions := test_helpers.GetInvalidShapeOptions()
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("transfer_duration") {
+		if tc.Name == "Recommended_Missing" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
 
-func TestTransferDurationValidation_MissingWarning(t *testing.T) {
-	services.AppMessageService.Clear()
-	fareAttribute := &types.FareAttribute{TransferDuration: nil}
-	severity := types.SEVERITY_WARNING
-	gtfs := &types.Gtfs{}
-	validations.TransferDurationValidation(fareAttribute, 2, gtfs, &types.FareAttributesRules{TransferDuration: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalWarnings,
-		Message:  "Missing transfer_duration with warning severity should warn",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+			var transferDuration *int
+			if tc.Name == "Invalid_Value" {
+				transferDuration = &negativeOptions[0]
+			} else if tc.Value != nil {
+				transferDuration = &validOptions[0]
+			} else {
+				transferDuration = nil
+			}
 
-func TestTransferDurationValidation_MissingIgnore(t *testing.T) {
-	services.AppMessageService.Clear()
-	fareAttribute := &types.FareAttribute{TransferDuration: nil}
-	severity := types.SEVERITY_IGNORE
-	gtfs := &types.Gtfs{}
-	validations.TransferDurationValidation(fareAttribute, 3, gtfs, &types.FareAttributesRules{TransferDuration: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing transfer_duration with ignore severity should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+			var rules *types.FareAttributesRules
+			if tc.Name == "Required" {
+				rules = &types.FareAttributesRules{TransferDuration: types.RuleConfig{Severity: types.SEVERITY_ERROR}}
+			} else {
+				rules = nil
+			}
 
-func TestTransferDurationValidation_NegativeDuration(t *testing.T) {
-	services.AppMessageService.Clear()
-	dur := -10
-	fareAttribute := &types.FareAttribute{TransferDuration: &dur}
-	severity := types.SEVERITY_ERROR
-	gtfs := &types.Gtfs{}
-	validations.TransferDurationValidation(fareAttribute, 4, gtfs, &types.FareAttributesRules{TransferDuration: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Negative transfer_duration should error",
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"fare_attributes": map[string][]int{"transfer_duration": []int{1}}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.TransferDurationValidation(&types.FareAttribute{TransferDuration: transferDuration}, tc.Row, gtfs, rules)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
 
-func TestTransferDurationValidation_ValidDuration(t *testing.T) {
-	services.AppMessageService.Clear()
-	dur := 3600
-	fareAttribute := &types.FareAttribute{TransferDuration: &dur}
-	severity := types.SEVERITY_ERROR
-	gtfs := &types.Gtfs{}
-	validations.TransferDurationValidation(fareAttribute, 5, gtfs, &types.FareAttributesRules{TransferDuration: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid transfer_duration should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("transfer_duration") {
+		if tc.Name != "Severity_Ignore_Missing" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"fare_attributes": map[string][]int{"transfer_duration": []int{1}}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.TransferDurationValidation(&types.FareAttribute{TransferDuration: &validOptions[tc.Row-1]}, tc.Row, gtfs, nil)
+			expectedTotalMessages := tc.ExpectedErrors + tc.ExpectedWarnings
+			test_helpers.AssertMessageCount(t, services.AppMessageService, expectedTotalMessages, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
 }

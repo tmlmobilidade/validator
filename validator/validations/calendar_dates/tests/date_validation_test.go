@@ -1,69 +1,31 @@
 package calendar_dates
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/calendar_dates/validations"
 	"testing"
 )
 
-func TestDateValidation_Valid(t *testing.T) {
-	services.AppMessageService.Clear()
-	row := 1
-	calendarDate := &types.CalendarDates{
-		Date:          "20240101",
-		ExceptionType: nil,
-		ServiceId:     "S1",
-	}
-
-	validations.DateValidation(calendarDate, row)
-
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid date should not error",
-	}
-
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestDateValidation_Empty(t *testing.T) {
-	services.AppMessageService.Clear()
-	row := 1
-	calendarDate := &types.CalendarDates{
-		Date:          "",
-		ExceptionType: nil,
-		ServiceId:     "S1",
-	}
-	validations.DateValidation(calendarDate, row)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Empty date should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestDateValidation_InvalidFormat(t *testing.T) {
-	services.AppMessageService.Clear()
-	row := 1
-	calendarDate := &types.CalendarDates{
-		Date:          "2024-01-01",
-		ExceptionType: nil,
-		ServiceId:     "S1",
-	}
-	validations.DateValidation(calendarDate, row)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid date format should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+func TestAllDateValidationTestCases(t *testing.T) {
+	validOptions := test_helpers.GetDateValidOptions()
+	invalidOptions := test_helpers.GetInvalidDateOptions()
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("date") {
+		if tc.Name == "Recommended_Missing" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var date string
+			if tc.Name == "Invalid_Value" {
+				date = invalidOptions[0]
+			} else if tc.Value != nil {
+				date = validOptions[0]
+			}
+			validations.DateValidation(&types.CalendarDates{Date: date}, tc.Row)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
 }

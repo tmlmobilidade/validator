@@ -1,68 +1,56 @@
 package fare_rules
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/fare_rules/validations"
 	"testing"
 )
 
-func TestRouteIdValidation_MissingRouteId(t *testing.T) {
-	services.AppMessageService.Clear()
-	fareRule := &types.FareRule{RouteId: nil}
-	gtfs := &types.Gtfs{
-		IdMap: map[string]map[string][]int{
-			"routes": {},
-		},
-	}
-	validations.RouteIdValidation(fareRule, 1, gtfs, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing route_id (optional) should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+func TestAllRouteIdValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericForeignKeyTestCases("route_id") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var routeId *string
+			if tc.Id != nil {
+				routeId = tc.Id
+			}
 
-func TestRouteIdValidation_InvalidRouteId(t *testing.T) {
-	services.AppMessageService.Clear()
-	invalidRouteId := "INVALID"
-	fareRule := &types.FareRule{RouteId: &invalidRouteId}
-	gtfs := &types.Gtfs{
-		IdMap: map[string]map[string][]int{
-			"routes": {},
-		},
-	}
-	validations.RouteIdValidation(fareRule, 2, gtfs, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Invalid route_id should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+			if tc.Name == "ForeignKey_Invalid" {
+				gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": map[string][]int{*routeId: {}}}}.ToGtfsWithDB()
+				if err != nil {
+					t.Fatalf("failed to create mock gtfs: %v", err)
+				}
+				defer cleanup()
+				validations.RouteIdValidation(&types.FareRule{RouteId: routeId}, tc.Row, gtfs, nil)
+				test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+				return
+			}
 
-func TestRouteIdValidation_ValidRouteId(t *testing.T) {
-	services.AppMessageService.Clear()
-	validRouteId := "ROUTE1"
-	fareRule := &types.FareRule{RouteId: &validRouteId}
-	gtfs := &types.Gtfs{
-		IdMap: map[string]map[string][]int{
-			"routes": {"ROUTE1": {1}},
-		},
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": map[string][]int{*routeId: {1}}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.RouteIdValidation(&types.FareRule{RouteId: routeId}, tc.Row, gtfs, nil)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+		})
 	}
-	validations.RouteIdValidation(fareRule, 3, gtfs, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid route_id should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("route_id") {
+		// skip this tests cases because they are optional and should not generate messages
+		if tc.Name != "Severity_Ignore_Missing" && tc.Name != "Severity_Forbidden_Missing" {
+			continue
+		}
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"routes": {}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.RouteIdValidation(&types.FareRule{RouteId: tc.Value.(*string)}, tc.Row, gtfs, &types.FareRulesRules{RouteId: types.RuleConfig{Severity: tc.Severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, tc.Severity)
+		})
 	}
 }

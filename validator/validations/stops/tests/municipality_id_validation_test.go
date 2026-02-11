@@ -1,63 +1,49 @@
 package stops
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/stops/validations"
 	"testing"
 )
 
-func TestMunicipalityIdValidation_MissingMunicipalityId_DefaultSeverity(t *testing.T) {
-	services.AppMessageService.Clear()
-	stop := &types.Stop{MunicipalityId: nil}
-	validations.MunicipalityIdValidation(stop, 1, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0, // Default severity is IGNORE, so should not error
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing municipality_id with default severity should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+func TestAllMunicipalityIdValidationTestCases(t *testing.T) {
+	for _, tc := range test_helpers.GetGenericRequiredFieldTestCases("municipality_id") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
 
-func TestMunicipalityIdValidation_MissingMunicipalityId_SeverityError(t *testing.T) {
-	services.AppMessageService.Clear()
-	stop := &types.Stop{MunicipalityId: nil}
-	severity := types.SEVERITY_ERROR
-	validations.MunicipalityIdValidation(stop, 2, &types.StopsRules{MunicipalityId: types.RuleConfig{Severity: severity}})
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Missing municipality_id with severity ERROR should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
+			var municipalityId *string
+			if tc.Value != nil {
+				municipalityId = tc.Value
+			}
 
-func TestMunicipalityIdValidation_MissingMunicipalityId_SeverityWarning(t *testing.T) {
-	services.AppMessageService.Clear()
-	stop := &types.Stop{MunicipalityId: nil}
-	severity := types.SEVERITY_WARNING
-	validations.MunicipalityIdValidation(stop, 3, &types.StopsRules{MunicipalityId: types.RuleConfig{Severity: severity}})
-	if services.AppMessageService.GetSummary().TotalWarnings != 1 {
-		t.Error("Missing municipality_id with severity WARNING should warn")
+			stop := &types.Stop{MunicipalityId: municipalityId}
+			var severity types.Severity
+			if tc.ExpectedWarnings > 0 {
+				severity = types.SEVERITY_WARNING
+			} else {
+				severity = types.SEVERITY_ERROR
+			}
+			validations.MunicipalityIdValidation(stop, tc.Row, &types.StopsRules{MunicipalityId: types.RuleConfig{Severity: severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
-}
+	for _, tc := range test_helpers.GetGenericSeverityTestCases("municipality_id") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			stop := &types.Stop{}
+			validations.MunicipalityIdValidation(stop, tc.Row, &types.StopsRules{MunicipalityId: types.RuleConfig{Severity: tc.Severity}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
+	}
 
-func TestMunicipalityIdValidation_ValidInput(t *testing.T) {
-	services.AppMessageService.Clear()
-	id := "MUN123"
-	stop := &types.Stop{MunicipalityId: &id}
-	validations.MunicipalityIdValidation(stop, 4, nil)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual:   services.AppMessageService.GetSummary().TotalErrors,
-		Message:  "Valid municipality_id should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
+	t.Run("DefaultSeverity", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		stop := &types.Stop{}
+		validations.MunicipalityIdValidation(stop, 1, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "DefaultSeverity", types.SEVERITY_ERROR)
+	})
 }

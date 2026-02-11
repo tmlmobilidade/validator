@@ -1,68 +1,28 @@
 package fare_attributes
 
 import (
-	"main/lib"
+	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
 	validations "main/validations/fare_attributes/validations"
 	"testing"
 )
 
-func TestPaymentMethodValidation_MissingPaymentMethod(t *testing.T) {
-	services.AppMessageService.Clear()
-	fareAttribute := &types.FareAttribute{PaymentMethod: nil}
-	validations.PaymentMethodValidation(fareAttribute, 1)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Missing payment_method should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestPaymentMethodValidation_InvalidPaymentMethod(t *testing.T) {
-	services.AppMessageService.Clear()
-	invalid := 2
-	fareAttribute := &types.FareAttribute{PaymentMethod: &invalid}
-	validations.PaymentMethodValidation(fareAttribute, 2)
-	assertion := lib.AssertionMessage{
-		Expected: 1,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Invalid payment_method should error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
+func TestAllPaymentMethodValidationTestCases(t *testing.T) {
+	validOptions := []int{0, 1}
+	for _, tc := range test_helpers.GetGenericEnumIntTestCases("payment_method", validOptions) {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			var paymentMethod *int
+			if tc.Value != nil {
+				if ptr, ok := tc.Value.(*int); ok {
+					paymentMethod = ptr
+				}
+			}
+			fareAttribute := &types.FareAttribute{PaymentMethod: paymentMethod}
+			validations.PaymentMethodValidation(fareAttribute, tc.Row)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
+		})
 	}
 }
-
-func TestPaymentMethodValidation_ValidPaymentMethod0(t *testing.T) {
-	services.AppMessageService.Clear()
-	pm := 0
-	fareAttribute := &types.FareAttribute{PaymentMethod: &pm}
-	validations.PaymentMethodValidation(fareAttribute, 3)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid payment_method 0 should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-}
-
-func TestPaymentMethodValidation_ValidPaymentMethod1(t *testing.T) {
-	services.AppMessageService.Clear()
-	pm := 1
-	fareAttribute := &types.FareAttribute{PaymentMethod: &pm}
-	validations.PaymentMethodValidation(fareAttribute, 4)
-	assertion := lib.AssertionMessage{
-		Expected: 0,
-		Actual: services.AppMessageService.GetSummary().TotalErrors,
-		Message: "Valid payment_method 1 should not error",
-	}
-	if assert := lib.Assert(assertion); assert != "" {
-		t.Error(assert)
-	}
-} 
