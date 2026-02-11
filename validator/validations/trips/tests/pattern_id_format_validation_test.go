@@ -12,7 +12,7 @@ import (
 func TestAllPatternIdFormatValidationTestCases(t *testing.T) {
 	t.Run("Valid Pattern ID", func(t *testing.T) {
 		services.AppMessageService.Clear()
-		trip := &types.Trip{PatternId: lib.Ptr("1001_0_1")}
+		trip := &types.Trip{PatternId: lib.Ptr("1001_0_6")}
 		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"trips": {"1001_0_1": []int{1}}}}.ToGtfsWithDB()
 		if err != nil {
 			t.Fatalf("failed to create mock gtfs: %v", err)
