@@ -1,7 +1,7 @@
 package fare_media
 
 import (
-	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 	"slices"
@@ -29,39 +29,33 @@ The type of fare media. Valid options are:
 [fare_media.txt]: https://gtfs.org/schedule/reference/#fare_mediatxt
 */
 
-func FareTypeValidation(fareMedia *types.FareMedia, row int, rules *types.FareMediaRules) {
-	addMessage := func(msg string) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "fare_type",
-			FileName:     "fare_media.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "fare_type_validation",
-		})
+func FareMediaTypeValidation(fareMedia *types.FareMedia, row int, rules *types.FareMediaRules) {
+	ctx := lib.NewValidationContext("fare_media_type", "fare_media.txt", "fare_media_type_validation", row, services.AppMessageService)
+	if rules != nil && rules.FareMediaType.Severity != "" {
+		ctx.WithSeverity(rules.FareMediaType.Severity)
 	}
 
 	// Validate presence
 	if fareMedia.FareMediaType == nil || strconv.Itoa(*fareMedia.FareMediaType) == "" {
-		addMessage(i18n.AppTranslator.Get("fare_type_validation.required"))
+		ctx.AddError(ctx.GetTranslatedMessage("fare_media_type_validation.required"))
 		return
 	}
 
 	validTypeOptions := []string{"0", "1", "2", "3", "4"}
 	// Validate that fareMedia.FareMediaType is in the valid options
 	if !slices.Contains(validTypeOptions, strconv.Itoa(*fareMedia.FareMediaType)) {
-		addMessage(i18n.AppTranslator.Get("fare_type_validation.invalid", fareMedia.FareMediaType))
+		ctx.AddError(ctx.GetTranslatedMessage("fare_media_type_validation.invalid", fareMedia.FareMediaType))
 		return
 	}
 
 	// Validate Rule Options
-	if rules != nil && rules.FareType.Options != nil {
-		if slices.Contains(*rules.FareType.Options, types.ALL_OPTIONS) {
+	if rules != nil && rules.FareMediaType.Options != nil {
+		if slices.Contains(*rules.FareMediaType.Options, types.ALL_OPTIONS) {
 			return
 		}
 
-		if !slices.Contains(*rules.FareType.Options, strconv.Itoa(*fareMedia.FareMediaType)) {
-			addMessage(i18n.AppTranslator.Get("fare_type_validation.not_allowed", fareMedia.FareMediaType))
+		if !slices.Contains(*rules.FareMediaType.Options, strconv.Itoa(*fareMedia.FareMediaType)) {
+			ctx.AddError(ctx.GetTranslatedMessage("fare_media_type_validation.not_allowed", fareMedia.FareMediaType))
 			return
 		}
 	}

@@ -1,7 +1,7 @@
 package fare_media
 
 import (
-	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 	"strconv"
@@ -24,23 +24,18 @@ For fare media which are transit cards (fare_media_type =2) or mobile apps (fare
 [fare_media.txt]: https://gtfs.org/schedule/reference/#fare_mediatxt
 */
 
-func FareNameValidation(fareMedia *types.FareMedia, row int, rules *types.FareMediaRules) {
-	addMessage := func(msg string) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "fare_name",
-			FileName:     "fare_media.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_WARNING,
-			ValidationID: "fare_name_validation",
-		})
+func FareMediaNameValidation(fareMedia *types.FareMedia, row int, rules *types.FareMediaRules) {
+	ctx := lib.NewValidationContext("fare_media_name", "fare_media.txt", "fare_media_name_validation", row, services.AppMessageService)
+	if rules != nil && rules.FareMediaName.Severity != "" {
+		ctx.WithSeverity(rules.FareMediaName.Severity)
 	}
 
 	// Validate that fareMedia.FareMediaType is 2 (transit cards) or 4 (mobile apps)
 	if fareMedia.FareMediaType != nil && (strconv.Itoa(*fareMedia.FareMediaType) == "2" || strconv.Itoa(*fareMedia.FareMediaType) == "4") {
 		if fareMedia.FareMediaName == nil || *fareMedia.FareMediaName == "" {
-			addMessage(i18n.AppTranslator.Get("fare_name_validation.warning"))
+			ctx.AddWarning(ctx.GetTranslatedMessage("fare_media_name_validation.warning"))
 			return
 		}
+		return
 	}
 }

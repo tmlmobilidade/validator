@@ -661,5 +661,17 @@
         "invalid_direction_id": "Field \"direction_id\" must be an integer between 0 and 1, received: %s",
         "not_matching": "Field \"direction_id\" \"%s\" does not match the pattern_id \"%s\"",
         "required": "Fields \"pattern_id\" and \"direction_id\" are required to validate the match"
+    },
+    "fare_media_id_validation": {
+        "required": "Field \"fare_media_id\" is required",
+        "duplicate": "Duplicate field \"fare_media_id\" \"%s\" found. Field \"fare_media_id\" must be unique"
+    },
+    "fare_media_name_validation": {
+        "warning": "Field \"fare_media_name\" is recommended for fare media type 2 (transit cards) or 4 (mobile apps)"
+    },
+    "fare_media_type_validation": {
+        "required": "Field \"fare_media_type\" is required",
+        "invalid": "Field \"fare_media_type\" must be 0, 1, 2, 3, or 4",
+        "not_allowed": "Field \"fare_media_type\" \"%s\" is not allowed"
     }
 }

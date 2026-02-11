@@ -843,6 +843,14 @@ func (g *Gtfs) GetCalendarDate(rowIndex int) (CalendarDatesRaw, error) {
 	return convertRowToStruct[CalendarDatesRaw](row), nil
 }
 
+// IterateFareMedia iterates over all fare media, calling fn for each
+func (g *Gtfs) IterateFareMedia(fn func(int, FareMediaRaw) error) error {
+	return g.iterateTable("fare_media", func(rowIndex int, row map[string]string) error {
+		fareMediaRaw := convertRowToStruct[FareMediaRaw](row)
+		return fn(rowIndex, fareMediaRaw)
+	})
+}
+
 // IterateFareRules iterates over all fare rules, calling fn for each
 func (g *Gtfs) IterateFareRules(fn func(int, FareRuleRaw) error) error {
 	return g.iterateTable("fare_rules", func(rowIndex int, row map[string]string) error {
