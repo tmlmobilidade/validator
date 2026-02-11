@@ -101,7 +101,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		validations.DirectionPatternIdMatchValidation(&trip, i, &gtfs, tripRules)
 
 		// Validate trip_id_limit_characters
-		validations.TripIdLimitCharactersValidation(&trip, i, tripRules)
+		validations.TripIdLimitCharactersValidation(&trip, i, &gtfs, tripRules)
 
 		return nil
 	})
