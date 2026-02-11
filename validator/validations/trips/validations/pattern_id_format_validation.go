@@ -4,7 +4,6 @@ import (
 	"main/lib"
 	"main/services"
 	"main/types"
-	"strconv"
 	"strings"
 )
 
@@ -37,13 +36,7 @@ func PatternIdFormatValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rule
 
 	Parts1Valid := len(patternIdParts[0]) <= 4 && len(patternIdParts[0]) >= 1
 	Parts2Valid := len(patternIdParts[1]) == 1
-
-	Parts3Valid := false
-	if len(patternIdParts[2]) == 1 {
-		if n, err := strconv.Atoi(patternIdParts[2]); err == nil && (n == 1 || n == 2 || n == 3) {
-			Parts3Valid = true
-		}
-	}
+	Parts3Valid := len(patternIdParts[2]) == 1 && (patternIdParts[2] == "1" || patternIdParts[2] == "2" || patternIdParts[2] == "3")
 
 	if !Parts1Valid || !Parts2Valid || !Parts3Valid {
 		ctx.AddError(ctx.GetTranslatedMessage("pattern_id_format_validation.invalid"))
