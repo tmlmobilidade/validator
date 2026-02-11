@@ -46,7 +46,7 @@
     "agency_name_id_match_validation": {
         "forbidden": "Field \"agency_id\" and forbidden",
         "required": "Field \"agency_id\" and field \"agency_name\" are required",
-        "no_match": "Field \"agency_id\" \"%s\" does not match field \"agency_name\" \"%s\""
+        "no_match": "Field \"agency_id\" \"%s\" does not match field \"agency_name\" \"%s\". The expected name is \"%s\""
     },
     "agency_name_validation": {
         "forbidden": "Field \"agency_name\" is forbidden",
