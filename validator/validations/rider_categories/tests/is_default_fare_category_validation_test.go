@@ -1,6 +1,7 @@
 package rider_categories_test
 
 import (
+	"main/lib"
 	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
@@ -23,4 +24,9 @@ func TestAllIsDefaultFareCategoryValidationTests(t *testing.T) {
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
+	t.Run("Invalid_Value", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		validations.IsDefaultFareCategoryValidation(&types.RiderCategory{IsDefaultFareCategory: lib.Ptr(2)}, 1, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Invalid_Value", types.SEVERITY_ERROR)
+	})
 }
