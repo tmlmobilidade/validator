@@ -1,7 +1,7 @@
 package rider_categories
 
 import (
-	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 )
@@ -21,25 +21,15 @@ Rider category name as displayed to the rider.
 [rider_categories.txt]: https://gtfs.org/schedule/reference/#rider_categoriestxt
 */
 
-func RiderCategoryNameValidation(riderCategory *types.RiderCategory, row int, gtfs *types.Gtfs, rules *types.RiderCategory) {
-	addMessage := func(msg string) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "rider_category_name",
-			FileName:     "rider_categories.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_WARNING,
-			ValidationID: "rider_category_name_validation",
-		})
+func RiderCategoryNameValidation(riderCategory *types.RiderCategory, row int, rules *types.RiderCategoriesRules) {
+	ctx := lib.NewValidationContext("rider_category_name", "rider_categories.txt", "rider_category_name_validation", row, services.AppMessageService)
+	if rules != nil && rules.RiderCategoryName.Severity != "" {
+		ctx.WithSeverity(rules.RiderCategoryName.Severity)
 	}
 
-	if riderCategory.RiderCategoryName == nil || *riderCategory.RiderCategoryName == "" {
-		addMessage(i18n.AppTranslator.Get("rider_category_name_validation.required"))
+	// Validate presence
+	if riderCategory.RiderCategoryName == nil {
+		ctx.AddError(ctx.GetTranslatedMessage("rider_category_name_validation.required"))
 		return
-	}
-
-	// Rules validation can be added here if needed
-	if rules != nil {
-		// Rules validation logic can be implemented here
 	}
 }

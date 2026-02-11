@@ -1,7 +1,7 @@
 package rider_categories
 
 import (
-	"main/i18n"
+	"main/lib"
 	"main/services"
 	"main/types"
 	"slices"
@@ -29,27 +29,24 @@ When multiple rider categories are eligible for a single fare product specified 
 [rider_categories.txt]: https://gtfs.org/schedule/reference/#rider_categoriestxt
 */
 
-func IsDefaultFareCategoryValidation(riderCategory *types.RiderCategory, row int, gtfs *types.Gtfs, rules *types.RiderCategory) {
-	addMessage := func(msg string) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "is_default_fare_category",
-			FileName:     "rider_categories.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "is_default_fare_category_validation",
-		})
+func IsDefaultFareCategoryValidation(riderCategory *types.RiderCategory, row int, rules *types.RiderCategoriesRules) {
+	ctx := lib.NewValidationContext("is_default_fare_category", "rider_categories.txt", "is_default_fare_category_validation", row, services.AppMessageService)
+	if rules != nil && rules.IsDefaultFareCategory.Severity != "" {
+		ctx.WithSeverity(rules.IsDefaultFareCategory.Severity)
+	} else {
+		ctx.WithSeverity(types.SEVERITY_WARNING)
 	}
 
 	// Validate presence
 	if riderCategory.IsDefaultFareCategory == nil {
+		ctx.AddError(ctx.GetTranslatedMessage("is_default_fare_category_validation.required"))
 		return
 	}
 
 	// Validate enum
 	validOptions := []int{0, 1}
 	if !slices.Contains(validOptions, *riderCategory.IsDefaultFareCategory) {
-		addMessage(i18n.AppTranslator.Get("is_default_fare_category_validation.invalid"))
+		ctx.AddError(ctx.GetTranslatedMessage("is_default_fare_category_validation.invalid"))
 		return
 	}
 }

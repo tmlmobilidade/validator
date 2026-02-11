@@ -1,7 +1,6 @@
 package rider_categories
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -22,27 +21,21 @@ Identifies a rider category.
 [rider_categories.txt]: https://gtfs.org/schedule/reference/#rider_categoriestxt
 */
 
-func RiderCategoryIdValidation(riderCategory *types.RiderCategory, row int, gtfs *types.Gtfs, rules *types.RiderCategory) {
-	addMessage := func(msg string) {
-		services.AppMessageService.AddMessage(types.Message{
-			Field:        "rider_category_id",
-			FileName:     "rider_categories.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "rider_category_id_validation",
-		})
+func RiderCategoryIdValidation(riderCategory *types.RiderCategory, row int, gtfs *types.Gtfs, rules *types.RiderCategoriesRules) {
+	ctx := lib.NewValidationContext("rider_category_id", "rider_categories.txt", "rider_category_id_validation", row, services.AppMessageService)
+	if rules != nil && rules.RiderCategoryId.Severity != "" {
+		ctx.WithSeverity(rules.RiderCategoryId.Severity)
 	}
 
 	// Validate presence
-	if riderCategory.RiderCategoryId == nil || *riderCategory.RiderCategoryId == "" {
-		addMessage(i18n.AppTranslator.Get("rider_category_id_validation.required"))
+	if riderCategory.RiderCategoryId == nil {
+		ctx.AddError(ctx.GetTranslatedMessage("rider_category_id_validation.required"))
 		return
 	}
 
-	// Validate foreign key
-	if gtfs != nil && !lib.GtfsIdMapKeyExists(gtfs, "rider_categories", *riderCategory.RiderCategoryId) {
-		addMessage(i18n.AppTranslator.Get("rider_category_id_validation.invalid"))
+	rows, err := gtfs.GetRowsById("rider_categories", *riderCategory.RiderCategoryId)
+	if err == nil && len(rows) > 1 {
+		ctx.AddError(ctx.GetTranslatedMessage("rider_category_id_validation.duplicate", map[string]interface{}{"rider_category_id": *riderCategory.RiderCategoryId}))
 		return
 	}
 

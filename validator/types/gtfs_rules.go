@@ -194,8 +194,8 @@ type FareRulesRules struct {
 }
 
 type FareMediaRules struct {
-	File 	 Severity   `json:"_file"`
-	FareId	 RuleConfig `json:"fare_id"`
+	File     Severity   `json:"_file"`
+	FareId   RuleConfig `json:"fare_id"`
 	FareName RuleConfig `json:"fare_Name"`
 	FareType RuleConfig `json:"fare_type"`
 }
@@ -290,23 +290,32 @@ type AttributionsRules struct {
 	AttributionPhone RuleConfig `json:"attribution_phone"`
 }
 
+type RiderCategoriesRules struct {
+	File                  Severity   `json:"_file"`
+	RiderCategoryId       RuleConfig `json:"rider_category_id"`
+	RiderCategoryName     RuleConfig `json:"rider_category_name"`
+	IsDefaultFareCategory RuleConfig `json:"is_default_fare_category"`
+	EligibilityUrl        RuleConfig `json:"eligibility_url"`
+}
+
 type GtfsRules struct {
-	Agency         AgencyRules         `json:"agency"`
-	Stops          StopsRules          `json:"stops"`
-	Routes         RoutesRules         `json:"routes"`
-	Trips          TripsRules          `json:"trips"`
-	StopTimes      StopTimesRules      `json:"stop_times"`
-	Calendar       CalendarRules       `json:"calendar"`
-	CalendarDates  CalendarDatesRules  `json:"calendar_dates"`
-	Vehicles       VehiclesRules       `json:"vehicles"`
-	FareAttributes FareAttributesRules `json:"fare_attributes"`
-	FareRules      FareRulesRules      `json:"fare_rules"`
-	Shapes         ShapesRules         `json:"shapes"`
-	Frequencies    FrequenciesRules    `json:"frequencies"`
-	Transfers      TransfersRules      `json:"transfers"`
-	Pathways       PathwaysRules       `json:"pathways"`
-	Levels         LevelsRules         `json:"levels"`
-	FeedInfo       FeedInfoRules       `json:"feed_info"`
-	Translations   TranslationsRules   `json:"translations"`
-	Attributions   AttributionsRules   `json:"attributions"`
+	Agency          AgencyRules          `json:"agency"`
+	RiderCategories RiderCategoriesRules `json:"rider_categories"`
+	Stops           StopsRules           `json:"stops"`
+	Routes          RoutesRules          `json:"routes"`
+	Trips           TripsRules           `json:"trips"`
+	StopTimes       StopTimesRules       `json:"stop_times"`
+	Calendar        CalendarRules        `json:"calendar"`
+	CalendarDates   CalendarDatesRules   `json:"calendar_dates"`
+	Vehicles        VehiclesRules        `json:"vehicles"`
+	FareAttributes  FareAttributesRules  `json:"fare_attributes"`
+	FareRules       FareRulesRules       `json:"fare_rules"`
+	Shapes          ShapesRules          `json:"shapes"`
+	Frequencies     FrequenciesRules     `json:"frequencies"`
+	Transfers       TransfersRules       `json:"transfers"`
+	Pathways        PathwaysRules        `json:"pathways"`
+	Levels          LevelsRules          `json:"levels"`
+	FeedInfo        FeedInfoRules        `json:"feed_info"`
+	Translations    TranslationsRules    `json:"translations"`
+	Attributions    AttributionsRules    `json:"attributions"`
 }
