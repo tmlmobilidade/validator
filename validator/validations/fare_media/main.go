@@ -37,7 +37,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		validations.FareMediaIdValidation(&fareMedia, i, &gtfs, fareMediaRules)
 
 		// Validate fare_media_name
-		validations.FareMediaNameValidation(&fareMedia, i, fareMediaRules)
+		validations.FareMediaNameValidation(&fareMedia, i, &gtfs, fareMediaRules)
 
 		// Validate fare_media_type
 		validations.FareMediaTypeValidation(&fareMedia, i, &gtfs, fareMediaRules)

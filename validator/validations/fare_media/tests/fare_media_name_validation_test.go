@@ -18,7 +18,13 @@ func TestAllGenericOptionsForFareMediaName(t *testing.T) {
 			FareMediaType: lib.Ptr(2),
 			FareMediaName: nil,
 		}
-		validations.FareMediaNameValidation(fareMedia, row, nil)
+
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"fare_media": map[string][]int{"FM5": {1}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.FareMediaNameValidation(fareMedia, row, gtfs, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Warning_Recommended_Missing", types.SEVERITY_WARNING)
 	})
 	t.Run("Empty_Name", func(t *testing.T) {
@@ -29,7 +35,12 @@ func TestAllGenericOptionsForFareMediaName(t *testing.T) {
 			FareMediaType: lib.Ptr(2),
 			FareMediaName: lib.Ptr(""),
 		}
-		validations.FareMediaNameValidation(fareMedia, row, nil)
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"fare_media": map[string][]int{"FM5": {1}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.FareMediaNameValidation(fareMedia, row, gtfs, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Empty_Name", types.SEVERITY_WARNING)
 	})
 	t.Run("Invalid_Type", func(t *testing.T) {
@@ -37,11 +48,16 @@ func TestAllGenericOptionsForFareMediaName(t *testing.T) {
 		row := 1
 		fareMedia := &types.FareMedia{
 			FareMediaId:   lib.Ptr("FM5"),
-			FareMediaType: lib.Ptr(5),
-			FareMediaName: lib.Ptr("Invalid Type"),
+			FareMediaType: lib.Ptr(4),
+			FareMediaName: nil,
 		}
-		validations.FareMediaNameValidation(fareMedia, row, nil)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Invalid_Type", types.SEVERITY_WARNING)
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"fare_media": map[string][]int{"FM5": {1}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.FareMediaNameValidation(fareMedia, row, gtfs, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Invalid_Type", types.SEVERITY_WARNING)
 	})
 	t.Run("Valid_Type", func(t *testing.T) {
 		services.AppMessageService.Clear()
@@ -51,7 +67,12 @@ func TestAllGenericOptionsForFareMediaName(t *testing.T) {
 			FareMediaType: lib.Ptr(2),
 			FareMediaName: lib.Ptr("Valid Type"),
 		}
-		validations.FareMediaNameValidation(fareMedia, row, nil)
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"fare_media": map[string][]int{"FM5": {1}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+		validations.FareMediaNameValidation(fareMedia, row, gtfs, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Valid_Type", types.SEVERITY_WARNING)
 	})
 }

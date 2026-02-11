@@ -24,7 +24,7 @@ For fare media which are transit cards (fare_media_type =2) or mobile apps (fare
 [fare_media.txt]: https://gtfs.org/schedule/reference/#fare_mediatxt
 */
 
-func FareMediaNameValidation(fareMedia *types.FareMedia, row int, rules *types.FareMediaRules) {
+func FareMediaNameValidation(fareMedia *types.FareMedia, row int, gtfs *types.Gtfs, rules *types.FareMediaRules) {
 	ctx := lib.NewValidationContext("fare_media_name", "fare_media.txt", "fare_media_name_validation", row, services.AppMessageService)
 	if rules != nil && rules.FareMediaName.Severity != "" {
 		ctx.WithSeverity(rules.FareMediaName.Severity)
