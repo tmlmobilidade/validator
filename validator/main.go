@@ -25,6 +25,7 @@ import (
 	_ "main/validations/fare_attributes"
 	_ "main/validations/fare_leg_join_rules"
 	_ "main/validations/fare_leg_rules"
+	_ "main/validations/fare_media"
 	_ "main/validations/fare_products"
 	_ "main/validations/fare_rules"
 	_ "main/validations/fare_transfer_rules"
