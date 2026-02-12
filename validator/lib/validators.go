@@ -147,21 +147,16 @@ func ValidateTime(t string) bool {
 	return true
 }
 
+var plateRegex = regexp.MustCompile(`^(?:[A-Z]{2}-\d{2}-[A-Z]{2}|\d{2}-[A-Z]{2}-\d{2})$`)
+
 func ValidateLicensePlate(licensePlate string) bool {
 	licensePlate = strings.ToUpper(licensePlate)
 
-	pattern := `^(?:[A-Z]{2}-\d{2}-[A-Z]{2}|\d{2}-[A-Z]{2}-\d{2})$`
-
-	if !regexp.MustCompile(pattern).MatchString(licensePlate) {
+	if len(licensePlate) != 8 {
 		return false
 	}
 
-	splits := strings.Split(licensePlate, "-")
-	if len(splits) != 3 {
-		return false
-	}
-
-	return true
+	return plateRegex.MatchString(licensePlate)
 }
 
 // KeyExists checks if a given key exists in a map.
