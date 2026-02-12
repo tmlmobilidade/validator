@@ -480,10 +480,6 @@ func GetHasTariffsInformationValidOptions() []int {
 	return []int{0, 1}
 }
 
-// ===============================================
-// TEST NUMBERS VALUE GENERATORS
-// ===============================================
-
 // GetValidShapeOptions returns valid shape_pt_sequence values
 func GetValidShapeOptions() []int {
 	return []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
@@ -491,6 +487,20 @@ func GetValidShapeOptions() []int {
 
 // GetInvalidShapeOptions returns invalid shape_pt_sequence values
 func GetInvalidShapeOptions() []int {
+	return []int{-1, -2, -3, -4, -5, -6, -7, -8, -9, -10}
+}
+
+// ===============================================
+// TEST NUMBERS VALUE GENERATORS
+// ===============================================
+
+// GetValidIntOptions returns valid int values
+func GetValidIntOptions() []int {
+	return []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+}
+
+// GetInvalidIntOptions returns invalid int values
+func GetInvalidIntOptions() []int {
 	return []int{-1, -2, -3, -4, -5, -6, -7, -8, -9, -10}
 }
 
