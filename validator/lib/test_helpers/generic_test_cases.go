@@ -610,6 +610,16 @@ func GetEmissionValidOptions() []int {
 	return []int{1, 2, 3, 4, 5, 6}
 }
 
+// GetClimatizationValidOptions returns valid climatization values
+func GetClimatizationValidOptions() []int {
+	return []int{0, 1}
+}
+
+// GetWheelchairValidOptions returns valid wheelchair values
+func GetWheelchairValidOptions() []int {
+	return []int{0, 1}
+}
+
 // ===============================================
 // TEST NUMBERS VALUE GENERATORS
 // ===============================================

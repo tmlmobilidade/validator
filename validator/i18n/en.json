@@ -699,5 +699,17 @@
     "propulsion_validation": {
         "required": "Field \"propulsion\" is required",
         "invalid": "Field \"propulsion\" \"%s\" is not a valid propulsion type"
+    },
+    "emission_validation": {
+        "required": "Field \"emission\" is required",
+        "invalid": "Field \"emission\" \"%s\" is not a valid emission type"
+    },
+    "climatization_validation": {
+        "required": "Field \"climatization\" is required",
+        "invalid": "Field \"climatization\" \"%s\" is not a valid climatization type"
+    },
+    "wheelchair_validation": {
+        "required": "Field \"wheelchair\" is required",
+        "invalid": "Field \"wheelchair\" \"%s\" is not a valid wheelchair type"
     }
 }

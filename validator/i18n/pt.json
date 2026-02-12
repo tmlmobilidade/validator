@@ -700,5 +700,17 @@
     "propulsion_validation": {
         "required": "O campo \"propulsion\" é obrigatório",
         "invalid": "O campo \"propulsion\" \"%s\" não é um tipo de propulsão válido"
+    },
+    "emission_validation": {
+        "required": "O campo \"emission\" é obrigatório",
+        "invalid": "O campo \"emission\" \"%s\" não é um tipo de emissão válido"
+    },
+    "climatization_validation": {
+        "required": "O campo \"climatization\" é obrigatório",
+        "invalid": "O campo \"climatization\" \"%s\" não é um tipo de climatização válido"
+    },
+    "wheelchair_validation": {
+        "required": "O campo \"wheelchair\" é obrigatório",
+        "invalid": "O campo \"wheelchair\" \"%s\" não é um tipo de wheelchair válido"
     }
 }
