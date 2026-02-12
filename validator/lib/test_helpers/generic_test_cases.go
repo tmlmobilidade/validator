@@ -685,6 +685,11 @@ func GetPassengerCountingValidOptions() []int {
 	return []int{0, 1}
 }
 
+// GetVideoSurveillanceValidOptions returns valid video_surveillance values
+func GetVideoSurveillanceValidOptions() []int {
+	return []int{0, 1}
+}
+
 // ===============================================
 // TEST NUMBERS VALUE GENERATORS
 // ===============================================

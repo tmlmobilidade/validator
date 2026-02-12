@@ -763,5 +763,9 @@
     "passenger_counting_validation": {
         "required": "Field \"passenger_counting\" is required",
         "invalid": "Field \"passenger_counting\" \"%s\" is not a valid passenger_counting type"
+    },
+    "video_surveillance_validation": {
+        "required": "Field \"video_surveillance\" is required",
+        "invalid": "Field \"video_surveillance\" \"%s\" is not a valid video_surveillance type"
     }
 }
