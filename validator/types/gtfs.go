@@ -453,25 +453,25 @@ type Vehicle struct {
 	RegistrationDate  string  `json:"registration_date"`
 	AvailableSeats    *int    `json:"available_seats"`
 	AvailableStanding *int    `json:"available_standing"`
-	Typology          string  `json:"typology"`
-	Propulsion        string  `json:"propulsion"`
-	Emission          string  `json:"emission"`
-	Climatization     string  `json:"climatization"`
-	Wheelchair        string  `json:"wheelchair"`
-	LoweredFloor      string  `json:"lowered_floor"`
-	Ramp              string  `json:"ramp"`
-	Kneeling          string  `json:"kneeling"`
-	StaticInformation string  `json:"static_information"`
-	OnboardMonitor    string  `json:"onboard_monitor"`
-	FrontDisplay      string  `json:"front_display"`
-	RearDisplay       string  `json:"rear_display"`
-	SideDisplay       string  `json:"side_display"`
-	InternalSound     string  `json:"internal_sound"`
-	ExternalSound     string  `json:"external_sound"`
-	ConsumptionMeter  string  `json:"consumption_meter"`
-	Bicycles          string  `json:"bicycles"`
-	PassengerCounting string  `json:"passenger_counting"`
-	VideoSurveillance string  `json:"video_surveillance"`
+	Typology          *string `json:"typology"`
+	Propulsion        *string `json:"propulsion"`
+	Emission          *string `json:"emission"`
+	Climatization     *string `json:"climatization"`
+	Wheelchair        *string `json:"wheelchair"`
+	LoweredFloor      *string `json:"lowered_floor"`
+	Ramp              *string `json:"ramp"`
+	Kneeling          *string `json:"kneeling"`
+	StaticInformation *string `json:"static_information"`
+	OnboardMonitor    *string `json:"onboard_monitor"`
+	FrontDisplay      *string `json:"front_display"`
+	RearDisplay       *string `json:"rear_display"`
+	SideDisplay       *string `json:"side_display"`
+	InternalSound     *string `json:"internal_sound"`
+	ExternalSound     *string `json:"external_sound"`
+	ConsumptionMeter  *string `json:"consumption_meter"`
+	Bicycles          *string `json:"bicycles"`
+	PassengerCounting *string `json:"passenger_counting"`
+	VideoSurveillance *string `json:"video_surveillance"`
 }
 
 /* PERIOD */
