@@ -680,6 +680,11 @@ func GetBicyclesValidOptions() []int {
 	return []int{0, 1}
 }
 
+// GetPassengerCountingValidOptions returns valid passenger_counting values
+func GetPassengerCountingValidOptions() []int {
+	return []int{0, 1}
+}
+
 // ===============================================
 // TEST NUMBERS VALUE GENERATORS
 // ===============================================

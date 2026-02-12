@@ -760,5 +760,9 @@
     "bicycles_validation": {
         "required": "O campo \"bicycles\" é obrigatório",
         "invalid": "O campo \"bicycles\" \"%s\" não é um tipo de bicycles válido"
+    },
+    "passenger_counting_validation": {
+        "required": "O campo \"passenger_counting\" é obrigatório",
+        "invalid": "O campo \"passenger_counting\" \"%s\" não é um tipo de passenger_counting válido"
     }
 }

@@ -759,5 +759,9 @@
     "bicycles_validation": {
         "required": "Field \"bicycles\" is required",
         "invalid": "Field \"bicycles\" \"%s\" is not a valid bicycles type"
+    },
+    "passenger_counting_validation": {
+        "required": "Field \"passenger_counting\" is required",
+        "invalid": "Field \"passenger_counting\" \"%s\" is not a valid passenger_counting type"
     }
 }
