@@ -728,5 +728,9 @@
     "static_information_validation": {
         "required": "O campo \"static_information\" é obrigatório",
         "invalid": "O campo \"static_information\" \"%s\" não é um tipo de static_information válido"
+    },
+    "onboard_monitor_validation": {
+        "required": "O campo \"onboard_monitor\" é obrigatório",
+        "invalid": "O campo \"onboard_monitor\" \"%s\" não é um tipo de onboard_monitor válido"
     }
 }

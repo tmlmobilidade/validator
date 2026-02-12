@@ -640,6 +640,11 @@ func GetStaticInformationValidOptions() []int {
 	return []int{0, 1}
 }
 
+// GetOnboardMonitorValidOptions returns valid onboard_monitor values
+func GetOnboardMonitorValidOptions() []int {
+	return []int{0, 1}
+}
+
 // ===============================================
 // TEST NUMBERS VALUE GENERATORS
 // ===============================================

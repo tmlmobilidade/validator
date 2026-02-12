@@ -727,5 +727,9 @@
     "static_information_validation": {
         "required": "Field \"static_information\" is required",
         "invalid": "Field \"static_information\" \"%s\" is not a valid static_information type"
+    },
+    "onboard_monitor_validation": {
+        "required": "Field \"onboard_monitor\" is required",
+        "invalid": "Field \"onboard_monitor\" \"%s\" is not a valid onboard_monitor type"
     }
 }
