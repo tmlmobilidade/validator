@@ -660,6 +660,11 @@ func GetSideDisplayValidOptions() []int {
 	return []int{0, 1}
 }
 
+// GetInternalSoundValidOptions returns valid internal_sound values
+func GetInternalSoundValidOptions() []int {
+	return []int{0, 1}
+}
+
 // ===============================================
 // TEST NUMBERS VALUE GENERATORS
 // ===============================================

@@ -744,5 +744,9 @@
     "side_display_validation": {
         "required": "O campo \"side_display\" é obrigatório",
         "invalid": "O campo \"side_display\" \"%s\" não é um tipo de side_display válido"
+    },
+    "internal_sound_validation": {
+        "required": "O campo \"internal_sound\" é obrigatório",
+        "invalid": "O campo \"internal_sound\" \"%s\" não é um tipo de internal_sound válido"
     }
 }
