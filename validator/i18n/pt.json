@@ -752,5 +752,9 @@
     "external_sound_validation": {
         "required": "O campo \"external_sound\" é obrigatório",
         "invalid": "O campo \"external_sound\" \"%s\" não é um tipo de external_sound válido"
+    },
+    "consumption_meter_validation": {
+        "required": "O campo \"consumption_meter\" é obrigatório",
+        "invalid": "O campo \"consumption_meter\" \"%s\" não é um tipo de consumption_meter válido"
     }
 }

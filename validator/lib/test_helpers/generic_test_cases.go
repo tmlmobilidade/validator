@@ -670,6 +670,11 @@ func GetExternalSoundValidOptions() []int {
 	return []int{0, 1}
 }
 
+// GetConsumptionMeterValidOptions returns valid consumption_meter values
+func GetConsumptionMeterValidOptions() []int {
+	return []int{0, 1}
+}
+
 // ===============================================
 // TEST NUMBERS VALUE GENERATORS
 // ===============================================

@@ -751,5 +751,9 @@
     "external_sound_validation": {
         "required": "Field \"external_sound\" is required",
         "invalid": "Field \"external_sound\" \"%s\" is not a valid external_sound type"
+    },
+    "consumption_meter_validation": {
+        "required": "Field \"consumption_meter\" is required",
+        "invalid": "Field \"consumption_meter\" \"%s\" is not a valid consumption_meter type"
     }
 }
