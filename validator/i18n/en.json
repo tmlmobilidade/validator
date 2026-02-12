@@ -755,5 +755,9 @@
     "consumption_meter_validation": {
         "required": "Field \"consumption_meter\" is required",
         "invalid": "Field \"consumption_meter\" \"%s\" is not a valid consumption_meter type"
+    },
+    "bicycles_validation": {
+        "required": "Field \"bicycles\" is required",
+        "invalid": "Field \"bicycles\" \"%s\" is not a valid bicycles type"
     }
 }

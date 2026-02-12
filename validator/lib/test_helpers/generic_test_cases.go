@@ -675,6 +675,11 @@ func GetConsumptionMeterValidOptions() []int {
 	return []int{0, 1}
 }
 
+// GetBicyclesValidOptions returns valid bicycles values
+func GetBicyclesValidOptions() []int {
+	return []int{0, 1}
+}
+
 // ===============================================
 // TEST NUMBERS VALUE GENERATORS
 // ===============================================

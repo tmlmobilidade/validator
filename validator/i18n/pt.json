@@ -756,5 +756,9 @@
     "consumption_meter_validation": {
         "required": "O campo \"consumption_meter\" é obrigatório",
         "invalid": "O campo \"consumption_meter\" \"%s\" não é um tipo de consumption_meter válido"
+    },
+    "bicycles_validation": {
+        "required": "O campo \"bicycles\" é obrigatório",
+        "invalid": "O campo \"bicycles\" \"%s\" não é um tipo de bicycles válido"
     }
 }
