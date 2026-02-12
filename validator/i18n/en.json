@@ -664,6 +664,6 @@
         "required": "Fields \"pattern_id\" and \"direction_id\" are required to validate the match"
     },
     "pattern_id_format_validation": {
-        "invalid": "Field \"pattern_id\" must be a valid ID in the format \"XXXX_[0|1]_1\", received: %s"
+        "invalid": "Field \"pattern_id\" must be a valid ID in the format \"XXXX_X_X\", received: %s"
     }
 }

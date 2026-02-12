@@ -665,6 +665,6 @@
         "required": "Os campos \"pattern_id\" e \"direction_id\" são obrigatórios para validar a correspondência"
     },
     "pattern_id_format_validation": {
-        "invalid": "O campo \"pattern_id\" deve ser um ID válido no formato \"XXXX_[0|1]_1\", recebido: %s"
+        "invalid": "O campo \"pattern_id\" deve ser um ID válido no formato \"XXXX_X_X\", recebido: %s"
     }
 }
