@@ -731,5 +731,9 @@
     "onboard_monitor_validation": {
         "required": "Field \"onboard_monitor\" is required",
         "invalid": "Field \"onboard_monitor\" \"%s\" is not a valid onboard_monitor type"
+    },
+    "front_display_validation": {
+        "required": "Field \"front_display\" is required",
+        "invalid": "Field \"front_display\" \"%s\" is not a valid front_display type"
     }
 }

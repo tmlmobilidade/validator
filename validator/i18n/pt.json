@@ -732,5 +732,9 @@
     "onboard_monitor_validation": {
         "required": "O campo \"onboard_monitor\" é obrigatório",
         "invalid": "O campo \"onboard_monitor\" \"%s\" não é um tipo de onboard_monitor válido"
+    },
+    "front_display_validation": {
+        "required": "O campo \"front_display\" é obrigatório",
+        "invalid": "O campo \"front_display\" \"%s\" não é um tipo de front_display válido"
     }
 }

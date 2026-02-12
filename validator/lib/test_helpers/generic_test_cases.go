@@ -645,6 +645,11 @@ func GetOnboardMonitorValidOptions() []int {
 	return []int{0, 1}
 }
 
+// GetFrontDisplayValidOptions returns valid front_display values
+func GetFrontDisplayValidOptions() []int {
+	return []int{0, 1, 2}
+}
+
 // ===============================================
 // TEST NUMBERS VALUE GENERATORS
 // ===============================================
