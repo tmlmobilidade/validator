@@ -724,5 +724,9 @@
     "kneeling_validation": {
         "required": "O campo \"kneeling\" é obrigatório",
         "invalid": "O campo \"kneeling\" \"%s\" não é um tipo de kneeling válido"
+    },
+    "static_information_validation": {
+        "required": "O campo \"static_information\" é obrigatório",
+        "invalid": "O campo \"static_information\" \"%s\" não é um tipo de static_information válido"
     }
 }

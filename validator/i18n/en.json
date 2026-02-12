@@ -723,5 +723,9 @@
     "kneeling_validation": {
         "required": "Field \"kneeling\" is required",
         "invalid": "Field \"kneeling\" \"%s\" is not a valid kneeling type"
+    },
+    "static_information_validation": {
+        "required": "Field \"static_information\" is required",
+        "invalid": "Field \"static_information\" \"%s\" is not a valid static_information type"
     }
 }

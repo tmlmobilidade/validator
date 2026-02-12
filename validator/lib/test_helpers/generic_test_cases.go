@@ -635,6 +635,11 @@ func GetKneelingValidOptions() []int {
 	return []int{0, 1, 2}
 }
 
+// GetStaticInformationValidOptions returns valid static_information values
+func GetStaticInformationValidOptions() []int {
+	return []int{0, 1}
+}
+
 // ===============================================
 // TEST NUMBERS VALUE GENERATORS
 // ===============================================
