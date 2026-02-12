@@ -665,6 +665,11 @@ func GetInternalSoundValidOptions() []int {
 	return []int{0, 1}
 }
 
+// GetExternalSoundValidOptions returns valid external_sound values
+func GetExternalSoundValidOptions() []int {
+	return []int{0, 1}
+}
+
 // ===============================================
 // TEST NUMBERS VALUE GENERATORS
 // ===============================================

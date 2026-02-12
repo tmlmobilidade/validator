@@ -747,5 +747,9 @@
     "internal_sound_validation": {
         "required": "Field \"internal_sound\" is required",
         "invalid": "Field \"internal_sound\" \"%s\" is not a valid internal_sound type"
+    },
+    "external_sound_validation": {
+        "required": "Field \"external_sound\" is required",
+        "invalid": "Field \"external_sound\" \"%s\" is not a valid external_sound type"
     }
 }

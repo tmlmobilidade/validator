@@ -17,7 +17,7 @@ import (
 
 # Description
 
-Internal sound system.
+Internal sound information (on-board Public Address).
 
 Valid options are:
 
