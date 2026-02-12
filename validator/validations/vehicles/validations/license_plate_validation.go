@@ -17,6 +17,8 @@ import (
 # Description
 
 The license plate of the vehicle.
+
+The license plate must be in the format XX-XX-XX.
 */
 func LicensePlateValidation(vehicle *types.Vehicle, row int, gtfs *types.Gtfs, rules *types.VehiclesRules) {
 	ctx := lib.NewValidationContext("license_plate", "vehicles.txt", "license_plate_validation", row, services.AppMessageService)

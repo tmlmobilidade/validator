@@ -12,7 +12,7 @@ import (
   - File: [vehicles.txt]
   - Field: vehicle_id
   - Presence: Required
-  - Type: String
+  - Type: unique ID
 
 # Description
 
