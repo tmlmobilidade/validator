@@ -655,6 +655,11 @@ func GetRearDisplayValidOptions() []int {
 	return []int{0, 1, 2}
 }
 
+// GetSideDisplayValidOptions returns valid side_display values
+func GetSideDisplayValidOptions() []int {
+	return []int{0, 1}
+}
+
 // ===============================================
 // TEST NUMBERS VALUE GENERATORS
 // ===============================================

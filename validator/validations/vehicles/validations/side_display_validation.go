@@ -1,0 +1,44 @@
+package vehicles
+
+import (
+	"main/lib"
+	"main/services"
+	"main/types"
+	"slices"
+	"strconv"
+)
+
+/*
+# Attributes
+  - File: [vehicles.txt]
+  - Field: side_display
+  - Presence: Required
+  - Type: Enum
+
+# Description
+
+External right side destination panel.
+
+Valid options are:
+
+  - 0 - No
+  - 1 - Yes
+*/
+
+func SideDisplayValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
+	ctx := lib.NewValidationContext("side_display", "vehicles.txt", "side_display_validation", row, services.AppMessageService)
+	if rules != nil && rules.SideDisplay.Severity != "" {
+		ctx.WithSeverity(rules.SideDisplay.Severity)
+	}
+
+	if vehicle.SideDisplay == nil {
+		ctx.AddError(ctx.GetTranslatedMessage("side_display_validation.required"))
+		return
+	}
+
+	validOptions := []int{0, 1}
+	if !slices.Contains(validOptions, *vehicle.SideDisplay) {
+		ctx.AddError(ctx.GetTranslatedMessage("side_display_validation.invalid", strconv.Itoa(*vehicle.SideDisplay)))
+		return
+	}
+}

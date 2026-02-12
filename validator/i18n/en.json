@@ -739,5 +739,9 @@
     "rear_display_validation": {
         "required": "Field \"rear_display\" is required",
         "invalid": "Field \"rear_display\" \"%s\" is not a valid rear_display type"
+    },
+    "side_display_validation": {
+        "required": "Field \"side_display\" is required",
+        "invalid": "Field \"side_display\" \"%s\" is not a valid side_display type"
     }
 }
