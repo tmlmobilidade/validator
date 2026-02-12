@@ -17,7 +17,7 @@ import (
 
 # Description
 
-The wheelchair of the vehicle.
+Wheelchair accessibility.
 
 Valid options are:
 

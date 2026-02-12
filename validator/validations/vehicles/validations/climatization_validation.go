@@ -17,7 +17,7 @@ import (
 
 # Description
 
-The climatization of the vehicle.
+Climatization.
 
 Valid options are:
 

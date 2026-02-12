@@ -712,5 +712,9 @@
     "wheelchair_validation": {
         "required": "O campo \"wheelchair\" é obrigatório",
         "invalid": "O campo \"wheelchair\" \"%s\" não é um tipo de wheelchair válido"
+    },
+    "lowered_floor_validation": {
+        "required": "O campo \"lowered_floor\" é obrigatório",
+        "invalid": "O campo \"lowered_floor\" \"%s\" não é um tipo de lowered_floor válido"
     }
 }

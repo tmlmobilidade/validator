@@ -620,6 +620,11 @@ func GetWheelchairValidOptions() []int {
 	return []int{0, 1}
 }
 
+// GetLoweredFloorValidOptions returns valid lowered_floor values
+func GetLoweredFloorValidOptions() []int {
+	return []int{0, 1, 2}
+}
+
 // ===============================================
 // TEST NUMBERS VALUE GENERATORS
 // ===============================================

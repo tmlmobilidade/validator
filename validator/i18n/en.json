@@ -711,5 +711,9 @@
     "wheelchair_validation": {
         "required": "Field \"wheelchair\" is required",
         "invalid": "Field \"wheelchair\" \"%s\" is not a valid wheelchair type"
+    },
+    "lowered_floor_validation": {
+        "required": "Field \"lowered_floor\" is required",
+        "invalid": "Field \"lowered_floor\" \"%s\" is not a valid lowered_floor type"
     }
 }
