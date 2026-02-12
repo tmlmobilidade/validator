@@ -735,5 +735,9 @@
     "front_display_validation": {
         "required": "Field \"front_display\" is required",
         "invalid": "Field \"front_display\" \"%s\" is not a valid front_display type"
+    },
+    "rear_display_validation": {
+        "required": "Field \"rear_display\" is required",
+        "invalid": "Field \"rear_display\" \"%s\" is not a valid rear_display type"
     }
 }
