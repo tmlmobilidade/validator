@@ -1,0 +1,38 @@
+package vehicles
+
+import (
+	"main/lib"
+	"main/services"
+	"main/types"
+)
+
+/*
+# Attributes
+
+  - File: [vehicles.txt]
+  - Field: vehicle_id
+  - Presence: Required
+  - Type: String
+
+# Description
+
+Identifies a vehicle.
+*/
+func VehicleIdValidation(vehicle *types.Vehicle, row int, gtfs *types.Gtfs, rules *types.VehiclesRules) {
+	ctx := lib.NewValidationContext("vehicle_id", "vehicles.txt", "vehicle_id_validation", row, services.AppMessageService)
+	if rules != nil && rules.VehicleId.Severity != "" {
+		ctx.WithSeverity(rules.VehicleId.Severity)
+	}
+
+	if vehicle.VehicleId == nil {
+		message := ctx.GetTranslatedMessage("vehicle_id_validation.required")
+		ctx.AddError(message)
+		return
+	}
+
+	rows, err := gtfs.GetRowsById("vehicles", *vehicle.VehicleId)
+	if err == nil && len(rows) > 1 {
+		ctx.AddError(ctx.GetTranslatedMessage("vehicle_id_validation.duplicate", map[string]interface{}{"vehicle_id": *vehicle.VehicleId}))
+		return
+	}
+}

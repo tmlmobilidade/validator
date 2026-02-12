@@ -539,6 +539,32 @@ func (g *Gtfs) GetRowsById(table, id string) ([]int, error) {
 	return result, rows.Err()
 }
 
+// GetRowsByField returns the row indices for a given table and column value from the actual table data.
+// Unlike GetRowsById which queries the id_map table, this queries the real table directly.
+// This is useful for checking uniqueness of non-primary-key fields (e.g., license_plate).
+func (g *Gtfs) GetRowsByField(table, column, value string) ([]int, error) {
+	if g.db == nil {
+		return nil, fmt.Errorf("database connection is nil")
+	}
+	tableName := sanitizeTableNameForQuery(table)
+	query := fmt.Sprintf("SELECT rowid - 1 FROM %s WHERE %s = ? ORDER BY rowid", tableName, column)
+	rows, err := g.db.Query(query, value)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []int
+	for rows.Next() {
+		var rowIndex int
+		if err := rows.Scan(&rowIndex); err != nil {
+			return nil, err
+		}
+		result = append(result, rowIndex)
+	}
+	return result, rows.Err()
+}
+
 // sanitizeTableNameForQuery sanitizes table name for use in queries (without quotes for table name)
 func sanitizeTableNameForQuery(name string) string {
 	return strings.ReplaceAll(name, "-", "_")

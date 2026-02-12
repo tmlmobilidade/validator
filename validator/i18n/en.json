@@ -661,5 +661,15 @@
         "invalid_direction_id": "Field \"direction_id\" must be an integer between 0 and 1, received: %s",
         "not_matching": "Field \"direction_id\" \"%s\" does not match the pattern_id \"%s\"",
         "required": "Fields \"pattern_id\" and \"direction_id\" are required to validate the match"
+    },
+    "vehicle_id_validation": {
+        "required": "Field \"vehicle_id\" is required",
+        "duplicate": "Duplicate field \"vehicle_id\" \"%s\" found. Field \"vehicle_id\" must be unique"
+    },
+    "license_plate_validation": {
+        "required": "Field \"license_plate\" is required",
+        "invalid": "Field \"license_plate\" \"%s\" is invalid. It must be 8 characters long",
+        "invalidFormat": "Field \"license_plate\" \"%s\" has an invalid format",
+        "duplicate": "Duplicate field \"license_plate\" \"%s\" found. Field \"license_plate\" must be unique"
     }
 }

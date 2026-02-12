@@ -662,5 +662,15 @@
         "invalid_direction_id": "O campo \"direction_id\" deve ser um número inteiro entre 0 e 1, recebido: %s",
         "not_matching": "O campo \"direction_id\" \"%s\" não corresponde do pattern_id \"%s\"",
         "required": "Os campos \"pattern_id\" e \"direction_id\" são obrigatórios para validar a correspondência"
+    },
+    "vehicle_id_validation": {
+        "required": "O campo \"vehicle_id\" é obrigatório",
+        "duplicate": "Campo \"vehicle_id\" \"%s\" duplicado encontrado. O campo \"vehicle_id\" deve ser único"
+    },
+    "license_plate_validation": {
+        "required": "O campo \"license_plate\" é obrigatório",
+        "invalid": "O campo \"license_plate\" \"%s\" é inválido. Deve ter 8 caracteres",
+        "invalidFormat": "O campo \"license_plate\" \"%s\" tem um formato inválido",
+        "duplicate": "Campo \"license_plate\" \"%s\" duplicado encontrado. O campo \"license_plate\" deve ser único"
     }
 }
