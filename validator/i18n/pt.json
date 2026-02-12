@@ -684,5 +684,17 @@
     "registration_date_validation": {
         "required": "O campo \"registration_date\" é obrigatório",
         "invalid": "O campo \"registration_date\" \"%s\" não é uma data válida, deve estar no formato AAAAMMDD"
+    },
+    "available_seats_validation": {
+        "required": "O campo \"available_seats\" é obrigatório",
+        "invalid": "O campo \"available_seats\" \"%s\" não é um número válido"
+    },
+    "available_standing_validation": {
+        "required": "O campo \"available_standing\" é obrigatório",
+        "invalid": "O campo \"available_standing\" \"%s\" não é um número válido"
+    },
+    "typology_validation": {
+        "required": "O campo \"typology\" é obrigatório",
+        "invalid": "O campo \"typology\" \"%s\" não é um tipo válido"
     }
 }

@@ -683,5 +683,17 @@
     "registration_date_validation": {
         "required": "Field \"registration_date\" is required",
         "invalid": "Field \"registration_date\" \"%s\" is not a valid date, must be in format YYYYMMDD"
+    },
+    "available_seats_validation": {
+        "required": "Field \"available_seats\" is required",
+        "invalid": "Field \"available_seats\" \"%s\" is not a valid number"
+    },
+    "available_standing_validation": {
+        "required": "Field \"available_standing\" is required",
+        "invalid": "Field \"available_standing\" \"%s\" is not a valid number"
+    },
+    "typology_validation": {
+        "required": "Field \"typology\" is required",
+        "invalid": "Field \"typology\" \"%s\" is not a valid type"
     }
 }
