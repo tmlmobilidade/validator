@@ -935,6 +935,15 @@ func (g *Gtfs) GetFareAttribute(rowIndex int) (FareAttributeRaw, error) {
 	return convertRowToStruct[FareAttributeRaw](row), nil
 }
 
+// IterateVehicles iterates over all vehicles, calling fn for each
+func (g *Gtfs) IterateVehicles(fn func(int, VehicleRaw) error) error {
+	return g.iterateTable("vehicles", func(rowIndex int, row map[string]string) error {
+		vehicleRaw := convertRowToStruct[VehicleRaw](row)
+		return fn(rowIndex, vehicleRaw)
+	})
+}
+
+// GetVehicle retrieves a vehicle by row index
 // iterateTable is a generic helper to iterate over table rows
 func (g *Gtfs) iterateTable(table string, fn func(int, map[string]string) error) error {
 	if g.db == nil {
