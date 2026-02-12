@@ -669,8 +669,20 @@
     },
     "license_plate_validation": {
         "required": "O campo \"license_plate\" é obrigatório",
-        "invalid": "O campo \"license_plate\" \"%s\" é inválido. Deve ter 8 caracteres",
-        "invalidFormat": "O campo \"license_plate\" \"%s\" tem um formato inválido",
+        "invalid": "O campo \"license_plate\" \"%s\" tem um formato inválido deve ser no formato XX-XX-XX",
         "duplicate": "Campo \"license_plate\" \"%s\" duplicado encontrado. O campo \"license_plate\" deve ser único"
+    },
+    "model_validation": {
+        "required": "O campo \"model\" é obrigatório"
+    },
+    "make_validation": {
+        "required": "O campo \"make\" é obrigatório"
+    },
+    "owner_validation": {
+        "required": "O campo \"owner\" é obrigatório"
+    },
+    "registration_date_validation": {
+        "required": "O campo \"registration_date\" é obrigatório",
+        "invalid": "O campo \"registration_date\" \"%s\" não é uma data válida, deve estar no formato AAAAMMDD"
     }
 }

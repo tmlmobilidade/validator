@@ -29,14 +29,9 @@ func LicensePlateValidation(vehicle *types.Vehicle, row int, gtfs *types.Gtfs, r
 		return
 	}
 
-	if len(*vehicle.LicensePlate) != 8 {
-		ctx.AddError(ctx.GetTranslatedMessage("license_plate_validation.invalid", map[string]interface{}{"license_plate": *vehicle.LicensePlate}))
-		return
-	}
-
 	if !lib.ValidateLicensePlate(*vehicle.LicensePlate) {
 		lib.AppLogger.Accent("Invalid license plate format", "license_plate", *vehicle.LicensePlate)
-		ctx.AddError(ctx.GetTranslatedMessage("license_plate_validation.invalidFormat", map[string]interface{}{"license_plate": *vehicle.LicensePlate}))
+		ctx.AddError(ctx.GetTranslatedMessage("license_plate_validation.invalid", map[string]interface{}{"license_plate": *vehicle.LicensePlate}))
 		return
 	}
 
