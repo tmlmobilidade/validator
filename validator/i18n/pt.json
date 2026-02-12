@@ -720,5 +720,9 @@
     "ramp_validation": {
         "required": "O campo \"ramp\" é obrigatório",
         "invalid": "O campo \"ramp\" \"%s\" não é um tipo de rampa válido"
-    }	
+    },
+    "kneeling_validation": {
+        "required": "O campo \"kneeling\" é obrigatório",
+        "invalid": "O campo \"kneeling\" \"%s\" não é um tipo de kneeling válido"
+    }
 }

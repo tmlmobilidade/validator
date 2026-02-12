@@ -719,5 +719,9 @@
     "ramp_validation": {
         "required": "Field \"ramp\" is required",
         "invalid": "Field \"ramp\" \"%s\" is not a valid ramp type"
+    },
+    "kneeling_validation": {
+        "required": "Field \"kneeling\" is required",
+        "invalid": "Field \"kneeling\" \"%s\" is not a valid kneeling type"
     }
 }

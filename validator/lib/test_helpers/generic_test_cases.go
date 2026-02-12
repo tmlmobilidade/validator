@@ -630,6 +630,11 @@ func GetRampValidOptions() []int {
 	return []int{0, 1, 2, 3}
 }
 
+// GetKneelingValidOptions returns valid kneeling values
+func GetKneelingValidOptions() []int {
+	return []int{0, 1, 2}
+}
+
 // ===============================================
 // TEST NUMBERS VALUE GENERATORS
 // ===============================================
