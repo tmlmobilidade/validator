@@ -37,10 +37,6 @@ func AgencyNameIdMatchValidation(agency *types.Agency, row int, rules *types.Age
 		return
 	}
 
-	if *agency.AgencyId == *agency.AgencyName {
-		return
-	}
-
 	if ctx.IsForbidden() {
 		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("agency_name_id_match_validation.forbidden"))
 		return
@@ -49,19 +45,17 @@ func AgencyNameIdMatchValidation(agency *types.Agency, row int, rules *types.Age
 	// Validate rules
 	if rules != nil && rules.AgencyNameIdMatch.Compare != nil {
 		// Find the matching key and value
+		validName := ""
 		for _, compare := range *rules.AgencyNameIdMatch.Compare {
 			if compare.Key == *agency.AgencyId && compare.Value == *agency.AgencyName {
 				return
-			} else {
-				for _, compare := range *rules.AgencyNameIdMatch.Compare {
-					if compare.Key == *agency.AgencyId {
-						matchname := compare.Value
-						ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("agency_name_id_match_validation.no_match", *agency.AgencyId, *agency.AgencyName, matchname))
-						return
-					}
-				}
+			}
+			if compare.Key == *agency.AgencyId {
+				validName = compare.Value
 			}
 		}
-	}
 
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("agency_name_id_match_validation.no_match", *agency.AgencyId, *agency.AgencyName, validName))
+		return
+	}
 }
