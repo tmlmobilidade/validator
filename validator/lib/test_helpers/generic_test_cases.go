@@ -595,8 +595,19 @@ func GetShapeFloat64InvalidOptions() []float64 {
 	return []float64{-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0, -10.0}
 }
 
+// GetTypologyValidOptions returns valid typology values
 func GetTypologyValidOptions() []float64 {
 	return []float64{0.1, 0.2, 0.3, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 4.1, 4.2, 4.3, 7.1, 7.2, 7.3}
+}
+
+// GetPropulsionValidOptions returns valid propulsion values
+func GetPropulsionValidOptions() []int {
+	return []int{1, 2, 3, 4, 5, 6, 7, 8}
+}
+
+// GetEmissionValidOptions returns valid emission values
+func GetEmissionValidOptions() []int {
+	return []int{1, 2, 3, 4, 5, 6}
 }
 
 // ===============================================

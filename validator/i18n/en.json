@@ -695,5 +695,9 @@
     "typology_validation": {
         "required": "Field \"typology\" is required",
         "invalid": "Field \"typology\" \"%s\" is not a valid type"
+    },
+    "propulsion_validation": {
+        "required": "Field \"propulsion\" is required",
+        "invalid": "Field \"propulsion\" \"%s\" is not a valid propulsion type"
     }
 }

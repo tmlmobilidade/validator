@@ -5,7 +5,6 @@ import (
 	"main/services"
 	"main/types"
 	"slices"
-	"strconv"
 )
 
 /*
@@ -18,6 +17,32 @@ import (
 # Description
 
 The typology of the vehicle.
+
+Valid options are:
+
+	- 0.1. - Light Rail (Type 1)
+	- 0.2. - Light Rail (Type 2)
+	- 0.3. - Light Rail (etc.)
+	- 1.1. - Metro (Type 1)
+	- 1.2. - Metro (Type 2)
+	- 1.3. - Metro (etc.)
+	- 2.1. - Rail (Type 1)
+	- 2.2. - Rail (Type 2)
+	- 2.3. - Rail (etc.)
+	- 3.1. - Bus - Urban Mini
+	- 3.2. - Bus - Urban Midi
+	- 3.3. - Bus - Urban Standard
+	- 3.4. - Bus - Urban Articulated
+	- 3.5. - Bus - Inter-urban Standard
+	- 3.6. - Bus - Inter-urban Articulated
+	- 3.7. - Bus - Tourism
+	- 4.1. - Ship (Type 1)
+	- 4.2. - Ship (Type 2)
+	- 4.3. - Ship (etc.)
+	...
+	- 7.1. - Funicular/Elevator (Type 1)
+	- 7.2. - Funicular/Elevator (Type 2)
+	- 7.3. - Funicular/Elevator (etc.)
 */
 
 func TypologyValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
@@ -31,14 +56,10 @@ func TypologyValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 		return
 	}
 
-	validOptions := []float32{0.1, 0.2, 0.3, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 4.1, 4.2, 4.3, 7.1, 7.2, 7.3}
-	typology, err := strconv.ParseFloat(*vehicle.Typology, 32)
-	if err != nil {
+	validOptions := []float64{0.1, 0.2, 0.3, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 4.1, 4.2, 4.3, 7.1, 7.2, 7.3}
+
+	if !slices.Contains(validOptions, *vehicle.Typology) {
 		ctx.AddError(ctx.GetTranslatedMessage("typology_validation.invalid", *vehicle.Typology))
-		return
-	}
-	if !slices.Contains(validOptions, float32(typology)) {
-		ctx.AddError(ctx.GetTranslatedMessage("typology_validation.invalid", float32(typology)))
 		return
 	}
 }
