@@ -715,5 +715,9 @@
     "lowered_floor_validation": {
         "required": "Field \"lowered_floor\" is required",
         "invalid": "Field \"lowered_floor\" \"%s\" is not a valid lowered_floor type"
+    },
+    "ramp_validation": {
+        "required": "Field \"ramp\" is required",
+        "invalid": "Field \"ramp\" \"%s\" is not a valid ramp type"
     }
 }

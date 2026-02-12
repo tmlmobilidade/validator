@@ -625,6 +625,11 @@ func GetLoweredFloorValidOptions() []int {
 	return []int{0, 1, 2}
 }
 
+// GetRampValidOptions returns valid ramp values
+func GetRampValidOptions() []int {
+	return []int{0, 1, 2, 3}
+}
+
 // ===============================================
 // TEST NUMBERS VALUE GENERATORS
 // ===============================================
