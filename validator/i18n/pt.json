@@ -272,6 +272,12 @@
         "invalid": "O campo \"shape_dist_traveled\" deve ser um float não negativo",
         "not_increasing": "O campo \"shape_dist_traveled\" para o shape_id '%s' deve ser crescente ao longo da viagem"
     },
+    "shape_id_in_unique_pattern_id_validation": {
+        "pattern_id_not_found": "O campo \"pattern_id\" é obrigatório",
+        "shape_id_not_found": "O campo \"shape_id\" é obrigatório",
+        "different_pattern_id": "O shape_id \"%s\" está a ser utilizada por diferentes pattern_ids: \"%s\" e \"%s\"",
+        "multiple_shape_id_in_unique_pattern_id": "O shape_id \"%s\" é utilizado em múltiplos pattern_ids"
+    },
     "shape_id_validation": {
         "forbidden": "O campo \"shape_id\" é proibido",
         "required": "O campo \"shape_id\" é obrigatório",
@@ -605,6 +611,7 @@
         "different_direction_id": "Encontrados direction_id's diferentes para o mesmo pattern_id: %s",
         "different_route_id": "Encontrados route_id's diferentes para o mesmo pattern_id: %s",
         "different_shape_id": "Encontrados shape_id's diferentes para o mesmo pattern_id: %s",
+        "different_pattern_id_same_shape": "O shape_id \"%s\" está a ser utilizado por diferentes pattern_ids: \"%s\" e \"%s\"",
         "multiple_stop_sequence_variations": "Para o pattern_id %s, existem viagens com múltiplas variações de sequência de paragens"
     },
     "stop_sequence_validation": {

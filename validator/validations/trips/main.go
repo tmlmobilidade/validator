@@ -37,6 +37,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	// Create progress tracker
 	tracker := lib.CreateProgressTracker(gtfs, "trips", config.ProgressThresholdLarge)
 	var tripsGroupedByPattern types.TripGroupedByPattern = make(types.TripGroupedByPattern)
+	var tripsGroupedByShapeId types.TripGroupedByShapeId = make(types.TripGroupedByShapeId)
 
 	err = gtfs.IterateTrips(func(i int, rawTrips types.TripRaw) error {
 		tracker.Track()
@@ -100,6 +101,18 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// Validate direction_id matches pattern_id
 		validations.DirectionPatternIdMatchValidation(&trip, i, &gtfs, tripRules)
 
+		// Validate shape_id is unique per pattern_id
+		if trip.ShapeId != nil {
+			group := tripsGroupedByShapeId[*trip.ShapeId]
+			group.Trips = append(group.Trips, trip)
+
+			if !slices.Contains(group.Hash, groupHash) {
+				group.Hash = append(group.Hash, groupHash)
+			}
+
+			tripsGroupedByShapeId[*trip.ShapeId] = group
+		}
+
 		return nil
 	})
 
@@ -111,4 +124,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 	//Validate pattern_id_group
 	validations.PatternIdGroupValidation(tripsGroupedByPattern, &gtfs)
+
+	//Validate shape_id uniqueness per pattern_id
+	validations.ShapeIdGroupValidation(tripsGroupedByShapeId, &gtfs)
 }
