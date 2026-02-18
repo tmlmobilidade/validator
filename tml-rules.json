@@ -662,7 +662,7 @@
 			"severity": "error"
 		},
 		"license_plate": {
-			"severity": "error"
+			"severity": "warning"
 		},
 		"lowered_floor": {
 			"options": ["0", "1", "2"],
@@ -709,7 +709,7 @@
 			"severity": "error"
 		},
 		"typology": {
-			"severity": "error",
+			"severity": "warning",
 			"options": ["0.1", "0.2", "0.3", "1.1", "1.2", "1.3", "2.1", "2.2", "2.3", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "4.1", "4.2", "4.3", "7.1", "7.2", "7.3"]
 		},
 		"vehicle_id": {
@@ -717,7 +717,7 @@
 		},
 		"video_surveillance": {
 			"options": ["0", "1"],
-			"severity": "error"
+			"severity": "warning"
 		},
 		"wheelchair": {
 			"options": ["0", "1"],

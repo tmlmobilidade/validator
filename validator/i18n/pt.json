@@ -694,8 +694,8 @@
         "invalid": "O campo \"available_standing\" \"%s\" não é um número válido"
     },
     "typology_validation": {
-        "required": "O campo \"typology\" é obrigatório",
-        "invalid": "O campo \"typology\" \"%s\" não é um tipo válido"
+        "required": "O campo \"typology\" vai ser obrigatório em breve. Precisamos do teu feedback.",
+        "invalid": "O campo \"typology\" \"%s\" não é um tipo válido. Precisamos do teu feedback."
     },
     "propulsion_validation": {
         "required": "O campo \"propulsion\" é obrigatório",

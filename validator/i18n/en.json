@@ -693,8 +693,8 @@
         "invalid": "Field \"available_standing\" \"%s\" is not a valid number"
     },
     "typology_validation": {
-        "required": "Field \"typology\" is required",
-        "invalid": "Field \"typology\" \"%s\" is not a valid type"
+        "required": "Field \"typology\" will be required soon. We need your feedback.",
+        "invalid": "Field \"typology\" \"%s\" is not a valid type. We need your feedback."
     },
     "propulsion_validation": {
         "required": "Field \"propulsion\" is required",
