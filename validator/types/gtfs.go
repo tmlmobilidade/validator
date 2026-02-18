@@ -204,10 +204,10 @@ type Shape struct {
 /* FREQUENCIES */
 type Frequencies struct {
 	EndTime     string  `json:"end_time"`
-	ExactTimes  *int    `json:"exact_times"`
+	ExactTimes  string  `json:"exact_times"`
 	HeadwaySecs float32 `json:"headway_secs"`
 	StartTime   string  `json:"start_time"`
-	TripId      string  `json:"trip_id"`
+	TripId      *string `json:"trip_id"`
 }
 
 /* TRANSFERS */

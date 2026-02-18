@@ -480,6 +480,10 @@ func GetHasTariffsInformationValidOptions() []int {
 	return []int{0, 1}
 }
 
+func GetExactTimesValidOptions() []int {
+	return []int{0, 1}
+}
+
 // ===============================================
 // TEST NUMBERS VALUE GENERATORS
 // ===============================================

@@ -662,5 +662,33 @@
         "invalid_direction_id": "O campo \"direction_id\" deve ser um número inteiro entre 0 e 1, recebido: %s",
         "not_matching": "O campo \"direction_id\" \"%s\" não corresponde do pattern_id \"%s\"",
         "required": "Os campos \"pattern_id\" e \"direction_id\" são obrigatórios para validar a correspondência"
+    },
+    "start_time_validation": {
+        "forbidden": "O campo \"start_time\" é proibido",
+        "required": "O campo \"start_time\" é obrigatório",
+        "recommended": "O campo \"start_time\" é recomendado",
+        "invalid": "O campo \"start_time\" deve ser uma hora válida, formato esperado: HH:MM:SS, recebido: %s",
+        "not_allowed": "O campo \"start_time\" \"%s\" não é permitido"
+    },
+    "end_time_validation": {
+        "forbidden": "O campo \"end_time\" é proibido",
+        "required": "O campo \"end_time\" é obrigatório",
+        "recommended": "O campo \"end_time\" é recomendado",
+        "invalid": "O campo \"end_time\" deve ser uma hora válida, formato esperado: HH:MM:SS, recebido: %s",
+        "not_allowed": "O campo \"end_time\" \"%s\" não é permitido"
+    },
+    "headway_secs_validation": {
+        "forbidden": "O campo \"headway_secs\" é proibido",
+        "required": "O campo \"headway_secs\" é obrigatório",
+        "recommended": "O campo \"headway_secs\" é recomendado",
+        "invalid": "O campo \"headway_secs\" deve ser um número inteiro positivo",
+        "not_allowed": "O campo \"headway_secs\" \"%s\" não é permitido"
+    },
+    "exact_times_validation": {
+        "forbidden": "O campo \"exact_times\" é proibido",
+        "required": "O campo \"exact_times\" é obrigatório",
+        "recommended": "O campo \"exact_times\" é recomendado",
+        "invalid": "O campo \"exact_times\" deve ser 0 ou 1",
+        "not_allowed": "O campo \"exact_times\" \"%s\" não é permitido"
     }
 }
