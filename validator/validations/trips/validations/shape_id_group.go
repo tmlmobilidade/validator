@@ -30,23 +30,21 @@ func ShapeIdGroupValidation(tripsGroupedByShapeId types.TripGroupedByShapeId, gt
 		patternId := group.Trips[0].PatternId
 		shapeIdValue := group.Trips[0].ShapeId
 		if shapeIdValue == nil {
-			return
+			continue
 		}
 
 		for _, trip := range group.Trips {
 			ctx := lib.NewValidationContext("shape_id", "trips.txt", "shape_id_in_unique_pattern_id_validation", trip.Row, services.AppMessageService)
 			// check if pattern_id is present
 			if trip.PatternId == nil {
-				lib.AppLogger.Accent("Pattern ID not found for shape_id: ")
 				ctx.AddError(ctx.GetTranslatedMessage("shape_id_in_unique_pattern_id_validation.pattern_id_not_found"))
-				return
+				continue
 			}
 
 			// check if pattern_id is different and shape_id is the same
 			if *trip.PatternId != *patternId {
-				lib.AppLogger.Accent("Different pattern ID found for shape_id: ", shapeId)
 				ctx.AddError(ctx.GetTranslatedMessage("shape_id_in_unique_pattern_id_validation.different_pattern_id", shapeId, *patternId, *trip.PatternId))
-				return
+				continue
 			}
 		}
 
