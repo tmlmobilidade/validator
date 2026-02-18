@@ -11,7 +11,7 @@ import (
 func testValidParseFrequencies(t *testing.T) {
 	services.AppMessageService.Clear()
 	frequency := &types.FrequenciesRaw{TripId: "T1", EndTime: "10:00:00", StartTime: "09:00:00", HeadwaySecs: "3600"}
-	parsedFrequency := validations.ParseFrequencies(frequency)
+	parsedFrequency := validations.ParseFrequencies(frequency, 1)
 	assertion := lib.AssertionMessage{
 		Expected: 0,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
@@ -34,7 +34,7 @@ func testValidParseFrequencies(t *testing.T) {
 func testInvalidParseFrequencies(t *testing.T) {
 	services.AppMessageService.Clear()
 	frequency := &types.FrequenciesRaw{TripId: "T1", EndTime: "10:00:00", StartTime: "09:00:00", HeadwaySecs: "not_a_float"}
-	validations.ParseFrequencies(frequency)
+	validations.ParseFrequencies(frequency, 1)
 	assertion := lib.AssertionMessage{
 		Expected: 1,
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,

@@ -38,22 +38,28 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 	err = gtfs.IterateFrequencies(func(i int, rawFrequency types.FrequenciesRaw) error {
 		tracker.Track()
-		parsedFrequency := validations.ParseFrequencies(&rawFrequency)
+
+		parsedFrequency := validations.ParseFrequencies(&rawFrequency, i)
+
+		var frequenciesRules *types.FrequenciesRules
+		if rules != nil {
+			frequenciesRules = &rules.Frequencies
+		}
 
 		// Validate trip_id
-		validations.TripIdValidation(parsedFrequency, i, &gtfs, nil)
+		validations.TripIdValidation(parsedFrequency, i, &gtfs, frequenciesRules)
 
 		// Validate end_time
-		validations.EndTimeValidation(parsedFrequency, i, nil)
+		validations.EndTimeValidation(parsedFrequency, i, frequenciesRules)
 
 		// Validate start_time
-		validations.StartTimeValidation(parsedFrequency, i, nil)
+		validations.StartTimeValidation(parsedFrequency, i, frequenciesRules)
 
 		// Validate headway_secs
-		validations.HeadwaySecsValidation(parsedFrequency, i, nil)
+		validations.HeadwaySecsValidation(parsedFrequency, i, frequenciesRules)
 
 		// Validate exact_times
-		validations.ExactTimesValidation(parsedFrequency, i, nil)
+		validations.ExactTimesValidation(parsedFrequency, i, frequenciesRules)
 
 		return nil
 	})

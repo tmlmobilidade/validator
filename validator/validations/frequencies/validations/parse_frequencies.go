@@ -6,13 +6,12 @@ import (
 	"main/types"
 )
 
-func ParseFrequencies(frequencies *types.FrequenciesRaw) *types.Frequencies {
+func ParseFrequencies(frequencies *types.FrequenciesRaw, row int) *types.Frequencies {
 	var (
 		frequency                  types.Frequencies = types.Frequencies{}
 		tripId, endTime, startTime string
 		exactTimes                 string
 		headwaySecs                float64
-		row                        int
 		messages                   []types.Message
 	)
 
