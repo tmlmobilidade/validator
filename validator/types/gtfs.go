@@ -445,34 +445,34 @@ type Afetacao struct {
 
 /* VEHICLE */
 type Vehicle struct {
-	VehicleId         *string  `json:"vehicle_id"`
-	AgencyId          *string  `json:"agency_id"`
-	LicensePlate      *string  `json:"license_plate"`
-	Make              *string  `json:"make"`
-	Model             *string  `json:"model"`
-	Owner             *string  `json:"owner"`
-	RegistrationDate  *string  `json:"registration_date"`
-	AvailableSeats    *int     `json:"available_seats"`
-	AvailableStanding *int     `json:"available_standing"`
-	Typology          *float64 `json:"typology"`
-	Propulsion        *int     `json:"propulsion"`
-	Emission          *int     `json:"emission"`
-	Climatization     *int     `json:"climatization"`
-	Wheelchair        *int     `json:"wheelchair"`
-	LoweredFloor      *int     `json:"lowered_floor"`
-	Ramp              *int     `json:"ramp"`
-	Kneeling          *int     `json:"kneeling"`
-	StaticInformation *int     `json:"static_information"`
-	OnboardMonitor    *int     `json:"onboard_monitor"`
-	FrontDisplay      *int     `json:"front_display"`
-	RearDisplay       *int     `json:"rear_display"`
-	SideDisplay       *int     `json:"side_display"`
-	InternalSound     *int     `json:"internal_sound"`
-	ExternalSound     *int     `json:"external_sound"`
-	ConsumptionMeter  *int     `json:"consumption_meter"`
-	Bicycles          *int     `json:"bicycles"`
-	PassengerCounting *int     `json:"passenger_counting"`
-	VideoSurveillance *int     `json:"video_surveillance"`
+	VehicleId         *string `json:"vehicle_id"`
+	AgencyId          *string `json:"agency_id"`
+	LicensePlate      *string `json:"license_plate"`
+	Make              *string `json:"make"`
+	Model             *string `json:"model"`
+	Owner             *string `json:"owner"`
+	RegistrationDate  *string `json:"registration_date"`
+	AvailableSeats    *int    `json:"available_seats"`
+	AvailableStanding *int    `json:"available_standing"`
+	Typology          *string `json:"typology"`
+	Propulsion        *int    `json:"propulsion"`
+	Emission          *int    `json:"emission"`
+	Climatization     *int    `json:"climatization"`
+	Wheelchair        *int    `json:"wheelchair"`
+	LoweredFloor      *int    `json:"lowered_floor"`
+	Ramp              *int    `json:"ramp"`
+	Kneeling          *int    `json:"kneeling"`
+	StaticInformation *int    `json:"static_information"`
+	OnboardMonitor    *int    `json:"onboard_monitor"`
+	FrontDisplay      *int    `json:"front_display"`
+	RearDisplay       *int    `json:"rear_display"`
+	SideDisplay       *int    `json:"side_display"`
+	InternalSound     *int    `json:"internal_sound"`
+	ExternalSound     *int    `json:"external_sound"`
+	ConsumptionMeter  *int    `json:"consumption_meter"`
+	Bicycles          *int    `json:"bicycles"`
+	PassengerCounting *int    `json:"passenger_counting"`
+	VideoSurveillance *int    `json:"video_surveillance"`
 }
 
 /* PERIOD */
