@@ -4,7 +4,7 @@ import (
 	"main/lib"
 	"main/services"
 	"main/types"
-	"strings"
+	"regexp"
 )
 
 /*
@@ -16,8 +16,10 @@ import (
 
 # Description
 
-Validates if the pattern_id is in the correct format. Must be in the format "X at XXXX_X_[1/2/3]".
+Validates if the pattern_id is in the correct format. Must be in the format "X at XXXX_X_X".
 */
+
+var patternIDRegex = regexp.MustCompile(`^[^_]{1,4}_[^_]_[^_]$`)
 func PatternIdFormatValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
 	ctx := lib.NewValidationContext("pattern_id", "trips.txt", "pattern_id_format_validation", row, services.AppMessageService)
 	if rules != nil && rules.PatternIdFormat.Severity != "" {
@@ -28,17 +30,7 @@ func PatternIdFormatValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rule
 		return
 	}
 
-	patternIdParts := strings.Split(*trip.PatternId, "_")
-	if len(patternIdParts) != 3 {
-		ctx.AddError(ctx.GetTranslatedMessage("pattern_id_format_validation.invalid"))
-		return
-	}
-
-	Parts1Valid := len(patternIdParts[0]) <= 4 && len(patternIdParts[0]) >= 1
-	Parts2Valid := len(patternIdParts[1]) == 1
-	Parts3Valid := len(patternIdParts[2]) == 1
-
-	if !Parts1Valid || !Parts2Valid || !Parts3Valid {
+	if !patternIDRegex.MatchString(*trip.PatternId) {
 		ctx.AddError(ctx.GetTranslatedMessage("pattern_id_format_validation.invalid"))
 		return
 	}
