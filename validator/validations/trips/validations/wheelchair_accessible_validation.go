@@ -65,7 +65,7 @@ func WheelchairAccessibleValidation(trip *types.Trip, row int, gtfs *types.Gtfs,
 		}
 
 		if !slices.Contains(*rules.WheelchairAccessible.Options, fmt.Sprintf("%d", *trip.WheelchairAccessible)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("wheelchair_accessible_validation.not_allowed", map[string]interface{}{"value": *trip.WheelchairAccessible}))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("wheelchair_accessible_validation.not_allowed", map[string]any{"value": *trip.WheelchairAccessible}))
 			return
 		}
 	}

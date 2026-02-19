@@ -56,7 +56,7 @@ func RouteLongNameValidation(route *types.Route, row int, rules *types.RoutesRul
 		}
 
 		if !slices.Contains(*rules.RouteLongName.Options, *route.RouteLongName) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_long_name_validation.not_allowed", map[string]interface{}{"value": *route.RouteLongName}))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_long_name_validation.not_allowed", map[string]any{"value": *route.RouteLongName}))
 			return
 		}
 	}

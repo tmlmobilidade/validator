@@ -194,6 +194,13 @@ type FareRulesRules struct {
 	ContainsId    RuleConfig `json:"contains_id"`
 }
 
+type FareMediaRules struct {
+	File          Severity   `json:"_file"`
+	FareMediaId   RuleConfig `json:"fare_media_id"`
+	FareMediaName RuleConfig `json:"fare_media_name"`
+	FareMediaType RuleConfig `json:"fare_media_type"`
+}
+
 type ShapesRules struct {
 	File              Severity   `json:"_file"`
 	ShapeId           RuleConfig `json:"shape_id"`
@@ -295,6 +302,7 @@ type GtfsRules struct {
 	Vehicles       VehiclesRules       `json:"vehicles"`
 	FareAttributes FareAttributesRules `json:"fare_attributes"`
 	FareRules      FareRulesRules      `json:"fare_rules"`
+	FareMedia      FareMediaRules      `json:"fare_media"`
 	Shapes         ShapesRules         `json:"shapes"`
 	Frequencies    FrequenciesRules    `json:"frequencies"`
 	Transfers      TransfersRules      `json:"transfers"`
