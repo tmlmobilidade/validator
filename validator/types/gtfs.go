@@ -231,7 +231,7 @@ type Transfers struct {
 /* PATHWAYS */
 type Pathways struct {
 	FromStopId           *string  `json:"from_stop_id"`
-	IsBidirectional      *bool    `json:"is_bidirectional"`
+	IsBidirectional      *int     `json:"is_bidirectional"`
 	Length               *float32 `json:"length"`
 	MaxSlope             *string  `json:"max_slope"`
 	MinWidth             *string  `json:"min_width"`

@@ -33,7 +33,7 @@ Valid options are:
 [pathways.txt]: https://gtfs.org/schedule/reference/#pathwaystxt
 */
 
-func PathwayModeValidation(pathways *types.Pathways, row int, gtfs *types.Gtfs, rules *types.PathwaysRules) {
+func PathwayModeValidation(pathways *types.Pathways, row int, rules *types.PathwaysRules) {
 	ctx := lib.NewValidationContext("pathway_mode", "pathways.txt", "pathway_mode_validation", row, services.AppMessageService)
 	if rules != nil && rules.PathwayMode.Severity != "" {
 		ctx.WithSeverity(rules.PathwayMode.Severity)

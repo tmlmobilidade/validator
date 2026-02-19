@@ -21,12 +21,7 @@ func TestAllPathwayModeValidationTestCases(t *testing.T) {
 			}
 
 			pathways := &types.Pathways{PathwayMode: pathwayMode}
-			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"pathways": map[string][]int{"PM1": {1}}}}.ToGtfsWithDB()
-			if err != nil {
-				t.Fatalf("failed to create mock gtfs: %v", err)
-			}
-			defer cleanup()
-			validations.PathwayModeValidation(pathways, tc.Row, gtfs, &types.PathwaysRules{PathwayMode: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+			validations.PathwayModeValidation(pathways, tc.Row, &types.PathwaysRules{PathwayMode: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
