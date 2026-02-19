@@ -29,7 +29,7 @@ func CurrencyTypeValidation(fareAttribute *types.FareAttribute, row int) {
 	}
 
 	if !lib.ValidateCurrencyType(*fareAttribute.CurrencyType) {
-		ctx.AddError(ctx.GetTranslatedMessage("currency_type_validation.invalid", &fareAttribute.CurrencyType))
+		ctx.AddError(ctx.GetTranslatedMessage("currency_type_validation.invalid", *fareAttribute.CurrencyType))
 		return
 	}
 }
