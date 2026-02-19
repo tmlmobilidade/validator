@@ -31,13 +31,13 @@ func LevelIdValidation(level *types.Levels, row int, gtfs types.Gtfs, rules *typ
 			return
 		}
 		message := ctx.GetTranslatedMessage("level_id_validation.required")
-		ctx.AddError(message)
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
 	rows, err := gtfs.GetRowsById("levels", *level.LevelId)
 	if err == nil && len(rows) > 1 {
-		ctx.AddError(ctx.GetTranslatedMessage("level_id_validation.duplicate", map[string]interface{}{"level_id": *level.LevelId}))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("level_id_validation.duplicate", map[string]interface{}{"level_id": *level.LevelId}))
 		return
 	}
 }

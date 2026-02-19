@@ -27,7 +27,7 @@ func LevelIndexValidation(level *types.Levels, row int, rules *types.LevelsRules
 	}
 
 	if level.LevelIndex == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("level_index_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("level_index_validation.required"))
 		return
 	}
 }
