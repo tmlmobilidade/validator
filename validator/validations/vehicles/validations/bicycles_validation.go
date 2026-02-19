@@ -26,12 +26,13 @@ Valid options are:
 */
 func BicyclesValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
 	ctx := lib.NewValidationContext("bicycles", "vehicles.txt", "bicycles_validation", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Bicycles.Severity != "" {
 		ctx.WithSeverity(rules.Bicycles.Severity)
 	}
 
 	if vehicle.Bicycles == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("bicycles_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("bicycles_validation.required"))
 		return
 	}
 
@@ -42,13 +43,14 @@ func BicyclesValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 	}
 
 	// Validate rules
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Bicycles.Options != nil {
 		if slices.Contains(*rules.Bicycles.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.Bicycles.Options, strconv.Itoa(*vehicle.Bicycles)) {
-			ctx.AddError(ctx.GetTranslatedMessage("bicycles_validation.not_allowed", *vehicle.Bicycles))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("bicycles_validation.not_allowed", *vehicle.Bicycles))
 			return
 		}
 	}

@@ -22,17 +22,18 @@ The license plate must be in the format XX-XX-XX.
 */
 func LicensePlateValidation(vehicle *types.Vehicle, row int, gtfs *types.Gtfs, rules *types.VehiclesRules) {
 	ctx := lib.NewValidationContext("license_plate", "vehicles.txt", "license_plate_validation", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.LicensePlate.Severity != "" {
 		ctx.WithSeverity(rules.LicensePlate.Severity)
 	}
 
 	if vehicle.LicensePlate == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("license_plate_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("license_plate_validation.required"))
 		return
 	}
 
 	if !lib.ValidateLicensePlate(*vehicle.LicensePlate) {
-		ctx.AddError(ctx.GetTranslatedMessage("license_plate_validation.invalid", *vehicle.LicensePlate))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("license_plate_validation.invalid", *vehicle.LicensePlate))
 		return
 	}
 

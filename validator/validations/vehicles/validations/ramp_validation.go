@@ -30,12 +30,13 @@ Valid options are:
 
 func RampValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
 	ctx := lib.NewValidationContext("ramp", "vehicles.txt", "ramp_validation", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Ramp.Severity != "" {
 		ctx.WithSeverity(rules.Ramp.Severity)
 	}
 
 	if vehicle.Ramp == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("ramp_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("ramp_validation.required"))
 		return
 	}
 
@@ -46,13 +47,14 @@ func RampValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules)
 	}
 
 	// Validate rules
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Ramp.Options != nil {
 		if slices.Contains(*rules.Ramp.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.Ramp.Options, strconv.Itoa(*vehicle.Ramp)) {
-			ctx.AddError(ctx.GetTranslatedMessage("ramp_validation.not_allowed", *vehicle.Ramp))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("ramp_validation.not_allowed", *vehicle.Ramp))
 			return
 		}
 	}

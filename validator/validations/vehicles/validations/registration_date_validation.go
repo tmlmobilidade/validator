@@ -20,17 +20,18 @@ Date of the first registration.
 
 func RegistrationDateValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
 	ctx := lib.NewValidationContext("registration_date", "vehicles.txt", "registration_date_validation", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.RegistrationDate.Severity != "" {
 		ctx.WithSeverity(rules.RegistrationDate.Severity)
 	}
 
 	if vehicle.RegistrationDate == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("registration_date_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("registration_date_validation.required"))
 		return
 	}
 
 	if !lib.IsValidServiceDate(*vehicle.RegistrationDate) {
-		ctx.AddError(ctx.GetTranslatedMessage("registration_date_validation.invalid", *vehicle.RegistrationDate))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("registration_date_validation.invalid", *vehicle.RegistrationDate))
 		return
 	}
 }

@@ -28,12 +28,13 @@ Valid options are:
 
 func RearDisplayValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
 	ctx := lib.NewValidationContext("rear_display", "vehicles.txt", "rear_display_validation", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.RearDisplay.Severity != "" {
 		ctx.WithSeverity(rules.RearDisplay.Severity)
 	}
 
 	if vehicle.RearDisplay == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("rear_display_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("rear_display_validation.required"))
 		return
 	}
 
@@ -44,13 +45,14 @@ func RearDisplayValidation(vehicle *types.Vehicle, row int, rules *types.Vehicle
 	}
 
 	// Validate rules
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.RearDisplay.Options != nil {
 		if slices.Contains(*rules.RearDisplay.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.RearDisplay.Options, strconv.Itoa(*vehicle.RearDisplay)) {
-			ctx.AddError(ctx.GetTranslatedMessage("rear_display_validation.not_allowed", *vehicle.RearDisplay))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("rear_display_validation.not_allowed", *vehicle.RearDisplay))
 			return
 		}
 	}

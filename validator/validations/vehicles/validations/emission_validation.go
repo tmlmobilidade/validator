@@ -31,12 +31,13 @@ Valid options are:
 
 func EmissionValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
 	ctx := lib.NewValidationContext("emission", "vehicles.txt", "emission_validation", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Emission.Severity != "" {
 		ctx.WithSeverity(rules.Emission.Severity)
 	}
 
 	if vehicle.Emission == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("emission_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("emission_validation.required"))
 		return
 	}
 
@@ -47,13 +48,14 @@ func EmissionValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 	}
 
 	// Validate rules
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Emission.Options != nil {
 		if slices.Contains(*rules.Emission.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.Emission.Options, strconv.Itoa(*vehicle.Emission)) {
-			ctx.AddError(ctx.GetTranslatedMessage("emission_validation.not_allowed", *vehicle.Emission))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("emission_validation.not_allowed", *vehicle.Emission))
 			return
 		}
 	}

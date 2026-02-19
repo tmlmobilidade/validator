@@ -27,12 +27,13 @@ Valid options are:
 
 func ExternalSoundValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
 	ctx := lib.NewValidationContext("external_sound", "vehicles.txt", "external_sound_validation", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.ExternalSound.Severity != "" {
 		ctx.WithSeverity(rules.ExternalSound.Severity)
 	}
 
 	if vehicle.ExternalSound == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("external_sound_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("external_sound_validation.required"))
 		return
 	}
 
@@ -43,13 +44,14 @@ func ExternalSoundValidation(vehicle *types.Vehicle, row int, rules *types.Vehic
 	}
 
 	// Validate rules
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.ExternalSound.Options != nil {
 		if slices.Contains(*rules.ExternalSound.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.ExternalSound.Options, strconv.Itoa(*vehicle.ExternalSound)) {
-			ctx.AddError(ctx.GetTranslatedMessage("external_sound_validation.not_allowed", *vehicle.ExternalSound))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("external_sound_validation.not_allowed", *vehicle.ExternalSound))
 			return
 		}
 	}

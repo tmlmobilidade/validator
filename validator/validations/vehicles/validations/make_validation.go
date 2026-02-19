@@ -20,12 +20,13 @@ The make of the vehicle.
 */
 func MakeValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
 	ctx := lib.NewValidationContext("make", "vehicles.txt", "make_validation", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Make.Severity != "" {
 		ctx.WithSeverity(rules.Make.Severity)
 	}
 
 	if vehicle.Make == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("make_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("make_validation.required"))
 		return
 	}
 }

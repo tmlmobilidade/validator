@@ -29,12 +29,13 @@ Valid options are:
 
 func KneelingValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
 	ctx := lib.NewValidationContext("kneeling", "vehicles.txt", "kneeling_validation", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Kneeling.Severity != "" {
 		ctx.WithSeverity(rules.Kneeling.Severity)
 	}
 
 	if vehicle.Kneeling == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("kneeling_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("kneeling_validation.required"))
 		return
 	}
 
@@ -45,13 +46,14 @@ func KneelingValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 	}
 
 	// Validate rules
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Kneeling.Options != nil {
 		if slices.Contains(*rules.Kneeling.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.Kneeling.Options, strconv.Itoa(*vehicle.Kneeling)) {
-			ctx.AddError(ctx.GetTranslatedMessage("kneeling_validation.not_allowed", *vehicle.Kneeling))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("kneeling_validation.not_allowed", *vehicle.Kneeling))
 			return
 		}
 	}

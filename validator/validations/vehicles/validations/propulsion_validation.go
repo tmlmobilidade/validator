@@ -33,12 +33,13 @@ Valid options are:
 
 func PropulsionValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
 	ctx := lib.NewValidationContext("propulsion", "vehicles.txt", "propulsion_validation", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Propulsion.Severity != "" {
 		ctx.WithSeverity(rules.Propulsion.Severity)
 	}
 
 	if vehicle.Propulsion == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("propulsion_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("propulsion_validation.required"))
 		return
 	}
 
@@ -49,13 +50,14 @@ func PropulsionValidation(vehicle *types.Vehicle, row int, rules *types.Vehicles
 	}
 
 	// Validate rules
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Propulsion.Options != nil {
 		if slices.Contains(*rules.Propulsion.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.Propulsion.Options, strconv.Itoa(*vehicle.Propulsion)) {
-			ctx.AddError(ctx.GetTranslatedMessage("propulsion_validation.not_allowed", *vehicle.Propulsion))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("propulsion_validation.not_allowed", *vehicle.Propulsion))
 			return
 		}
 	}

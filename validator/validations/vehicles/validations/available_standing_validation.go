@@ -20,12 +20,13 @@ The number of standing available on the vehicle.
 
 func AvailableStandingValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
 	ctx := lib.NewValidationContext("available_standing", "vehicles.txt", "available_standing_validation", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.AvailableStanding.Severity != "" {
 		ctx.WithSeverity(rules.AvailableStanding.Severity)
 	}
 
 	if vehicle.AvailableStanding == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("available_standing_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("available_standing_validation.required"))
 		return
 	}
 

@@ -28,12 +28,13 @@ Valid options are:
 
 func SideDisplayValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
 	ctx := lib.NewValidationContext("side_display", "vehicles.txt", "side_display_validation", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.SideDisplay.Severity != "" {
 		ctx.WithSeverity(rules.SideDisplay.Severity)
 	}
 
 	if vehicle.SideDisplay == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("side_display_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("side_display_validation.required"))
 		return
 	}
 
@@ -44,13 +45,14 @@ func SideDisplayValidation(vehicle *types.Vehicle, row int, rules *types.Vehicle
 	}
 
 	// Validate rules
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.SideDisplay.Options != nil {
 		if slices.Contains(*rules.SideDisplay.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.SideDisplay.Options, strconv.Itoa(*vehicle.SideDisplay)) {
-			ctx.AddError(ctx.GetTranslatedMessage("side_display_validation.not_allowed", *vehicle.SideDisplay))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("side_display_validation.not_allowed", *vehicle.SideDisplay))
 			return
 		}
 	}
