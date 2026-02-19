@@ -6,10 +6,10 @@ MAIN_PKG := ./
 all: build
 
 build:
-	go build -o bin/$(APP_NAME) $(MAIN_PKG)
+	go build -o ./../bin/$(APP_NAME) $(MAIN_PKG)
 
 run: build
-	./bin/$(APP_NAME) $(ARGS)
+	./../bin/$(APP_NAME) $(ARGS)
 
 dev:
 	go run main.go -out=output.json -rules=../tml-rules.json -lang=en -log=debug --input=$(INPUT)

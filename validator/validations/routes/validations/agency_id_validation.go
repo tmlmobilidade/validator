@@ -42,7 +42,7 @@ func AgencyIdValidation(route *types.Route, row int, gtfs types.Gtfs, rules *typ
 	if route.AgencyId != nil && *route.AgencyId != "" {
 		// Check Foreign Key
 		if !lib.GtfsIdMapKeyExists(&gtfs, "agency", *route.AgencyId) {
-			ctx.AddError(ctx.GetTranslatedMessage("agency_id_validation.not_found", map[string]interface{}{"agency_id": *route.AgencyId}))
+			ctx.AddError(ctx.GetTranslatedMessage("agency_id_validation.not_found", map[string]any{"agency_id": *route.AgencyId}))
 			return
 		}
 	}

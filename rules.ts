@@ -148,7 +148,7 @@ type GtfsRules = {
         registration_date: RuleConfig;
         available_seats: RuleConfig;
         available_standing: RuleConfig;
-        typology: RuleConfig;
+        typology: WithOptions<RuleConfig>;
         propulsion: WithOptions<RuleConfig>;
         emission: WithOptions<RuleConfig>;
         climatization: WithOptions<RuleConfig>;
@@ -681,6 +681,7 @@ const rules: GtfsRules = {
         },
         typology: {
             severity: "error",
+            options: ["0.1", "0.2", "0.3", "1.1", "1.2", "1.3", "2.1", "2.2", "2.3", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "4.1", "4.2", "4.3", "7.1", "7.2", "7.3"]
         },
         propulsion: {
             severity: "error",
