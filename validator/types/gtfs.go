@@ -451,7 +451,7 @@ type Vehicle struct {
 	Make              *string  `json:"make"`
 	Model             *string  `json:"model"`
 	Owner             *string  `json:"owner"`
-	RegistrationDate  string   `json:"registration_date"`
+	RegistrationDate  *string  `json:"registration_date"`
 	AvailableSeats    *int     `json:"available_seats"`
 	AvailableStanding *int     `json:"available_standing"`
 	Typology          *float64 `json:"typology"`

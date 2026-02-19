@@ -24,12 +24,12 @@ func RegistrationDateValidation(vehicle *types.Vehicle, row int, rules *types.Ve
 		ctx.WithSeverity(rules.RegistrationDate.Severity)
 	}
 
-	if vehicle.RegistrationDate == "" {
+	if vehicle.RegistrationDate == nil {
 		ctx.AddError(ctx.GetTranslatedMessage("registration_date_validation.required"))
 		return
 	}
 
-	if !lib.IsValidServiceDate(vehicle.RegistrationDate) {
+	if !lib.IsValidServiceDate(*vehicle.RegistrationDate) {
 		ctx.AddError(ctx.GetTranslatedMessage("registration_date_validation.invalid", vehicle.RegistrationDate))
 		return
 	}

@@ -99,7 +99,7 @@ func ParseVehicles(rawVehicles types.VehicleRaw, row int) types.Vehicle {
 	vehicle.Make = lib.IfThenElse(make != "", &make, nil)
 	vehicle.Model = lib.IfThenElse(model != "", &model, nil)
 	vehicle.Owner = lib.IfThenElse(owner != "", &owner, nil)
-	vehicle.RegistrationDate = registrationDate
+	vehicle.RegistrationDate = lib.IfThenElse(registrationDate != "", &registrationDate, nil)
 	vehicle.AvailableSeats = lib.IfThenElse(rawVehicles.AvailableSeats != "", &availableSeats, nil)
 	vehicle.AvailableStanding = lib.IfThenElse(rawVehicles.AvailableStanding != "", &availableStanding, nil)
 	vehicle.Typology = lib.IfThenElse(rawVehicles.Typology != "", &typology, nil)
