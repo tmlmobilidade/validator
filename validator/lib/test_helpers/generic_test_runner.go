@@ -124,8 +124,6 @@ func RunGenericEnumTests(t *testing.T, fieldName string, validOptions []int, val
 }
 
 // RunGenericEnumFloat32Tests runs all float32 enum validation test cases
-
-// RunGenericEnumFloat32Tests runs all float32 enum validation test cases
 func RunGenericEnumFloat32Tests(t *testing.T, fieldName string, validOptions []float32, validateFunc func(value *float32, row int) (errors int, warnings int)) {
 	t.Helper()
 
