@@ -30,7 +30,7 @@ func TripIdLimitCharactersValidation(trip *types.Trip, row int, gtfs *types.Gtfs
 		return
 	}
 
-	if len(*trip.TripId) > 31 {
+	if len(*trip.TripId) > 32 {
 		ctx.AddError(ctx.GetTranslatedMessage("trip_id_limit_characters_validation.too_long"))
 		return
 	}
