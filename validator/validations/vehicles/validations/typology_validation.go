@@ -71,7 +71,7 @@ func TypologyValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 		}
 
 		if !slices.Contains(*rules.Typology.Options, strconv.FormatFloat(*vehicle.Typology, 'f', -1, 64)) {
-			ctx.AddError(ctx.GetTranslatedMessage("typology_validation.not_allowed", map[string]any{"value": *vehicle.Typology}))
+			ctx.AddError(ctx.GetTranslatedMessage("typology_validation.not_allowed", *vehicle.Typology))
 			return
 		}
 	}

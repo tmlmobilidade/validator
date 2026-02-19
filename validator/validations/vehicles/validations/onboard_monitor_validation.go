@@ -50,7 +50,7 @@ func OnboardMonitorValidation(vehicle *types.Vehicle, row int, rules *types.Vehi
 		}
 
 		if !slices.Contains(*rules.OnboardMonitor.Options, strconv.Itoa(*vehicle.OnboardMonitor)) {
-			ctx.AddError(ctx.GetTranslatedMessage("onboard_monitor_validation.not_allowed", map[string]any{"value": *vehicle.OnboardMonitor}))
+			ctx.AddError(ctx.GetTranslatedMessage("onboard_monitor_validation.not_allowed", *vehicle.OnboardMonitor))
 			return
 		}
 	}

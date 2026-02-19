@@ -52,7 +52,7 @@ func RampValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules)
 		}
 
 		if !slices.Contains(*rules.Ramp.Options, strconv.Itoa(*vehicle.Ramp)) {
-			ctx.AddError(ctx.GetTranslatedMessage("ramp_validation.not_allowed", map[string]any{"value": *vehicle.Ramp}))
+			ctx.AddError(ctx.GetTranslatedMessage("ramp_validation.not_allowed", *vehicle.Ramp))
 			return
 		}
 	}

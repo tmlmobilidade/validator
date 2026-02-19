@@ -1,7 +1,6 @@
 package rider_categories
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -40,14 +39,14 @@ func ParseRiderCategories(rawRiderCategories types.RiderCategoryRaw, row int) ty
 	// Parse string fields
 	for field, target := range stringFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawRiderCategories, "gtfs", field), target); errMsg != "" {
-			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]interface{}{"field": field, "error": errMsg}))
+			addMessage(field, errMsg)
 		}
 	}
 
 	// Parse int fields
 	for field, target := range intFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawRiderCategories, "gtfs", field), target); errMsg != "" {
-			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]interface{}{"field": field, "error": errMsg}))
+			addMessage(field, errMsg)
 		}
 	}
 

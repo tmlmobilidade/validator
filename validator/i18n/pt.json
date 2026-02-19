@@ -73,7 +73,7 @@
         "invalid": "O campo \"agency_url\" \"%s\" não é um URL válido",
         "not_allowed": "O campo \"agency_url\" \"%s\" não é permitido"
     },
-    "parse_error": {
+    "parser": {
         "forbidden": " ao transformar \"%s\" proibido",
         "int8": "Falha ao transformar \"%s\" para int8",
         "int16": "Falha ao transformar \"%s\" para int16",

@@ -50,7 +50,7 @@ func FrontDisplayValidation(vehicle *types.Vehicle, row int, rules *types.Vehicl
 		}
 
 		if !slices.Contains(*rules.FrontDisplay.Options, strconv.Itoa(*vehicle.FrontDisplay)) {
-			ctx.AddError(ctx.GetTranslatedMessage("front_display_validation.not_allowed", map[string]any{"value": *vehicle.FrontDisplay}))
+			ctx.AddError(ctx.GetTranslatedMessage("front_display_validation.not_allowed", *vehicle.FrontDisplay))
 			return
 		}
 	}

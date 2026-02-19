@@ -1,7 +1,6 @@
 package feed_info
 
 import (
-	"main/i18n"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -41,7 +40,7 @@ func ParseFeedInfo(rawFeedInfo types.FeedInfoRaw, row int) types.FeedInfo {
 	// Parse string fields
 	for field, target := range stringFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawFeedInfo, "gtfs", field), target); errMsg != "" {
-			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]any{"field": field, "error": errMsg}))
+			addMessage(field, errMsg)
 		}
 	}
 

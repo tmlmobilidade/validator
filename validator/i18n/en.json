@@ -73,7 +73,7 @@
         "invalid": "Field \"agency_url\" \"%s\" is not a valid URL",
         "not_allowed": "Field \"agency_url\" \"%s\" is not allowed"
     },
-    "parse_error": {
+    "parser": {
         "forbidden": "ed to parse \"%s forbidden",
         "int8": "Failed to parse \"%s\" to int8",
         "int16": "Failed to parse \"%s\" to int16",

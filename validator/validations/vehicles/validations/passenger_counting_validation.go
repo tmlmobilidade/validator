@@ -49,7 +49,7 @@ func PassengerCountingValidation(vehicle *types.Vehicle, row int, rules *types.V
 		}
 
 		if !slices.Contains(*rules.PassengerCounting.Options, strconv.Itoa(*vehicle.PassengerCounting)) {
-			ctx.AddError(ctx.GetTranslatedMessage("passenger_counting_validation.not_allowed", map[string]any{"value": *vehicle.PassengerCounting}))
+			ctx.AddError(ctx.GetTranslatedMessage("passenger_counting_validation.not_allowed", *vehicle.PassengerCounting))
 			return
 		}
 	}

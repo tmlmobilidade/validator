@@ -30,7 +30,7 @@ func RegistrationDateValidation(vehicle *types.Vehicle, row int, rules *types.Ve
 	}
 
 	if !lib.IsValidServiceDate(*vehicle.RegistrationDate) {
-		ctx.AddError(ctx.GetTranslatedMessage("registration_date_validation.invalid", &vehicle.RegistrationDate))
+		ctx.AddError(ctx.GetTranslatedMessage("registration_date_validation.invalid", *vehicle.RegistrationDate))
 		return
 	}
 }

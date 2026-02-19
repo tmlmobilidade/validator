@@ -37,7 +37,7 @@ func InternalSoundValidation(vehicle *types.Vehicle, row int, rules *types.Vehic
 
 	validOptions := []int{0, 1}
 	if !slices.Contains(validOptions, *vehicle.InternalSound) {
-		ctx.AddError(ctx.GetTranslatedMessage("internal_sound_validation.invalid", strconv.Itoa(*vehicle.InternalSound)))
+		ctx.AddError(ctx.GetTranslatedMessage("internal_sound_validation.invalid", *vehicle.InternalSound))
 		return
 	}
 
@@ -48,7 +48,7 @@ func InternalSoundValidation(vehicle *types.Vehicle, row int, rules *types.Vehic
 		}
 
 		if !slices.Contains(*rules.InternalSound.Options, strconv.Itoa(*vehicle.InternalSound)) {
-			ctx.AddError(ctx.GetTranslatedMessage("internal_sound_validation.not_allowed", map[string]any{"value": *vehicle.InternalSound}))
+			ctx.AddError(ctx.GetTranslatedMessage("internal_sound_validation.not_allowed", *vehicle.InternalSound))
 			return
 		}
 	}

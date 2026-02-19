@@ -50,7 +50,7 @@ func LoweredFloorValidation(vehicle *types.Vehicle, row int, rules *types.Vehicl
 		}
 
 		if !slices.Contains(*rules.LoweredFloor.Options, strconv.Itoa(*vehicle.LoweredFloor)) {
-			ctx.AddError(ctx.GetTranslatedMessage("lowered_floor_validation.not_allowed", map[string]any{"value": *vehicle.LoweredFloor}))
+			ctx.AddError(ctx.GetTranslatedMessage("lowered_floor_validation.not_allowed", *vehicle.LoweredFloor))
 			return
 		}
 	}

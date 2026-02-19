@@ -32,7 +32,7 @@ func VehicleIdValidation(vehicle *types.Vehicle, row int, gtfs *types.Gtfs, rule
 
 	rows, err := gtfs.GetRowsById("vehicles", *vehicle.VehicleId)
 	if err == nil && len(rows) > 1 {
-		ctx.AddError(ctx.GetTranslatedMessage("vehicle_id_validation.duplicate", map[string]any{"vehicle_id": *vehicle.VehicleId}))
+		ctx.AddError(ctx.GetTranslatedMessage("vehicle_id_validation.duplicate", *vehicle.VehicleId))
 		return
 	}
 }
