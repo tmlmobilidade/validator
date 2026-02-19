@@ -40,8 +40,8 @@ func EmissionValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 		return
 	}
 
-	validOptions := map[int]struct{}{0: {}, 1: {}, 2: {}}
-	if _, ok := validOptions[*vehicle.Emission]; !ok {
+	validOptions := []int{1, 2, 3, 4, 5, 6}
+	if !slices.Contains(validOptions, *vehicle.Emission) {
 		ctx.AddError(ctx.GetTranslatedMessage("emission_validation.invalid", strconv.Itoa(*vehicle.Emission)))
 		return
 	}
