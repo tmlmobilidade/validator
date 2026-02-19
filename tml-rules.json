@@ -319,6 +319,21 @@
 			"severity": "ignore"
 		}
 	},
+	"rider_categories": {
+		"_file": "ignore",
+		"rider_category_id": {
+			"severity": "error"
+		},
+		"rider_category_name": {
+			"severity": "error"
+		},
+		"eligibility_url": { 
+			"severity": "warning"
+		},
+		"is_default_fare_category": {
+			"severity": "error"
+		}
+	},
 	"routes": {
 		"_file": "error",
 		"agency_id": {

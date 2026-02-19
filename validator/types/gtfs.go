@@ -298,10 +298,10 @@ type Timeframe struct {
 
 /* RIDER CATEGORY*/
 type RiderCategory struct {
-	EligibilityUrl        string `json:"eligibility_url"`
-	IsDefaultFareCategory bool   `json:"is_default_fare_category"`
-	RiderCategoryId       string `json:"rider_category_id"`
-	RiderCategoryName     string `json:"rider_category_name"`
+	EligibilityUrl        *string `json:"eligibility_url"`
+	IsDefaultFareCategory *int    `json:"is_default_fare_category"`
+	RiderCategoryId       *string `json:"rider_category_id"`
+	RiderCategoryName     *string `json:"rider_category_name"`
 }
 
 /* FARE MEDIA */

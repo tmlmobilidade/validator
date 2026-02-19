@@ -275,6 +275,13 @@ type GtfsRules = {
         attribution_email: RuleConfig;
         attribution_phone: RuleConfig;
     }
+    rider_categories: {
+        _file: Severity;
+        rider_category_id: RuleConfig;
+        rider_category_name: RuleConfig;
+        is_default_fare_category: RuleConfig;
+        eligibility_url: RuleConfig;
+    }
 }
 
 const rules: GtfsRules = {
@@ -1015,6 +1022,21 @@ const rules: GtfsRules = {
         },
         attribution_phone: {
             severity: "ignore",
+        }
+    },
+    rider_categories: {
+        _file: "ignore",
+        rider_category_id: {
+            severity: "error",
+        },
+        rider_category_name: {
+            severity: "error",
+        },
+        is_default_fare_category: {
+            severity: "error",
+        },
+        eligibility_url: {
+            severity: "error",
         }
     }
 }

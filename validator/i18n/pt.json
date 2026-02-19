@@ -664,6 +664,21 @@
         "not_matching": "O campo \"direction_id\" \"%s\" não corresponde do pattern_id \"%s\"",
         "required": "Os campos \"pattern_id\" e \"direction_id\" são obrigatórios para validar a correspondência"
     },
+    "eligibility_url_validation": {
+        "invalid": "O campo \"eligibility_url\" deve ser um URL válido"
+    },
+    "is_default_fare_category_validation": {
+        "required": "O campo \"is_default_fare_category\" é obrigatório",
+        "invalid": "O campo \"is_default_fare_category\" deve ser 0 ou 1",
+        "not_allowed": "O campo \"is_default_fare_category\" \"%s\" não é permitido"
+    },
+    "rider_category_name_validation": {
+        "required": "O campo \"rider_category_name\" é obrigatório"
+    },
+    "rider_category_id_validation": {
+        "required": "O campo \"rider_category_id\" é obrigatório",
+        "duplicate": "Campo \"rider_category_id\" \"%s\" duplicado encontrado. O campo \"rider_category_id\" deve ser único"
+    },
     "pattern_id_format_validation": {
         "invalid": "O campo \"pattern_id\" deve ser um ID válido no formato \"XXXX_X_X\", recebido: %s"
     },

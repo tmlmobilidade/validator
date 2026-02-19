@@ -663,6 +663,21 @@
         "not_matching": "Field \"direction_id\" \"%s\" does not match the pattern_id \"%s\"",
         "required": "Fields \"pattern_id\" and \"direction_id\" are required to validate the match"
     },
+    "eligibility_url_validation": {
+        "invalid": "Field \"eligibility_url\" must be a valid URL"
+    },
+    "is_default_fare_category_validation": {
+        "required": "Field \"is_default_fare_category\" is required",
+        "invalid": "Field \"is_default_fare_category\" must be 0 or 1",
+        "not_allowed": "Field \"is_default_fare_category\" \"%s\" is not allowed"
+    },
+    "rider_category_name_validation": {
+        "required": "Field \"rider_category_name\" is required"
+    },
+    "rider_category_id_validation": {
+        "required": "Field \"rider_category_id\" is required",
+        "duplicate": "Duplicate field \"rider_category_id\" \"%s\" found. Field \"rider_category_id\" must be unique"
+    },
     "pattern_id_format_validation": {
         "invalid": "Field \"pattern_id\" must be a valid ID in the format \"XXXX_X_X\", received: %s"
     },

@@ -943,6 +943,14 @@ func (g *Gtfs) GetFareAttribute(rowIndex int) (FareAttributeRaw, error) {
 	return convertRowToStruct[FareAttributeRaw](row), nil
 }
 
+// IterateRiderCategories iterates over all rider categories, calling fn for each
+func (g *Gtfs) IterateRiderCategories(fn func(int, RiderCategoryRaw) error) error {
+	return g.iterateTable("rider_categories", func(rowIndex int, row map[string]string) error {
+		riderCategoryRaw := convertRowToStruct[RiderCategoryRaw](row)
+		return fn(rowIndex, riderCategoryRaw)
+	})
+}
+
 // IterateFrequencies iterates over all frequencies, calling fn for each
 func (g *Gtfs) IterateFrequencies(fn func(int, FrequenciesRaw) error) error {
 	return g.iterateTable("frequencies", func(rowIndex int, row map[string]string) error {
