@@ -4,7 +4,6 @@ import (
 	"main/lib"
 	"main/services"
 	"main/types"
-	"strconv"
 )
 
 /*
@@ -30,12 +29,22 @@ func FareMediaNameValidation(fareMedia *types.FareMedia, row int, gtfs *types.Gt
 		ctx.WithSeverity(rules.FareMediaName.Severity)
 	}
 
-	// Validate that fareMedia.FareMediaType is 2 (transit cards) or 4 (mobile apps)
-	if fareMedia.FareMediaType != nil && (strconv.Itoa(*fareMedia.FareMediaType) == "2" || strconv.Itoa(*fareMedia.FareMediaType) == "4") {
-		if fareMedia.FareMediaName == nil || *fareMedia.FareMediaName == "" {
+	if fareMedia.FareMediaName != nil && ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("fare_media_name_validation.forbidden"))
+		return
+	}
+
+	if fareMedia.FareMediaName == nil {
+		if fareMedia.FareMediaType != nil && (*fareMedia.FareMediaType == 2 || *fareMedia.FareMediaType == 4) {
 			ctx.AddWarning(ctx.GetTranslatedMessage("fare_media_name_validation.warning"))
 			return
 		}
-		return
+
+		if ctx.ShouldSkip() {
+			return
+		}
+
+		message := ctx.GetRequiredMessage("fare_media_name_validation.required", "fare_media_name_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 	}
 }

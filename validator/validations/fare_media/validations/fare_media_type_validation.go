@@ -41,9 +41,9 @@ func FareMediaTypeValidation(fareMedia *types.FareMedia, row int, gtfs *types.Gt
 		return
 	}
 
-	validTypeOptions := []string{"0", "1", "2", "3", "4"}
+	validTypeOptions := []int{0, 1, 2, 3, 4}
 	// Validate that fareMedia.FareMediaType is in the valid options
-	if !slices.Contains(validTypeOptions, strconv.Itoa(*fareMedia.FareMediaType)) {
+	if !slices.Contains(validTypeOptions, *fareMedia.FareMediaType) {
 		ctx.AddError(ctx.GetTranslatedMessage("fare_media_type_validation.invalid", fareMedia.FareMediaType))
 		return
 	}

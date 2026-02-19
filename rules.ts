@@ -190,7 +190,7 @@ type GtfsRules = {
         _file: Severity;
         fare_id: RuleConfig;
         fare_media_name: RuleConfig;
-        fare_media_type:RuleConfig;
+        fare_media_type:WithOptions<RuleConfig>;
     }
     shapes: {
         _file: Severity;
@@ -800,7 +800,7 @@ const rules: GtfsRules = {
         }
     },
     fare_media: {
-        _file: "error",
+        _file: "ignore",
         fare_id: {
             severity: "error",
         },
@@ -809,6 +809,7 @@ const rules: GtfsRules = {
         },
         fare_media_type: {
             severity: "error",
+            options: ["0", "1", "2", "3", "4"]
         }
     },
     shapes: {

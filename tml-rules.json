@@ -200,7 +200,7 @@
 		}
 	},
 	"fare_media": {
-		"_file": "error",
+		"_file": "ignore",
 		"fare_id": {
 			"severity": "error"
 		},

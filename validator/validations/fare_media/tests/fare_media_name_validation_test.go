@@ -33,7 +33,7 @@ func TestAllGenericOptionsForFareMediaName(t *testing.T) {
 		fareMedia := &types.FareMedia{
 			FareMediaId:   lib.Ptr("FM5"),
 			FareMediaType: lib.Ptr(2),
-			FareMediaName: lib.Ptr(""),
+			FareMediaName: nil,
 		}
 		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"fare_media": map[string][]int{"FM5": {1}}}}.ToGtfsWithDB()
 		if err != nil {
