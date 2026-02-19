@@ -1,4 +1,4 @@
-package tests
+package pathways_tests
 
 import (
 	"main/lib/test_helpers"
