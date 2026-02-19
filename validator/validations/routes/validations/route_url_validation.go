@@ -69,7 +69,7 @@ func RouteUrlValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *ty
 		}
 
 		if !slices.Contains(*rules.RouteUrl.Options, *route.RouteUrl) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_url_validation.not_allowed", map[string]interface{}{"value": *route.RouteUrl}))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_url_validation.not_allowed", map[string]any{"value": *route.RouteUrl}))
 			return
 		}
 	}

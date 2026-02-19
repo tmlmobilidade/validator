@@ -73,7 +73,7 @@ func RouteDescValidation(route *types.Route, row int, rules *types.RoutesRules) 
 		}
 
 		if !slices.Contains(*rules.RouteDesc.Options, *route.RouteDesc) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_desc_validation.not_allowed", map[string]interface{}{"value": *route.RouteDesc}))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_desc_validation.not_allowed", map[string]any{"value": *route.RouteDesc}))
 			return
 		}
 	}

@@ -60,7 +60,7 @@ func RouteShortNameValidation(route *types.Route, row int, rules *types.RoutesRu
 		}
 
 		if !slices.Contains(*rules.RouteShortName.Options, *route.RouteShortName) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_short_name_validation.not_allowed", map[string]interface{}{"value": *route.RouteShortName}))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_short_name_validation.not_allowed", map[string]any{"value": *route.RouteShortName}))
 			return
 		}
 	}

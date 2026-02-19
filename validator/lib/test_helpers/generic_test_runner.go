@@ -123,6 +123,46 @@ func RunGenericEnumTests(t *testing.T, fieldName string, validOptions []int, val
 	}
 }
 
+// RunGenericEnumFloat32Tests runs all float32 enum validation test cases
+func RunGenericEnumFloat32Tests(t *testing.T, fieldName string, validOptions []float32, validateFunc func(value *float32, row int) (errors int, warnings int)) {
+	t.Helper()
+
+	cases := GetGenericEnumFloat32TestCases(fieldName, validOptions)
+
+	for _, tc := range cases {
+		t.Run(tc.Name, func(t *testing.T) {
+			errors, warnings := validateFunc(tc.Value, tc.Row)
+
+			if errors != tc.ExpectedErrors {
+				t.Errorf("%s: expected %d errors, got %d", tc.Name, tc.ExpectedErrors, errors)
+			}
+			if warnings != tc.ExpectedWarnings {
+				t.Errorf("%s: expected %d warnings, got %d", tc.Name, tc.ExpectedWarnings, warnings)
+			}
+		})
+	}
+}
+
+// RunGenericEnumFloat64Tests runs all float64 enum validation test cases
+func RunGenericEnumFloat64Tests(t *testing.T, fieldName string, validOptions []float64, validateFunc func(value *float64, row int) (errors int, warnings int)) {
+	t.Helper()
+
+	cases := GetGenericEnumFloat64TestCases(fieldName, validOptions)
+
+	for _, tc := range cases {
+		t.Run(tc.Name, func(t *testing.T) {
+			errors, warnings := validateFunc(tc.Value, tc.Row)
+
+			if errors != tc.ExpectedErrors {
+				t.Errorf("%s: expected %d errors, got %d", tc.Name, tc.ExpectedErrors, errors)
+			}
+			if warnings != tc.ExpectedWarnings {
+				t.Errorf("%s: expected %d warnings, got %d", tc.Name, tc.ExpectedWarnings, warnings)
+			}
+		})
+	}
+}
+
 // RunGenericIdTests runs all ID validation test cases
 func RunGenericIdTests(t *testing.T, fieldName string, validateFunc func(id *string, row int, existingIds map[string][]int) (errors int)) {
 	t.Helper()

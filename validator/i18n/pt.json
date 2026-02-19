@@ -46,7 +46,7 @@
     "agency_name_id_match_validation": {
         "forbidden": "s campos \"agency_id\" proibido",
         "required": "Os campos \"agency_id\" e \"agency_name\" são obrigatórios",
-        "no_match": "O campo \"agency_id\" \"%s\" não corresponde ao campo \"agency_name\" \"%s\""
+        "no_match": "A correspondência entre o campo \"agency_id\" \"%s\" e o campo \"agency_name\" \"%s\" não é válida. Para o agency_id \"%s\" é esperado o nome \"%s\""
     },
     "agency_name_validation": {
         "forbidden": "O campo \"agency_name\" é proibido",
@@ -609,6 +609,7 @@
         "route_id_not_found": "O campo \"route_id\" não foi encontrado",
         "direction_id_not_found": "O campo \"direction_id\" não foi encontrado",
         "not_allowed": "O campo \"pattern_id\" \"%s\" não é permitido",
+        "invalid_pattern_id": "O campo \"pattern_id\" deve estar no formato \"XXXX_X_X\", recebido: %s",
         "different_direction_id": "Encontrados direction_id's diferentes para o mesmo pattern_id: %s",
         "different_route_id": "Encontrados route_id's diferentes para o mesmo pattern_id: %s",
         "different_shape_id": "Encontrados shape_id's diferentes para o mesmo pattern_id: %s",
@@ -669,5 +670,188 @@
         "invalid_direction_id": "O campo \"direction_id\" deve ser um número inteiro entre 0 e 1, recebido: %s",
         "not_matching": "O campo \"direction_id\" \"%s\" não corresponde do pattern_id \"%s\"",
         "required": "Os campos \"pattern_id\" e \"direction_id\" são obrigatórios para validar a correspondência"
+    },
+    "eligibility_url_validation": {
+        "invalid": "O campo \"eligibility_url\" deve ser um URL válido"
+    },
+    "is_default_fare_category_validation": {
+        "required": "O campo \"is_default_fare_category\" é obrigatório",
+        "invalid": "O campo \"is_default_fare_category\" deve ser 0 ou 1",
+        "not_allowed": "O campo \"is_default_fare_category\" \"%s\" não é permitido"
+    },
+    "rider_category_name_validation": {
+        "required": "O campo \"rider_category_name\" é obrigatório"
+    },
+    "rider_category_id_validation": {
+        "required": "O campo \"rider_category_id\" é obrigatório",
+        "duplicate": "Campo \"rider_category_id\" \"%s\" duplicado encontrado. O campo \"rider_category_id\" deve ser único"
+    },
+    "pattern_id_format_validation": {
+        "invalid": "O campo \"pattern_id\" deve ser um ID válido no formato \"XXXX_X_X\", recebido: %s"
+    },
+    "fare_media_id_validation": {
+        "required": "O campo \"fare_media_id\" é obrigatório",
+        "duplicate": "Campo \"fare_media_id\" \"%s\" duplicado encontrado. O campo \"fare_media_id\" deve ser único"
+    },
+    "fare_media_name_validation": {
+        "warning": "O campo \"fare_media_name\" é recomendado para fare media de tipo 2 (transit cards) ou 4 (mobile apps)"
+    },
+    "fare_media_type_validation": {
+        "required": "O campo \"fare_media_type\" é obrigatório",
+        "invalid": "O campo \"fare_media_type\" deve ser 0, 1, 2, 3 ou 4",
+        "not_allowed": "O campo \"fare_media_type\" \"%s\" não é permitido"
+    },
+    "vehicle_id_validation": {
+        "required": "O campo \"vehicle_id\" é obrigatório",
+        "duplicate": "Campo \"vehicle_id\" \"%s\" duplicado encontrado. O campo \"vehicle_id\" deve ser único"
+    },
+    "license_plate_validation": {
+        "required": "O campo \"license_plate\" é obrigatório",
+        "invalid": "O campo \"license_plate\" \"%s\" tem um formato inválido deve ser no formato XX-XX-XX",
+        "duplicate": "Campo \"license_plate\" \"%s\" duplicado encontrado. O campo \"license_plate\" deve ser único"
+    },
+    "model_validation": {
+        "required": "O campo \"model\" é obrigatório"
+    },
+    "make_validation": {
+        "required": "O campo \"make\" é obrigatório"
+    },
+    "owner_validation": {
+        "required": "O campo \"owner\" é obrigatório"
+    },
+    "registration_date_validation": {
+        "required": "O campo \"registration_date\" é obrigatório",
+        "invalid": "O campo \"registration_date\" \"%s\" não é uma data válida, deve estar no formato AAAAMMDD"
+    },
+    "available_seats_validation": {
+        "required": "O campo \"available_seats\" é obrigatório",
+        "invalid": "O campo \"available_seats\" \"%s\" não é um número válido"
+    },
+    "available_standing_validation": {
+        "required": "O campo \"available_standing\" é obrigatório",
+        "invalid": "O campo \"available_standing\" \"%s\" não é um número válido"
+    },
+    "typology_validation": {
+        "required": "O campo \"typology\" vai ser obrigatório em breve. Precisamos do teu feedback.",
+        "invalid": "O campo \"typology\" \"%s\" não é um tipo válido. Precisamos do teu feedback.",
+        "not_allowed": "O campo \"typology\" \"%s\" não é permitido. Precisamos do teu feedback."
+
+    },
+    "propulsion_validation": {
+        "required": "O campo \"propulsion\" é obrigatório",
+        "invalid": "O campo \"propulsion\" \"%s\" não é um tipo de propulsão válido",
+        "not_allowed": "O campo \"propulsion\" \"%s\" não é permitido"
+    },
+    "emission_validation": {
+        "required": "O campo \"emission\" é obrigatório",
+        "invalid": "O campo \"emission\" \"%s\" não é um tipo de emissão válido",
+        "not_allowed": "O campo \"emission\" \"%s\" não é permitido"
+    },
+    "climatization_validation": {
+        "required": "O campo \"climatization\" é obrigatório",
+        "invalid": "O campo \"climatization\" \"%s\" não é um tipo de climatização válido"
+    },
+    "wheelchair_validation": {
+        "required": "O campo \"wheelchair\" é obrigatório",
+        "invalid": "O campo \"wheelchair\" \"%s\" não é um tipo de wheelchair válido",
+        "not_allowed": "O campo \"wheelchair\" \"%s\" não é permitido"
+    },
+    "lowered_floor_validation": {
+        "required": "O campo \"lowered_floor\" é obrigatório",
+        "invalid": "O campo \"lowered_floor\" \"%s\" não é um tipo de lowered_floor válido",
+        "not_allowed": "O campo \"lowered_floor\" \"%s\" não é permitido"
+    },
+    "ramp_validation": {
+        "required": "O campo \"ramp\" é obrigatório",
+        "invalid": "O campo \"ramp\" \"%s\" não é um tipo de rampa válido",
+        "not_allowed": "O campo \"ramp\" \"%s\" não é permitido"
+    },
+    "kneeling_validation": {
+        "required": "O campo \"kneeling\" é obrigatório",
+        "invalid": "O campo \"kneeling\" \"%s\" não é um tipo de kneeling válido",
+        "not_allowed": "O campo \"kneeling\" \"%s\" não é permitido"
+    },
+    "static_information_validation": {
+        "required": "O campo \"static_information\" é obrigatório",
+        "invalid": "O campo \"static_information\" \"%s\" não é um tipo de static_information válido",
+        "not_allowed": "O campo \"static_information\" \"%s\" não é permitido"
+    },
+    "onboard_monitor_validation": {
+        "required": "O campo \"onboard_monitor\" é obrigatório",
+        "invalid": "O campo \"onboard_monitor\" \"%s\" não é um tipo de onboard_monitor válido",
+        "not_allowed": "O campo \"onboard_monitor\" \"%s\" não é permitido"
+    },
+    "front_display_validation": {
+        "required": "O campo \"front_display\" é obrigatório",
+        "invalid": "O campo \"front_display\" \"%s\" não é um tipo de front_display válido",
+        "not_allowed": "O campo \"front_display\" \"%s\" não é permitido"
+    },
+    "rear_display_validation": {
+        "required": "O campo \"rear_display\" é obrigatório",
+        "invalid": "O campo \"rear_display\" \"%s\" não é um tipo de rear_display válido",
+        "not_allowed": "O campo \"rear_display\" \"%s\" não é permitido"
+    },
+    "side_display_validation": {
+        "required": "O campo \"side_display\" é obrigatório",
+        "invalid": "O campo \"side_display\" \"%s\" não é um tipo de side_display válido",
+        "not_allowed": "O campo \"side_display\" \"%s\" não é permitido"
+    },
+    "internal_sound_validation": {
+        "required": "O campo \"internal_sound\" é obrigatório",
+        "invalid": "O campo \"internal_sound\" \"%s\" não é um tipo de internal_sound válido",
+        "not_allowed": "O campo \"internal_sound\" \"%s\" não é permitido"
+    },  
+    "external_sound_validation": {
+        "required": "O campo \"external_sound\" é obrigatório",
+        "invalid": "O campo \"external_sound\" \"%s\" não é um tipo de external_sound válido",
+        "not_allowed": "O campo \"external_sound\" \"%s\" não é permitido"
+    },
+    "consumption_meter_validation": {
+        "required": "O campo \"consumption_meter\" é obrigatório",
+        "invalid": "O campo \"consumption_meter\" \"%s\" não é um tipo de consumption_meter válido",
+        "not_allowed": "O campo \"consumption_meter\" \"%s\" não é permitido"
+    },
+    "bicycles_validation": {
+        "required": "O campo \"bicycles\" é obrigatório",
+        "invalid": "O campo \"bicycles\" \"%s\" não é um tipo de bicycles válido",
+        "not_allowed": "O campo \"bicycles\" \"%s\" não é permitido"
+    },
+    "passenger_counting_validation": {
+        "required": "O campo \"passenger_counting\" é obrigatório",
+        "invalid": "O campo \"passenger_counting\" \"%s\" não é um tipo de passenger_counting válido",
+        "not_allowed": "O campo \"passenger_counting\" \"%s\" não é permitido"
+    },
+    "video_surveillance_validation": {
+        "required": "O campo \"video_surveillance\" é obrigatório",
+        "invalid": "O campo \"video_surveillance\" \"%s\" não é um tipo de video_surveillance válido",
+        "not_allowed": "O campo \"video_surveillance\" \"%s\" não é permitido"
+    },
+    "start_time_validation": {
+        "forbidden": "O campo \"start_time\" é proibido",
+        "required": "O campo \"start_time\" é obrigatório",
+        "recommended": "O campo \"start_time\" é recomendado",
+        "invalid": "O campo \"start_time\" deve ser uma hora válida, formato esperado: HH:MM:SS, recebido: %s",
+        "not_allowed": "O campo \"start_time\" \"%s\" não é permitido"
+    },
+    "end_time_validation": {
+        "forbidden": "O campo \"end_time\" é proibido",
+        "required": "O campo \"end_time\" é obrigatório",
+        "recommended": "O campo \"end_time\" é recomendado",
+        "invalid": "O campo \"end_time\" deve ser uma hora válida, formato esperado: HH:MM:SS, recebido: %s",
+        "not_allowed": "O campo \"end_time\" \"%s\" não é permitido"
+    },
+    "headway_secs_validation": {
+        "forbidden": "O campo \"headway_secs\" é proibido",
+        "required": "O campo \"headway_secs\" é obrigatório",
+        "recommended": "O campo \"headway_secs\" é recomendado",
+        "invalid": "O campo \"headway_secs\" deve ser um número inteiro positivo",
+        "not_allowed": "O campo \"headway_secs\" \"%s\" não é permitido"
+    },
+    "exact_times_validation": {
+        "forbidden": "O campo \"exact_times\" é proibido",
+        "required": "O campo \"exact_times\" é obrigatório",
+        "recommended": "O campo \"exact_times\" é recomendado",
+        "invalid": "O campo \"exact_times\" deve ser 0 ou 1",
+        "not_allowed": "O campo \"exact_times\" \"%s\" não é permitido"
     }
 }
