@@ -4,6 +4,7 @@ import (
 	"main/lib"
 	"main/services"
 	"main/types"
+	"slices"
 	"strconv"
 )
 
@@ -37,13 +38,33 @@ func ExactTimesValidation(frequency *types.Frequencies, row int, rules *types.Fr
 		return
 	}
 
-	if frequency.ExactTimes != "0" && frequency.ExactTimes != "1" && frequency.ExactTimes != "" {
-		ctx.AddError(ctx.GetTranslatedMessage("exact_times_validation.invalid"))
+	validOptions := []int{0, 1}
+
+	if frequency.ExactTimes == nil {
+		if ctx.ShouldIgnore() {
+			return
+		}
+
+		message := ctx.GetRequiredMessage("exact_times_validation.required", "exact_times_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	if frequency.ExactTimes == "1" && frequency.EndTime <= frequency.StartTime+strconv.Itoa(int(frequency.HeadwaySecs)) {
-		ctx.AddError(ctx.GetTranslatedMessage("exact_times_validation.invalid"))
+	if !slices.Contains(validOptions, *frequency.ExactTimes) {
+		ctx.AddError(ctx.GetTranslatedMessage("exact_times_validation.invalid", *frequency.ExactTimes))
 		return
 	}
+
+	// Validate rules
+	if rules != nil && rules.ExactTimes.Options != nil {
+		if slices.Contains(*rules.ExactTimes.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.ExactTimes.Options, strconv.Itoa(*frequency.ExactTimes)) {
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("exact_times_validation.not_allowed", *frequency.ExactTimes))
+			return
+		}
+	}
+
 }

@@ -1,6 +1,7 @@
 package frequencies
 
 import (
+	"main/lib"
 	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
@@ -25,7 +26,7 @@ func TestAllHeadwaySecsValidationTestCases(t *testing.T) {
 			} else {
 				headwaySecs = 0
 			}
-			frequency := &types.Frequencies{HeadwaySecs: headwaySecs}
+			frequency := &types.Frequencies{HeadwaySecs: lib.Ptr(int(headwaySecs))}
 			validations.HeadwaySecsValidation(frequency, tc.Row, nil)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})

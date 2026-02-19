@@ -26,18 +26,13 @@ func EndTimeValidation(frequency *types.Frequencies, row int, rules *types.Frequ
 		ctx.WithSeverity(rules.EndTime.Severity)
 	}
 
-	if ctx.IsForbidden() {
-		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("end_time_validation.forbidden"))
-		return
-	}
-
-	if &frequency.EndTime == nil {
+	if frequency.EndTime == nil {
 		ctx.AddError(ctx.GetTranslatedMessage("end_time_validation.required"))
 		return
 	}
 
-	if !lib.ValidateTime(frequency.EndTime) {
-		ctx.AddError(ctx.GetTranslatedMessage("end_time_validation.invalid", frequency.EndTime))
+	if !lib.ValidateTime(*frequency.EndTime) {
+		ctx.AddError(ctx.GetTranslatedMessage("end_time_validation.invalid", *frequency.EndTime))
 		return
 	}
 }

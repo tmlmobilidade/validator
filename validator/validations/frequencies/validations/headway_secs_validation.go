@@ -25,17 +25,13 @@ func HeadwaySecsValidation(frequency *types.Frequencies, row int, rules *types.F
 	if rules != nil && rules.HeadwaySecs.Severity != "" {
 		ctx.WithSeverity(rules.HeadwaySecs.Severity)
 	}
-	if ctx.IsForbidden() {
-		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("headway_secs_validation.forbidden"))
-		return
-	}
 
-	if &frequency.HeadwaySecs == nil {
+	if frequency.HeadwaySecs == nil {
 		ctx.AddError(ctx.GetTranslatedMessage("headway_secs_validation.required"))
 		return
 	}
 
-	if frequency.HeadwaySecs <= 0 {
+	if *frequency.HeadwaySecs <= 0 {
 		ctx.AddError(ctx.GetTranslatedMessage("headway_secs_validation.invalid"))
 		return
 	}

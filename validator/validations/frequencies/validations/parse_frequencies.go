@@ -6,23 +6,26 @@ import (
 	"main/types"
 )
 
-func ParseFrequencies(frequencies *types.FrequenciesRaw, row int) *types.Frequencies {
+func ParseFrequencies(rawFrequencies *types.FrequenciesRaw, row int) *types.Frequencies {
 	var (
 		frequency                  types.Frequencies = types.Frequencies{}
 		tripId, endTime, startTime string
-		exactTimes                 string
-		headwaySecs                float64
+		exactTimes                 int
+		headwaySecs                int
 		messages                   []types.Message
 	)
 
 	stringFields := map[string]*string{
-		"trip_id":     &tripId,
-		"end_time":    &endTime,
-		"start_time":  &startTime,
+		"trip_id":    &tripId,
+		"end_time":   &endTime,
+		"start_time": &startTime,
+	}
+
+	intFields := map[string]*int{
 		"exact_times": &exactTimes,
 	}
 
-	floatFields := map[string]*float64{
+	floatFields := map[string]*int{
 		"headway_secs": &headwaySecs,
 	}
 
@@ -38,13 +41,19 @@ func ParseFrequencies(frequencies *types.FrequenciesRaw, row int) *types.Frequen
 	}
 
 	for field, target := range stringFields {
-		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&frequencies, "gtfs", field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawFrequencies, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
 
 	for field, target := range floatFields {
-		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&frequencies, "gtfs", field), target); errMsg != "" {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawFrequencies, "gtfs", field), target); errMsg != "" {
+			addMessage(field, errMsg)
+		}
+	}
+
+	for field, target := range intFields {
+		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawFrequencies, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
@@ -54,11 +63,11 @@ func ParseFrequencies(frequencies *types.FrequenciesRaw, row int) *types.Frequen
 		return &frequency
 	}
 
-	frequency.TripId = lib.IfThenElse(frequencies.TripId != "", &tripId, nil)
-	frequency.ExactTimes = exactTimes
-	frequency.HeadwaySecs = float32(headwaySecs)
-	frequency.StartTime = startTime
-	frequency.EndTime = endTime
+	frequency.TripId = lib.IfThenElse(rawFrequencies.TripId != "", &tripId, nil)
+	frequency.ExactTimes = lib.IfThenElse(rawFrequencies.ExactTimes != "", &exactTimes, nil)
+	frequency.HeadwaySecs = lib.IfThenElse(rawFrequencies.HeadwaySecs != "", &headwaySecs, nil)
+	frequency.StartTime = lib.IfThenElse(rawFrequencies.StartTime != "", &startTime, nil)
+	frequency.EndTime = lib.IfThenElse(rawFrequencies.EndTime != "", &endTime, nil)
 
 	return &frequency
 }

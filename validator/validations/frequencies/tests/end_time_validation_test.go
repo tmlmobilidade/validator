@@ -27,7 +27,7 @@ func TestAllEndTimeValidationTestCases(t *testing.T) {
 				endTime = ""
 			}
 
-			frequency := &types.Frequencies{EndTime: endTime}
+			frequency := &types.Frequencies{EndTime: &endTime}
 
 			validations.EndTimeValidation(frequency, tc.Row, nil)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)

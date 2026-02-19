@@ -17,17 +17,21 @@ func testValidParseFrequencies(t *testing.T) {
 		Actual:   services.AppMessageService.GetSummary().TotalErrors,
 		Message:  "Valid input should not error",
 	}
+
+	endTime := "10:00:00"
+	startTime := "09:00:00"
+
 	if assert := lib.Assert(assertion); assert != "" {
 		t.Error(assert)
 	}
 	if parsedFrequency.TripId == nil || *parsedFrequency.TripId != "T1" {
 		t.Errorf("Expected TripId 'T1', got '%s'", *parsedFrequency.TripId)
 	}
-	if parsedFrequency.EndTime != "10:00:00" {
-		t.Errorf("Expected EndTime '10:00:00', got '%s'", parsedFrequency.EndTime)
+	if *parsedFrequency.EndTime != endTime {
+		t.Errorf("Expected EndTime '10:00:00', got '%s'", *parsedFrequency.EndTime)
 	}
-	if parsedFrequency.StartTime != "09:00:00" {
-		t.Errorf("Expected StartTime '09:00:00', got '%s'", parsedFrequency.StartTime)
+	if *parsedFrequency.StartTime != startTime {
+		t.Errorf("Expected StartTime '09:00:00', got '%s'", *parsedFrequency.StartTime)
 	}
 }
 

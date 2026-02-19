@@ -27,12 +27,6 @@ func TripIdValidation(frequency *types.Frequencies, row int, gtfs *types.Gtfs, r
 		ctx.WithSeverity(rules.TripId.Severity)
 	}
 
-	if ctx.IsForbidden() {
-		lib.AppLogger.Accent("Trip ID is forbidden")
-		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("trip_id_validation.forbidden"))
-		return
-	}
-
 	if frequency.TripId == nil {
 		ctx.AddError(ctx.GetTranslatedMessage("trip_id_validation.required"))
 		return

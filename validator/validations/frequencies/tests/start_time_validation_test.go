@@ -27,7 +27,7 @@ func TestAllStartTimeValidationTestCases(t *testing.T) {
 				startTime = ""
 			}
 
-			frequency := &types.Frequencies{StartTime: startTime}
+			frequency := &types.Frequencies{StartTime: &startTime}
 
 			validations.StartTimeValidation(frequency, tc.Row, nil)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
