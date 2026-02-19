@@ -12,7 +12,7 @@ import (
 func TestAllLevelIndexValidationTestCases(t *testing.T) {
 	t.Run("Valid_Value", func(t *testing.T) {
 		services.AppMessageService.Clear()
-		levelIndex := &types.Levels{LevelIndex: lib.Ptr(0.0)}
+		levelIndex := &types.Levels{LevelIndex: lib.Ptr(float32(0.0))}
 		validations.LevelIndexValidation(levelIndex, 1, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Valid_Value", types.SEVERITY_ERROR)
 	})

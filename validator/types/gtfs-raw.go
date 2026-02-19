@@ -203,7 +203,7 @@ type PathwaysRaw struct {
 /* LEVELS */
 type LevelsRaw struct {
 	LevelId    string `gtfs:"level_id"`
-	LevelIndex uint16 `gtfs:"level_index"`
+	LevelIndex string `gtfs:"level_index"`
 	LevelName  string `gtfs:"level_name"`
 }
 
