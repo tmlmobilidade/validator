@@ -787,5 +787,33 @@
         "required": "O campo \"video_surveillance\" é obrigatório",
         "invalid": "O campo \"video_surveillance\" \"%s\" não é um tipo de video_surveillance válido",
         "not_allowed": "O campo \"video_surveillance\" \"%s\" não é permitido"
+    },
+    "start_time_validation": {
+        "forbidden": "O campo \"start_time\" é proibido",
+        "required": "O campo \"start_time\" é obrigatório",
+        "recommended": "O campo \"start_time\" é recomendado",
+        "invalid": "O campo \"start_time\" deve ser uma hora válida, formato esperado: HH:MM:SS, recebido: %s",
+        "not_allowed": "O campo \"start_time\" \"%s\" não é permitido"
+    },
+    "end_time_validation": {
+        "forbidden": "O campo \"end_time\" é proibido",
+        "required": "O campo \"end_time\" é obrigatório",
+        "recommended": "O campo \"end_time\" é recomendado",
+        "invalid": "O campo \"end_time\" deve ser uma hora válida, formato esperado: HH:MM:SS, recebido: %s",
+        "not_allowed": "O campo \"end_time\" \"%s\" não é permitido"
+    },
+    "headway_secs_validation": {
+        "forbidden": "O campo \"headway_secs\" é proibido",
+        "required": "O campo \"headway_secs\" é obrigatório",
+        "recommended": "O campo \"headway_secs\" é recomendado",
+        "invalid": "O campo \"headway_secs\" deve ser um número inteiro positivo",
+        "not_allowed": "O campo \"headway_secs\" \"%s\" não é permitido"
+    },
+    "exact_times_validation": {
+        "forbidden": "O campo \"exact_times\" é proibido",
+        "required": "O campo \"exact_times\" é obrigatório",
+        "recommended": "O campo \"exact_times\" é recomendado",
+        "invalid": "O campo \"exact_times\" deve ser 0 ou 1",
+        "not_allowed": "O campo \"exact_times\" \"%s\" não é permitido"
     }
 }

@@ -786,5 +786,33 @@
         "required": "Field \"video_surveillance\" is required",
         "invalid": "Field \"video_surveillance\" \"%s\" is not a valid video_surveillance type",
         "not_allowed": "Field \"video_surveillance\" \"%s\" is not allowed"
+    },
+    "start_time_validation": {
+        "forbidden": "Field \"start_time\" is forbidden",
+        "required": "Field \"start_time\" is required",
+        "recommended": "Field \"start_time\" is recommended",
+        "invalid": "Field \"start_time\" must be a valid time, expected format: HH:MM:SS, got: %s",
+        "not_allowed": "Field \"start_time\" \"%s\" is not allowed"
+    },
+    "end_time_validation": {
+        "forbidden": "Field \"end_time\" is forbidden",
+        "required": "Field \"end_time\" is required",
+        "recommended": "Field \"end_time\" is recommended",
+        "invalid": "Field \"end_time\" must be a valid time, expected format: HH:MM:SS, got: %s",
+        "not_allowed": "Field \"end_time\" \"%s\" is not allowed"
+    },
+    "headway_secs_validation": {
+        "forbidden": "Field \"headway_secs\" is forbidden",
+        "required": "Field \"headway_secs\" is required",
+        "recommended": "Field \"headway_secs\" is recommended",
+        "invalid": "Field \"headway_secs\" must be a positive integer",
+        "not_allowed": "Field \"headway_secs\" \"%s\" is not allowed"
+    },
+    "exact_times_validation": {
+        "forbidden": "Field \"exact_times\" is forbidden",
+        "required": "Field \"exact_times\" is required",
+        "recommended": "Field \"exact_times\" is recommended",
+        "invalid": "Field \"exact_times\" must be 0 or 1",
+        "not_allowed": "Field \"exact_times\" \"%s\" is not allowed"
     }
 }
