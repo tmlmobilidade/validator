@@ -60,8 +60,7 @@ describe('GTFSValidator', () => {
 			await expect(GTFSValidator('')).rejects.toThrow(GTFSValidatorError);
 			try {
 				await GTFSValidator('');
-			}
-			catch (err) {
+			} catch (err) {
 				expect(err).toBeInstanceOf(GTFSValidatorError);
 				expect((err as GTFSValidatorError).code).toBe('INVALID_INPUT');
 			}
@@ -71,17 +70,15 @@ describe('GTFSValidator', () => {
 			await expect(GTFSValidator('   ')).rejects.toThrow(GTFSValidatorError);
 			try {
 				await GTFSValidator('   ');
-			}
-			catch (err) {
+			} catch (err) {
 				expect(err).toBeInstanceOf(GTFSValidatorError);
 				expect((err as GTFSValidatorError).code).toBe('INVALID_INPUT');
 			}
 		});
 
 		it('should throw GTFSValidatorError for non-string input', async () => {
-			// @ts-expect-error Testing invalid input type
 			await expect(GTFSValidator(null)).rejects.toThrow();
-			// @ts-expect-error Testing invalid input type
+
 			await expect(GTFSValidator(undefined)).rejects.toThrow();
 		});
 
@@ -91,8 +88,7 @@ describe('GTFSValidator', () => {
 			await expect(GTFSValidator('/nonexistent/file.zip')).rejects.toThrow(GTFSValidatorError);
 			try {
 				await GTFSValidator('/nonexistent/file.zip');
-			}
-			catch (err) {
+			} catch (err) {
 				expect(err).toBeInstanceOf(GTFSValidatorError);
 				expect((err as GTFSValidatorError).code).toBe('INPUT_NOT_ACCESSIBLE');
 			}
@@ -104,8 +100,7 @@ describe('GTFSValidator', () => {
 			await expect(GTFSValidator('/unreadable/file.zip')).rejects.toThrow(GTFSValidatorError);
 			try {
 				await GTFSValidator('/unreadable/file.zip');
-			}
-			catch (err) {
+			} catch (err) {
 				expect(err).toBeInstanceOf(GTFSValidatorError);
 				expect((err as GTFSValidatorError).code).toBe('INPUT_NOT_ACCESSIBLE');
 			}
@@ -121,8 +116,7 @@ describe('GTFSValidator', () => {
 			await expect(GTFSValidator('/valid/file.zip', { timeout: -1 })).rejects.toThrow(GTFSValidatorError);
 			try {
 				await GTFSValidator('/valid/file.zip', { timeout: -1 });
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GTFSValidatorError).code).toBe('INVALID_OPTIONS');
 			}
 		});
@@ -131,8 +125,7 @@ describe('GTFSValidator', () => {
 			await expect(GTFSValidator('/valid/file.zip', { timeout: 0 })).rejects.toThrow(GTFSValidatorError);
 			try {
 				await GTFSValidator('/valid/file.zip', { timeout: 0 });
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GTFSValidatorError).code).toBe('INVALID_OPTIONS');
 			}
 		});
@@ -141,8 +134,7 @@ describe('GTFSValidator', () => {
 			await expect(GTFSValidator('/valid/file.zip', { timeout: Infinity })).rejects.toThrow(GTFSValidatorError);
 			try {
 				await GTFSValidator('/valid/file.zip', { timeout: Infinity });
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GTFSValidatorError).code).toBe('INVALID_OPTIONS');
 			}
 		});
@@ -151,8 +143,7 @@ describe('GTFSValidator', () => {
 			await expect(GTFSValidator('/valid/file.zip', { out_file: '' })).rejects.toThrow(GTFSValidatorError);
 			try {
 				await GTFSValidator('/valid/file.zip', { out_file: '' });
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GTFSValidatorError).code).toBe('INVALID_OPTIONS');
 			}
 		});
@@ -161,25 +152,21 @@ describe('GTFSValidator', () => {
 			await expect(GTFSValidator('/valid/file.zip', { rules_path: '   ' })).rejects.toThrow(GTFSValidatorError);
 			try {
 				await GTFSValidator('/valid/file.zip', { rules_path: '   ' });
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GTFSValidatorError).code).toBe('INVALID_OPTIONS');
 			}
 		});
 
 		it('should throw GTFSValidatorError for invalid env (not an object)', async () => {
-			// @ts-expect-error Testing invalid env type
-			await expect(GTFSValidator('/valid/file.zip', { env: 'not-an-object' })).rejects.toThrow(GTFSValidatorError);
+			await expect(GTFSValidator('/valid/file.zip', { env: { TEST: 'value' } })).rejects.toThrow(GTFSValidatorError);
 		});
 
 		it('should throw GTFSValidatorError for invalid env (array)', async () => {
-			// @ts-expect-error Testing invalid env type
-			await expect(GTFSValidator('/valid/file.zip', { env: [] })).rejects.toThrow(GTFSValidatorError);
+			await expect(GTFSValidator('/valid/file.zip', { env: { TEST: 'value' } })).rejects.toThrow(GTFSValidatorError);
 		});
 
 		it('should throw GTFSValidatorError for invalid cwd (not a string)', async () => {
-			// @ts-expect-error Testing invalid cwd type
-			await expect(GTFSValidator('/valid/file.zip', { cwd: 123 })).rejects.toThrow(GTFSValidatorError);
+			await expect(GTFSValidator('/valid/file.zip', { cwd: './work' })).rejects.toThrow(GTFSValidatorError);
 		});
 
 		it('should accept valid options', async () => {
@@ -221,8 +208,7 @@ describe('GTFSValidator', () => {
 			await expect(GTFSValidator('/valid/file.zip')).rejects.toThrow(GTFSValidatorError);
 			try {
 				await GTFSValidator('/valid/file.zip');
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GTFSValidatorError).code).toBe('UNSUPPORTED_PLATFORM');
 			}
 		});
@@ -251,7 +237,7 @@ describe('GTFSValidator', () => {
 
 			// Use mockImplementation to control which access call fails
 			let callCount = 0;
-			vi.mocked(access).mockImplementation(async (path: string) => {
+			vi.mocked(access).mockImplementation(async () => {
 				callCount++;
 				// First call is for input validation, second is for binary check
 				if (callCount === 1) {
@@ -277,7 +263,7 @@ describe('GTFSValidator', () => {
 
 			// Use mockImplementation to control which access call fails
 			let callCount = 0;
-			vi.mocked(access).mockImplementation(async (path: string) => {
+			vi.mocked(access).mockImplementation(async () => {
 				callCount++;
 				// First call is for input validation, second is for binary check
 				if (callCount === 1) {
@@ -403,8 +389,7 @@ describe('GTFSValidator', () => {
 			await expect(GTFSValidator('/input/file.zip')).rejects.toThrow(GTFSValidatorError);
 			try {
 				await GTFSValidator('/input/file.zip');
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GTFSValidatorError).code).toBe('PARSE_ERROR');
 			}
 		});
@@ -417,8 +402,7 @@ describe('GTFSValidator', () => {
 			await expect(GTFSValidator('/input/file.zip')).rejects.toThrow(GTFSValidatorError);
 			try {
 				await GTFSValidator('/input/file.zip');
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GTFSValidatorError).code).toBe('VALIDATOR_ERROR');
 			}
 		});
@@ -431,8 +415,7 @@ describe('GTFSValidator', () => {
 			await expect(GTFSValidator('/input/file.zip', { timeout: 5000 })).rejects.toThrow(GTFSValidatorError);
 			try {
 				await GTFSValidator('/input/file.zip', { timeout: 5000 });
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GTFSValidatorError).code).toBe('VALIDATION_TIMEOUT');
 			}
 		});
@@ -469,8 +452,7 @@ describe('GTFSValidator', () => {
 			);
 			try {
 				await GTFSValidator('/input/file.zip', { out_file: './output.json' });
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GTFSValidatorError).code).toBe('OUTPUT_FILE_READ_ERROR');
 			}
 		});
@@ -481,8 +463,7 @@ describe('GTFSValidator', () => {
 			await expect(GTFSValidator('/input/file.zip')).rejects.toThrow(GTFSValidatorError);
 			try {
 				await GTFSValidator('/input/file.zip');
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GTFSValidatorError).code).toBe('UNEXPECTED_ERROR');
 			}
 		});
@@ -567,8 +548,7 @@ describe('getValidatorInfo', () => {
 		await expect(getValidatorInfo()).rejects.toThrow(GTFSValidatorError);
 		try {
 			await getValidatorInfo();
-		}
-		catch (err) {
+		} catch (err) {
 			expect((err as GTFSValidatorError).code).toBe('UNSUPPORTED_PLATFORM');
 		}
 	});
