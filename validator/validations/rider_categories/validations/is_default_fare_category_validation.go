@@ -5,6 +5,7 @@ import (
 	"main/services"
 	"main/types"
 	"slices"
+	"strconv"
 )
 
 /*
@@ -48,5 +49,17 @@ func IsDefaultFareCategoryValidation(riderCategory *types.RiderCategory, row int
 	if !slices.Contains(validOptions, *riderCategory.IsDefaultFareCategory) {
 		ctx.AddError(ctx.GetTranslatedMessage("is_default_fare_category_validation.invalid"))
 		return
+	}
+
+	// Validate rules
+	if rules != nil && rules.IsDefaultFareCategory.Options != nil {
+		if slices.Contains(*rules.IsDefaultFareCategory.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.IsDefaultFareCategory.Options, strconv.Itoa(*riderCategory.IsDefaultFareCategory)) {
+			ctx.AddError(ctx.GetTranslatedMessage("is_default_fare_category_validation.not_allowed", *riderCategory.IsDefaultFareCategory))
+			return
+		}
 	}
 }
