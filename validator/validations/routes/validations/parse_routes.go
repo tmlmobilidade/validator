@@ -49,13 +49,13 @@ func ParseRoutes(rawRoute types.RouteRaw, row int) types.Route {
 
 	for field, target := range stringFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawRoute, "gtfs", field), target); errMsg != "" {
-			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]interface{}{"field": field, "error": errMsg}))
+			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]any{"field": field, "error": errMsg}))
 		}
 	}
 
 	for field, target := range intFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawRoute, "gtfs", field), target); errMsg != "" {
-			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]interface{}{"field": field, "error": errMsg}))
+			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]any{"field": field, "error": errMsg}))
 		}
 	}
 

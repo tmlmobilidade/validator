@@ -98,6 +98,7 @@ type TripsRules struct {
 	BikesAllowed            RuleConfig `json:"bikes_allowed"`
 	StopSequence            RuleConfig `json:"stop_sequence"`
 	DirectionPatternIdMatch RuleConfig `json:"direction_pattern_id_match"`
+	PatternIdFormat         RuleConfig `json:"pattern_id_format"`
 }
 
 type StopTimesRules struct {
@@ -191,6 +192,13 @@ type FareRulesRules struct {
 	OriginId      RuleConfig `json:"origin_id"`
 	DestinationId RuleConfig `json:"destination_id"`
 	ContainsId    RuleConfig `json:"contains_id"`
+}
+
+type FareMediaRules struct {
+	File          Severity   `json:"_file"`
+	FareMediaId   RuleConfig `json:"fare_media_id"`
+	FareMediaName RuleConfig `json:"fare_media_name"`
+	FareMediaType RuleConfig `json:"fare_media_type"`
 }
 
 type ShapesRules struct {
@@ -311,4 +319,5 @@ type GtfsRules struct {
 	FeedInfo        FeedInfoRules        `json:"feed_info"`
 	Translations    TranslationsRules    `json:"translations"`
 	Attributions    AttributionsRules    `json:"attributions"`
+	FareMedia       FareMediaRules       `json:"fare_media"`
 }

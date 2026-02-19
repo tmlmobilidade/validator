@@ -55,7 +55,7 @@ func NetworkIdValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *t
 		}
 
 		if !slices.Contains(*rules.NetworkId.Options, *route.NetworkId) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("network_id_validation.not_allowed", map[string]interface{}{"value": *route.NetworkId}))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("network_id_validation.not_allowed", map[string]any{"value": *route.NetworkId}))
 			return
 		}
 	}

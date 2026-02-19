@@ -48,14 +48,14 @@ func ParseTrips(rawTrips types.TripRaw, row int) types.Trip {
 	// Parse string fields
 	for field, target := range stringFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawTrips, "gtfs", field), target); errMsg != "" {
-			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]interface{}{"field": field, "error": errMsg}))
+			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]any{"field": field, "error": errMsg}))
 		}
 	}
 
 	// Parse int fields
 	for field, target := range intFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawTrips, "gtfs", field), target); errMsg != "" {
-			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]interface{}{"field": field, "error": errMsg}))
+			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]any{"field": field, "error": errMsg}))
 		}
 	}
 
