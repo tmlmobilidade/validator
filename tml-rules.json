@@ -307,7 +307,7 @@
 		}
 	},
 	"rider_categories": {
-		"_file": "error",
+		"_file": "ignore",
 		"rider_category_id": {
 			"severity": "error"
 		},
