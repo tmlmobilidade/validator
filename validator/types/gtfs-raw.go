@@ -877,6 +877,14 @@ func (g *Gtfs) GetFareAttribute(rowIndex int) (FareAttributeRaw, error) {
 	return convertRowToStruct[FareAttributeRaw](row), nil
 }
 
+// IterateFrequencies iterates over all frequencies, calling fn for each
+func (g *Gtfs) IterateFrequencies(fn func(int, FrequenciesRaw) error) error {
+	return g.iterateTable("frequencies", func(rowIndex int, row map[string]string) error {
+		frequencyRaw := convertRowToStruct[FrequenciesRaw](row)
+		return fn(rowIndex, frequencyRaw)
+	})
+}
+
 // iterateTable is a generic helper to iterate over table rows
 func (g *Gtfs) iterateTable(table string, fn func(int, map[string]string) error) error {
 	if g.db == nil {

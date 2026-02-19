@@ -661,5 +661,33 @@
         "invalid_direction_id": "Field \"direction_id\" must be an integer between 0 and 1, received: %s",
         "not_matching": "Field \"direction_id\" \"%s\" does not match the pattern_id \"%s\"",
         "required": "Fields \"pattern_id\" and \"direction_id\" are required to validate the match"
+    },
+    "start_time_validation": {
+        "forbidden": "Field \"start_time\" is forbidden",
+        "required": "Field \"start_time\" is required",
+        "recommended": "Field \"start_time\" is recommended",
+        "invalid": "Field \"start_time\" must be a valid time, expected format: HH:MM:SS, got: %s",
+        "not_allowed": "Field \"start_time\" \"%s\" is not allowed"
+    },
+    "end_time_validation": {
+        "forbidden": "Field \"end_time\" is forbidden",
+        "required": "Field \"end_time\" is required",
+        "recommended": "Field \"end_time\" is recommended",
+        "invalid": "Field \"end_time\" must be a valid time, expected format: HH:MM:SS, got: %s",
+        "not_allowed": "Field \"end_time\" \"%s\" is not allowed"
+    },
+    "headway_secs_validation": {
+        "forbidden": "Field \"headway_secs\" is forbidden",
+        "required": "Field \"headway_secs\" is required",
+        "recommended": "Field \"headway_secs\" is recommended",
+        "invalid": "Field \"headway_secs\" must be a positive integer",
+        "not_allowed": "Field \"headway_secs\" \"%s\" is not allowed"
+    },
+    "exact_times_validation": {
+        "forbidden": "Field \"exact_times\" is forbidden",
+        "required": "Field \"exact_times\" is required",
+        "recommended": "Field \"exact_times\" is recommended",
+        "invalid": "Field \"exact_times\" must be 0 or 1",
+        "not_allowed": "Field \"exact_times\" \"%s\" is not allowed"
     }
 }
