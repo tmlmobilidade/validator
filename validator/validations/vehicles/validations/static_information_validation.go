@@ -41,4 +41,16 @@ func StaticInformationValidation(vehicle *types.Vehicle, row int, rules *types.V
 		ctx.AddError(ctx.GetTranslatedMessage("static_information_validation.invalid", strconv.Itoa(*vehicle.StaticInformation)))
 		return
 	}
+
+	// Validate rules
+	if rules != nil && rules.StaticInformation.Options != nil {
+		if slices.Contains(*rules.StaticInformation.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.StaticInformation.Options, strconv.Itoa(*vehicle.StaticInformation)) {
+			ctx.AddError(ctx.GetTranslatedMessage("static_information_validation.not_allowed", map[string]any{"value": *vehicle.StaticInformation}))
+			return
+		}
+	}
 }

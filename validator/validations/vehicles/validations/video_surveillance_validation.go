@@ -40,4 +40,16 @@ func VideoSurveillanceValidation(vehicle *types.Vehicle, row int, rules *types.V
 		ctx.AddError(ctx.GetTranslatedMessage("video_surveillance_validation.invalid", strconv.Itoa(*vehicle.VideoSurveillance)))
 		return
 	}
+
+	// Validate rules
+	if rules != nil && rules.VideoSurveillance.Options != nil {
+		if slices.Contains(*rules.VideoSurveillance.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.VideoSurveillance.Options, strconv.Itoa(*vehicle.VideoSurveillance)) {
+			ctx.AddError(ctx.GetTranslatedMessage("video_surveillance_validation.not_allowed", map[string]any{"value": *vehicle.VideoSurveillance}))
+			return
+		}
+	}
 }

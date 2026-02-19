@@ -41,4 +41,16 @@ func PassengerCountingValidation(vehicle *types.Vehicle, row int, rules *types.V
 		ctx.AddError(ctx.GetTranslatedMessage("passenger_counting_validation.invalid", strconv.Itoa(*vehicle.PassengerCounting)))
 		return
 	}
+
+	// Validate rules
+	if rules != nil && rules.PassengerCounting.Options != nil {
+		if slices.Contains(*rules.PassengerCounting.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.PassengerCounting.Options, strconv.Itoa(*vehicle.PassengerCounting)) {
+			ctx.AddError(ctx.GetTranslatedMessage("passenger_counting_validation.not_allowed", map[string]any{"value": *vehicle.PassengerCounting}))
+			return
+		}
+	}
 }

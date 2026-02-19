@@ -42,4 +42,16 @@ func SideDisplayValidation(vehicle *types.Vehicle, row int, rules *types.Vehicle
 		ctx.AddError(ctx.GetTranslatedMessage("side_display_validation.invalid", strconv.Itoa(*vehicle.SideDisplay)))
 		return
 	}
+
+	// Validate rules
+	if rules != nil && rules.SideDisplay.Options != nil {
+		if slices.Contains(*rules.SideDisplay.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.SideDisplay.Options, strconv.Itoa(*vehicle.SideDisplay)) {
+			ctx.AddError(ctx.GetTranslatedMessage("side_display_validation.not_allowed", map[string]any{"value": *vehicle.SideDisplay}))
+			return
+		}
+	}
 }

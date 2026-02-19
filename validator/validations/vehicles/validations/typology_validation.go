@@ -5,6 +5,7 @@ import (
 	"main/services"
 	"main/types"
 	"slices"
+	"strconv"
 )
 
 /*
@@ -61,5 +62,17 @@ func TypologyValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 	if !slices.Contains(validOptions, *vehicle.Typology) {
 		ctx.AddError(ctx.GetTranslatedMessage("typology_validation.invalid", *vehicle.Typology))
 		return
+	}
+
+	// Validate rules
+	if rules != nil && rules.Typology.Options != nil {
+		if slices.Contains(*rules.Typology.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.Typology.Options, strconv.FormatFloat(*vehicle.Typology, 'f', -1, 64)) {
+			ctx.AddError(ctx.GetTranslatedMessage("typology_validation.not_allowed", map[string]any{"value": *vehicle.Typology}))
+			return
+		}
 	}
 }

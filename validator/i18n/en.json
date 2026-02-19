@@ -694,78 +694,97 @@
     },
     "typology_validation": {
         "required": "Field \"typology\" will be required soon. We need your feedback.",
-        "invalid": "Field \"typology\" \"%s\" is not a valid type. We need your feedback."
+        "invalid": "Field \"typology\" \"%s\" is not a valid type. We need your feedback.",
+        "not_allowed": "Field \"typology\" \"%s\" is not allowed. We need your feedback."
     },
     "propulsion_validation": {
         "required": "Field \"propulsion\" is required",
-        "invalid": "Field \"propulsion\" \"%s\" is not a valid propulsion type"
+        "invalid": "Field \"propulsion\" \"%s\" is not a valid propulsion type",
+        "not_allowed": "Field \"propulsion\" \"%s\" is not allowed"
     },
     "emission_validation": {
         "required": "Field \"emission\" is required",
-        "invalid": "Field \"emission\" \"%s\" is not a valid emission type"
+        "invalid": "Field \"emission\" \"%s\" is not a valid emission type",
+        "not_allowed": "Field \"emission\" \"%s\" is not allowed"
     },
     "climatization_validation": {
         "required": "Field \"climatization\" is required",
-        "invalid": "Field \"climatization\" \"%s\" is not a valid climatization type"
+        "invalid": "Field \"climatization\" \"%s\" is not a valid climatization type",
+        "not_allowed": "Field \"climatization\" \"%s\" is not allowed"
     },
     "wheelchair_validation": {
         "required": "Field \"wheelchair\" is required",
-        "invalid": "Field \"wheelchair\" \"%s\" is not a valid wheelchair type"
+        "invalid": "Field \"wheelchair\" \"%s\" is not a valid wheelchair type",
+        "not_allowed": "Field \"wheelchair\" \"%s\" is not allowed"
     },
     "lowered_floor_validation": {
         "required": "Field \"lowered_floor\" is required",
-        "invalid": "Field \"lowered_floor\" \"%s\" is not a valid lowered_floor type"
+        "invalid": "Field \"lowered_floor\" \"%s\" is not a valid lowered_floor type",
+        "not_allowed": "Field \"lowered_floor\" \"%s\" is not allowed"
     },
     "ramp_validation": {
         "required": "Field \"ramp\" is required",
-        "invalid": "Field \"ramp\" \"%s\" is not a valid ramp type"
+        "invalid": "Field \"ramp\" \"%s\" is not a valid ramp type",
+        "not_allowed": "Field \"ramp\" \"%s\" is not allowed"
     },
     "kneeling_validation": {
         "required": "Field \"kneeling\" is required",
-        "invalid": "Field \"kneeling\" \"%s\" is not a valid kneeling type"
+        "invalid": "Field \"kneeling\" \"%s\" is not a valid kneeling type",
+        "not_allowed": "Field \"kneeling\" \"%s\" is not allowed"
     },
     "static_information_validation": {
         "required": "Field \"static_information\" is required",
-        "invalid": "Field \"static_information\" \"%s\" is not a valid static_information type"
+        "invalid": "Field \"static_information\" \"%s\" is not a valid static_information type",
+        "not_allowed": "Field \"static_information\" \"%s\" is not allowed"
     },
     "onboard_monitor_validation": {
         "required": "Field \"onboard_monitor\" is required",
-        "invalid": "Field \"onboard_monitor\" \"%s\" is not a valid onboard_monitor type"
+        "invalid": "Field \"onboard_monitor\" \"%s\" is not a valid onboard_monitor type",
+        "not_allowed": "Field \"onboard_monitor\" \"%s\" is not allowed"
     },
     "front_display_validation": {
         "required": "Field \"front_display\" is required",
-        "invalid": "Field \"front_display\" \"%s\" is not a valid front_display type"
+        "invalid": "Field \"front_display\" \"%s\" is not a valid front_display type",
+        "not_allowed": "Field \"front_display\" \"%s\" is not allowed"
     },
     "rear_display_validation": {
         "required": "Field \"rear_display\" is required",
-        "invalid": "Field \"rear_display\" \"%s\" is not a valid rear_display type"
+        "invalid": "Field \"rear_display\" \"%s\" is not a valid rear_display type",
+        "not_allowed": "Field \"rear_display\" \"%s\" is not allowed"
     },
     "side_display_validation": {
         "required": "Field \"side_display\" is required",
-        "invalid": "Field \"side_display\" \"%s\" is not a valid side_display type"
+        "invalid": "Field \"side_display\" \"%s\" is not a valid side_display type",
+        "not_allowed": "Field \"side_display\" \"%s\" is not allowed"
     },
     "internal_sound_validation": {
         "required": "Field \"internal_sound\" is required",
-        "invalid": "Field \"internal_sound\" \"%s\" is not a valid internal_sound type"
+        "invalid": "Field \"internal_sound\" \"%s\" is not a valid internal_sound type",
+        "not_allowed": "Field \"internal_sound\" \"%s\" is not allowed"
     },
     "external_sound_validation": {
         "required": "Field \"external_sound\" is required",
-        "invalid": "Field \"external_sound\" \"%s\" is not a valid external_sound type"
+        "invalid": "Field \"external_sound\" \"%s\" is not a valid external_sound type",
+        "not_allowed": "Field \"external_sound\" \"%s\" is not allowed"
     },
     "consumption_meter_validation": {
         "required": "Field \"consumption_meter\" is required",
-        "invalid": "Field \"consumption_meter\" \"%s\" is not a valid consumption_meter type"
+        "invalid": "Field \"consumption_meter\" \"%s\" is not a valid consumption_meter type",
+        "not_allowed": "Field \"consumption_meter\" \"%s\" is not allowed"
     },
     "bicycles_validation": {
         "required": "Field \"bicycles\" is required",
-        "invalid": "Field \"bicycles\" \"%s\" is not a valid bicycles type"
+        "invalid": "Field \"bicycles\" \"%s\" is not a valid bicycles type",
+        "not_allowed": "Field \"bicycles\" \"%s\" is not allowed"
     },
     "passenger_counting_validation": {
         "required": "Field \"passenger_counting\" is required",
-        "invalid": "Field \"passenger_counting\" \"%s\" is not a valid passenger_counting type"
+        "invalid": "Field \"passenger_counting\" \"%s\" is not a valid passenger_counting type",
+        "not_allowed": "Field \"passenger_counting\" \"%s\" is not allowed"
     },
     "video_surveillance_validation": {
         "required": "Field \"video_surveillance\" is required",
-        "invalid": "Field \"video_surveillance\" \"%s\" is not a valid video_surveillance type"
+        "invalid": "Field \"video_surveillance\" \"%s\" is not a valid video_surveillance type",
+        "not_allowed": "Field \"video_surveillance\" \"%s\" is not allowed"
     }
 }

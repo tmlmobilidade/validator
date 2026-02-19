@@ -41,4 +41,16 @@ func ClimatizationValidation(vehicle *types.Vehicle, row int, rules *types.Vehic
 		ctx.AddError(ctx.GetTranslatedMessage("climatization_validation.invalid", strconv.Itoa(*vehicle.Climatization)))
 		return
 	}
+
+	// Validate rules
+	if rules != nil && rules.Climatization.Options != nil {
+		if slices.Contains(*rules.Climatization.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.Climatization.Options, strconv.Itoa(*vehicle.Climatization)) {
+			ctx.AddError(ctx.GetTranslatedMessage("climatization_validation.not_allowed", map[string]any{"value": *vehicle.Climatization}))
+			return
+		}
+	}
 }

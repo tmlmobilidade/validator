@@ -43,4 +43,16 @@ func KneelingValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 		ctx.AddError(ctx.GetTranslatedMessage("kneeling_validation.invalid", strconv.Itoa(*vehicle.Kneeling)))
 		return
 	}
+
+	// Validate rules
+	if rules != nil && rules.Kneeling.Options != nil {
+		if slices.Contains(*rules.Kneeling.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.Kneeling.Options, strconv.Itoa(*vehicle.Kneeling)) {
+			ctx.AddError(ctx.GetTranslatedMessage("kneeling_validation.not_allowed", map[string]any{"value": *vehicle.Kneeling}))
+			return
+		}
+	}
 }

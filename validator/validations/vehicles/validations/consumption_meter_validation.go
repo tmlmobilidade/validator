@@ -40,4 +40,16 @@ func ConsumptionMeterValidation(vehicle *types.Vehicle, row int, rules *types.Ve
 		ctx.AddError(ctx.GetTranslatedMessage("consumption_meter_validation.invalid", strconv.Itoa(*vehicle.ConsumptionMeter)))
 		return
 	}
+
+	// Validate rules
+	if rules != nil && rules.ConsumptionMeter.Options != nil {
+		if slices.Contains(*rules.ConsumptionMeter.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.ConsumptionMeter.Options, strconv.Itoa(*vehicle.ConsumptionMeter)) {
+			ctx.AddError(ctx.GetTranslatedMessage("consumption_meter_validation.not_allowed", map[string]any{"value": *vehicle.ConsumptionMeter}))
+			return
+		}
+	}
 }

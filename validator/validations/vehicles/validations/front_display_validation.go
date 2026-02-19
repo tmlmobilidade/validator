@@ -42,4 +42,16 @@ func FrontDisplayValidation(vehicle *types.Vehicle, row int, rules *types.Vehicl
 		ctx.AddError(ctx.GetTranslatedMessage("front_display_validation.invalid", strconv.Itoa(*vehicle.FrontDisplay)))
 		return
 	}
+
+	// Validate rules
+	if rules != nil && rules.FrontDisplay.Options != nil {
+		if slices.Contains(*rules.FrontDisplay.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.FrontDisplay.Options, strconv.Itoa(*vehicle.FrontDisplay)) {
+			ctx.AddError(ctx.GetTranslatedMessage("front_display_validation.not_allowed", map[string]any{"value": *vehicle.FrontDisplay}))
+			return
+		}
+	}
 }

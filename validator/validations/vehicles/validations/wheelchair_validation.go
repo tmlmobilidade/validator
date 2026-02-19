@@ -41,4 +41,16 @@ func WheelchairValidation(vehicle *types.Vehicle, row int, rules *types.Vehicles
 		ctx.AddError(ctx.GetTranslatedMessage("wheelchair_validation.invalid", strconv.Itoa(*vehicle.Wheelchair)))
 		return
 	}
+
+	// Validate rules
+	if rules != nil && rules.Wheelchair.Options != nil {
+		if slices.Contains(*rules.Wheelchair.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.Wheelchair.Options, strconv.Itoa(*vehicle.Wheelchair)) {
+			ctx.AddError(ctx.GetTranslatedMessage("wheelchair_validation.not_allowed", map[string]any{"value": *vehicle.Wheelchair}))
+			return
+		}
+	}
 }

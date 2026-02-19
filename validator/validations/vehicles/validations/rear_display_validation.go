@@ -42,4 +42,16 @@ func RearDisplayValidation(vehicle *types.Vehicle, row int, rules *types.Vehicle
 		ctx.AddError(ctx.GetTranslatedMessage("rear_display_validation.invalid", strconv.Itoa(*vehicle.RearDisplay)))
 		return
 	}
+
+	// Validate rules
+	if rules != nil && rules.RearDisplay.Options != nil {
+		if slices.Contains(*rules.RearDisplay.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.RearDisplay.Options, strconv.Itoa(*vehicle.RearDisplay)) {
+			ctx.AddError(ctx.GetTranslatedMessage("rear_display_validation.not_allowed", map[string]any{"value": *vehicle.RearDisplay}))
+			return
+		}
+	}
 }

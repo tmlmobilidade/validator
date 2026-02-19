@@ -41,4 +41,16 @@ func ExternalSoundValidation(vehicle *types.Vehicle, row int, rules *types.Vehic
 		ctx.AddError(ctx.GetTranslatedMessage("external_sound_validation.invalid", strconv.Itoa(*vehicle.ExternalSound)))
 		return
 	}
+
+	// Validate rules
+	if rules != nil && rules.ExternalSound.Options != nil {
+		if slices.Contains(*rules.ExternalSound.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.ExternalSound.Options, strconv.Itoa(*vehicle.ExternalSound)) {
+			ctx.AddError(ctx.GetTranslatedMessage("external_sound_validation.not_allowed", map[string]any{"value": *vehicle.ExternalSound}))
+			return
+		}
+	}
 }

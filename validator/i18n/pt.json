@@ -695,15 +695,19 @@
     },
     "typology_validation": {
         "required": "O campo \"typology\" vai ser obrigatório em breve. Precisamos do teu feedback.",
-        "invalid": "O campo \"typology\" \"%s\" não é um tipo válido. Precisamos do teu feedback."
+        "invalid": "O campo \"typology\" \"%s\" não é um tipo válido. Precisamos do teu feedback.",
+        "not_allowed": "O campo \"typology\" \"%s\" não é permitido. Precisamos do teu feedback."
+
     },
     "propulsion_validation": {
         "required": "O campo \"propulsion\" é obrigatório",
-        "invalid": "O campo \"propulsion\" \"%s\" não é um tipo de propulsão válido"
+        "invalid": "O campo \"propulsion\" \"%s\" não é um tipo de propulsão válido",
+        "not_allowed": "O campo \"propulsion\" \"%s\" não é permitido"
     },
     "emission_validation": {
         "required": "O campo \"emission\" é obrigatório",
-        "invalid": "O campo \"emission\" \"%s\" não é um tipo de emissão válido"
+        "invalid": "O campo \"emission\" \"%s\" não é um tipo de emissão válido",
+        "not_allowed": "O campo \"emission\" \"%s\" não é permitido"
     },
     "climatization_validation": {
         "required": "O campo \"climatization\" é obrigatório",
@@ -711,62 +715,77 @@
     },
     "wheelchair_validation": {
         "required": "O campo \"wheelchair\" é obrigatório",
-        "invalid": "O campo \"wheelchair\" \"%s\" não é um tipo de wheelchair válido"
+        "invalid": "O campo \"wheelchair\" \"%s\" não é um tipo de wheelchair válido",
+        "not_allowed": "O campo \"wheelchair\" \"%s\" não é permitido"
     },
     "lowered_floor_validation": {
         "required": "O campo \"lowered_floor\" é obrigatório",
-        "invalid": "O campo \"lowered_floor\" \"%s\" não é um tipo de lowered_floor válido"
+        "invalid": "O campo \"lowered_floor\" \"%s\" não é um tipo de lowered_floor válido",
+        "not_allowed": "O campo \"lowered_floor\" \"%s\" não é permitido"
     },
     "ramp_validation": {
         "required": "O campo \"ramp\" é obrigatório",
-        "invalid": "O campo \"ramp\" \"%s\" não é um tipo de rampa válido"
+        "invalid": "O campo \"ramp\" \"%s\" não é um tipo de rampa válido",
+        "not_allowed": "O campo \"ramp\" \"%s\" não é permitido"
     },
     "kneeling_validation": {
         "required": "O campo \"kneeling\" é obrigatório",
-        "invalid": "O campo \"kneeling\" \"%s\" não é um tipo de kneeling válido"
+        "invalid": "O campo \"kneeling\" \"%s\" não é um tipo de kneeling válido",
+        "not_allowed": "O campo \"kneeling\" \"%s\" não é permitido"
     },
     "static_information_validation": {
         "required": "O campo \"static_information\" é obrigatório",
-        "invalid": "O campo \"static_information\" \"%s\" não é um tipo de static_information válido"
+        "invalid": "O campo \"static_information\" \"%s\" não é um tipo de static_information válido",
+        "not_allowed": "O campo \"static_information\" \"%s\" não é permitido"
     },
     "onboard_monitor_validation": {
         "required": "O campo \"onboard_monitor\" é obrigatório",
-        "invalid": "O campo \"onboard_monitor\" \"%s\" não é um tipo de onboard_monitor válido"
+        "invalid": "O campo \"onboard_monitor\" \"%s\" não é um tipo de onboard_monitor válido",
+        "not_allowed": "O campo \"onboard_monitor\" \"%s\" não é permitido"
     },
     "front_display_validation": {
         "required": "O campo \"front_display\" é obrigatório",
-        "invalid": "O campo \"front_display\" \"%s\" não é um tipo de front_display válido"
+        "invalid": "O campo \"front_display\" \"%s\" não é um tipo de front_display válido",
+        "not_allowed": "O campo \"front_display\" \"%s\" não é permitido"
     },
     "rear_display_validation": {
         "required": "O campo \"rear_display\" é obrigatório",
-        "invalid": "O campo \"rear_display\" \"%s\" não é um tipo de rear_display válido"
+        "invalid": "O campo \"rear_display\" \"%s\" não é um tipo de rear_display válido",
+        "not_allowed": "O campo \"rear_display\" \"%s\" não é permitido"
     },
     "side_display_validation": {
         "required": "O campo \"side_display\" é obrigatório",
-        "invalid": "O campo \"side_display\" \"%s\" não é um tipo de side_display válido"
+        "invalid": "O campo \"side_display\" \"%s\" não é um tipo de side_display válido",
+        "not_allowed": "O campo \"side_display\" \"%s\" não é permitido"
     },
     "internal_sound_validation": {
         "required": "O campo \"internal_sound\" é obrigatório",
-        "invalid": "O campo \"internal_sound\" \"%s\" não é um tipo de internal_sound válido"
-    },
+        "invalid": "O campo \"internal_sound\" \"%s\" não é um tipo de internal_sound válido",
+        "not_allowed": "O campo \"internal_sound\" \"%s\" não é permitido"
+    },  
     "external_sound_validation": {
         "required": "O campo \"external_sound\" é obrigatório",
-        "invalid": "O campo \"external_sound\" \"%s\" não é um tipo de external_sound válido"
+        "invalid": "O campo \"external_sound\" \"%s\" não é um tipo de external_sound válido",
+        "not_allowed": "O campo \"external_sound\" \"%s\" não é permitido"
     },
     "consumption_meter_validation": {
         "required": "O campo \"consumption_meter\" é obrigatório",
-        "invalid": "O campo \"consumption_meter\" \"%s\" não é um tipo de consumption_meter válido"
+        "invalid": "O campo \"consumption_meter\" \"%s\" não é um tipo de consumption_meter válido",
+        "not_allowed": "O campo \"consumption_meter\" \"%s\" não é permitido"
     },
     "bicycles_validation": {
         "required": "O campo \"bicycles\" é obrigatório",
-        "invalid": "O campo \"bicycles\" \"%s\" não é um tipo de bicycles válido"
+        "invalid": "O campo \"bicycles\" \"%s\" não é um tipo de bicycles válido",
+        "not_allowed": "O campo \"bicycles\" \"%s\" não é permitido"
     },
     "passenger_counting_validation": {
         "required": "O campo \"passenger_counting\" é obrigatório",
-        "invalid": "O campo \"passenger_counting\" \"%s\" não é um tipo de passenger_counting válido"
+        "invalid": "O campo \"passenger_counting\" \"%s\" não é um tipo de passenger_counting válido",
+        "not_allowed": "O campo \"passenger_counting\" \"%s\" não é permitido"
     },
     "video_surveillance_validation": {
         "required": "O campo \"video_surveillance\" é obrigatório",
-        "invalid": "O campo \"video_surveillance\" \"%s\" não é um tipo de video_surveillance válido"
+        "invalid": "O campo \"video_surveillance\" \"%s\" não é um tipo de video_surveillance válido",
+        "not_allowed": "O campo \"video_surveillance\" \"%s\" não é permitido"
     }
 }

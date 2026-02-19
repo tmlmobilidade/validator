@@ -40,4 +40,16 @@ func BicyclesValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 		ctx.AddError(ctx.GetTranslatedMessage("bicycles_validation.invalid", strconv.Itoa(*vehicle.Bicycles)))
 		return
 	}
+
+	// Validate rules
+	if rules != nil && rules.Bicycles.Options != nil {
+		if slices.Contains(*rules.Bicycles.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.Bicycles.Options, strconv.Itoa(*vehicle.Bicycles)) {
+			ctx.AddError(ctx.GetTranslatedMessage("bicycles_validation.not_allowed", map[string]any{"value": *vehicle.Bicycles}))
+			return
+		}
+	}
 }

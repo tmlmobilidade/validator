@@ -42,4 +42,16 @@ func OnboardMonitorValidation(vehicle *types.Vehicle, row int, rules *types.Vehi
 		ctx.AddError(ctx.GetTranslatedMessage("onboard_monitor_validation.invalid", strconv.Itoa(*vehicle.OnboardMonitor)))
 		return
 	}
+
+	// Validate rules
+	if rules != nil && rules.OnboardMonitor.Options != nil {
+		if slices.Contains(*rules.OnboardMonitor.Options, types.ALL_OPTIONS) {
+			return
+		}
+
+		if !slices.Contains(*rules.OnboardMonitor.Options, strconv.Itoa(*vehicle.OnboardMonitor)) {
+			ctx.AddError(ctx.GetTranslatedMessage("onboard_monitor_validation.not_allowed", map[string]any{"value": *vehicle.OnboardMonitor}))
+			return
+		}
+	}
 }
