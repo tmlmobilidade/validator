@@ -645,6 +645,9 @@
 		"wheelchair_accessible": {
 			"severity": "warning"
 		},
+		"trip_id_limit_characters": {
+			"severity": "error"
+		},
 		"pattern_id_format": {
 			"severity": "error"
 		}
