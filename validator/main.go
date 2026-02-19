@@ -49,6 +49,7 @@ import (
 	_ "main/validations/transfers"
 	_ "main/validations/translations"
 	_ "main/validations/trips"
+	_ "main/validations/vehicles"
 )
 
 func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *types.GtfsRules) {

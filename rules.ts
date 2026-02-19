@@ -95,6 +95,8 @@ type GtfsRules = {
         bikes_allowed: RuleConfig;
         stop_sequence: RuleConfig;
         direction_pattern_id_match: RuleConfig;
+        trip_id_limit_characters: RuleConfig;
+        pattern_id_format: RuleConfig;
     }
     stop_times: {
         _file: Severity;
@@ -148,7 +150,7 @@ type GtfsRules = {
         registration_date: RuleConfig;
         available_seats: RuleConfig;
         available_standing: RuleConfig;
-        typology: RuleConfig;
+        typology: WithOptions<RuleConfig>;
         propulsion: WithOptions<RuleConfig>;
         emission: WithOptions<RuleConfig>;
         climatization: WithOptions<RuleConfig>;
@@ -185,6 +187,12 @@ type GtfsRules = {
         origin_id: RuleConfig;
         destination_id: RuleConfig;
         contains_id: RuleConfig;
+    }
+    fare_media: {
+        _file: Severity;
+        fare_id: RuleConfig;
+        fare_media_name: RuleConfig;
+        fare_media_type:WithOptions<RuleConfig>;
     }
     shapes: {
         _file: Severity;
@@ -267,6 +275,13 @@ type GtfsRules = {
         attribution_url: RuleConfig;
         attribution_email: RuleConfig;
         attribution_phone: RuleConfig;
+    }
+    rider_categories: {
+        _file: Severity;
+        rider_category_id: RuleConfig;
+        rider_category_name: RuleConfig;
+        is_default_fare_category: RuleConfig;
+        eligibility_url: RuleConfig;
     }
 }
 
@@ -537,6 +552,12 @@ const rules: GtfsRules = {
         },
         direction_pattern_id_match: {
             severity: "error",
+        },
+        trip_id_limit_characters: {
+            severity: "error",
+        },
+        pattern_id_format: {
+            severity: "error",
         }
     },
     stop_times: {
@@ -675,6 +696,7 @@ const rules: GtfsRules = {
         },
         typology: {
             severity: "error",
+            options: ["0.1", "0.2", "0.3", "1.1", "1.2", "1.3", "2.1", "2.2", "2.3", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "4.1", "4.2", "4.3", "7.1", "7.2", "7.3"]
         },
         propulsion: {
             severity: "error",
@@ -791,6 +813,19 @@ const rules: GtfsRules = {
         },
         contains_id: {
             severity: "forbidden",
+        }
+    },
+    fare_media: {
+        _file: "ignore",
+        fare_id: {
+            severity: "error",
+        },
+        fare_media_name:{
+            severity: "warning",
+        },
+        fare_media_type: {
+            severity: "error",
+            options: ["0", "1", "2", "3", "4"]
         }
     },
     shapes: {
@@ -991,6 +1026,21 @@ const rules: GtfsRules = {
         },
         attribution_phone: {
             severity: "ignore",
+        }
+    },
+    rider_categories: {
+        _file: "ignore",
+        rider_category_id: {
+            severity: "error",
+        },
+        rider_category_name: {
+            severity: "error",
+        },
+        is_default_fare_category: {
+            severity: "error",
+        },
+        eligibility_url: {
+            severity: "error",
         }
     }
 }

@@ -410,6 +410,38 @@ type PeriodRaw struct {
 	PeriodName string `gtfs:"period_name"`
 }
 
+/* VEHICLE */
+type VehicleRaw struct {
+	VehicleId         string `gtfs:"vehicle_id"`
+	AgencyId          string `gtfs:"agency_id"`
+	LicensePlate      string `gtfs:"license_plate"`
+	Make              string `gtfs:"make"`
+	Model             string `gtfs:"model"`
+	Owner             string `gtfs:"owner"`
+	RegistrationDate  string `gtfs:"registration_date"`
+	AvailableSeats    string `gtfs:"available_seats"`
+	AvailableStanding string `gtfs:"available_standing"`
+	Typology          string `gtfs:"typology"`
+	Propulsion        string `gtfs:"propulsion"`
+	Emission          string `gtfs:"emission"`
+	Climatization     string `gtfs:"climatization"`
+	Wheelchair        string `gtfs:"wheelchair"`
+	LoweredFloor      string `gtfs:"lowered_floor"`
+	Ramp              string `gtfs:"ramp"`
+	Kneeling          string `gtfs:"kneeling"`
+	StaticInformation string `gtfs:"static_information"`
+	OnboardMonitor    string `gtfs:"onboard_monitor"`
+	FrontDisplay      string `gtfs:"front_display"`
+	RearDisplay       string `gtfs:"rear_display"`
+	SideDisplay       string `gtfs:"side_display"`
+	InternalSound     string `gtfs:"internal_sound"`
+	ExternalSound     string `gtfs:"external_sound"`
+	ConsumptionMeter  string `gtfs:"consumption_meter"`
+	Bicycles          string `gtfs:"bicycles"`
+	PassengerCounting string `gtfs:"passenger_counting"`
+	VideoSurveillance string `gtfs:"video_surveillance"`
+}
+
 // Gtfs represents a collection of parsed GTFS data files where the key is the filename (without  extension)
 // and the value is a slice of maps containing the CSV data with column headers as keys.
 type GtfsFiles map[string][]map[string]string
@@ -523,6 +555,32 @@ func (g *Gtfs) GetRowsById(table, id string) ([]int, error) {
 		return nil, fmt.Errorf("database connection is nil")
 	}
 	rows, err := g.db.Query("SELECT row_index FROM id_map WHERE file = ? AND key = ? ORDER BY row_index", table, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []int
+	for rows.Next() {
+		var rowIndex int
+		if err := rows.Scan(&rowIndex); err != nil {
+			return nil, err
+		}
+		result = append(result, rowIndex)
+	}
+	return result, rows.Err()
+}
+
+// GetRowsByField returns the row indices for a given table and column value from the actual table data.
+// Unlike GetRowsById which queries the id_map table, this queries the real table directly.
+// This is useful for checking uniqueness of non-primary-key fields (e.g., license_plate).
+func (g *Gtfs) GetRowsByField(table, column, value string) ([]int, error) {
+	if g.db == nil {
+		return nil, fmt.Errorf("database connection is nil")
+	}
+	tableName := sanitizeTableNameForQuery(table)
+	query := fmt.Sprintf("SELECT rowid - 1 FROM %s WHERE %s = ? ORDER BY rowid", tableName, column)
+	rows, err := g.db.Query(query, value)
 	if err != nil {
 		return nil, err
 	}
@@ -843,6 +901,14 @@ func (g *Gtfs) GetCalendarDate(rowIndex int) (CalendarDatesRaw, error) {
 	return convertRowToStruct[CalendarDatesRaw](row), nil
 }
 
+// IterateFareMedia iterates over all fare media, calling fn for each
+func (g *Gtfs) IterateFareMedia(fn func(int, FareMediaRaw) error) error {
+	return g.iterateTable("fare_media", func(rowIndex int, row map[string]string) error {
+		fareMediaRaw := convertRowToStruct[FareMediaRaw](row)
+		return fn(rowIndex, fareMediaRaw)
+	})
+}
+
 // IterateFareRules iterates over all fare rules, calling fn for each
 func (g *Gtfs) IterateFareRules(fn func(int, FareRuleRaw) error) error {
 	return g.iterateTable("fare_rules", func(rowIndex int, row map[string]string) error {
@@ -877,6 +943,31 @@ func (g *Gtfs) GetFareAttribute(rowIndex int) (FareAttributeRaw, error) {
 	return convertRowToStruct[FareAttributeRaw](row), nil
 }
 
+// IterateRiderCategories iterates over all rider categories, calling fn for each
+func (g *Gtfs) IterateRiderCategories(fn func(int, RiderCategoryRaw) error) error {
+	return g.iterateTable("rider_categories", func(rowIndex int, row map[string]string) error {
+		riderCategoryRaw := convertRowToStruct[RiderCategoryRaw](row)
+		return fn(rowIndex, riderCategoryRaw)
+	})
+}
+
+// IterateFrequencies iterates over all frequencies, calling fn for each
+func (g *Gtfs) IterateFrequencies(fn func(int, FrequenciesRaw) error) error {
+	return g.iterateTable("frequencies", func(rowIndex int, row map[string]string) error {
+		frequencyRaw := convertRowToStruct[FrequenciesRaw](row)
+		return fn(rowIndex, frequencyRaw)
+	})
+}
+
+// IterateVehicles iterates over all vehicles, calling fn for each
+func (g *Gtfs) IterateVehicles(fn func(int, VehicleRaw) error) error {
+	return g.iterateTable("vehicles", func(rowIndex int, row map[string]string) error {
+		vehicleRaw := convertRowToStruct[VehicleRaw](row)
+		return fn(rowIndex, vehicleRaw)
+	})
+}
+
+// GetVehicle retrieves a vehicle by row index
 // iterateTable is a generic helper to iterate over table rows
 func (g *Gtfs) iterateTable(table string, fn func(int, map[string]string) error) error {
 	if g.db == nil {

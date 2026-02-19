@@ -37,5 +37,5 @@ func ServiceIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 	if err == nil && len(calendarDatesRows) > 0 {
 		return
 	}
-	ctx.AddError(ctx.GetTranslatedMessage("service_id_validation.not_found", map[string]interface{}{"service_id": *trip.ServiceId}))
+	ctx.AddError(ctx.GetTranslatedMessage("service_id_validation.not_found", map[string]any{"service_id": *trip.ServiceId}))
 }

@@ -3,6 +3,7 @@ package test_helpers
 import (
 	"main/lib"
 	"main/types"
+	"strconv"
 )
 
 // ===============================================
@@ -56,6 +57,26 @@ type GenericEnumTestCase struct {
 	Name             string
 	Value            interface{} // Can be *int or *string
 	ValidOptions     []int
+	Row              int
+	ExpectedErrors   int
+	ExpectedWarnings int
+}
+
+// GenericEnumFloat32TestCase for float32 enum validation
+type GenericEnumFloat32TestCase struct {
+	Name             string
+	Value            *float32
+	ValidOptions     []float32
+	Row              int
+	ExpectedErrors   int
+	ExpectedWarnings int
+}
+
+// GenericEnumFloat64TestCase for float64 enum validation
+type GenericEnumFloat64TestCase struct {
+	Name             string
+	Value            *float64
+	ValidOptions     []float64
 	Row              int
 	ExpectedErrors   int
 	ExpectedWarnings int
@@ -304,6 +325,80 @@ func GetGenericEnumIntTestCases(fieldName string, validOptions []int) []GenericE
 	return cases
 }
 
+// GetGenericEnumFloat32TestCases returns test cases for float32 enum validation
+func GetGenericEnumFloat32TestCases(fieldName string, validOptions []float32) []GenericEnumFloat32TestCase {
+	cases := []GenericEnumFloat32TestCase{
+		{
+			Name:           "Missing_Value_Required",
+			Value:          (*float32)(nil),
+			ValidOptions:   validOptions,
+			Row:            1,
+			ExpectedErrors: 1,
+		},
+	}
+
+	// Add valid cases for each option
+	for i, opt := range validOptions {
+		val := opt
+		cases = append(cases, GenericEnumFloat32TestCase{
+			Name:           "Valid_Option_" + strconv.FormatFloat(float64(opt), 'f', -1, 32),
+			Value:          &val,
+			ValidOptions:   validOptions,
+			Row:            i + 2,
+			ExpectedErrors: 0,
+		})
+	}
+
+	// Add invalid case
+	invalidVal := float32(999)
+	cases = append(cases, GenericEnumFloat32TestCase{
+		Name:           "Invalid_Option",
+		Value:          &invalidVal,
+		ValidOptions:   validOptions,
+		Row:            len(validOptions),
+		ExpectedErrors: 1,
+	})
+
+	return cases
+}
+
+// GetGenericEnumFloat64TestCases returns test cases for float64 enum validation
+func GetGenericEnumFloat64TestCases(fieldName string, validOptions []float64) []GenericEnumFloat64TestCase {
+	cases := []GenericEnumFloat64TestCase{
+		{
+			Name:           "Missing_Value_Required",
+			Value:          (*float64)(nil),
+			ValidOptions:   validOptions,
+			Row:            1,
+			ExpectedErrors: 1,
+		},
+	}
+
+	// Add valid cases for each option
+	for i, opt := range validOptions {
+		val := opt
+		cases = append(cases, GenericEnumFloat64TestCase{
+			Name:           "Valid_Option_" + strconv.FormatFloat(float64(opt), 'f', -1, 64),
+			Value:          &val,
+			ValidOptions:   validOptions,
+			Row:            i + 2,
+			ExpectedErrors: 0,
+		})
+	}
+
+	// Add invalid case
+	invalidVal := float64(999)
+	cases = append(cases, GenericEnumFloat64TestCase{
+		Name:           "Invalid_Option",
+		Value:          &invalidVal,
+		ValidOptions:   validOptions,
+		Row:            len(validOptions),
+		ExpectedErrors: 1,
+	})
+
+	return cases
+}
+
 // GetGenericIdTestCases returns test cases for ID validation
 func GetGenericIdTestCases(fieldName string) []GenericIdTestCase {
 	return []GenericIdTestCase{
@@ -480,9 +575,9 @@ func GetHasTariffsInformationValidOptions() []int {
 	return []int{0, 1}
 }
 
-// ===============================================
-// TEST NUMBERS VALUE GENERATORS
-// ===============================================
+func GetExactTimesValidOptions() []int {
+	return []int{0, 1}
+}
 
 // GetValidShapeOptions returns valid shape_pt_sequence values
 func GetValidShapeOptions() []int {
@@ -504,6 +599,115 @@ func GetShapeFloat64InvalidOptions() []float64 {
 	return []float64{-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0, -10.0}
 }
 
+// GetTypologyValidOptions returns valid typology values
+func GetTypologyValidOptions() []float64 {
+	return []float64{0.1, 0.2, 0.3, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 4.1, 4.2, 4.3, 7.1, 7.2, 7.3}
+}
+
+// GetPropulsionValidOptions returns valid propulsion values
+func GetPropulsionValidOptions() []int {
+	return []int{1, 2, 3, 4, 5, 6, 7, 8}
+}
+
+// GetEmissionValidOptions returns valid emission values
+func GetEmissionValidOptions() []int {
+	return []int{1, 2, 3, 4, 5, 6}
+}
+
+// GetClimatizationValidOptions returns valid climatization values
+func GetClimatizationValidOptions() []int {
+	return []int{0, 1}
+}
+
+// GetWheelchairValidOptions returns valid wheelchair values
+func GetWheelchairValidOptions() []int {
+	return []int{0, 1}
+}
+
+// GetLoweredFloorValidOptions returns valid lowered_floor values
+func GetLoweredFloorValidOptions() []int {
+	return []int{0, 1, 2}
+}
+
+// GetRampValidOptions returns valid ramp values
+func GetRampValidOptions() []int {
+	return []int{0, 1, 2, 3}
+}
+
+// GetKneelingValidOptions returns valid kneeling values
+func GetKneelingValidOptions() []int {
+	return []int{0, 1, 2}
+}
+
+// GetStaticInformationValidOptions returns valid static_information values
+func GetStaticInformationValidOptions() []int {
+	return []int{0, 1}
+}
+
+// GetOnboardMonitorValidOptions returns valid onboard_monitor values
+func GetOnboardMonitorValidOptions() []int {
+	return []int{0, 1}
+}
+
+// GetFrontDisplayValidOptions returns valid front_display values
+func GetFrontDisplayValidOptions() []int {
+	return []int{0, 1, 2}
+}
+
+// GetRearDisplayValidOptions returns valid rear_display values
+func GetRearDisplayValidOptions() []int {
+	return []int{0, 1, 2}
+}
+
+// GetSideDisplayValidOptions returns valid side_display values
+func GetSideDisplayValidOptions() []int {
+	return []int{0, 1, 2}
+}
+
+// GetInternalSoundValidOptions returns valid internal_sound values
+func GetInternalSoundValidOptions() []int {
+	return []int{0, 1}
+}
+
+// GetExternalSoundValidOptions returns valid external_sound values
+func GetExternalSoundValidOptions() []int {
+	return []int{0, 1}
+}
+
+// GetConsumptionMeterValidOptions returns valid consumption_meter values
+func GetConsumptionMeterValidOptions() []int {
+	return []int{0, 1}
+}
+
+// GetBicyclesValidOptions returns valid bicycles values
+func GetBicyclesValidOptions() []int {
+	return []int{0, 1}
+}
+
+// GetPassengerCountingValidOptions returns valid passenger_counting values
+func GetPassengerCountingValidOptions() []int {
+	return []int{0, 1}
+}
+
+// GetVideoSurveillanceValidOptions returns valid video_surveillance values
+func GetVideoSurveillanceValidOptions() []int {
+	return []int{0, 1}
+}
+
+// ===============================================
+// TEST NUMBERS VALUE GENERATORS
+// ===============================================
+
+// GetValidIntOptions returns valid int values
+func GetValidIntOptions() []int {
+	return []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+}
+
+// GetInvalidIntOptions returns invalid int values
+func GetInvalidIntOptions() []int {
+	return []int{-1, -2, -3, -4, -5, -6, -7, -8, -9, -10}
+}
+
 // GetFloat32ValidOptions returns valid float32 values
 func GetFloat32ValidOptions() []float32 {
 	return []float32{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0}
@@ -512,6 +716,16 @@ func GetFloat32ValidOptions() []float32 {
 // GetFloat32InvalidOptions returns invalid float32 values
 func GetFloat32InvalidOptions() []float32 {
 	return []float32{-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0, -10.0}
+}
+
+// GetFloat64ValidOptions returns valid float64 values
+func GetFloat64ValidOptions() []float64 {
+	return []float64{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0}
+}
+
+// GetFloat64InvalidOptions returns invalid float64 values
+func GetFloat64InvalidOptions() []float64 {
+	return []float64{-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0, -10.0}
 }
 
 // ===============================================

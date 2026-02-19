@@ -30,7 +30,7 @@ func TripIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 
 	rows, err := gtfs.GetRowsById("trips", *trip.TripId)
 	if err == nil && len(rows) > 1 {
-		ctx.AddError(ctx.GetTranslatedMessage("trip_id_validation.duplicate", map[string]interface{}{"trip_id": *trip.TripId}))
+		ctx.AddError(ctx.GetTranslatedMessage("trip_id_validation.duplicate", map[string]any{"trip_id": *trip.TripId}))
 		return
 	}
 }
