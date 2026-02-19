@@ -9,9 +9,8 @@ import (
 func ParseVehicles(rawVehicles types.VehicleRaw, row int) types.Vehicle {
 	var (
 		vehicle                                                                                                                                                                                                                                                                                     types.Vehicle = types.Vehicle{}
-		vehicleId, agencyId, licensePlate, make, model, owner, registrationDate                                                                                                                                                                                                                     string
+		vehicleId, agencyId, licensePlate, make, model, owner, registrationDate, typology                                                                                                                                                                                                           string
 		availableSeats, availableStanding, propulsion, emission, climatization, wheelchair, loweredFloor, ramp, kneeling, staticInformation, onboardMonitor, frontDisplay, rearDisplay, sideDisplay, internalSound, externalSound, consumptionMeter, bicycles, passengerCounting, videoSurveillance int
-		typology                                                                                                                                                                                                                                                                                    float64
 		messages                                                                                                                                                                                                                                                                                    []types.Message
 	)
 
@@ -23,6 +22,7 @@ func ParseVehicles(rawVehicles types.VehicleRaw, row int) types.Vehicle {
 		"model":             &model,
 		"owner":             &owner,
 		"registration_date": &registrationDate,
+		"typology":          &typology,
 	}
 
 	intFields := map[string]*int{
@@ -46,10 +46,6 @@ func ParseVehicles(rawVehicles types.VehicleRaw, row int) types.Vehicle {
 		"bicycles":           &bicycles,
 		"passenger_counting": &passengerCounting,
 		"video_surveillance": &videoSurveillance,
-	}
-
-	floatFields := map[string]*float64{
-		"typology": &typology,
 	}
 
 	// Helper to collect error messages
@@ -78,13 +74,6 @@ func ParseVehicles(rawVehicles types.VehicleRaw, row int) types.Vehicle {
 		}
 	}
 
-	// Parse float fields
-	for field, target := range floatFields {
-		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawVehicles, "gtfs", field), target); errMsg != "" {
-			addMessage(field, errMsg)
-		}
-	}
-
 	// If there are any errors, return an empty trip
 	if len(messages) > 0 {
 		services.AppMessageService.AddMessages(messages)
@@ -101,7 +90,7 @@ func ParseVehicles(rawVehicles types.VehicleRaw, row int) types.Vehicle {
 	vehicle.RegistrationDate = lib.IfThenElse(registrationDate != "", &registrationDate, nil)
 	vehicle.AvailableSeats = lib.IfThenElse(rawVehicles.AvailableSeats != "", &availableSeats, nil)
 	vehicle.AvailableStanding = lib.IfThenElse(rawVehicles.AvailableStanding != "", &availableStanding, nil)
-	vehicle.Typology = lib.IfThenElse(rawVehicles.Typology != "", &typology, nil)
+	vehicle.Typology = lib.IfThenElse(typology != "", &typology, nil)
 	vehicle.Propulsion = lib.IfThenElse(rawVehicles.Propulsion != "", &propulsion, nil)
 	vehicle.Emission = lib.IfThenElse(rawVehicles.Emission != "", &emission, nil)
 	vehicle.Climatization = lib.IfThenElse(rawVehicles.Climatization != "", &climatization, nil)

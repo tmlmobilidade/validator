@@ -1,6 +1,8 @@
 package tests
 
 import (
+	"fmt"
+	"main/lib"
 	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
@@ -14,6 +16,7 @@ func TestAllTypologyValidationTestCases(t *testing.T) {
 	for _, tc := range test_helpers.GetGenericEnumFloat64TestCases("typology", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
+			vehicle := &types.Vehicle{}
 
 			var typologyValue *float64
 			if tc.Name == "Invalid_Option" {
@@ -22,7 +25,11 @@ func TestAllTypologyValidationTestCases(t *testing.T) {
 				typologyValue = &validOptions[0]
 			}
 
-			validations.TypologyValidation(&types.Vehicle{Typology: typologyValue}, tc.Row, nil)
+			if typologyValue != nil {
+				vehicle.Typology = lib.Ptr(fmt.Sprintf("%.1f", *typologyValue))
+			}
+
+			validations.TypologyValidation(vehicle, tc.Row, nil)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
