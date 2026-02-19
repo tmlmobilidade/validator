@@ -45,7 +45,6 @@ func OnboardMonitorValidation(vehicle *types.Vehicle, row int, rules *types.Vehi
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.OnboardMonitor.Options != nil {
 		if slices.Contains(*rules.OnboardMonitor.Options, types.ALL_OPTIONS) {
 			return

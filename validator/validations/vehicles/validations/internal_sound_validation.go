@@ -43,7 +43,6 @@ func InternalSoundValidation(vehicle *types.Vehicle, row int, rules *types.Vehic
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.InternalSound.Options != nil {
 		if slices.Contains(*rules.InternalSound.Options, types.ALL_OPTIONS) {
 			return

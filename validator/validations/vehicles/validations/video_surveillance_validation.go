@@ -43,7 +43,6 @@ func VideoSurveillanceValidation(vehicle *types.Vehicle, row int, rules *types.V
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.VideoSurveillance.Options != nil {
 		if slices.Contains(*rules.VideoSurveillance.Options, types.ALL_OPTIONS) {
 			return

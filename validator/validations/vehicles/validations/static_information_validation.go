@@ -44,7 +44,6 @@ func StaticInformationValidation(vehicle *types.Vehicle, row int, rules *types.V
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.StaticInformation.Options != nil {
 		if slices.Contains(*rules.StaticInformation.Options, types.ALL_OPTIONS) {
 			return

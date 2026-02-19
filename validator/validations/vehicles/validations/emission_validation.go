@@ -48,7 +48,6 @@ func EmissionValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Emission.Options != nil {
 		if slices.Contains(*rules.Emission.Options, types.ALL_OPTIONS) {
 			return

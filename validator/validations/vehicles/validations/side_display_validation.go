@@ -45,7 +45,6 @@ func SideDisplayValidation(vehicle *types.Vehicle, row int, rules *types.Vehicle
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.SideDisplay.Options != nil {
 		if slices.Contains(*rules.SideDisplay.Options, types.ALL_OPTIONS) {
 			return

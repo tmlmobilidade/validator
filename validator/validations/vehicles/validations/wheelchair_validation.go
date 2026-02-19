@@ -45,7 +45,6 @@ func WheelchairValidation(vehicle *types.Vehicle, row int, rules *types.Vehicles
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Wheelchair.Options != nil {
 		if slices.Contains(*rules.Wheelchair.Options, types.ALL_OPTIONS) {
 			return

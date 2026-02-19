@@ -43,7 +43,6 @@ func ConsumptionMeterValidation(vehicle *types.Vehicle, row int, rules *types.Ve
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.ConsumptionMeter.Options != nil {
 		if slices.Contains(*rules.ConsumptionMeter.Options, types.ALL_OPTIONS) {
 			return

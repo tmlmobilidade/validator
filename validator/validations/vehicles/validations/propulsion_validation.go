@@ -50,7 +50,6 @@ func PropulsionValidation(vehicle *types.Vehicle, row int, rules *types.Vehicles
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Propulsion.Options != nil {
 		if slices.Contains(*rules.Propulsion.Options, types.ALL_OPTIONS) {
 			return

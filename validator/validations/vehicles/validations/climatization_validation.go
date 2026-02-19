@@ -44,7 +44,6 @@ func ClimatizationValidation(vehicle *types.Vehicle, row int, rules *types.Vehic
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Climatization.Options != nil {
 		if slices.Contains(*rules.Climatization.Options, types.ALL_OPTIONS) {
 			return

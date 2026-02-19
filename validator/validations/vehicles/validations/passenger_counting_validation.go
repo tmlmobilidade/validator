@@ -44,7 +44,6 @@ func PassengerCountingValidation(vehicle *types.Vehicle, row int, rules *types.V
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.PassengerCounting.Options != nil {
 		if slices.Contains(*rules.PassengerCounting.Options, types.ALL_OPTIONS) {
 			return

@@ -45,7 +45,6 @@ func FrontDisplayValidation(vehicle *types.Vehicle, row int, rules *types.Vehicl
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.FrontDisplay.Options != nil {
 		if slices.Contains(*rules.FrontDisplay.Options, types.ALL_OPTIONS) {
 			return

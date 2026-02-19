@@ -45,7 +45,6 @@ func LoweredFloorValidation(vehicle *types.Vehicle, row int, rules *types.Vehicl
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.LoweredFloor.Options != nil {
 		if slices.Contains(*rules.LoweredFloor.Options, types.ALL_OPTIONS) {
 			return

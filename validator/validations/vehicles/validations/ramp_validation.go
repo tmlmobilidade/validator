@@ -47,7 +47,6 @@ func RampValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules)
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Ramp.Options != nil {
 		if slices.Contains(*rules.Ramp.Options, types.ALL_OPTIONS) {
 			return

@@ -44,7 +44,6 @@ func ExternalSoundValidation(vehicle *types.Vehicle, row int, rules *types.Vehic
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.ExternalSound.Options != nil {
 		if slices.Contains(*rules.ExternalSound.Options, types.ALL_OPTIONS) {
 			return

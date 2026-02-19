@@ -43,7 +43,6 @@ func BicyclesValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Bicycles.Options != nil {
 		if slices.Contains(*rules.Bicycles.Options, types.ALL_OPTIONS) {
 			return
