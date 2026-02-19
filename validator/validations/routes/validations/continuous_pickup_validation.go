@@ -71,7 +71,7 @@ func ContinuousPickupValidation(route *types.Route, row int, gtfs *types.Gtfs, r
 		}
 
 		if !slices.Contains(*rules.ContinuousPickup.Options, *route.ContinuousPickup) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("continuous_pickup_validation.not_allowed", map[string]interface{}{"value": *route.ContinuousPickup}))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("continuous_pickup_validation.not_allowed", map[string]any{"value": *route.ContinuousPickup}))
 			return
 		}
 	}

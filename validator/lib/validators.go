@@ -147,6 +147,18 @@ func ValidateTime(t string) bool {
 	return true
 }
 
+var plateRegex = regexp.MustCompile(`^(?:[A-Z]{2}-\d{2}-[A-Z]{2}|\d{2}-[A-Z]{2}-\d{2})$`)
+
+func ValidateLicensePlate(licensePlate string) bool {
+	licensePlate = strings.ToUpper(licensePlate)
+
+	if len(licensePlate) != 8 {
+		return false
+	}
+
+	return plateRegex.MatchString(licensePlate)
+}
+
 // KeyExists checks if a given key exists in a map.
 func GtfsIdMapKeyExists(gtfs *types.Gtfs, fileName string, key string) bool {
 	if gtfs.IdMap == nil {

@@ -74,7 +74,7 @@ func DirectionIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *t
 		}
 
 		if !slices.Contains(*rules.DirectionId.Options, fmt.Sprintf("%d", *trip.DirectionId)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("direction_id_validation.not_allowed", map[string]interface{}{"value": *trip.DirectionId}))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("direction_id_validation.not_allowed", map[string]any{"value": *trip.DirectionId}))
 			return
 		}
 	}

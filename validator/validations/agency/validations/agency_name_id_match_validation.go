@@ -45,13 +45,17 @@ func AgencyNameIdMatchValidation(agency *types.Agency, row int, rules *types.Age
 	// Validate rules
 	if rules != nil && rules.AgencyNameIdMatch.Compare != nil {
 		// Find the matching key and value
+		validName := ""
 		for _, compare := range *rules.AgencyNameIdMatch.Compare {
 			if compare.Key == *agency.AgencyId && compare.Value == *agency.AgencyName {
 				return
 			}
+			if compare.Key == *agency.AgencyId {
+				validName = compare.Value
+			}
 		}
 
-		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("agency_name_id_match_validation.no_match", *agency.AgencyId, *agency.AgencyName))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("agency_name_id_match_validation.no_match", *agency.AgencyId, *agency.AgencyName, *agency.AgencyId, validName))
 		return
 	}
 }

@@ -17,6 +17,10 @@ type MockGtfs struct {
 
 	// IdMapData contains the ID mapping structure: table -> id -> []row_indices
 	IdMapData types.GtfsIdMap
+
+	// TableData contains actual table data for testing validations that use GetRowsByField().
+	// Maps table name -> rows, where each row is a map of column name -> value.
+	TableData map[string][]map[string]string
 }
 
 // ToGtfs converts the MockGtfs to a types.Gtfs struct.
@@ -143,6 +147,74 @@ func (m MockGtfs) ToGtfsWithDB() (*types.Gtfs, func(), error) {
 					}
 				}
 			}
+		}
+	}
+
+	// Insert TableData into actual SQLite tables
+	if m.TableData != nil {
+		for table, rows := range m.TableData {
+			if len(rows) == 0 {
+				continue
+			}
+			// Collect all column names from all rows
+			colSet := make(map[string]bool)
+			for _, row := range rows {
+				for col := range row {
+					colSet[col] = true
+				}
+			}
+			columns := make([]string, 0, len(colSet))
+			for col := range colSet {
+				columns = append(columns, col)
+			}
+
+			// Create table
+			colDefs := ""
+			for i, col := range columns {
+				if i > 0 {
+					colDefs += ", "
+				}
+				colDefs += col + " TEXT"
+			}
+			createSQL := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (%s)", table, colDefs)
+			if _, err := db.Exec(createSQL); err != nil {
+				cleanup()
+				return nil, nil, fmt.Errorf("failed to create table %s: %w", table, err)
+			}
+
+			// Insert rows
+			placeholders := ""
+			for i := range columns {
+				if i > 0 {
+					placeholders += ", "
+				}
+				placeholders += "?"
+			}
+			colNames := ""
+			for i, col := range columns {
+				if i > 0 {
+					colNames += ", "
+				}
+				colNames += col
+			}
+			insertSQL := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", table, colNames, placeholders)
+			dataStmt, err := db.Prepare(insertSQL)
+			if err != nil {
+				cleanup()
+				return nil, nil, fmt.Errorf("failed to prepare table data insert: %w", err)
+			}
+			for _, row := range rows {
+				vals := make([]interface{}, len(columns))
+				for i, col := range columns {
+					vals[i] = row[col]
+				}
+				if _, err := dataStmt.Exec(vals...); err != nil {
+					dataStmt.Close()
+					cleanup()
+					return nil, nil, fmt.Errorf("failed to insert table data row: %w", err)
+				}
+			}
+			dataStmt.Close()
 		}
 	}
 
