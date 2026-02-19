@@ -240,9 +240,9 @@ type Pathways struct {
 
 /* LEVELS */
 type Levels struct {
-	LevelId    *string `json:"level_id"`
-	LevelIndex uint16  `json:"level_index"`
-	LevelName  *string `json:"level_name"`
+	LevelId    *string  `json:"level_id"`
+	LevelIndex *float64 `json:"level_index"`
+	LevelName  *string  `json:"level_name"`
 }
 
 /* FEED INFO */

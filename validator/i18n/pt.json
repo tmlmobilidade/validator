@@ -453,6 +453,13 @@
         "not_found": "O campo \"level_id\" \"%s\" não existe em levels.txt",
         "not_allowed": "O campo \"level_id\" \"%s\" não é permitido"
     },
+    "level_index_validation": {
+        "forbidden": "O campo \"level_index\" é proibido",
+        "required": "O campo \"level_index\" é obrigatório",
+        "recommended": "O campo \"level_index\" é recomendado",
+        "invalid": "O campo \"level_index\" deve ser um número inteiro não negativo",
+        "not_allowed": "O campo \"level_index\" \"%s\" não é permitido"
+    },
     "location_type_validation": {
         "forbidden": "O campo \"location_type\" é proibido",
         "required": "O campo \"location_type\" é obrigatório",

@@ -28,22 +28,16 @@ func LevelIdValidation(level *types.Levels, row int, gtfs types.Gtfs, rules *typ
 
 	if level.LevelId == nil || *level.LevelId == "" {
 		if ctx.ShouldSkip() {
-			lib.AppLogger.Accent("level_id_validation.required: should skip")
 			return
 		}
-		lib.AppLogger.Accent("level_id_validation.required: should not skip")
 		message := ctx.GetTranslatedMessage("level_id_validation.required")
 		ctx.AddError(message)
 		return
 	}
 
-	// Check Foreign Key
-	if !lib.GtfsIdMapKeyExists(&gtfs, "levels", *level.LevelId) {
-		lib.AppLogger.Accent("level_id_validation.not_found: should not skip")
-		ctx.AddError(ctx.GetTranslatedMessage("level_id_validation.not_found", *level.LevelId))
+	rows, err := gtfs.GetRowsById("levels", *level.LevelId)
+	if err == nil && len(rows) > 1 {
+		ctx.AddError(ctx.GetTranslatedMessage("level_id_validation.duplicate", map[string]interface{}{"level_id": *level.LevelId}))
 		return
 	}
-
-	lib.AppLogger.Accent("level_id_validation.should_skip: should skip")
-	return
 }

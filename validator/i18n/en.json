@@ -452,6 +452,19 @@
         "not_found": "Field \"level_id\" \"%s\" does not exist in levels.txt",
         "not_allowed": "Field \"level_id\" \"%s\" is not allowed"
     },
+    "level_index_validation": {
+        "forbidden": "Field \"level_index\" is forbidden",
+        "required": "Field \"level_index\" is required",
+        "recommended": "Field \"level_index\" is recommended",
+        "invalid": "Field \"level_index\" must be a non-negative integer",
+        "not_allowed": "Field \"level_index\" \"%s\" is not allowed"
+    },
+    "level_name_validation": {
+        "forbidden": "Field \"level_name\" is forbidden",
+        "required": "Field \"level_name\" is required",
+        "recommended": "Field \"level_name\" is recommended",
+        "not_allowed": "Field \"level_name\" \"%s\" is not allowed"
+    },
     "location_type_validation": {
         "forbidden": "Field \"location_type\" is forbidden",
         "required": "Field \"location_type\" is required",
