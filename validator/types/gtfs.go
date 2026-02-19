@@ -38,6 +38,7 @@ var GTFS_PRIMARY_KEYS = map[string]any{
 	"transfers":            []string{"from_stop_id", "to_stop_id", "from_trip_id", "to_trip_id", "from_route_id", "to_route_id"},
 	"translations":         []string{"table_name", "field_name", "language", "record_id", "record_sub_id", "field_value"},
 	"trips":                []string{"trip_id", "route_id"},
+	"vehicles":             "vehicle_id",
 }
 
 /* AGENCY */
@@ -440,6 +441,38 @@ type Afetacao struct {
 	StopId            string  `json:"stop_id"`
 	StopName          string  `json:"stop_name"`
 	StopSequence      float32 `json:"stop_sequence"`
+}
+
+/* VEHICLE */
+type Vehicle struct {
+	VehicleId         *string  `json:"vehicle_id"`
+	AgencyId          *string  `json:"agency_id"`
+	LicensePlate      *string  `json:"license_plate"`
+	Make              *string  `json:"make"`
+	Model             *string  `json:"model"`
+	Owner             *string  `json:"owner"`
+	RegistrationDate  *string  `json:"registration_date"`
+	AvailableSeats    *int     `json:"available_seats"`
+	AvailableStanding *int     `json:"available_standing"`
+	Typology          *float64 `json:"typology"`
+	Propulsion        *int     `json:"propulsion"`
+	Emission          *int     `json:"emission"`
+	Climatization     *int     `json:"climatization"`
+	Wheelchair        *int     `json:"wheelchair"`
+	LoweredFloor      *int     `json:"lowered_floor"`
+	Ramp              *int     `json:"ramp"`
+	Kneeling          *int     `json:"kneeling"`
+	StaticInformation *int     `json:"static_information"`
+	OnboardMonitor    *int     `json:"onboard_monitor"`
+	FrontDisplay      *int     `json:"front_display"`
+	RearDisplay       *int     `json:"rear_display"`
+	SideDisplay       *int     `json:"side_display"`
+	InternalSound     *int     `json:"internal_sound"`
+	ExternalSound     *int     `json:"external_sound"`
+	ConsumptionMeter  *int     `json:"consumption_meter"`
+	Bicycles          *int     `json:"bicycles"`
+	PassengerCounting *int     `json:"passenger_counting"`
+	VideoSurveillance *int     `json:"video_surveillance"`
 }
 
 /* PERIOD */

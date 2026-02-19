@@ -66,7 +66,7 @@ func BikesAllowedValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *
 		}
 
 		if !slices.Contains(*rules.BikesAllowed.Options, fmt.Sprintf("%d", *trip.BikesAllowed)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("bikes_allowed_validation.not_allowed", map[string]interface{}{"value": *trip.BikesAllowed}))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("bikes_allowed_validation.not_allowed", map[string]any{"value": *trip.BikesAllowed}))
 			return
 		}
 	}

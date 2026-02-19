@@ -58,7 +58,7 @@ func RouteColorValidation(route *types.Route, row int, rules *types.RoutesRules)
 		}
 
 		if !slices.Contains(*rules.RouteColor.Options, *route.RouteColor) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_color_validation.not_allowed", map[string]interface{}{"value": *route.RouteColor}))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_color_validation.not_allowed", map[string]any{"value": *route.RouteColor}))
 			return
 		}
 	}
