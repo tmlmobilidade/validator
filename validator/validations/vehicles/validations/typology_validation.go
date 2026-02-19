@@ -56,11 +56,11 @@ func TypologyValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 		return
 	}
 
-	validOptions := []string{"0.1", "0.2", "0.3", "1.1", "1.2", "1.3", "2.1", "2.2", "2.3", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "4.1", "4.2", "4.3", "7.1", "7.2", "7.3"}
-	if !slices.Contains(validOptions, *vehicle.Typology) {
-		ctx.AddError(ctx.GetTranslatedMessage("typology_validation.invalid", &vehicle.Typology))
-		return
-	}
+	// validOptions := []string{"0.1", "0.2", "0.3", "1.1", "1.2", "1.3", "2.1", "2.2", "2.3", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "4.1", "4.2", "4.3", "7.1", "7.2", "7.3"}
+	// if !slices.Contains(validOptions, *vehicle.Typology) {
+	// 	ctx.AddError(ctx.GetTranslatedMessage("typology_validation.invalid", &vehicle.Typology))
+	// 	return
+	// }
 
 	// Validate rules
 	if rules != nil && rules.Typology.Options != nil {
@@ -69,7 +69,8 @@ func TypologyValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 		}
 
 		if !slices.Contains(*rules.Typology.Options, *vehicle.Typology) {
-			ctx.AddError(ctx.GetTranslatedMessage("typology_validation.not_allowed", &vehicle.Typology))
+
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("typology_validation.not_allowed", *vehicle.Typology))
 			return
 		}
 	}
