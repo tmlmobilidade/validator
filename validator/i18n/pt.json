@@ -46,7 +46,7 @@
     "agency_name_id_match_validation": {
         "forbidden": "s campos \"agency_id\" proibido",
         "required": "Os campos \"agency_id\" e \"agency_name\" são obrigatórios",
-        "no_match": "O campo \"agency_id\" \"%s\" não corresponde ao campo \"agency_name\" \"%s\""
+        "no_match": "A correspondência entre o campo \"agency_id\" \"%s\" e o campo \"agency_name\" \"%s\" não é válida. Para o agency_id \"%s\" é esperado o nome \"%s\""
     },
     "agency_name_validation": {
         "forbidden": "O campo \"agency_name\" é proibido",
