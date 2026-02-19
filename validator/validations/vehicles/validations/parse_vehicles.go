@@ -68,21 +68,21 @@ func ParseVehicles(rawVehicles types.VehicleRaw, row int) types.Vehicle {
 	// Parse string fields
 	for field, target := range stringFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawVehicles, "gtfs", field), target); errMsg != "" {
-			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]interface{}{"field": field, "error": errMsg}))
+			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]any{"field": field, "error": errMsg}))
 		}
 	}
 
 	// Parse int fields
 	for field, target := range intFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawVehicles, "gtfs", field), target); errMsg != "" {
-			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]interface{}{"field": field, "error": errMsg}))
+			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]any{"field": field, "error": errMsg}))
 		}
 	}
 
 	// Parse float fields
 	for field, target := range floatFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawVehicles, "gtfs", field), target); errMsg != "" {
-			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]interface{}{"field": field, "error": errMsg}))
+			addMessage(field, i18n.AppTranslator.Get("parse_error", map[string]any{"field": field, "error": errMsg}))
 		}
 	}
 
