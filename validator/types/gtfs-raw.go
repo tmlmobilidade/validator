@@ -967,6 +967,14 @@ func (g *Gtfs) IterateVehicles(fn func(int, VehicleRaw) error) error {
 	})
 }
 
+// IterateLevels iterates over all levels, calling fn for each
+func (g *Gtfs) IterateLevels(fn func(int, LevelsRaw) error) error {
+	return g.iterateTable("levels", func(rowIndex int, row map[string]string) error {
+		levelRaw := convertRowToStruct[LevelsRaw](row)
+		return fn(rowIndex, levelRaw)
+	})
+}
+
 // GetVehicle retrieves a vehicle by row index
 // iterateTable is a generic helper to iterate over table rows
 func (g *Gtfs) iterateTable(table string, fn func(int, map[string]string) error) error {
