@@ -64,4 +64,12 @@ func TestAllLicensePlateValidationTestCases(t *testing.T) {
 		validations.LicensePlateValidation(vehicle, 0, gtfs, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Duplicate license plate should error", types.SEVERITY_ERROR)
 	})
+
+	t.Run("InvalidLicensePlate", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		plate := lib.Ptr("AA-00-BB-1")
+		vehicle := &types.Vehicle{LicensePlate: plate}
+		validations.LicensePlateValidation(vehicle, 0, nil, nil)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Duplicate license plate should error", types.SEVERITY_ERROR)
+	})
 }

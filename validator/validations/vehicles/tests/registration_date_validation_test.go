@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"main/lib"
 	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
@@ -19,7 +20,7 @@ func TestAllRegistrationDateValidationTestCases(t *testing.T) {
 			if tc.Name == "Valid_Present" {
 				registrationDate = "20240101"
 			}
-			vehicle := &types.Vehicle{RegistrationDate: registrationDate}
+			vehicle := &types.Vehicle{RegistrationDate: lib.Ptr(registrationDate)}
 			validations.RegistrationDateValidation(vehicle, tc.Row, nil)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
