@@ -28,7 +28,7 @@ func TestAllMinWidthValidationTestCases(t *testing.T) {
 			if tc.Name == "Valid_Present" {
 				minWidth = lib.Ptr("21")
 			}
-			pathways := &types.Pathways{MinWidth: minWidth, PathwayMode: lib.Ptr(1)}
+			pathways := &types.Pathways{MinWidth: minWidth}
 			validations.MinWidthValidation(pathways, tc.Row, &types.PathwaysRules{MinWidth: types.RuleConfig{Severity: severity}})
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
@@ -36,7 +36,7 @@ func TestAllMinWidthValidationTestCases(t *testing.T) {
 	}
 	t.Run("less_than_1_meter", func(t *testing.T) {
 		services.AppMessageService.Clear()
-		pathways := &types.Pathways{MinWidth: lib.Ptr("0.5"), PathwayMode: lib.Ptr(1)}
+		pathways := &types.Pathways{MinWidth: lib.Ptr("0.5")}
 		validations.MinWidthValidation(pathways, 1, &types.PathwaysRules{MinWidth: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "less_than_1_meter", types.SEVERITY_ERROR)
 	})
