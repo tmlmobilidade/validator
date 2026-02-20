@@ -857,5 +857,19 @@
         "recommended": "O campo \"exact_times\" é recomendado",
         "invalid": "O campo \"exact_times\" deve ser 0 ou 1",
         "not_allowed": "O campo \"exact_times\" \"%s\" não é permitido"
+    },
+    "transfer_type_validation": {
+        "forbidden": "O campo \"transfer_type\" é proibido",
+        "required": "O campo \"transfer_type\" é obrigatório",
+        "recommended": "O campo \"transfer_type\" é recomendado",
+        "invalid": "O campo \"transfer_type\" deve ser 0, 1, 2, 3, 4 ou 5",
+        "not_allowed": "O campo \"transfer_type\" \"%s\" não é permitido"
+    },
+    "min_transfer_time_validation": {
+        "forbidden": "O campo \"min_transfer_time\" é proibido",
+        "required": "O campo \"min_transfer_time\" é obrigatório",
+        "recommended": "O campo \"min_transfer_time\" é recomendado",
+        "invalid": "O campo \"min_transfer_time\" deve ser um número inteiro não negativo",
+        "not_allowed": "O campo \"min_transfer_time\" \"%s\" não é permitido"
     }
 }

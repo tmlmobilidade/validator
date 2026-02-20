@@ -856,5 +856,19 @@
     "trip_id_limit_characters_validation": {
         "too_long": "Field \"trip_id\" must be less than or equal to 32 characters",
         "not_allowed": "Field \"trip_id\" \"%s\" is not allowed"
+    },
+    "transfer_type_validation": {
+        "forbidden": "Field \"transfer_type\" is forbidden",
+        "required": "Field \"transfer_type\" is required",
+        "recommended": "Field \"transfer_type\" is recommended",
+        "invalid": "Field \"transfer_type\" must be 0, 1, 2, 3, 4, or 5",
+        "not_allowed": "Field \"transfer_type\" \"%s\" is not allowed"
+    },
+    "min_transfer_time_validation": {
+        "forbidden": "Field \"min_transfer_time\" is forbidden",
+        "required": "Field \"min_transfer_time\" is required",
+        "recommended": "Field \"min_transfer_time\" is recommended",
+        "invalid": "Field \"min_transfer_time\" must be a non-negative integer",
+        "not_allowed": "Field \"min_transfer_time\" \"%s\" is not allowed"
     }
 }

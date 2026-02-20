@@ -577,7 +577,8 @@
 			"severity": "ignore"
 		},
 		"transfer_type": {
-			"severity": "ignore"
+			"options": ["0", "1", "2", "3", "4", "5"],
+			"severity": "error"
 		}
 	},
 	"translations": {
