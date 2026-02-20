@@ -241,7 +241,7 @@ type Pathways struct {
 	SignpostedAs         *string  `json:"signposted_as"`
 	StairCount           *uint16  `json:"stair_count"`
 	ToStopId             *string  `json:"to_stop_id"`
-	TraversalTime        *float32 `json:"traversal_time"`
+	TraversalTime        *int     `json:"traversal_time"`
 }
 
 /* LEVELS */
