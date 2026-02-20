@@ -857,5 +857,59 @@
         "recommended": "O campo \"exact_times\" é recomendado",
         "invalid": "O campo \"exact_times\" deve ser 0 ou 1",
         "not_allowed": "O campo \"exact_times\" \"%s\" não é permitido"
+    },
+    "pathway_id_validation": {
+        "required": "O campo \"pathway_id\" é obrigatório",
+        "recommended": "O campo \"pathway_id\" é recomendado",
+        "duplicate": "Campo \"pathway_id\" \"%s\" duplicado encontrado. O campo \"pathway_id\" deve ser único"
+    },
+    "from_stop_id_validation": {
+        "required": "O campo \"from_stop_id\" é obrigatório",
+        "recommended": "O campo \"from_stop_id\" é recomendado",
+        "not_found": "O campo \"from_stop_id\" \"%s\" não existe em stops.txt",
+        "not_allowed": "O campo \"from_stop_id\" \"%s\" não é permitido"
+    },
+    "to_stop_id_validation": {
+        "required": "O campo \"to_stop_id\" é obrigatório",
+        "recommended": "O campo \"to_stop_id\" é recomendado",
+        "not_found": "O campo \"to_stop_id\" \"%s\" não existe em stops.txt",
+        "not_allowed": "O campo \"to_stop_id\" \"%s\" não é permitido"
+    },
+    "pathway_mode_validation": {
+        "required": "O campo \"pathway_mode\" é obrigatório",
+        "recommended": "O campo \"pathway_mode\" é recomendado",
+        "invalid": "O campo \"pathway_mode\" deve ser 0, 1, 2, 3, 4 ou 5",
+        "not_allowed": "O campo \"pathway_mode\" \"%s\" não é permitido"
+    },
+    "is_bidirectional_validation": {
+        "required": "O campo \"is_bidirectional\" é obrigatório",
+        "recommended": "O campo \"is_bidirectional\" é recomendado",
+        "invalid": "O campo \"is_bidirectional\" deve ser 0 ou 1",
+        "not_allowed": "O campo \"is_bidirectional\" \"%s\" não é permitido"
+    },
+    "length_validation": {
+        "required": "O campo \"length\" é obrigatório",
+        "recommended": "O campo \"length\" é recomendado",
+        "invalid": "O campo \"length\" \"%s\" não é um número válido",
+        "not_allowed": "O campo \"length\" \"%s\" não é permitido"
+    },
+    "traversal_time_validation": {
+        "required": "O campo \"traversal_time\" é obrigatório",
+        "recommended": "O campo \"traversal_time\" é recomendado",
+        "invalid": "O campo \"traversal_time\" \"%s\" não é um número válido",
+        "not_allowed": "O campo \"traversal_time\" \"%s\" não é permitido"
+    },
+    "stair_count_validation": {
+        "required": "O campo \"stair_count\" é obrigatório",
+        "recommended": "O campo \"stair_count\" é recomendado",
+        "invalid": "O campo \"stair_count\" \"%s\" não é um número válido",
+        "not_allowed": "O campo \"stair_count\" \"%s\" não é permitido"
+    },
+    "max_slope_validation": {
+        "required": "O campo \"max_slope\" é obrigatório",
+        "recommended": "O campo \"max_slope\" é recomendado",
+        "invalid": "O campo \"max_slope\" \"%s\" não é um número válido",
+        "not_allowed": "O campo \"max_slope\" \"%s\" não é permitido",
+        "not_allowed_pathway_mode": "O campo \"max_slope\" não é permitido para o pathway_mode \"%s\""
     }
 }

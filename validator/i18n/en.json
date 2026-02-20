@@ -856,5 +856,59 @@
     "trip_id_limit_characters_validation": {
         "too_long": "Field \"trip_id\" must be less than or equal to 32 characters",
         "not_allowed": "Field \"trip_id\" \"%s\" is not allowed"
+    },
+    "pathway_id_validation": {
+        "required": "Field \"pathway_id\" is required",
+        "recommended": "Field \"pathway_id\" is recommended",
+        "duplicate": "Duplicate field \"pathway_id\" \"%s\" found. Field \"pathway_id\" must be unique"
+    },
+    "from_stop_id_validation": {
+        "required": "Field \"from_stop_id\" is required",
+        "recommended": "Field \"from_stop_id\" is recommended",
+        "not_found": "Field \"from_stop_id\" \"%s\" does not exist in stops.txt",
+        "not_allowed": "Field \"from_stop_id\" \"%s\" is not allowed"
+    },
+    "to_stop_id_validation": {
+        "required": "Field \"to_stop_id\" is required",
+        "recommended": "Field \"to_stop_id\" is recommended",
+        "not_found": "Field \"to_stop_id\" \"%s\" does not exist in stops.txt",
+        "not_allowed": "Field \"to_stop_id\" \"%s\" is not allowed"
+    },
+    "pathway_mode_validation": {
+        "required": "Field \"pathway_mode\" is required",
+        "recommended": "Field \"pathway_mode\" is recommended",
+        "invalid": "Field \"pathway_mode\" must be 0, 1, 2, 3, 4, or 5",
+        "not_allowed": "Field \"pathway_mode\" \"%s\" is not allowed"
+    },
+    "is_bidirectional_validation": {
+        "required": "Field \"is_bidirectional\" is required",
+        "recommended": "Field \"is_bidirectional\" is recommended",
+        "invalid": "Field \"is_bidirectional\" must be 0 or 1",
+        "not_allowed": "Field \"is_bidirectional\" \"%s\" is not allowed"
+    },
+    "length_validation": {
+        "required": "Field \"length\" is required",
+        "recommended": "Field \"length\" is recommended",
+        "invalid": "Field \"length\" \"%s\" is not a valid number",
+        "not_allowed": "Field \"length\" \"%s\" is not allowed"
+    },
+    "traversal_time_validation": {
+        "required": "Field \"traversal_time\" is required",
+        "recommended": "Field \"traversal_time\" is recommended",
+        "invalid": "Field \"traversal_time\" \"%s\" is not a valid number",
+        "not_allowed": "Field \"traversal_time\" \"%s\" is not allowed"
+    },
+    "stair_count_validation": {
+        "required": "Field \"stair_count\" is required",
+        "recommended": "Field \"stair_count\" is recommended",
+        "invalid": "Field \"stair_count\" \"%s\" is not a valid number",
+        "not_allowed": "Field \"stair_count\" \"%s\" is not allowed"
+    },
+    "max_slope_validation": {
+        "required": "Field \"max_slope\" is required",
+        "recommended": "Field \"max_slope\" is recommended",
+        "invalid": "Field \"max_slope\" \"%s\" is not a valid number",
+        "not_allowed": "Field \"max_slope\" \"%s\" is not allowed",
+        "not_allowed_pathway_mode": "Field \"max_slope\" is not allowed for pathway_mode \"%s\""
     }
 }
