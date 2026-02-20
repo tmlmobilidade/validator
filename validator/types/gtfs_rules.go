@@ -57,6 +57,7 @@ type StopsRules struct {
 	RegionId              RuleConfig `json:"region_id"`
 	MunicipalityId        RuleConfig `json:"municipality_id"`
 	ParishId              RuleConfig `json:"parish_id"`
+	StopAccess            RuleConfig `json:"stop_access"`
 }
 
 type RoutesRules struct {

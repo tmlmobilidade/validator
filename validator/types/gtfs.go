@@ -84,6 +84,7 @@ type Stop struct {
 	TtsStopName           *string  `json:"tts_stop_name,omitempty"`
 	WheelchairBoarding    *int     `json:"wheelchair_boarding,omitempty"`
 	ZoneId                *string  `json:"zone_id,omitempty"`
+	StopAccess            *int     `json:"stop_access,omitempty"`
 }
 
 /* ROUTE */

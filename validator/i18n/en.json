@@ -866,7 +866,9 @@
         "required": "Field \"from_stop_id\" is required",
         "recommended": "Field \"from_stop_id\" is recommended",
         "not_found": "Field \"from_stop_id\" \"%s\" does not exist in stops.txt",
-        "not_allowed": "Field \"from_stop_id\" \"%s\" is not allowed"
+        "not_allowed": "Field \"from_stop_id\" \"%s\" is not allowed",
+        "invalid_location_type": "Field \"from_stop_id\" \"%s\" references a stop with invalid location_type \"%d\". Must be platform (0 or empty), entrance/exit (2), generic node (3), or boarding area (4)",
+        "invalid_location_type_station": "Field \"from_stop_id\" \"%s\" references a station (location_type=1). Stations are forbidden for pathways"
     },
     "to_stop_id_validation": {
         "required": "Field \"to_stop_id\" is required",
@@ -931,5 +933,14 @@
         "forbidden": "Field \"reversed_signposted_as\" is forbidden",
         "required": "Field \"reversed_signposted_as\" is required",
         "recommended": "Field \"reversed_signposted_as\" is recommended"
+    },
+    "stop_access_validation": {
+        "forbidden": "Field \"stop_access\" is forbidden",
+        "required": "Field \"stop_access\" is required",
+        "recommended": "Field \"stop_access\" is recommended",
+        "invalid": "Field \"stop_access\" must be 0 or 1",
+        "not_allowed": "Field \"stop_access\" \"%s\" is not allowed",
+        "forbidden_parent_station_empty": "Field \"stop_access\" is forbidden if \"parent_station\" is empty",
+        "forbidden_location_type_not_platform": "Field \"stop_access\" is forbidden if \"location_type\" is not  (0 or empty)"
     }
 }

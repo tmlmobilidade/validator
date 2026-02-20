@@ -867,7 +867,9 @@
         "required": "O campo \"from_stop_id\" é obrigatório",
         "recommended": "O campo \"from_stop_id\" é recomendado",
         "not_found": "O campo \"from_stop_id\" \"%s\" não existe em stops.txt",
-        "not_allowed": "O campo \"from_stop_id\" \"%s\" não é permitido"
+        "not_allowed": "O campo \"from_stop_id\" \"%s\" não é permitido",
+        "invalid_location_type": "O campo \"from_stop_id\" \"%s\" referencia uma paragem com location_type inválido \"%d\". Deve ser plataforma (0 ou vazio), entrada/saída (2), nó genérico (3) ou área de embarque (4)",
+        "invalid_location_type_station": "O campo \"from_stop_id\" \"%s\" referencia uma estação (location_type=1). Estações são proibidas para pathways"
     },
     "to_stop_id_validation": {
         "required": "O campo \"to_stop_id\" é obrigatório",
@@ -932,5 +934,14 @@
         "forbidden": "O campo \"reversed_signposted_as\" é proibido",
         "required": "O campo \"reversed_signposted_as\" é obrigatório",
         "recommended": "O campo \"reversed_signposted_as\" é recomendado"
+    },
+    "stop_access_validation": {
+        "forbidden": "O campo \"stop_access\" é proibido",
+        "required": "O campo \"stop_access\" é obrigatório",
+        "recommended": "O campo \"stop_access\" é recomendado",
+        "invalid": "O campo \"stop_access\" deve ser 0 ou 1",
+        "not_allowed": "O campo \"stop_access\" \"%s\" não é permitido",
+        "forbidden_parent_station_empty": "O campo \"stop_access\" é proibido se \"parent_station\" estiver vazio",
+        "forbidden_location_type_not_platform": "O campo \"stop_access\" é proibido se \"location_type\" não for (0 ou vazio)"
     }
 }
