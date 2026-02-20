@@ -71,5 +71,7 @@ func TestAllStopAccessValidationTestCases(t *testing.T) {
 		}
 		defer cleanup()
 		validations.StopAccessValidation(stop, 1, gtfs, &types.StopsRules{StopAccess: types.RuleConfig{Severity: types.SEVERITY_IGNORE}})
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "TestSeverity_Ignore", types.SEVERITY_ERROR)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "TestSeverity_Ignore", types.SEVERITY_WARNING)
 	})
 }
