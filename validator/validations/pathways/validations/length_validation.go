@@ -34,7 +34,12 @@ func LengthValidation(pathways *types.Pathways, row int, rules *types.PathwaysRu
 			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("length_validation.recommended"))
 			return
 		}
+		if ctx.ShouldSkip() {
+			return
+		}
 
+		message := ctx.GetRequiredMessage("length_validation.required", "length_validation.recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
