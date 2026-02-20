@@ -1,44 +1,63 @@
 package pathways_tests
 
 import (
-	"main/lib/test_helpers"
-	"main/services"
-	"main/types"
-	validations "main/validations/pathways/validations"
 	"testing"
+
+	"main/types"
+	pathways "main/validations/pathways/validations"
 )
 
-func TestAllParsePathwaysTestCases(t *testing.T) {
-	t.Run("Valid_All_Fields", func(t *testing.T) {
-		rawPathways := types.PathwaysRaw{
-			FromStopId:           "1",
-			ToStopId:             "2",
-			PathwayId:            "3",
-			SignpostedAs:         "4",
-			ReversedSignpostedAs: "5",
-			MaxSlope:             "6",
-			MinWidth:             "7",
-			PathwayMode:          "8",
-			IsBidirectional:      "9",
-			TraversalTime:        "10",
-			Length:               "11",
-			StairCount:           "12",
+func TestParsePathways_ValidAndInvalidValues(t *testing.T) {
+
+	t.Run("valid values", func(t *testing.T) {
+		raw := types.PathwaysRaw{
+			FromStopId:      "STOP1",
+			ToStopId:        "STOP2",
+			PathwayId:       "P1",
+			PathwayMode:     "1",
+			IsBidirectional: "1",
+			TraversalTime:   "120",
+			Length:          "15.5",
+			StairCount:      "10",
 		}
-		validations.ParsePathways(rawPathways, 1)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Valid_All_Fields", types.SEVERITY_ERROR)
+
+		result := pathways.ParsePathways(raw, 1)
+
+		if result.FromStopId == nil || *result.FromStopId != "STOP1" {
+			t.Errorf("expected FromStopId=STOP1, got %+v", result.FromStopId)
+		}
+
+		if result.PathwayMode == nil || *result.PathwayMode != 1 {
+			t.Errorf("expected PathwayMode=1, got %+v", result.PathwayMode)
+		}
+
+		if result.Length == nil || *result.Length != 15.5 {
+			t.Errorf("expected Length=15.5, got %+v", result.Length)
+		}
+
+		if result.StairCount == nil || *result.StairCount != 10 {
+			t.Errorf("expected StairCount=10, got %+v", result.StairCount)
+		}
 	})
-	t.Run("Invalid_All_Fields", func(t *testing.T) {
-		rawPathways := types.PathwaysRaw{
-			FromStopId:           "1",
-			ToStopId:             "not_a_stop_id",
-			PathwayId:            "not_a_pathway_id",
-			SignpostedAs:         "not_a_signposted_as",
-			ReversedSignpostedAs: "not_a_reversed_signposted_as",
-			MaxSlope:             "not_a_max_slope",
-			MinWidth:             "not_a_min_width",
-			TraversalTime:        "not_a_traversal_time",
+
+	t.Run("invalid values", func(t *testing.T) {
+		raw := types.PathwaysRaw{
+			FromStopId:      "STOP1",
+			ToStopId:        "STOP2",
+			PathwayId:       "P1",
+			PathwayMode:     "invalid", // invalid int
+			IsBidirectional: "1",
 		}
-		validations.ParsePathways(rawPathways, 1)
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Invalid_All_Fields", types.SEVERITY_ERROR)
+
+		result := pathways.ParsePathways(raw, 1)
+
+		// Because there is a parsing error,
+		// the function must return an empty Pathways struct
+		if result.FromStopId != nil ||
+			result.ToStopId != nil ||
+			result.PathwayId != nil ||
+			result.PathwayMode != nil {
+			t.Errorf("expected empty Pathways due to parse error, got %+v", result)
+		}
 	})
 }
