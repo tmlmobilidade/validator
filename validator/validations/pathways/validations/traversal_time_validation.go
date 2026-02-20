@@ -36,6 +36,11 @@ func TraversalTimeValidation(pathways *types.Pathways, row int, rules *types.Pat
 		return
 	}
 
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("traversal_time_validation.forbidden"))
+		return
+	}
+
 	if *pathways.TraversalTime < 0 {
 		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("traversal_time_validation.negative", *pathways.TraversalTime))
 		return

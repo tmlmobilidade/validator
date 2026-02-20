@@ -887,24 +887,28 @@
         "not_allowed": "Field \"is_bidirectional\" \"%s\" is not allowed"
     },
     "length_validation": {
+        "forbidden": "Field \"length\" is forbidden",
         "required": "Field \"length\" is required",
         "recommended": "Field \"length\" is recommended",
         "invalid": "Field \"length\" \"%s\" is not a valid number",
         "not_allowed": "Field \"length\" \"%s\" is not allowed"
     },
     "traversal_time_validation": {
+        "forbidden": "Field \"traversal_time\" is forbidden",
         "required": "Field \"traversal_time\" is required",
         "recommended": "Field \"traversal_time\" is recommended",
         "invalid": "Field \"traversal_time\" \"%s\" is not a valid number",
         "not_allowed": "Field \"traversal_time\" \"%s\" is not allowed"
     },
     "stair_count_validation": {
+        "forbidden": "Field \"stair_count\" is forbidden",
         "required": "Field \"stair_count\" is required",
         "recommended": "Field \"stair_count\" is recommended",
         "invalid": "Field \"stair_count\" \"%s\" is not a valid number",
         "not_allowed": "Field \"stair_count\" \"%s\" is not allowed"
     },
     "max_slope_validation": {
+        "forbidden": "Field \"max_slope\" is forbidden",
         "required": "Field \"max_slope\" is required",
         "recommended": "Field \"max_slope\" is recommended",
         "invalid": "Field \"max_slope\" \"%s\" is not a valid number",
@@ -912,9 +916,15 @@
         "not_allowed_pathway_mode": "Field \"max_slope\" is not allowed for pathway_mode \"%s\""
     },
     "min_width_validation": {
+        "forbidden": "Field \"min_width\" is forbidden",
         "required": "Field \"min_width\" is required",
         "recommended": "Field \"min_width\" is recommended",
         "invalid": "Field \"min_width\" \"%s\" is not a valid number",
         "negative": "Field \"min_width\" must be a positive number"
+    },
+    "signposted_as_validation": {
+        "forbidden": "Field \"signposted_as\" is forbidden",
+        "required": "Field \"signposted_as\" is required",
+        "recommended": "Field \"signposted_as\" is recommended"
     }
 }

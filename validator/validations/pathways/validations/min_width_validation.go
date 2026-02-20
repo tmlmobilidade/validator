@@ -38,6 +38,11 @@ func MinWidthValidation(pathways *types.Pathways, row int, rules *types.Pathways
 		return
 	}
 
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("min_width_validation.forbidden"))
+		return
+	}
+
 	minWidthFloat, err := strconv.ParseFloat(*pathways.MinWidth, 64)
 	if err != nil {
 		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("min_width_validation.invalid"))

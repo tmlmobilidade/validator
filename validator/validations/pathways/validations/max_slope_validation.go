@@ -45,6 +45,11 @@ func MaxSlopeValidation(pathways *types.Pathways, row int, rules *types.Pathways
 		return
 	}
 
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("max_slope_validation.forbidden"))
+		return
+	}
+
 	if *pathways.PathwayMode != 1 && *pathways.PathwayMode != 3 {
 		if *pathways.MaxSlope == "0" {
 			return

@@ -43,6 +43,11 @@ func LengthValidation(pathways *types.Pathways, row int, rules *types.PathwaysRu
 		return
 	}
 
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("length_validation.forbidden"))
+		return
+	}
+
 	if *pathways.Length < 0 {
 		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("length_validation.negative", *pathways.Length))
 		return

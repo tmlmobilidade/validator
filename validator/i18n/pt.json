@@ -888,24 +888,28 @@
         "not_allowed": "O campo \"is_bidirectional\" \"%s\" não é permitido"
     },
     "length_validation": {
+        "forbidden": "O campo \"length\" é proibido",
         "required": "O campo \"length\" é obrigatório",
         "recommended": "O campo \"length\" é recomendado",
         "invalid": "O campo \"length\" \"%s\" não é um número válido",
         "not_allowed": "O campo \"length\" \"%s\" não é permitido"
     },
     "traversal_time_validation": {
+        "forbidden": "O campo \"traversal_time\" é proibido",
         "required": "O campo \"traversal_time\" é obrigatório",
         "recommended": "O campo \"traversal_time\" é recomendado",
         "invalid": "O campo \"traversal_time\" \"%s\" não é um número válido",
         "not_allowed": "O campo \"traversal_time\" \"%s\" não é permitido"
     },
     "stair_count_validation": {
+        "forbidden": "O campo \"stair_count\" é proibido",
         "required": "O campo \"stair_count\" é obrigatório",
         "recommended": "O campo \"stair_count\" é recomendado",
         "invalid": "O campo \"stair_count\" \"%s\" não é um número válido",
         "not_allowed": "O campo \"stair_count\" \"%s\" não é permitido"
     },
     "max_slope_validation": {
+        "forbidden": "O campo \"max_slope\" é proibido",
         "required": "O campo \"max_slope\" é obrigatório",
         "recommended": "O campo \"max_slope\" é recomendado",
         "invalid": "O campo \"max_slope\" \"%s\" não é um número válido",
@@ -913,9 +917,15 @@
         "not_allowed_pathway_mode": "O campo \"max_slope\" não é permitido para o pathway_mode \"%s\""
     },
     "min_width_validation": {
+        "forbidden": "O campo \"min_width\" é proibido",
         "required": "O campo \"min_width\" é obrigatório",
         "recommended": "O campo \"min_width\" é recomendado",
         "invalid": "O campo \"min_width\" \"%s\" não é um número válido",
         "negative": "O campo \"min_width\" deve ser um número positivo"
+    },
+    "signposted_as_validation": {
+        "forbidden": "O campo \"signposted_as\" é proibido",
+        "required": "O campo \"signposted_as\" é obrigatório",
+        "recommended": "O campo \"signposted_as\" é recomendado"
     }
 }

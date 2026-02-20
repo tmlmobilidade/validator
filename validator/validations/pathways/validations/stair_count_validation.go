@@ -35,4 +35,9 @@ func StairCountValidation(pathways *types.Pathways, row int, rules *types.Pathwa
 		ctx.AddMessageWithSeverity(message)
 		return
 	}
+
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("stair_count_validation.forbidden"))
+		return
+	}
 }
