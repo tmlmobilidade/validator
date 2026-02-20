@@ -911,5 +911,11 @@
         "invalid": "O campo \"max_slope\" \"%s\" não é um número válido",
         "not_allowed": "O campo \"max_slope\" \"%s\" não é permitido",
         "not_allowed_pathway_mode": "O campo \"max_slope\" não é permitido para o pathway_mode \"%s\""
+    },
+    "min_width_validation": {
+        "required": "O campo \"min_width\" é obrigatório",
+        "recommended": "O campo \"min_width\" é recomendado",
+        "invalid": "O campo \"min_width\" \"%s\" não é um número válido",
+        "negative": "O campo \"min_width\" deve ser um número positivo"
     }
 }
