@@ -875,7 +875,10 @@
         "required": "Field \"to_stop_id\" is required",
         "recommended": "Field \"to_stop_id\" is recommended",
         "not_found": "Field \"to_stop_id\" \"%s\" does not exist in stops.txt",
-        "not_allowed": "Field \"to_stop_id\" \"%s\" is not allowed"
+        "not_allowed": "Field \"to_stop_id\" \"%s\" is not allowed",
+        "invalid_location_type": "Field \"to_stop_id\" \"%s\" references a stop with invalid location_type \"%d\". Must be platform (0 or empty), entrance/exit (2), generic node (3), or boarding area (4)",
+        "invalid_location_type_station": "Field \"to_stop_id\" \"%s\" references a station (location_type=1). Stations are forbidden for pathways",
+        "forbidden_stop_access_1": "Field \"to_stop_id\" \"%s\" references a stop (location_type=0 or empty) with stop_access=1. Stops with stop_access=1 are forbidden for pathways"
     },
     "pathway_mode_validation": {
         "required": "Field \"pathway_mode\" is required",

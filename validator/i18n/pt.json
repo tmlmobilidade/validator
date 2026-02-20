@@ -868,7 +868,7 @@
         "recommended": "O campo \"from_stop_id\" é recomendado",
         "not_found": "O campo \"from_stop_id\" \"%s\" não existe em stops.txt",
         "not_allowed": "O campo \"from_stop_id\" \"%s\" não é permitido",
-        "invalid_location_type": "O campo \"from_stop_id\" \"%s\" referencia uma paragem com location_type inválido \"%d\". Deve ser plataforma (0 ou vazio), entrada/saída (2), nó genérico (3) ou área de embarque (4)",
+        "invalid_location_type": "O campo \"from_stop_id\" \"%s\" referencia uma paragem com location_type inválido \"%d\". Deve ser plataforma (0 ou vazio), entrada/saída (2), nó (3) ou área de embarque (4)",
         "invalid_location_type_station": "O campo \"from_stop_id\" \"%s\" referencia uma estação (location_type=1). Estações são proibidas para pathways",
         "forbidden_stop_access_1": "O campo \"from_stop_id\" \"%s\" referencia uma paragem (location_type=0 ou vazio) com stop_access=1. Paragens com stop_access=1 são proibidas para pathways"
     },
@@ -876,7 +876,10 @@
         "required": "O campo \"to_stop_id\" é obrigatório",
         "recommended": "O campo \"to_stop_id\" é recomendado",
         "not_found": "O campo \"to_stop_id\" \"%s\" não existe em stops.txt",
-        "not_allowed": "O campo \"to_stop_id\" \"%s\" não é permitido"
+        "not_allowed": "O campo \"to_stop_id\" \"%s\" não é permitido",
+        "invalid_location_type": "O campo \"to_stop_id\" \"%s\" referencia uma paragem com location_type inválido \"%d\". Deve ser plataforma (0 ou vazio), entrada/saída (2), nó genérico (3) ou área de embarque (4)",
+        "invalid_location_type_station": "O campo \"to_stop_id\" \"%s\" referencia uma estação (location_type=1). Estações são proibidas para pathways",
+        "forbidden_stop_access_1": "O campo \"to_stop_id\" \"%s\" referencia uma paragem (location_type=0 ou vazio) com stop_access=1. Paragens com stop_access=1 são proibidas para pathways"
     },
     "pathway_mode_validation": {
         "required": "O campo \"pathway_mode\" é obrigatório",
