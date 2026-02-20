@@ -927,5 +927,10 @@
         "forbidden": "O campo \"signposted_as\" é proibido",
         "required": "O campo \"signposted_as\" é obrigatório",
         "recommended": "O campo \"signposted_as\" é recomendado"
+    },
+    "reversed_signposted_as_validation": {
+        "forbidden": "O campo \"reversed_signposted_as\" é proibido",
+        "required": "O campo \"reversed_signposted_as\" é obrigatório",
+        "recommended": "O campo \"reversed_signposted_as\" é recomendado"
     }
 }

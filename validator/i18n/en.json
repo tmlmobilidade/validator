@@ -926,5 +926,10 @@
         "forbidden": "Field \"signposted_as\" is forbidden",
         "required": "Field \"signposted_as\" is required",
         "recommended": "Field \"signposted_as\" is recommended"
+    },
+    "reversed_signposted_as_validation": {
+        "forbidden": "Field \"reversed_signposted_as\" is forbidden",
+        "required": "Field \"reversed_signposted_as\" is required",
+        "recommended": "Field \"reversed_signposted_as\" is recommended"
     }
 }
