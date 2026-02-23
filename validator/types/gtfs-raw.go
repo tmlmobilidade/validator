@@ -967,6 +967,14 @@ func (g *Gtfs) IterateVehicles(fn func(int, VehicleRaw) error) error {
 	})
 }
 
+// IterateTransfers iterates over all transfers, calling fn for each
+func (g *Gtfs) IterateTransfers(fn func(int, TransfersRaw) error) error {
+	return g.iterateTable("transfers", func(rowIndex int, row map[string]string) error {
+		transfersRaw := convertRowToStruct[TransfersRaw](row)
+		return fn(rowIndex, transfersRaw)
+	})
+}
+
 // GetVehicle retrieves a vehicle by row index
 // iterateTable is a generic helper to iterate over table rows
 func (g *Gtfs) iterateTable(table string, fn func(int, map[string]string) error) error {
