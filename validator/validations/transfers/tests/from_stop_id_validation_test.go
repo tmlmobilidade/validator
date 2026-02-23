@@ -55,6 +55,24 @@ func TestAllFromStopIdValidationTestCases(t *testing.T) {
 		})
 	}
 
+	// Foreign key tests
+	for _, tc := range test_helpers.GetGenericForeignKeyTestCases("from_stop_id") {
+		t.Run(tc.Name, func(t *testing.T) {
+			services.AppMessageService.Clear()
+			transfer := &types.Transfers{FromStopId: tc.Id}
+			if tc.Name == "ForeignKey_Invalid" {
+				transfer = &types.Transfers{FromStopId: nil}
+			}
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{*tc.Id: {1}}}}.ToGtfsWithDB()
+			if err != nil {
+				t.Fatalf("failed to create mock gtfs: %v", err)
+			}
+			defer cleanup()
+			validations.FromStopIdValidation(transfer, tc.Row, *gtfs, &types.TransfersRules{FromStopId: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
+			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
+		})
+	}
+
 	// Severity tests (when from_stop_id is missing with different severity levels)
 	for _, tc := range test_helpers.GetGenericSeverityTestCases("from_stop_id") {
 		t.Run(tc.Name, func(t *testing.T) {
