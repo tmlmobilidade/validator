@@ -871,5 +871,12 @@
         "recommended": "O campo \"min_transfer_time\" é recomendado",
         "invalid": "O campo \"min_transfer_time\" deve ser um número inteiro não negativo",
         "not_allowed": "O campo \"min_transfer_time\" \"%s\" não é permitido"
+    },
+    "from_stop_id_validation": {
+        "required": "O campo \"from_stop_id\" é obrigatório",
+        "recommended": "O campo \"from_stop_id\" é recomendado",
+        "not_found": "O campo \"from_stop_id\" \"%s\" não existe em stops.txt",
+        "invalid_location_type": "O campo \"from_stop_id\" \"%s\" referencia uma paragem com location_type inválido \"%d\". Deve ser uma paragem (location_type=0) ou estação (location_type=1)",
+        "must_be_stop_for_transfer_type_4_5": "O campo \"from_stop_id\" \"%s\" deve referenciar uma paragem (location_type=0) quando transfer_type é %d. Estações (location_type=1) não são permitidas para transfer_type 4 ou 5"
     }
 }

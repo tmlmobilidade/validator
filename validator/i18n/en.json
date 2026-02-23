@@ -870,5 +870,12 @@
         "recommended": "Field \"min_transfer_time\" is recommended",
         "invalid": "Field \"min_transfer_time\" must be a non-negative integer",
         "not_allowed": "Field \"min_transfer_time\" \"%s\" is not allowed"
+    },
+    "from_stop_id_validation": {
+        "required": "Field \"from_stop_id\" is required",
+        "recommended": "Field \"from_stop_id\" is recommended",
+        "not_found": "Field \"from_stop_id\" \"%s\" does not exist in stops.txt",
+        "invalid_location_type": "Field \"from_stop_id\" \"%s\" references a stop with invalid location_type \"%d\". Must be a stop (location_type=0) or station (location_type=1)",
+        "must_be_stop_for_transfer_type_4_5": "Field \"from_stop_id\" \"%s\" must reference a stop (location_type=0) when transfer_type is %d. Stations (location_type=1) are not allowed for transfer_type 4 or 5"
     }
 }
