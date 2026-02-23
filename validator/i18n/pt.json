@@ -901,5 +901,12 @@
         "not_found": "O campo \"to_route_id\" \"%s\" não existe em routes.txt",
         "not_allowed": "O campo \"to_route_id\" \"%s\" não é permitido",
         "trip_must_belong_to_route": "Quando to_trip_id e to_route_id estão definidos, to_trip_id \"%s\" deve pertencer a to_route_id \"%s\". A viagem referencia a rota \"%s\""
+    },
+    "from_trip_id_validation": {
+        "required": "O campo \"from_trip_id\" é obrigatório",
+        "recommended": "O campo \"from_trip_id\" é recomendado",
+        "not_found": "O campo \"from_trip_id\" \"%s\" não existe em trips.txt",
+        "not_allowed": "O campo \"from_trip_id\" \"%s\" não é permitido",
+        "trip_must_belong_to_route": "Quando from_trip_id e from_route_id estão definidos, from_trip_id \"%s\" deve pertencer a from_route_id \"%s\". A viagem referencia a rota \"%s\""
     }
 }
