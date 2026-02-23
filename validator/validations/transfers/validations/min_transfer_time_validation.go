@@ -34,7 +34,7 @@ func MinTransferTimeValidation(transfer *types.Transfers, row int, rules *types.
 	}
 
 	if *transfer.MinTransferTime < 0 {
-		ctx.AddError(ctx.GetTranslatedMessage("transfers_validation.invalid", *transfer.MinTransferTime))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("transfers_validation.invalid", *transfer.MinTransferTime))
 	}
 
 	if ctx.IsForbidden() {

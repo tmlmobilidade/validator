@@ -50,7 +50,7 @@ func ToRouteIdValidation(transfer *types.Transfers, row int, gtfs types.Gtfs, ru
 
 	// Validation foreign key to_route_id
 	if !lib.GtfsIdMapKeyExists(&gtfs, "routes", *transfer.ToRouteId) {
-		ctx.AddError(ctx.GetTranslatedMessage("to_route_id_validation.not_found", *transfer.ToRouteId))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("to_route_id_validation.not_found", *transfer.ToRouteId))
 		return
 	}
 
@@ -68,7 +68,7 @@ func ToRouteIdValidation(transfer *types.Transfers, row int, gtfs types.Gtfs, ru
 		}
 
 		if trip.RouteId != "" && trip.RouteId != *transfer.ToRouteId {
-			ctx.AddError(ctx.GetTranslatedMessage("to_route_id_validation.trip_must_belong_to_route", *transfer.ToTripId, *transfer.ToRouteId, trip.RouteId))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("to_route_id_validation.trip_must_belong_to_route", *transfer.ToTripId, *transfer.ToRouteId, trip.RouteId))
 			return
 		}
 	}

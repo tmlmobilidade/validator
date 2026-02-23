@@ -39,13 +39,13 @@ func TransferTypeValidation(transfer *types.Transfers, row int, rules *types.Tra
 			return
 		}
 
-		ctx.AddError(ctx.GetTranslatedMessage("transfer_type_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("transfer_type_validation.required"))
 		return
 	}
 
 	validTransferTypes := []int{0, 1, 2, 3, 4, 5}
 	if !slices.Contains(validTransferTypes, *transfer.TransferType) {
-		ctx.AddError(ctx.GetTranslatedMessage("transfer_type_validation.invalid", *transfer.TransferType))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("transfer_type_validation.invalid", *transfer.TransferType))
 		return
 	}
 
