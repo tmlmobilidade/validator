@@ -223,7 +223,11 @@ type FrequenciesRules struct {
 type TransfersRules struct {
 	File            Severity   `json:"_file"`
 	FromStopId      RuleConfig `json:"from_stop_id"`
+	FromRouteId     RuleConfig `json:"from_route_id"`
+	FromTripId      RuleConfig `json:"from_trip_id"`
+	ToRouteId       RuleConfig `json:"to_route_id"`
 	ToStopId        RuleConfig `json:"to_stop_id"`
+	ToTripId        RuleConfig `json:"to_trip_id"`
 	TransferType    RuleConfig `json:"transfer_type"`
 	MinTransferTime RuleConfig `json:"min_transfer_time"`
 }

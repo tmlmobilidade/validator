@@ -885,5 +885,13 @@
         "invalid_location_type": "Field \"to_stop_id\" \"%s\" references a stop with invalid location_type \"%d\". Must be a stop (location_type=0) or station (location_type=1)",
         "must_be_stop_for_transfer_type_4_5": "Field \"to_stop_id\" \"%s\" must reference a stop (location_type=0) when transfer_type is %d. Stations (location_type=1) are not allowed for transfer_type 4 or 5",
         "must_be_different_from_from_stop_id": "Field \"to_stop_id\" \"%s\" must be different from \"from_stop_id\" \"%s\". A transfer cannot have the same stop for both from and to"
+    },
+    "from_route_id_validation": {
+        "forbidden": "Field \"from_route_id\" is forbidden",
+        "required": "Field \"from_route_id\" is required",
+        "recommended": "Field \"from_route_id\" is recommended",
+        "not_found": "Field \"from_route_id\" \"%s\" does not exist in routes.txt",
+        "not_allowed": "Field \"from_route_id\" \"%s\" is not allowed",
+        "trip_must_belong_to_route": "When both from_trip_id and from_route_id are defined, from_trip_id \"%s\" must belong to from_route_id \"%s\". Trip references route \"%s\""
     }
 }
