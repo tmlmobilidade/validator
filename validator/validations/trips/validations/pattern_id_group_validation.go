@@ -24,10 +24,6 @@ func PatternIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, 
 			panic("trips is empty")
 		}
 
-		routeId := group.Trips[0].RouteId
-		directionId := group.Trips[0].DirectionId
-		shapeId := group.Trips[0].ShapeId
-
 		for _, trip := range group.Trips {
 			ctx := lib.NewValidationContext("pattern_id", "trips.txt", "pattern_id_validation", trip.Row, services.AppMessageService)
 
@@ -45,24 +41,6 @@ func PatternIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, 
 				ctx.AddError(ctx.GetTranslatedMessage("pattern_id_validation.direction_id_not_found"))
 				continue
 			}
-
-			//check if route_id is the same
-			if *trip.RouteId != *routeId {
-				ctx.AddError(ctx.GetTranslatedMessage("pattern_id_validation.different_route_id", patternId))
-				continue
-			}
-
-			//check if direction_id is the same
-			if *trip.DirectionId != *directionId {
-				ctx.AddError(ctx.GetTranslatedMessage("pattern_id_validation.different_direction_id", patternId))
-				continue
-			}
-
-			//check if shape_id is the same
-			if *trip.ShapeId != *shapeId {
-				ctx.AddError(ctx.GetTranslatedMessage("pattern_id_validation.different_shape_id", patternId))
-				continue
-			}
 		}
 
 		if len(group.Hash) > 1 {
@@ -70,5 +48,4 @@ func PatternIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, 
 			ctx.AddError(ctx.GetTranslatedMessage("pattern_id_validation.multiple_stop_sequence_variations", patternId))
 		}
 	}
-
 }

@@ -127,9 +127,5 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		lib.AppLogger.Info(fmt.Sprintf("Completed trips.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 
-	//Validate pattern_id_group
-	validations.PatternIdGroupValidation(tripsGroupedByPattern, &gtfs)
-
-	//Validate shape_id uniqueness per pattern_id
-	validations.ShapeIdGroupValidation(tripsGroupedByShapeId, &gtfs)
+	validations.ValidatePatternGroups(tripsGroupedByPattern, tripsGroupedByShapeId, &gtfs)
 }
