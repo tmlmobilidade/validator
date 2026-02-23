@@ -907,5 +907,12 @@
         "not_found": "Field \"from_trip_id\" \"%s\" does not exist in trips.txt",
         "not_allowed": "Field \"from_trip_id\" \"%s\" is not allowed",
         "trip_must_belong_to_route": "When both from_trip_id and from_route_id are defined, from_trip_id \"%s\" must belong to from_route_id \"%s\". Trip references route \"%s\""
+    },
+    "to_trip_id_validation": {
+        "required": "Field \"to_trip_id\" is required",
+        "recommended": "Field \"to_trip_id\" is recommended",
+        "not_found": "Field \"to_trip_id\" \"%s\" does not exist in trips.txt",
+        "not_allowed": "Field \"to_trip_id\" \"%s\" is not allowed",
+        "trip_must_belong_to_route": "When both to_trip_id and to_route_id are defined, to_trip_id \"%s\" must belong to to_route_id \"%s\". Trip references route \"%s\""
     }
 }
