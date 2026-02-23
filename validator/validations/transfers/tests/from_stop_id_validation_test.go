@@ -59,9 +59,9 @@ func TestAllFromStopIdValidationTestCases(t *testing.T) {
 	for _, tc := range test_helpers.GetGenericForeignKeyTestCases("from_stop_id") {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
-			transfer := &types.Transfers{FromStopId: tc.Id}
+			transfer := &types.Transfers{FromStopId: tc.Id, TransferType: lib.Ptr(1)}
 			if tc.Name == "ForeignKey_Invalid" {
-				transfer = &types.Transfers{FromStopId: nil}
+				transfer = &types.Transfers{FromStopId: nil, TransferType: lib.Ptr(1)}
 			}
 			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{*tc.Id: {1}}}}.ToGtfsWithDB()
 			if err != nil {

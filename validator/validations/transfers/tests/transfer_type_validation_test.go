@@ -21,7 +21,7 @@ func TestAllTransferTypeValidationTestCases(t *testing.T) {
 				}
 			}
 
-			validations.TransferTypeValidation(&types.Transfers{TransferType: transferType}, tc.Row, nil)
+			validations.TransferTypeValidation(&types.Transfers{TransferType: transferType}, tc.Row, &types.TransfersRules{TransferType: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
