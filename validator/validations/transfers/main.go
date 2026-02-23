@@ -34,16 +34,16 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		validations.ToStopIdValidation(transfer, row, gtfs, &rules.Transfers)
 
 		// Validate from_route_id
-		validations.FromRouteIdValidation(transfer, row, gtfs, &rules.Transfers)
+		// validations.FromRouteIdValidation(transfer, row, gtfs, &rules.Transfers)
 
-		// Validate to_route_id
-		validations.ToRouteIdValidation(transfer, row, gtfs, &rules.Transfers)
+		// // Validate to_route_id
+		// validations.ToRouteIdValidation(transfer, row, gtfs, &rules.Transfers)
 
-		// Validate from_trip_id
-		validations.FromTripIdValidation(transfer, row, gtfs, &rules.Transfers)
+		// // Validate from_trip_id
+		// validations.FromTripIdValidation(transfer, row, gtfs, &rules.Transfers)
 
-		// Validate to_trip_id
-		validations.ToTripIdValidation(transfer, row, gtfs, &rules.Transfers)
+		// // Validate to_trip_id
+		// validations.ToTripIdValidation(transfer, row, gtfs, &rules.Transfers)
 
 		// Validate transfer_type
 		validations.TransferTypeValidation(transfer, row, &rules.Transfers)
