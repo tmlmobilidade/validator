@@ -12,7 +12,7 @@ Processes both pattern_id groups and shape_id groups, and reports the most
 appropriate error for each inconsistency (avoids duplicate errors).
 */
 
-func PatternShapeConsistencyValidation(
+func ShapeIdGroupValidation(
 	tripsGroupedByPattern types.TripGroupedByPattern,
 	tripsGroupedByShapeId types.TripGroupedByShapeId,
 	gtfs *types.Gtfs,

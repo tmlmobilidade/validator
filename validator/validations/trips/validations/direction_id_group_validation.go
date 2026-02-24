@@ -24,6 +24,7 @@ If a pattern_id has trips with different direction_ids, report error.
 */
 
 func DirectionIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, gtfs *types.Gtfs) {
+	// Group trips by pattern_id and validate direction_id
 	for patternId, group := range tripsGroupedByPattern {
 		if len(group.Trips) == 0 {
 			panic("trips is empty")

@@ -19,6 +19,7 @@ import (
 Validates if trips with the same pattern_id have the same route_id, trip_headsign, direction_id, shape_id and the same stop sequence.
 */
 func PatternIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, gtfs *types.Gtfs) {
+	// Group trips by pattern_id and validate the group
 	for patternId, group := range tripsGroupedByPattern {
 		if len(group.Trips) == 0 {
 			panic("trips is empty")
