@@ -490,6 +490,11 @@ func GetBinaryValidOptions() []int {
 	return []int{0, 1}
 }
 
+// GetThreeStateValidOptions returns valid three-state values
+func GetThreeStateValidOptions() []int {
+	return []int{0, 1, 2}
+}
+
 // GetRouteTypeValidOptions returns valid GTFS route_type values
 func GetRouteTypeValidOptions() []int {
 	return []int{0, 1, 2, 3, 4, 5, 6, 7, 11, 12}
@@ -515,21 +520,6 @@ func GetLocationTypeValidOptions() []int {
 	return []int{0, 1, 2, 3, 4}
 }
 
-// GetWheelchairBoardingValidOptions returns valid wheelchair_boarding values
-func GetWheelchairBoardingValidOptions() []int {
-	return []int{0, 1, 2}
-}
-
-// GetBikesAllowedValidOptions returns valid bikes_allowed values
-func GetBikesAllowedValidOptions() []int {
-	return []int{0, 1, 2}
-}
-
-// GetTransfersValidOptions returns valid transfers values
-func GetTransfersValidOptions() []int {
-	return []int{0, 1, 2}
-}
-
 // GetHasBenchValidOptions returns valid has_bench values
 func GetHasBenchValidOptions() []int {
 	return []int{0, 1, 2, 3}
@@ -538,11 +528,6 @@ func GetHasBenchValidOptions() []int {
 // GetHasNetworkMapValidOptions returns valid has_network_map values
 func GetHasNetworkMapValidOptions() []int {
 	return []int{0, 1, 2, 3}
-}
-
-// GetHasPipRealTimeValidOptions returns valid has_pip_real_time values
-func GetHasPipRealTimeValidOptions() []int {
-	return []int{0, 1, 2}
 }
 
 // GetHasStopSignValidOptions returns valid has_stop_sign values
@@ -585,34 +570,9 @@ func GetEmissionValidOptions() []int {
 	return []int{1, 2, 3, 4, 5, 6}
 }
 
-// GetLoweredFloorValidOptions returns valid lowered_floor values
-func GetLoweredFloorValidOptions() []int {
-	return []int{0, 1, 2}
-}
-
 // GetRampValidOptions returns valid ramp values
 func GetRampValidOptions() []int {
 	return []int{0, 1, 2, 3}
-}
-
-// GetKneelingValidOptions returns valid kneeling values
-func GetKneelingValidOptions() []int {
-	return []int{0, 1, 2}
-}
-
-// GetFrontDisplayValidOptions returns valid front_display values
-func GetFrontDisplayValidOptions() []int {
-	return []int{0, 1, 2}
-}
-
-// GetRearDisplayValidOptions returns valid rear_display values
-func GetRearDisplayValidOptions() []int {
-	return []int{0, 1, 2}
-}
-
-// GetSideDisplayValidOptions returns valid side_display values
-func GetSideDisplayValidOptions() []int {
-	return []int{0, 1, 2}
 }
 
 // ===============================================

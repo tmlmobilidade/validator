@@ -489,14 +489,14 @@ func TestGTFSValidOptionsGenerators(t *testing.T) {
 	})
 
 	t.Run("WheelchairBoardingValidOptions", func(t *testing.T) {
-		opts := GetWheelchairBoardingValidOptions()
+		opts := GetThreeStateValidOptions()
 		if len(opts) != 3 {
 			t.Errorf("WheelchairBoardingValidOptions should have 3 values, got %d", len(opts))
 		}
 	})
 
 	t.Run("BikesAllowedValidOptions", func(t *testing.T) {
-		opts := GetBikesAllowedValidOptions()
+		opts := GetThreeStateValidOptions()
 		if len(opts) != 3 {
 			t.Errorf("BikesAllowedValidOptions should have 3 values, got %d", len(opts))
 		}
