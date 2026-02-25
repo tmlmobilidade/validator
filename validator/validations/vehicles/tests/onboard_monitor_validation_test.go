@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllOnboardMonitorValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetOnboardMonitorValidOptions()
+	validOptions := test_helpers.GetBinaryValidOptions()
 	invalidOptions := test_helpers.GetInvalidIntOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("onboard_monitor", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {

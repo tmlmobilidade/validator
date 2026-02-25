@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllTimepointValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetTimepointValidOptions()
+	validOptions := test_helpers.GetBinaryValidOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("timepoint", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()

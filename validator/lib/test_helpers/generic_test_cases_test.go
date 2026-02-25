@@ -475,7 +475,7 @@ func TestGTFSValidOptionsGenerators(t *testing.T) {
 	})
 
 	t.Run("TimepointValidOptions", func(t *testing.T) {
-		opts := GetTimepointValidOptions()
+		opts := GetBinaryValidOptions()
 		if len(opts) != 2 {
 			t.Errorf("TimepointValidOptions should have 2 values, got %d", len(opts))
 		}
@@ -503,14 +503,14 @@ func TestGTFSValidOptionsGenerators(t *testing.T) {
 	})
 
 	t.Run("DirectionIdValidOptions", func(t *testing.T) {
-		opts := GetDirectionIdValidOptions()
+		opts := GetBinaryValidOptions()
 		if len(opts) != 2 {
 			t.Errorf("DirectionIdValidOptions should have 2 values, got %d", len(opts))
 		}
 	})
 
 	t.Run("ExceptionTypeValidOptions", func(t *testing.T) {
-		opts := GetExceptionTypeValidOptions()
+		opts := GetBinaryValidOptions()
 		if len(opts) != 2 {
 			t.Errorf("ExceptionTypeValidOptions should have 2 values, got %d", len(opts))
 		}
