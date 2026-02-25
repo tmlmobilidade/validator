@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllHasSchedulesValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetBinaryValidOptions()
+	validOptions := test_helpers.GetFourStateValidOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("has_schedules", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()

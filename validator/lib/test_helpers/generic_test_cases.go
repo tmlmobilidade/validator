@@ -495,44 +495,19 @@ func GetThreeStateValidOptions() []int {
 	return []int{0, 1, 2}
 }
 
+// GetFourStateValidOptions returns valid four-state values
+func GetFourStateValidOptions() []int {
+	return []int{0, 1, 2, 3}
+}
+
 // GetRouteTypeValidOptions returns valid GTFS route_type values
 func GetRouteTypeValidOptions() []int {
 	return []int{0, 1, 2, 3, 4, 5, 6, 7, 11, 12}
 }
 
-// GetContinuousPickupDropOffValidOptions returns valid continuous_pickup/drop_off values
-func GetContinuousPickupDropOffValidOptions() []int {
-	return []int{0, 1, 2, 3}
-}
-
-// GetPickupTypeValidOptions returns valid pickup_type values for stop_times
-func GetPickupTypeValidOptions() []int {
-	return []int{0, 1, 2, 3}
-}
-
-// GetDropOffTypeValidOptions returns valid drop_off_type values for stop_times
-func GetDropOffTypeValidOptions() []int {
-	return []int{0, 1, 2, 3}
-}
-
 // GetLocationTypeValidOptions returns valid location_type values for stops
 func GetLocationTypeValidOptions() []int {
 	return []int{0, 1, 2, 3, 4}
-}
-
-// GetHasBenchValidOptions returns valid has_bench values
-func GetHasBenchValidOptions() []int {
-	return []int{0, 1, 2, 3}
-}
-
-// GetHasNetworkMapValidOptions returns valid has_network_map values
-func GetHasNetworkMapValidOptions() []int {
-	return []int{0, 1, 2, 3}
-}
-
-// GetHasStopSignValidOptions returns valid has_stop_sign values
-func GetHasStopSignValidOptions() []int {
-	return []int{0, 1, 2, 3}
 }
 
 // GetValidShapeOptions returns valid shape_pt_sequence values
@@ -568,11 +543,6 @@ func GetPropulsionValidOptions() []int {
 // GetEmissionValidOptions returns valid emission values
 func GetEmissionValidOptions() []int {
 	return []int{1, 2, 3, 4, 5, 6}
-}
-
-// GetRampValidOptions returns valid ramp values
-func GetRampValidOptions() []int {
-	return []int{0, 1, 2, 3}
 }
 
 // ===============================================
