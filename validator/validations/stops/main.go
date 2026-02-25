@@ -5,8 +5,8 @@ import (
 	"main/config"
 	"main/lib"
 	"main/types"
-	validations "main/validations/stops/validations"
 	registry "main/validations"
+	validations "main/validations/stops/validations"
 )
 
 func init() {
@@ -118,6 +118,9 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 		// Validate has_tariffs_information
 		validations.HasTariffsInformationValidation(&stop, row, stopRules)
+
+		// Validate stop_access
+		validations.StopAccessValidation(&stop, row, &gtfs, stopRules)
 
 		return nil
 	})

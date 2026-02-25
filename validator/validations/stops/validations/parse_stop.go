@@ -11,7 +11,7 @@ func ParseStop(rawStop types.StopRaw, row int) types.Stop {
 	var (
 		stop                                                                                                                                                                                                      types.Stop = types.Stop{}
 		stopId, stopCode, stopName, stopDesc, zoneId, stopUrl, parentStation, stopTimezone, levelId, platformCode, ttsStopName, shelterCode, shelterMaintainer, stopShortName, municipalityId, parishId, regionId string
-		locationType, wheelchairBoarding, hasBench, hasNetworkMap, hasPipRealTime, hasSchedules, hasShelter, hasStopSign, hasTariffsInformation, publicVisible                                                    int
+		locationType, wheelchairBoarding, hasBench, hasNetworkMap, hasPipRealTime, hasSchedules, hasShelter, hasStopSign, hasTariffsInformation, publicVisible, stopAccess                                        int
 		stopLat, stopLon                                                                                                                                                                                          float32
 		messages                                                                                                                                                                                                  []types.Message
 	)
@@ -47,6 +47,7 @@ func ParseStop(rawStop types.StopRaw, row int) types.Stop {
 		"has_stop_sign":           &hasStopSign,
 		"has_tariffs_information": &hasTariffsInformation,
 		"public_visible":          &publicVisible,
+		"stop_access":             &stopAccess,
 	}
 
 	float32Fields := map[string]*float32{
@@ -119,6 +120,6 @@ func ParseStop(rawStop types.StopRaw, row int) types.Stop {
 	stop.TtsStopName = lib.IfThenElse(rawStop.TtsStopName != "", &ttsStopName, nil)
 	stop.WheelchairBoarding = lib.IfThenElse(rawStop.WheelchairBoarding != "", &wheelchairBoarding, nil)
 	stop.ZoneId = lib.IfThenElse(rawStop.ZoneId != "", &zoneId, nil)
-
+	stop.StopAccess = lib.IfThenElse(rawStop.StopAccess != "", &stopAccess, nil)
 	return stop
 }
