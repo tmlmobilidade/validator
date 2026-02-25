@@ -711,7 +711,7 @@
     },
     "license_plate_validation": {
         "required": "O campo \"license_plate\" é obrigatório",
-        "invalid": "O campo \"license_plate\" \"%s\" tem um formato inválido deve ser no formato XX-XX-XX",
+        "invalid": "O campo \"license_plate\" \"%s\" tem um formato inválido deve ser no formato XXXXXX",
         "duplicate": "Campo \"license_plate\" \"%s\" duplicado encontrado. O campo \"license_plate\" deve ser único"
     },
     "model_validation": {
