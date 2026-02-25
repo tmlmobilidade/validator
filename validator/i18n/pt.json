@@ -691,7 +691,7 @@
         "duplicate": "Campo \"rider_category_id\" \"%s\" duplicado encontrado. O campo \"rider_category_id\" deve ser único"
     },
     "pattern_id_format_validation": {
-        "invalid": "O campo \"pattern_id\" deve ser um ID válido no formato \"XXXX_X_X\", recebido: %s"
+        "invalid": "O campo \"pattern_id\" deve ser um ID válido no formato \"XXXX_X_X\", recebido: \"%s\""
     },
     "fare_media_id_validation": {
         "required": "O campo \"fare_media_id\" é obrigatório",

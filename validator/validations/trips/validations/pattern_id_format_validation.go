@@ -20,6 +20,7 @@ Validates if the pattern_id is in the correct format. Must be in the format "X a
 */
 
 var patternIDRegex = regexp.MustCompile(`^[^_]{1,4}_[^_]_[^_]$`)
+
 func PatternIdFormatValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
 	ctx := lib.NewValidationContext("pattern_id", "trips.txt", "pattern_id_format_validation", row, services.AppMessageService)
 	if rules != nil && rules.PatternIdFormat.Severity != "" {
@@ -31,7 +32,7 @@ func PatternIdFormatValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rule
 	}
 
 	if !patternIDRegex.MatchString(*trip.PatternId) {
-		ctx.AddError(ctx.GetTranslatedMessage("pattern_id_format_validation.invalid"))
+		ctx.AddError(ctx.GetTranslatedMessage("pattern_id_format_validation.invalid", *trip.PatternId))
 		return
 	}
 }
