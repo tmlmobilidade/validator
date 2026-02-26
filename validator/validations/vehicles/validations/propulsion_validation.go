@@ -56,7 +56,7 @@ func PropulsionValidation(vehicle *types.Vehicle, row int, rules *types.Vehicles
 		}
 
 		if !slices.Contains(*rules.Propulsion.Options, strconv.Itoa(*vehicle.Propulsion)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("propulsion_validation.not_allowed", *vehicle.Propulsion))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("propulsion_validation.not_allowed", strconv.Itoa(*vehicle.Propulsion)))
 			return
 		}
 	}

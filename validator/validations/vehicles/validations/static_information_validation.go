@@ -50,7 +50,7 @@ func StaticInformationValidation(vehicle *types.Vehicle, row int, rules *types.V
 		}
 
 		if !slices.Contains(*rules.StaticInformation.Options, strconv.Itoa(*vehicle.StaticInformation)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("static_information_validation.not_allowed", *vehicle.StaticInformation))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("static_information_validation.not_allowed", strconv.Itoa(*vehicle.StaticInformation)))
 			return
 		}
 	}

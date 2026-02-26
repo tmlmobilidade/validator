@@ -4,6 +4,7 @@ import (
 	"main/lib"
 	"main/services"
 	"main/types"
+	"strconv"
 )
 
 /*
@@ -31,7 +32,7 @@ func AvailableStandingValidation(vehicle *types.Vehicle, row int, rules *types.V
 	}
 
 	if *vehicle.AvailableStanding <= 0 {
-		ctx.AddError(ctx.GetTranslatedMessage("available_standing_validation.invalid", *vehicle.AvailableStanding))
+		ctx.AddError(ctx.GetTranslatedMessage("available_standing_validation.invalid", strconv.Itoa(*vehicle.AvailableStanding)))
 		return
 	}
 }

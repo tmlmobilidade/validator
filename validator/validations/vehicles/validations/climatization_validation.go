@@ -39,7 +39,7 @@ func ClimatizationValidation(vehicle *types.Vehicle, row int, rules *types.Vehic
 
 	validOptions := []int{0, 1}
 	if !slices.Contains(validOptions, *vehicle.Climatization) {
-		ctx.AddError(ctx.GetTranslatedMessage("climatization_validation.invalid", *vehicle.Climatization))
+		ctx.AddError(ctx.GetTranslatedMessage("climatization_validation.invalid", strconv.Itoa(*vehicle.Climatization)))
 		return
 	}
 
@@ -50,7 +50,7 @@ func ClimatizationValidation(vehicle *types.Vehicle, row int, rules *types.Vehic
 		}
 
 		if !slices.Contains(*rules.Climatization.Options, strconv.Itoa(*vehicle.Climatization)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("climatization_validation.not_allowed", *vehicle.Climatization))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("climatization_validation.not_allowed", strconv.Itoa(*vehicle.Climatization)))
 			return
 		}
 	}
