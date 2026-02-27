@@ -51,7 +51,7 @@ func SideDisplayValidation(vehicle *types.Vehicle, row int, rules *types.Vehicle
 		}
 
 		if !slices.Contains(*rules.SideDisplay.Options, strconv.Itoa(*vehicle.SideDisplay)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("side_display_validation.not_allowed", *vehicle.SideDisplay))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("side_display_validation.not_allowed", strconv.Itoa(*vehicle.SideDisplay)))
 			return
 		}
 	}

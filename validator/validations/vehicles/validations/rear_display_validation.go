@@ -51,7 +51,7 @@ func RearDisplayValidation(vehicle *types.Vehicle, row int, rules *types.Vehicle
 		}
 
 		if !slices.Contains(*rules.RearDisplay.Options, strconv.Itoa(*vehicle.RearDisplay)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("rear_display_validation.not_allowed", *vehicle.RearDisplay))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("rear_display_validation.not_allowed", strconv.Itoa(*vehicle.RearDisplay)))
 			return
 		}
 	}
