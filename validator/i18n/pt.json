@@ -599,6 +599,12 @@
         "invalid": "O campo \"direction_id\" deve ser 0 ou 1",
         "not_allowed": "O campo \"direction_id\" \"%s\" não é permitido"
     },
+    "route_id_group_validation": {
+        "different_route_ids_in_pattern": "pattern_id %s tem viagens com route_ids diferentes: %s. Todas as viagens com o mesmo pattern_id devem ter o mesmo route_id"
+    },
+    "direction_id_group_validation": {
+        "different_direction_ids_in_pattern": "pattern_id %s tem viagens com direction_ids diferentes: %s. Todas as viagens com o mesmo pattern_id devem ter o mesmo direction_id"
+    },
     "pattern_id_validation": {
         "forbidden": "O campo \"pattern_id\" é proibido",
         "required": "O campo \"pattern_id\" é obrigatório",

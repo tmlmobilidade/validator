@@ -598,6 +598,12 @@
         "invalid": "Field \"direction_id\" must be 0 or 1",
         "not_allowed": "Field \"direction_id\" \"%s\" is not allowed"
     },
+    "route_id_group_validation": {
+        "different_route_ids_in_pattern": "pattern_id %s has trips with different route_ids: %s. All trips with the same pattern_id must have the same route_id"
+    },
+    "direction_id_group_validation": {
+        "different_direction_ids_in_pattern": "pattern_id %s has trips with different direction_ids: %s. All trips with the same pattern_id must have the same direction_id"
+    },
     "pattern_id_validation": {
         "forbidden": "Field \"pattern_id\" is forbidden",
         "required": "Field \"pattern_id\" is required",
