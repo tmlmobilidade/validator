@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllKneelingValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetKneelingValidOptions()
+	validOptions := test_helpers.GetThreeStateValidOptions()
 	invalidOptions := test_helpers.GetInvalidIntOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("kneeling", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {

@@ -692,7 +692,7 @@
         "duplicate": "Duplicate field \"rider_category_id\" \"%s\" found. Field \"rider_category_id\" must be unique"
     },
     "pattern_id_format_validation": {
-        "invalid": "Field \"pattern_id\" must be a valid ID in the format \"XXXX_X_X\", received: %s"
+        "invalid": "Field \"pattern_id\" must be a valid ID in the format \"XXXX_X_X\", received: \"%s\""
     },
     "fare_media_id_validation": {
         "required": "Field \"fare_media_id\" is required",
@@ -712,7 +712,7 @@
     },
     "license_plate_validation": {
         "required": "Field \"license_plate\" is required",
-        "invalid": "Field \"license_plate\" \"%s\" has an invalid format, must be in the format XX-XX-XX",
+        "invalid": "Field \"license_plate\" \"%s\" has an invalid format, must be in the format XXXXXX",
         "duplicate": "Duplicate field \"license_plate\" \"%s\" found. Field \"license_plate\" must be unique"
     },
     "model_validation": {

@@ -41,19 +41,18 @@ func KneelingValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 
 	validOptions := []int{0, 1, 2}
 	if !slices.Contains(validOptions, *vehicle.Kneeling) {
-		ctx.AddError(ctx.GetTranslatedMessage("kneeling_validation.invalid", *vehicle.Kneeling))
+		ctx.AddError(ctx.GetTranslatedMessage("kneeling_validation.invalid", strconv.Itoa(*vehicle.Kneeling)))
 		return
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Kneeling.Options != nil {
 		if slices.Contains(*rules.Kneeling.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.Kneeling.Options, strconv.Itoa(*vehicle.Kneeling)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("kneeling_validation.not_allowed", *vehicle.Kneeling))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("kneeling_validation.not_allowed", strconv.Itoa(*vehicle.Kneeling)))
 			return
 		}
 	}

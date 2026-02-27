@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllHasShelterValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetHasShelterValidOptions()
+	validOptions := test_helpers.GetBinaryValidOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("has_shelter", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()

@@ -38,19 +38,18 @@ func InternalSoundValidation(vehicle *types.Vehicle, row int, rules *types.Vehic
 
 	validOptions := []int{0, 1}
 	if !slices.Contains(validOptions, *vehicle.InternalSound) {
-		ctx.AddError(ctx.GetTranslatedMessage("internal_sound_validation.invalid", *vehicle.InternalSound))
+		ctx.AddError(ctx.GetTranslatedMessage("internal_sound_validation.invalid", strconv.Itoa(*vehicle.InternalSound)))
 		return
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.InternalSound.Options != nil {
 		if slices.Contains(*rules.InternalSound.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.InternalSound.Options, strconv.Itoa(*vehicle.InternalSound)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("internal_sound_validation.not_allowed", *vehicle.InternalSound))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("internal_sound_validation.not_allowed", strconv.Itoa(*vehicle.InternalSound)))
 			return
 		}
 	}

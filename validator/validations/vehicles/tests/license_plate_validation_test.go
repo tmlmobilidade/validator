@@ -21,7 +21,7 @@ func TestAllLicensePlateValidationTestCases(t *testing.T) {
 			}
 			vehicle := &types.Vehicle{LicensePlate: licensePlate}
 			validations.LicensePlateValidation(vehicle, tc.Row, nil, &types.VehiclesRules{LicensePlate: types.RuleConfig{Severity: tc.Severity}})
-			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, tc.Severity)
+			test_helpers.AssertMessageCount(t, services.AppMessageService, lib.IfThenElse(tc.Severity == types.SEVERITY_ERROR, tc.ExpectedErrors, tc.ExpectedWarnings), tc.Name, tc.Severity)
 		})
 	}
 	t.Run("UniqueLicensePlate", func(t *testing.T) {

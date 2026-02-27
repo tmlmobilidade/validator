@@ -300,7 +300,7 @@ func TestRoutesAgencyIdTestCases(t *testing.T) {
 }
 
 func TestRoutesContinuousPickupTestCases(t *testing.T) {
-	validOptions := GetContinuousPickupDropOffValidOptions()
+	validOptions := GetFourStateValidOptions()
 	cases := GetGenericEnumIntTestCases("continuous_pickup", validOptions)
 	if len(cases) == 0 {
 		t.Error("RoutesContinuousPickupTestCases should return test cases")
@@ -316,7 +316,7 @@ func TestRoutesContinuousPickupTestCases(t *testing.T) {
 }
 
 func TestRoutesContinuousDropOffTestCases(t *testing.T) {
-	validOptions := GetContinuousPickupDropOffValidOptions()
+	validOptions := GetFourStateValidOptions()
 	cases := GetGenericEnumIntTestCases("continuous_drop_off", validOptions)
 	if len(cases) == 0 {
 		t.Error("RoutesContinuousDropOffTestCases should return test cases")
@@ -454,28 +454,28 @@ func TestGTFSValidOptionsGenerators(t *testing.T) {
 	})
 
 	t.Run("ContinuousPickupDropOffValidOptions", func(t *testing.T) {
-		opts := GetContinuousPickupDropOffValidOptions()
+		opts := GetFourStateValidOptions()
 		if len(opts) != 4 {
 			t.Errorf("ContinuousPickupDropOffValidOptions should have 4 values, got %d", len(opts))
 		}
 	})
 
 	t.Run("PickupTypeValidOptions", func(t *testing.T) {
-		opts := GetPickupTypeValidOptions()
+		opts := GetFourStateValidOptions()
 		if len(opts) != 4 {
 			t.Errorf("PickupTypeValidOptions should have 4 values, got %d", len(opts))
 		}
 	})
 
 	t.Run("DropOffTypeValidOptions", func(t *testing.T) {
-		opts := GetDropOffTypeValidOptions()
+		opts := GetFourStateValidOptions()
 		if len(opts) != 4 {
 			t.Errorf("DropOffTypeValidOptions should have 4 values, got %d", len(opts))
 		}
 	})
 
 	t.Run("TimepointValidOptions", func(t *testing.T) {
-		opts := GetTimepointValidOptions()
+		opts := GetBinaryValidOptions()
 		if len(opts) != 2 {
 			t.Errorf("TimepointValidOptions should have 2 values, got %d", len(opts))
 		}
@@ -489,28 +489,28 @@ func TestGTFSValidOptionsGenerators(t *testing.T) {
 	})
 
 	t.Run("WheelchairBoardingValidOptions", func(t *testing.T) {
-		opts := GetWheelchairBoardingValidOptions()
+		opts := GetThreeStateValidOptions()
 		if len(opts) != 3 {
 			t.Errorf("WheelchairBoardingValidOptions should have 3 values, got %d", len(opts))
 		}
 	})
 
 	t.Run("BikesAllowedValidOptions", func(t *testing.T) {
-		opts := GetBikesAllowedValidOptions()
+		opts := GetThreeStateValidOptions()
 		if len(opts) != 3 {
 			t.Errorf("BikesAllowedValidOptions should have 3 values, got %d", len(opts))
 		}
 	})
 
 	t.Run("DirectionIdValidOptions", func(t *testing.T) {
-		opts := GetDirectionIdValidOptions()
+		opts := GetBinaryValidOptions()
 		if len(opts) != 2 {
 			t.Errorf("DirectionIdValidOptions should have 2 values, got %d", len(opts))
 		}
 	})
 
 	t.Run("ExceptionTypeValidOptions", func(t *testing.T) {
-		opts := GetExceptionTypeValidOptions()
+		opts := GetBinaryValidOptions()
 		if len(opts) != 2 {
 			t.Errorf("ExceptionTypeValidOptions should have 2 values, got %d", len(opts))
 		}
@@ -578,7 +578,7 @@ func TestAllTestCasesCount(t *testing.T) {
 	totalCases += len(GetGenericRequiredFieldTestCases("route_desc"))
 	totalCases += len(GetGenericRequiredFieldTestCases("route_sort_order"))
 	totalCases += len(GetGenericIdTestCases("routes_agency_id"))
-	validContinuousOptions := GetContinuousPickupDropOffValidOptions()
+	validContinuousOptions := GetFourStateValidOptions()
 	totalCases += len(GetGenericEnumIntTestCases("continuous_pickup", validContinuousOptions))
 	totalCases += len(GetGenericEnumIntTestCases("continuous_drop_off", validContinuousOptions))
 	totalCases += len(GetGenericIdTestCases("routes_network_id"))

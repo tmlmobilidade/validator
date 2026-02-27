@@ -45,14 +45,13 @@ func OnboardMonitorValidation(vehicle *types.Vehicle, row int, rules *types.Vehi
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.OnboardMonitor.Options != nil {
 		if slices.Contains(*rules.OnboardMonitor.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.OnboardMonitor.Options, strconv.Itoa(*vehicle.OnboardMonitor)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("onboard_monitor_validation.not_allowed", *vehicle.OnboardMonitor))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("onboard_monitor_validation.not_allowed", strconv.Itoa(*vehicle.OnboardMonitor)))
 			return
 		}
 	}

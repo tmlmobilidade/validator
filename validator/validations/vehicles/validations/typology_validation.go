@@ -64,14 +64,12 @@ func TypologyValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 	// }
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Typology.Options != nil {
 		if slices.Contains(*rules.Typology.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.Typology.Options, *vehicle.Typology) {
-
 			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("typology_validation.not_allowed", *vehicle.Typology))
 			return
 		}

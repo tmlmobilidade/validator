@@ -50,14 +50,13 @@ func PropulsionValidation(vehicle *types.Vehicle, row int, rules *types.Vehicles
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Propulsion.Options != nil {
 		if slices.Contains(*rules.Propulsion.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.Propulsion.Options, strconv.Itoa(*vehicle.Propulsion)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("propulsion_validation.not_allowed", *vehicle.Propulsion))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("propulsion_validation.not_allowed", strconv.Itoa(*vehicle.Propulsion)))
 			return
 		}
 	}

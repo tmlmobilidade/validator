@@ -697,7 +697,7 @@
         "duplicate": "Campo \"rider_category_id\" \"%s\" duplicado encontrado. O campo \"rider_category_id\" deve ser único"
     },
     "pattern_id_format_validation": {
-        "invalid": "O campo \"pattern_id\" deve ser um ID válido no formato \"XXXX_X_X\", recebido: %s"
+        "invalid": "O campo \"pattern_id\" deve ser um ID válido no formato \"XXXX_X_X\", recebido: \"%s\""
     },
     "fare_media_id_validation": {
         "required": "O campo \"fare_media_id\" é obrigatório",
@@ -717,7 +717,7 @@
     },
     "license_plate_validation": {
         "required": "O campo \"license_plate\" é obrigatório",
-        "invalid": "O campo \"license_plate\" \"%s\" tem um formato inválido deve ser no formato XX-XX-XX",
+        "invalid": "O campo \"license_plate\" \"%s\" tem um formato inválido deve ser no formato XXXXXX",
         "duplicate": "Campo \"license_plate\" \"%s\" duplicado encontrado. O campo \"license_plate\" deve ser único"
     },
     "model_validation": {

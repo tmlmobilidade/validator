@@ -44,14 +44,13 @@ func PassengerCountingValidation(vehicle *types.Vehicle, row int, rules *types.V
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.PassengerCounting.Options != nil {
 		if slices.Contains(*rules.PassengerCounting.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.PassengerCounting.Options, strconv.Itoa(*vehicle.PassengerCounting)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("passenger_counting_validation.not_allowed", *vehicle.PassengerCounting))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("passenger_counting_validation.not_allowed", strconv.Itoa(*vehicle.PassengerCounting)))
 			return
 		}
 	}

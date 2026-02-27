@@ -147,12 +147,15 @@ func ValidateTime(t string) bool {
 	return true
 }
 
-var plateRegex = regexp.MustCompile(`^(?:[A-Z]{2}-\d{2}-[A-Z]{2}|\d{2}-[A-Z]{2}-\d{2})$`)
+var plateRegex = regexp.MustCompile(`^(?:[A-Z]{2}\d{2}[A-Z]{2}|\d{2}[A-Z]{2}\d{2})$`)
 
 func ValidateLicensePlate(licensePlate string) bool {
 	licensePlate = strings.ToUpper(licensePlate)
 
-	if len(licensePlate) != 8 {
+	// Remove dashes if present
+	licensePlate = strings.ReplaceAll(licensePlate, "-", "")
+
+	if len(licensePlate) != 6 {
 		return false
 	}
 
