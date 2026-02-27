@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllDropOffTypeValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetDropOffTypeValidOptions()
+	validOptions := test_helpers.GetFourStateValidOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("drop_off_type", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()

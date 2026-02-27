@@ -10,7 +10,7 @@ import (
 )
 
 func TestAllContinuousPickupValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetContinuousPickupDropOffValidOptions()
+	validOptions := test_helpers.GetFourStateValidOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("continuous_pickup", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()

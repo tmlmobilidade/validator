@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllHasNetworkMapValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetHasNetworkMapValidOptions()
+	validOptions := test_helpers.GetFourStateValidOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("has_network_map", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
