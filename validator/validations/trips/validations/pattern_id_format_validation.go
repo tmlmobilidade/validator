@@ -5,6 +5,7 @@ import (
 	"main/services"
 	"main/types"
 	"regexp"
+	"strings"
 )
 
 /*
@@ -22,8 +23,10 @@ Validates if the pattern_id is in the correct format. Must be in the format "X a
 const defaultPatternIDFormat = "XXXX_X_X"
 
 var patternIDFormatRegexMap = map[string]*regexp.Regexp{
-	"XXXX_X_X":   regexp.MustCompile(`^[^_]{1,4}_[^_]_[^_]$`),
-	"XXXX_X_XXX": regexp.MustCompile(`^[^_]{1,4}_[^_]_[^_]{3}$`),
+	"XXXX_X_X":    regexp.MustCompile(`^[^_]{1,4}_[^_]_[^_]$`),
+	"XXXX_X_ASC":  regexp.MustCompile(`^[^_]{1,4}_[^_]_ASC$`),
+	"XXXX_X_DESC": regexp.MustCompile(`^[^_]{1,4}_[^_]_DESC$`),
+	"XXXX_X_CIRC": regexp.MustCompile(`^[^_]{1,4}_[^_]_CIRC$`),
 }
 
 func PatternIdFormatValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
@@ -37,17 +40,36 @@ func PatternIdFormatValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rule
 	}
 
 	expectedFormat := defaultPatternIDFormat
-	patternIDRegex := patternIDFormatRegexMap[defaultPatternIDFormat]
+	allowedRegexes := []*regexp.Regexp{patternIDFormatRegexMap[defaultPatternIDFormat]}
 
 	if rules != nil && rules.PatternIdFormat.Options != nil && len(*rules.PatternIdFormat.Options) > 0 {
-		configuredFormat := (*rules.PatternIdFormat.Options)[0]
-		if configuredRegex, ok := patternIDFormatRegexMap[configuredFormat]; ok {
-			expectedFormat = configuredFormat
-			patternIDRegex = configuredRegex
+		expectedFormats := make([]string, 0)
+		allowedRegexes = make([]*regexp.Regexp, 0)
+
+		for _, configuredFormat := range *rules.PatternIdFormat.Options {
+			if configuredRegex, ok := patternIDFormatRegexMap[configuredFormat]; ok {
+				expectedFormats = append(expectedFormats, configuredFormat)
+				allowedRegexes = append(allowedRegexes, configuredRegex)
+			}
+		}
+
+		// Fallback to default when options are present but none are recognized.
+		if len(allowedRegexes) == 0 {
+			allowedRegexes = []*regexp.Regexp{patternIDFormatRegexMap[defaultPatternIDFormat]}
+		} else {
+			expectedFormat = strings.Join(expectedFormats, " | ")
 		}
 	}
 
-	if !patternIDRegex.MatchString(*trip.PatternId) {
+	isValidFormat := false
+	for _, allowedRegex := range allowedRegexes {
+		if allowedRegex.MatchString(*trip.PatternId) {
+			isValidFormat = true
+			break
+		}
+	}
+
+	if !isValidFormat {
 		ctx.AddError(ctx.GetTranslatedMessage("pattern_id_format_validation.invalid", expectedFormat, *trip.PatternId))
 		return
 	}
