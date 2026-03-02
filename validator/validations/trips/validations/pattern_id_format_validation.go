@@ -17,7 +17,7 @@ import (
 
 # Description
 
-Validates if the pattern_id is in the correct format. Must be in the format "X at XXXX_X_X".
+Validates if the pattern_id is in the correct format. Must be in the defalut format "X at XXXX_X_X" or the formats specified in the rules.
 */
 
 const defaultPatternIDFormat = "XXXX_X_X"
