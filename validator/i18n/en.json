@@ -686,7 +686,7 @@
         "duplicate": "Duplicate field \"rider_category_id\" \"%s\" found. Field \"rider_category_id\" must be unique"
     },
     "pattern_id_format_validation": {
-        "invalid": "Field \"pattern_id\" must be a valid ID in the format \"XXXX_X_X\", received: \"%s\""
+        "invalid": "Field \"pattern_id\" must be a valid ID in the format \"%s\", received: \"%s\""
     },
     "fare_media_id_validation": {
         "required": "Field \"fare_media_id\" is required",
