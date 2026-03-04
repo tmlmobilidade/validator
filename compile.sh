@@ -17,7 +17,7 @@ fi
 cd validator
 
 # Compile the validator for linux
-GOOS=linux GOARCH=amd64 go build -o ../bin/validator-linux-amd64 ./main.go
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build go build -o ../bin/validator-linux-amd64 ./main.go
 
 # Compile the validator for linux arm64
 GOOS=linux GOARCH=arm64 go build -o ../bin/validator-linux-arm64 ./main.go
