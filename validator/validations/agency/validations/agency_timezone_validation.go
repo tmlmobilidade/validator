@@ -30,7 +30,7 @@ func AgencyTimezoneValidation(agency *types.Agency, row int, rules *types.Agency
 	}
 
 	if !lib.ValidateTimezone(*agency.AgencyTimezone) {
-		ctx.AddError(ctx.GetTranslatedMessage("agency_timezone_validation.invalid", &agency.AgencyTimezone))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("agency_timezone_validation.invalid", *agency.AgencyTimezone))
 		return
 	}
 
@@ -41,7 +41,7 @@ func AgencyTimezoneValidation(agency *types.Agency, row int, rules *types.Agency
 		}
 
 		if !slices.Contains(*rules.AgencyTimezone.Options, *agency.AgencyTimezone) {
-			ctx.AddError(ctx.GetTranslatedMessage("agency_timezone_validation.not_allowed", *agency.AgencyTimezone))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("agency_timezone_validation.not_allowed", *agency.AgencyTimezone))
 			return
 		}
 	}
