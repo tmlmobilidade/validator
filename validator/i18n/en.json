@@ -283,7 +283,8 @@
         "recommended": "Field \"shape_id\" is recommended",
         "continuous_pickup_dropoff": "Field \"shape_id\" is required when a continuous pickup or drop-off behavior is defined either in routes.txt or in stop_times.txt",
         "not_found": "Field \"shape_id\" \"%s\" does not exist in shapes.txt",
-        "invalid": "Field \"shape_id\" \"%s\" is not a valid shape_id from shapes.txt"
+        "invalid": "Field \"shape_id\" \"%s\" is not a valid shape_id from shapes.txt",
+        "different_from_pattern_id": "Field \"shape_id\" \"%s\" is different from field \"pattern_id\" \"%s\""
     },
     "shape_pt_lat_validation": {
         "forbidden": "Field \"shape_pt_lat\" is forbidden",
