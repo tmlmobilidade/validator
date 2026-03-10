@@ -279,10 +279,10 @@
     },
     "shape_id_validation": {
         "forbidden": "Field \"shape_id\" is forbidden",
-        "required": "Field \"shape_id\" is required",
-        "recommended": "Field \"shape_id\" is recommended",
-        "continuous_pickup_dropoff": "Field \"shape_id\" is required when a continuous pickup or drop-off behavior is defined either in routes.txt or in stop_times.txt",
-        "not_found": "Field \"shape_id\" \"%s\" does not exist in shapes.txt",
+        "required": "A valid shape_id is required for this trip",
+        "recommended": "A shape_id is recommended for this trip",
+        "continuous_pickup_dropoff": "This trip must include a valid shape_id because continuous pickup or drop-off is defined in routes.txt or stop_times.txt",
+        "not_found": "Invalid shape_id \"%s\": it must match a shape_id in shapes.txt",
         "invalid": "Field \"shape_id\" \"%s\" is not a valid shape_id from shapes.txt"
     },
     "shape_pt_lat_validation": {
