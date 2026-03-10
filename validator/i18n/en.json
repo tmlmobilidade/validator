@@ -387,7 +387,8 @@
         "not_allowed": "Field \"stop_id\" \"%s\" is not allowed",
         "forbidden_location_group_id_location_id": "Field \"stop_id\" is forbidden if \"location_group_id\" or \"location_id\" are defined",
         "required_location_group_id_location_id": "Field \"stop_id\" is required if \"location_group_id\" and \"location_id\" are not defined",
-        "invalid_location_type": "Field \"stop_id\" must reference a stop with location_type 0 or empty (platform/stop)"
+        "invalid_location_type": "Field \"stop_id\" must reference a stop with location_type 0 or empty (platform/stop)",
+        "not_allowed_by_reference_api": "Field \"stop_id\" \"%s\" is not present in the external reference API"
     },
     "timepoint_validation": {
         "forbidden": "Field \"timepoint\" is forbidden",

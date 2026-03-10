@@ -388,7 +388,8 @@
         "not_allowed": "O campo \"stop_id\" \"%s\" não é permitido",
         "forbidden_location_group_id_location_id": "O campo \"stop_id\" é proibido se \"location_group_id\" ou \"location_id\" estiverem definidos",
         "required_location_group_id_location_id": "O campo \"stop_id\" é obrigatório se \"location_group_id\" e \"location_id\" não estiverem definidos",
-        "invalid_location_type": "O campo \"stop_id\" deve referenciar uma paragem com location_type 0 ou vazio (plataforma/paragem)"
+        "invalid_location_type": "O campo \"stop_id\" deve referenciar uma paragem com location_type 0 ou vazio (plataforma/paragem)",
+        "not_allowed_by_reference_api": "O campo \"stop_id\" \"%s\" não existe na API externa de referência"
     },
     "timepoint_validation": {
         "forbidden": "O campo \"timepoint\" é proibido",

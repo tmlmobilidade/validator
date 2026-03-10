@@ -28,6 +28,7 @@
 	},
 	"scripts": {
 		"build": "rm -rf dist && tsc",
+		"dev:api": "tsx ./src/api/server.ts",
 		"lint": "eslint ./src && tsc --noEmit",
 		"lint:fix": "eslint --fix ./src",
 		"postinstall": "if [ ! -d dist ]; then tsx ./scripts/postinstall.ts; else node ./dist/scripts/postinstall.js; fi",
@@ -39,7 +40,9 @@
 		"test:watch": "vitest"
 	},
 	"dependencies": {
-		"@tmlmobilidade/types": "20260302.1453.8"
+		"@tmlmobilidade/types": "20260302.1453.8",
+		"dotenv": "17.2.2",
+		"mongodb": "6.19.0"
 	},
 	"devDependencies": {
 		"@tmlmobilidade/eslint": "20260302.1453.8",

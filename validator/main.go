@@ -104,6 +104,11 @@ func main() {
 		i18n.AppTranslator.SetLanguage(services.AppCLI.Options.RulesLang)
 	}
 
+	// 0.25 Pre-load optional external stop references once.
+	if err := services.LoadStopsFromAPI(); err != nil {
+		lib.AppLogger.Error(fmt.Sprintf("Failed to preload stop references from API: %v", err))
+	}
+
 	//
 	// 0.3 Parse Rules
 	rules, err := services.NewRulesParser(services.AppCLI.Options.RulesPath).ParseRules()
