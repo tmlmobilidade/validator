@@ -701,14 +701,7 @@ func (g *Gtfs) GetStop(rowIndex int) (StopRaw, error) {
 func (g *Gtfs) IterateTrips(fn func(int, TripRaw) error) error {
 	return g.iterateTable("trips", func(rowIndex int, row map[string]string) error {
 		tripRaw := convertRowToStruct[TripRaw](row)
-		return func() (err error) {
-			defer func() {
-				if r := recover(); r != nil {
-					err = fmt.Errorf("unexpected panic while iterating trips at row %d: %v", rowIndex, r)
-				}
-			}()
-			return fn(rowIndex, tripRaw)
-		}()
+		return fn(rowIndex, tripRaw)
 	})
 }
 

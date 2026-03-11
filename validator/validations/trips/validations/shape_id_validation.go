@@ -31,8 +31,8 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 
 	// Never let a malformed row crash the full validator process.
 	defer func() {
-		if recover() != nil {
-			ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.invalid", ""))
+		if panicValue := recover(); panicValue != nil {
+			ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.internal_error", panicValue))
 		}
 	}()
 
@@ -44,14 +44,24 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 
 	// Check if the route has continuous pickup/dropoff behavior
 	routeRows, err := gtfs.GetRowsById("routes", *trip.RouteId)
-	if err == nil {
-		for _, routeRow := range routeRows {
-			routeRaw, err := gtfs.GetRoute(routeRow)
-			if err == nil && routeRaw.ContinuousPickup != "" {
-				hasContinuousPickupDropoff = true
-			}
-			break
+	if err != nil {
+		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.route_lookup_failed", *trip.RouteId, err.Error()))
+		return
+	}
+	if len(routeRows) == 0 {
+		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.route_not_found_for_trip", *trip.RouteId))
+		return
+	}
+
+	for _, routeRow := range routeRows {
+		routeRaw, getRouteErr := gtfs.GetRoute(routeRow)
+		if getRouteErr != nil {
+			continue
 		}
+		if routeRaw.ContinuousPickup != "" || routeRaw.ContinuousDropOff != "" {
+			hasContinuousPickupDropoff = true
+		}
+		break
 	}
 
 	// Check if the stop_times have continuous pickup/dropoff behavior
@@ -60,7 +70,7 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 		stopTimesRaw, exists := tripStopTimesCache[*trip.TripId]
 		if exists && !hasContinuousPickupDropoff {
 			for _, stopTimeRaw := range stopTimesRaw {
-				if continuousPickup := stopTimeRaw.ContinuousPickup; continuousPickup != "" {
+				if stopTimeRaw.ContinuousPickup != "" || stopTimeRaw.ContinuousDropOff != "" {
 					hasContinuousPickupDropoff = true
 					break // Exit early once we find a continuous pickup
 				}
@@ -74,7 +84,7 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 					if err != nil {
 						continue
 					}
-					if continuousPickup := stopTimeRaw.ContinuousPickup; continuousPickup != "" {
+					if stopTimeRaw.ContinuousPickup != "" || stopTimeRaw.ContinuousDropOff != "" {
 						hasContinuousPickupDropoff = true
 						break // Exit early once we find a continuous pickup
 					}
