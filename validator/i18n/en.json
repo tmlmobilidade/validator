@@ -505,7 +505,7 @@
         "required": "Field \"region_id\" is required",
         "recommended": "Field \"region_id\" is recommended",
         "not_found": "Field \"region_id\" \"%s\" does not exist in regions.txt",
-        "not_allowed": "Field \"region_id\" \"%s\" is not allowed"
+        "not_allowed": "Field \"region_id\" \"%s\" is not valid"
     },
     "shelter_code_validation": {
         "forbidden": "Field \"shelter_code\" is forbidden",

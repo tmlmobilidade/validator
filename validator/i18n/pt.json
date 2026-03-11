@@ -506,7 +506,7 @@
         "required": "O campo \"region_id\" é obrigatório",
         "recommended": "O campo \"region_id\" é recomendado",
         "not_found": "O campo \"region_id\" \"%s\" não existe em regions.txt",
-        "not_allowed": "O campo \"region_id\" \"%s\" não é permitido"
+        "not_allowed": "O campo \"region_id\" \"%s\" não é válido"
     },
     "shelter_code_validation": {
         "forbidden": "O campo \"shelter_code\" é proibido",
