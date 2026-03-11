@@ -29,9 +29,16 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 		ctx.WithSeverity(rules.ShapeId.Severity)
 	}
 
+	// Never let a malformed row crash the full validator process.
+	defer func() {
+		if recover() != nil {
+			ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.invalid", ""))
+		}
+	}()
+
 	hasContinuousPickupDropoff := false
 
-	if trip.RouteId == nil {
+	if trip == nil || trip.RouteId == nil {
 		return
 	}
 
@@ -93,7 +100,7 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 
 	// Check Foreign Key
 	if !lib.GtfsIdMapKeyExists(gtfs, "shapes", *trip.ShapeId) {
-		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.not_found", map[string]any{"shape_id": *trip.ShapeId}))
+		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.not_found", *trip.ShapeId))
 		return
 	}
 }
