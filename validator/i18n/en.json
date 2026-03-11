@@ -473,6 +473,10 @@
         "not_found": "Field \"municipality_id\" \"%s\" does not exist in municipalities.txt",
         "not_allowed": "Field \"municipality_id\" \"%s\" is not allowed"
     },
+    "coordenates_validation": {
+        "not_mapped": "Coordinates (%f, %f) are not mapped to a municipality_id",
+        "invalid_municipality_id": "Field \"municipality_id\" does not match mapped municipality. Expected \"%s\", got \"%s\""
+    },
     "parent_station_validation": {
         "forbidden": "Field \"parent_station\" is forbidden",
         "required": "Field \"parent_station\" is required",

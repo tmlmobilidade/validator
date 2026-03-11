@@ -109,8 +109,13 @@ func main() {
 		lib.AppLogger.Error(fmt.Sprintf("Failed to preload stop references from API: %v", err))
 	}
 
+	// 0.3 Pre-load optional municipality coordinates map.
+	if err := services.LoadMunicipalityCoordinatesFromFile(services.AppCLI.Options.MunicipalityCoordinatesPath); err != nil {
+		log.Fatalf("Error loading municipality coordinates: %v", err)
+	}
+
 	//
-	// 0.3 Parse Rules
+	// 0.4 Parse Rules
 	rules, err := services.NewRulesParser(services.AppCLI.Options.RulesPath).ParseRules()
 	if err != nil {
 		log.Fatalf("Error parsing rules: %v", err)
@@ -121,7 +126,7 @@ func main() {
 	lib.AppLogger.Divider("GTFS Validator")
 
 	//
-	// 0.4 Start Performance Tracker
+	// 0.5 Start Performance Tracker
 	tracker := lib.AppLogger.StartPerformanceTracker("Reading GTFS")
 
 	//
