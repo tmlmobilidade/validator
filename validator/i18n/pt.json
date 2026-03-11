@@ -217,6 +217,7 @@
     "route_id_validation": {
         "forbidden": "O campo \"route_id\" é proibido",
         "required": "O campo \"route_id\" é obrigatório",
+        "not_found": "No trips.txt, o route_id \"%s\" não foi encontrado no routes.txt. Confirma que trips.route_id é igual a routes.route_id.",
         "duplicate": "Campo \"route_id\" \"%s\" duplicado encontrado. O campo \"route_id\" deve ser único",
         "invalid": "O campo \"route_id\" \"%s\" não é um route_id válido de routes.txt"
     },
