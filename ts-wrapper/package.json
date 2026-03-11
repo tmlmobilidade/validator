@@ -28,7 +28,6 @@
 	},
 	"scripts": {
 		"build": "rm -rf dist && tsc",
-		"dev:api": "tsx ./src/api/server.ts",
 		"lint": "eslint ./src && tsc --noEmit",
 		"lint:fix": "eslint --fix ./src",
 		"postinstall": "if [ ! -d dist ]; then tsx ./scripts/postinstall.ts; else node ./dist/scripts/postinstall.js; fi",
