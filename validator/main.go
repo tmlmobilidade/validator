@@ -55,9 +55,8 @@ import (
 )
 
 func resolveMunicipalityCoordinatesPath(cliPath string) string {
-	trimmed := strings.TrimSpace(cliPath)
-	if trimmed != "" {
-		return trimmed
+	if strings.TrimSpace(cliPath) != "" {
+		lib.AppLogger.Info("Using municipalities.json.")
 	}
 
 	candidates := []string{
@@ -67,12 +66,12 @@ func resolveMunicipalityCoordinatesPath(cliPath string) string {
 
 	for _, candidate := range candidates {
 		if _, err := os.Stat(candidate); err == nil {
-			lib.AppLogger.Info(fmt.Sprintf("Auto-detected municipality coordinates file: %s", candidate))
+			lib.AppLogger.Info(fmt.Sprintf("Using municipality coordinates file: %s", candidate))
 			return candidate
 		}
 	}
 
-	lib.AppLogger.Info("Municipality coordinates file not found (checked: municipalities.json, ../municipalities.json). Coordinate-to-municipality validation will be skipped unless --municipality_coordinates is provided.")
+	lib.AppLogger.Info("Municipality coordinates file not found (checked: municipalities.json, ../municipalities.json). Coordinate-to-municipality validation will be skipped.")
 	return ""
 }
 
