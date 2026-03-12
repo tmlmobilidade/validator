@@ -1,7 +1,6 @@
 package vehicles
 
 import (
-	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -23,10 +22,12 @@ The license plate must be in the format XX-XX-XX.
 */
 func LicensePlateValidation(vehicle *types.Vehicle, row int, gtfs *types.Gtfs, rules *types.VehiclesRules) {
 	ctx := lib.NewValidationContext("license_plate", "vehicles.txt", "license_plate_validation", row, services.AppMessageService)
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.LicensePlate.Severity != "" {
-		fmt.Println("rules.LicensePlate.Severity", rules.LicensePlate.Severity)
 		ctx.WithSeverity(rules.LicensePlate.Severity)
+	}
+
+	if ctx.ShouldIgnore() {
+		return
 	}
 
 	if vehicle.LicensePlate == nil {
