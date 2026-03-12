@@ -474,8 +474,8 @@
         "not_allowed": "Field \"municipality_id\" \"%s\" is not allowed"
     },
     "coordenates_validation": {
-        "not_mapped": "Coordinates (%f, %f) are not mapped to Portugal",
-        "invalid_municipality_id": "Coordinates (%f, %f) do not match mapped municipality. Expected \"%s\", received \"%s\""
+        "not_mapped": "Coordinates (%f, %f) are not mapped in Portugal Continental",
+        "invalid_municipality_id": "Coordinates (%f, %f) do not match mapped municipality. Municipality_id expected \"%s\", received \"%s\""
     },
     "parent_station_validation": {
         "forbidden": "Field \"parent_station\" is forbidden",

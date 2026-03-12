@@ -33,7 +33,7 @@ type municipalityGeometry struct {
 	MaxLon         float64
 }
 
-func municipalityIDFromRaw(raw json.RawMessage) string {
+func MunicipalityIDFromRaw(raw json.RawMessage) string {
 	if len(raw) == 0 {
 		return ""
 	}
@@ -182,7 +182,7 @@ func loadMunicipalityCoordinates(collection types.MunicipalityCoordinatesFeature
 	geometries := make([]municipalityGeometry, 0, len(collection.Features))
 
 	for idx, feature := range collection.Features {
-		municipalityID := municipalityIDFromRaw(feature.ID)
+		municipalityID := MunicipalityIDFromRaw(feature.ID)
 		if municipalityID == "" {
 			return fmt.Errorf("municipality coordinates: missing _id at feature index %d", idx)
 		}
