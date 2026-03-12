@@ -137,6 +137,47 @@ func parseMultiPolygonCoordinates(raw json.RawMessage) ([]municipalityPolygon, e
 	return polygons, nil
 }
 
+func parseFeatureGeometry(raw json.RawMessage) ([]municipalityPolygon, error) {
+	var geometry types.MunicipalityCoordinatesGeometry
+	if err := json.Unmarshal(raw, &geometry); err == nil && geometry.Type != "" {
+		switch geometry.Type {
+		case "Polygon":
+			return parsePolygonCoordinates(geometry.Coordinates)
+		case "MultiPolygon":
+			return parseMultiPolygonCoordinates(geometry.Coordinates)
+		default:
+			return nil, fmt.Errorf("unsupported geometry type %q", geometry.Type)
+		}
+	}
+
+	// Support legacy payloads where geometry is directly an array of [lon, lat] points.
+	var ring [][]float64
+	if err := json.Unmarshal(raw, &ring); err == nil {
+		polygon := make(municipalityPolygon, 0, len(ring))
+		for _, coord := range ring {
+			if len(coord) < 2 {
+				continue
+			}
+			polygon = append(polygon, point{Lon: coord[0], Lat: coord[1]})
+		}
+		if len(polygon) >= 3 {
+			return []municipalityPolygon{polygon}, nil
+		}
+	}
+
+	// Support raw polygon coordinates without the geometry object wrapper.
+	if polygons, err := parsePolygonCoordinates(raw); err == nil && len(polygons) > 0 {
+		return polygons, nil
+	}
+
+	// Support raw multipolygon coordinates without the geometry object wrapper.
+	if polygons, err := parseMultiPolygonCoordinates(raw); err == nil && len(polygons) > 0 {
+		return polygons, nil
+	}
+
+	return nil, fmt.Errorf("geometry is not a supported object, polygon, or multipolygon format")
+}
+
 func loadMunicipalityCoordinates(collection types.MunicipalityCoordinatesFeatureCollection) error {
 	geometries := make([]municipalityGeometry, 0, len(collection.Features))
 
@@ -146,22 +187,9 @@ func loadMunicipalityCoordinates(collection types.MunicipalityCoordinatesFeature
 			return fmt.Errorf("municipality coordinates: missing _id at feature index %d", idx)
 		}
 
-		var polygons []municipalityPolygon
-		switch feature.Geometry.Type {
-		case "Polygon":
-			parsed, err := parsePolygonCoordinates(feature.Geometry.Coordinates)
-			if err != nil {
-				return fmt.Errorf("municipality coordinates: invalid Polygon coordinates at feature index %d: %w", idx, err)
-			}
-			polygons = parsed
-		case "MultiPolygon":
-			parsed, err := parseMultiPolygonCoordinates(feature.Geometry.Coordinates)
-			if err != nil {
-				return fmt.Errorf("municipality coordinates: invalid MultiPolygon coordinates at feature index %d: %w", idx, err)
-			}
-			polygons = parsed
-		default:
-			return fmt.Errorf("municipality coordinates: unsupported geometry type %q at feature index %d", feature.Geometry.Type, idx)
+		polygons, err := parseFeatureGeometry(feature.Geometry)
+		if err != nil {
+			return fmt.Errorf("municipality coordinates: invalid geometry at feature index %d: %w", idx, err)
 		}
 
 		if len(polygons) == 0 {

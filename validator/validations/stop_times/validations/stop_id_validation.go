@@ -62,11 +62,5 @@ func StopIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs, stopL
 			ctx.AddError(ctx.GetTranslatedMessage("stop_id_validation.invalid_location_type"))
 			return
 		}
-
-		// Optional external reference check (API preloaded once at startup).
-		if allowed, enabled := services.IsStopIDAllowedByReferenceAPI(*stopTime.StopId); enabled && !allowed {
-			ctx.AddWarning(ctx.GetTranslatedMessage("stop_id_validation.not_allowed_by_reference_api", *stopTime.StopId))
-			return
-		}
 	}
 }

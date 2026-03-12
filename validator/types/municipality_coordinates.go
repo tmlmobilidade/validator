@@ -8,7 +8,7 @@ type MunicipalityCoordinatesFeatureCollection struct {
 
 type MunicipalityCoordinatesFeature struct {
 	ID         json.RawMessage                `json:"_id"`
-	Geometry   MunicipalityCoordinatesGeometry `json:"geometry"`
+	Geometry   json.RawMessage                `json:"geometry"`
 	Properties MunicipalityCoordinatesProps    `json:"properties"`
 }
 

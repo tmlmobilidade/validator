@@ -765,7 +765,33 @@
       "severity": "ignore"
     },
     "region_id": {
-      "options": ["PT111", "PT112", "PT119", "PT11A", "PT11B", "PT11C", "PT11D", "PT11E", "PT150", "PT1191", "PT1192", "PT1193", "PT1194", "PT1195", "PT1196", "PT1A0", "PT1B0", "PT1C1", "PT1C2", "PT1C3", "PT1C4", "PT1D1", "PT1D2", "PT1D3"],
+      "options": [
+        "PT170",
+        "PT111",
+        "PT112",
+        "PT119",
+        "PT11A",
+        "PT11B",
+        "PT11C",
+        "PT11D", 
+        "PT11E", 
+        "PT150", 
+        "PT1191", 
+        "PT1192", 
+        "PT1193", 
+        "PT1194", 
+        "PT1195", 
+        "PT1196", 
+        "PT1A0", 
+        "PT1B0", 
+        "PT1C1", 
+        "PT1C2", 
+        "PT1C3", 
+        "PT1C4", 
+        "PT1D1", 
+        "PT1D2", 
+        "PT1D3"
+      ],
       "severity": "warning"
     },
     "shelter_code": {
@@ -976,7 +1002,7 @@
       "severity": "error"
     },
     "license_plate": {
-      "severity": "warning"
+      "severity": "ignore"
     },
     "lowered_floor": {
       "options": [
