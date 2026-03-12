@@ -1,10 +1,10 @@
 package stops
 
 import (
+	"encoding/json"
 	"main/lib"
 	"main/services"
 	"main/types"
-	"slices"
 )
 
 /*
@@ -42,15 +42,8 @@ func MunicipalityIdValidation(stop *types.Stop, row int, rules *types.StopsRules
 		return
 	}
 
-	// Validate rules
-	if rules != nil && rules.MunicipalityId.Options != nil {
-		if slices.Contains(*rules.MunicipalityId.Options, types.ALL_OPTIONS) {
-			return
-		}
-
-		if !slices.Contains(*rules.MunicipalityId.Options, *stop.MunicipalityId) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("municipality_id_validation.not_allowed", *stop.MunicipalityId))
-			return
-		}
+	if services.MunicipalityIDFromRaw(json.RawMessage(*stop.MunicipalityId)) != *stop.MunicipalityId {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("municipality_id_validation.not_found", *stop.MunicipalityId))
+		return
 	}
 }

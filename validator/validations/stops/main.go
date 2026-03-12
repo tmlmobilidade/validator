@@ -5,8 +5,8 @@ import (
 	"main/config"
 	"main/lib"
 	"main/types"
-	validations "main/validations/stops/validations"
 	registry "main/validations"
+	validations "main/validations/stops/validations"
 )
 
 func init() {
@@ -94,6 +94,9 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 		// Validate municipality_id
 		validations.MunicipalityIdValidation(&stop, row, stopRules)
+
+		// Validate coordinates against municipality_id mapping
+		validations.CoordenatesValidation(&stop, row, stopRules)
 
 		// Validate parish_id
 		validations.ParishIdValidation(&stop, row, stopRules)

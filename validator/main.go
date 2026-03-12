@@ -11,6 +11,8 @@ import (
 	"main/validations"
 	file_validation "main/validations/files"
 	"os"
+	"path/filepath"
+	"strings"
 	"sync"
 
 	// Import all validation packages to trigger their init() functions
@@ -52,6 +54,27 @@ import (
 	_ "main/validations/vehicles"
 )
 
+func resolveMunicipalityCoordinatesPath(cliPath string) string {
+	if strings.TrimSpace(cliPath) != "" {
+		lib.AppLogger.Info("Using municipalities.json.")
+	}
+
+	candidates := []string{
+		"municipalities.json",
+		filepath.Join("..", "municipalities.json"),
+	}
+
+	for _, candidate := range candidates {
+		if _, err := os.Stat(candidate); err == nil {
+			lib.AppLogger.Info(fmt.Sprintf("Using municipality coordinates file: %s", candidate))
+			return candidate
+		}
+	}
+
+	lib.AppLogger.Info("Municipality coordinates file not found (checked: municipalities.json, ../municipalities.json). Coordinate-to-municipality validation will be skipped.")
+	return ""
+}
+
 func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *types.GtfsRules) {
 	// Create a wait group to wait for all validations to complete
 	var wg sync.WaitGroup
@@ -92,9 +115,21 @@ func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *typ
 	tracker.End()
 }
 
-func main() {
+func preloadMunicipalityCoordinates(cliPath string) {
+	coordinatesPath := resolveMunicipalityCoordinatesPath(cliPath)
+	if coordinatesPath == "" {
+		// Ensure the service remains explicitly disabled when no file is available.
+		_ = services.LoadMunicipalityCoordinatesFromFile("")
+		return
+	}
 
-	//
+	if err := services.LoadMunicipalityCoordinatesFromFile(coordinatesPath); err != nil {
+		lib.AppLogger.Info(fmt.Sprintf("WARNING: failed to load municipality coordinates from %q: %v. Coordinate-to-municipality validation will be skipped.", coordinatesPath, err))
+		_ = services.LoadMunicipalityCoordinatesFromFile("")
+	}
+}
+
+func runStartupOrchestrator() (*types.GtfsRules, error) {
 	// 0.1 Initialize CLI
 	services.AppCLI.Run()
 	lib.AppLogger.SetLogLevel(services.AppCLI.Options.LogLevel)
@@ -104,11 +139,22 @@ func main() {
 		i18n.AppTranslator.SetLanguage(services.AppCLI.Options.RulesLang)
 	}
 
-	//
-	// 0.3 Parse Rules
+	// 0.3 Pre-load optional municipality coordinates map.
+	preloadMunicipalityCoordinates(services.AppCLI.Options.MunicipalityCoordinatesPath)
+
+	// 0.4 Parse Rules
 	rules, err := services.NewRulesParser(services.AppCLI.Options.RulesPath).ParseRules()
 	if err != nil {
-		log.Fatalf("Error parsing rules: %v", err)
+		return nil, fmt.Errorf("error parsing rules: %w", err)
+	}
+
+	return rules, nil
+}
+
+func main() {
+	rules, err := runStartupOrchestrator()
+	if err != nil {
+		log.Fatalf("Startup orchestrator failed: %v", err)
 	}
 
 	//
@@ -116,7 +162,7 @@ func main() {
 	lib.AppLogger.Divider("GTFS Validator")
 
 	//
-	// 0.4 Start Performance Tracker
+	// 0.5 Start Performance Tracker
 	tracker := lib.AppLogger.StartPerformanceTracker("Reading GTFS")
 
 	//
