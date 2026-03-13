@@ -863,5 +863,63 @@
         "recommended": "O campo \"exact_times\" é recomendado",
         "invalid": "O campo \"exact_times\" deve ser 0 ou 1",
         "not_allowed": "O campo \"exact_times\" \"%s\" não é permitido"
+    },
+    "transfer_type_validation": {
+        "forbidden": "O campo \"transfer_type\" é proibido",
+        "required": "O campo \"transfer_type\" é obrigatório",
+        "recommended": "O campo \"transfer_type\" é recomendado",
+        "invalid": "O campo \"transfer_type\" deve ser 0, 1, 2, 3, 4 ou 5",
+        "not_allowed": "O campo \"transfer_type\" \"%s\" não é permitido"
+    },
+    "min_transfer_time_validation": {
+        "forbidden": "O campo \"min_transfer_time\" é proibido",
+        "required": "O campo \"min_transfer_time\" é obrigatório",
+        "recommended": "O campo \"min_transfer_time\" é recomendado",
+        "invalid": "O campo \"min_transfer_time\" deve ser um número inteiro não negativo",
+        "not_allowed": "O campo \"min_transfer_time\" \"%s\" não é permitido"
+    },
+    "from_stop_id_validation": {
+        "required": "O campo \"from_stop_id\" é obrigatório",
+        "recommended": "O campo \"from_stop_id\" é recomendado",
+        "not_found": "O campo \"from_stop_id\" \"%s\" não existe em stops.txt",
+        "invalid_location_type": "O campo \"from_stop_id\" \"%s\" referencia uma paragem com location_type inválido \"%d\". Deve ser uma paragem (location_type=0) ou estação (location_type=1)",
+        "must_be_stop_for_transfer_type_4_5": "O campo \"from_stop_id\" \"%s\" deve referenciar uma paragem (location_type=0) quando transfer_type é %d. Estações (location_type=1) não são permitidas para transfer_type 4 ou 5"
+    },
+    "to_stop_id_validation": {
+        "required": "O campo \"to_stop_id\" é obrigatório",
+        "recommended": "O campo \"to_stop_id\" é recomendado",
+        "not_found": "O campo \"to_stop_id\" \"%s\" não existe em stops.txt",
+        "invalid_location_type": "O campo \"to_stop_id\" \"%s\" referencia uma paragem com location_type inválido \"%d\". Deve ser uma paragem (location_type=0) ou estação (location_type=1)",
+        "must_be_stop_for_transfer_type_4_5": "O campo \"to_stop_id\" \"%s\" deve referenciar uma paragem (location_type=0) quando transfer_type é %d. Estações (location_type=1) não são permitidas para transfer_type 4 ou 5",
+        "must_be_different_from_from_stop_id": "O campo \"to_stop_id\" \"%s\" deve ser diferente do \"from_stop_id\" \"%s\". Uma transferência não pode ter a mesma paragem para origem e destino"
+    },
+    "from_route_id_validation": {
+        "forbidden": "O campo \"from_route_id\" é proibido",
+        "required": "O campo \"from_route_id\" é obrigatório",
+        "recommended": "O campo \"from_route_id\" é recomendado",
+        "not_found": "O campo \"from_route_id\" \"%s\" não existe em routes.txt",
+        "not_allowed": "O campo \"from_route_id\" \"%s\" não é permitido",
+        "trip_must_belong_to_route": "Quando from_trip_id e from_route_id estão definidos, from_trip_id \"%s\" deve pertencer a from_route_id \"%s\". A viagem referencia a rota \"%s\""
+    },
+    "to_route_id_validation": {
+        "required": "O campo \"to_route_id\" é obrigatório",
+        "recommended": "O campo \"to_route_id\" é recomendado",
+        "not_found": "O campo \"to_route_id\" \"%s\" não existe em routes.txt",
+        "not_allowed": "O campo \"to_route_id\" \"%s\" não é permitido",
+        "trip_must_belong_to_route": "Quando to_trip_id e to_route_id estão definidos, to_trip_id \"%s\" deve pertencer a to_route_id \"%s\". A viagem referencia a rota \"%s\""
+    },
+    "from_trip_id_validation": {
+        "required": "O campo \"from_trip_id\" é obrigatório",
+        "recommended": "O campo \"from_trip_id\" é recomendado",
+        "not_found": "O campo \"from_trip_id\" \"%s\" não existe em trips.txt",
+        "not_allowed": "O campo \"from_trip_id\" \"%s\" não é permitido",
+        "trip_must_belong_to_route": "Quando from_trip_id e from_route_id estão definidos, from_trip_id \"%s\" deve pertencer a from_route_id \"%s\". A viagem referencia a rota \"%s\""
+    },
+    "to_trip_id_validation": {
+        "required": "O campo \"to_trip_id\" é obrigatório",
+        "recommended": "O campo \"to_trip_id\" é recomendado",
+        "not_found": "O campo \"to_trip_id\" \"%s\" não existe em trips.txt",
+        "not_allowed": "O campo \"to_trip_id\" \"%s\" não é permitido",
+        "trip_must_belong_to_route": "Quando to_trip_id e to_route_id estão definidos, to_trip_id \"%s\" deve pertencer a to_route_id \"%s\". A viagem referencia a rota \"%s\""
     }
 }

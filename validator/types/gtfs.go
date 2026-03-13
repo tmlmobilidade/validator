@@ -229,13 +229,13 @@ type Frequencies struct {
 /* TRANSFERS */
 type Transfers struct {
 	FromRouteId     *string `json:"from_route_id"`
-	FromStopId      string  `json:"from_stop_id"`
+	FromStopId      *string `json:"from_stop_id"`
 	FromTripId      *string `json:"from_trip_id"`
-	MinTransferTime float32 `json:"min_transfer_time"`
+	MinTransferTime *int    `json:"min_transfer_time"`
 	ToRouteId       *string `json:"to_route_id"`
-	ToStopId        string  `json:"to_stop_id"`
+	ToStopId        *string `json:"to_stop_id"`
 	ToTripId        *string `json:"to_trip_id"`
-	TransferType    int     `json:"transfer_type"`
+	TransferType    *int    `json:"transfer_type"`
 }
 
 /* PATHWAYS */

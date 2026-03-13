@@ -214,7 +214,7 @@ type GtfsRules = {
         _file: Severity;
         from_stop_id: RuleConfig;
         to_stop_id: RuleConfig;
-        transfer_type: RuleConfig;
+        transfer_type: WithOptions<RuleConfig>;
         min_transfer_time: RuleConfig;
     }
     pathways: {
@@ -873,7 +873,8 @@ const rules: GtfsRules = {
             severity: "ignore",
         },
         transfer_type: {
-            severity: "ignore",
+            severity: "error",
+            options: ["0", "1", "2", "3", "4", "5"]
         },
         min_transfer_time: {
             severity: "ignore",
