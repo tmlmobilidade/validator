@@ -3,6 +3,7 @@ package stops
 import (
 	"main/lib"
 	"main/services"
+	municipality_coordinates "main/services/geo/municipalities"
 	"main/types"
 )
 
@@ -22,7 +23,7 @@ func CoordenatesValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	ctx := lib.NewValidationContext("coordenates", "stops.txt", "coordenates_validation", row, services.AppMessageService)
 
 	// This validation is only meaningful when the coordinates map is loaded.
-	if !services.MunicipalityCoordinatesEnabled() {
+	if !municipality_coordinates.MunicipalityCoordinatesEnabled() {
 		return
 	}
 
@@ -31,7 +32,7 @@ func CoordenatesValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 		return
 	}
 
-	expectedMunicipalityID, found, _ := services.ResolveMunicipalityByCoordinates(*stop.StopLat, *stop.StopLon)
+	expectedMunicipalityID, found, _ := municipality_coordinates.ResolveMunicipalityByCoordinates(*stop.StopLat, *stop.StopLon)
 	if !found {
 		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("coordenates_validation.not_mapped", *stop.StopLat, *stop.StopLon))
 		return

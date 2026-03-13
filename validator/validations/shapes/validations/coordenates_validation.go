@@ -3,6 +3,7 @@ package shapes
 import (
 	"main/lib"
 	"main/services"
+	municipality_coordinates "main/services/geo/municipalities"
 	"main/types"
 )
 
@@ -22,7 +23,7 @@ func CoordenatesValidation(shape *types.Shape, row int, rules *types.ShapesRules
 	ctx := lib.NewValidationContext("coordenates", "shapes.txt", "coordenates_validation", row, services.AppMessageService)
 
 	// This validation is only meaningful when the coordinates map is loaded.
-	if !services.MunicipalityCoordinatesEnabled() {
+	if !municipality_coordinates.MunicipalityCoordinatesEnabled() {
 		return
 	}
 
@@ -31,7 +32,7 @@ func CoordenatesValidation(shape *types.Shape, row int, rules *types.ShapesRules
 		return
 	}
 
-	if _, found, _ := services.ResolveMunicipalityByCoordinates(*shape.ShapePtLat, *shape.ShapePtLon); !found {
+	if _, found, _ := municipality_coordinates.ResolveMunicipalityByCoordinates(*shape.ShapePtLat, *shape.ShapePtLon); !found {
 		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("coordenates_validation.not_mapped", *shape.ShapePtLat, *shape.ShapePtLon))
 		return
 	}

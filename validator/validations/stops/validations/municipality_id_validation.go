@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"main/lib"
 	"main/services"
+	municipality_coordinates "main/services/geo/municipalities"
 	"main/types"
 )
 
@@ -42,7 +43,7 @@ func MunicipalityIdValidation(stop *types.Stop, row int, rules *types.StopsRules
 		return
 	}
 
-	if services.MunicipalityIDFromRaw(json.RawMessage(*stop.MunicipalityId)) != *stop.MunicipalityId {
+	if municipality_coordinates.MunicipalityIDFromRaw(json.RawMessage(*stop.MunicipalityId)) != *stop.MunicipalityId {
 		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("municipality_id_validation.not_found", *stop.MunicipalityId))
 		return
 	}

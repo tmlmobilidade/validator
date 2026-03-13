@@ -16,6 +16,7 @@ import (
 	"sync"
 
 	// Import all validation packages to trigger their init() functions
+	municipality_coordinates "main/services/geo/municipalities"
 	_ "main/validations/afetacao"
 	_ "main/validations/agency"
 	_ "main/validations/archives"
@@ -119,13 +120,13 @@ func preloadMunicipalityCoordinates(cliPath string) {
 	coordinatesPath := resolveMunicipalityCoordinatesPath(cliPath)
 	if coordinatesPath == "" {
 		// Ensure the service remains explicitly disabled when no file is available.
-		_ = services.LoadMunicipalityCoordinatesFromFile("")
+		_ = municipality_coordinates.LoadMunicipalityCoordinatesFromFile("")
 		return
 	}
 
-	if err := services.LoadMunicipalityCoordinatesFromFile(coordinatesPath); err != nil {
+	if err := municipality_coordinates.LoadMunicipalityCoordinatesFromFile(coordinatesPath); err != nil {
 		lib.AppLogger.Info(fmt.Sprintf("WARNING: failed to load municipality coordinates from %q: %v. Coordinate-to-municipality validation will be skipped.", coordinatesPath, err))
-		_ = services.LoadMunicipalityCoordinatesFromFile("")
+		_ = municipality_coordinates.LoadMunicipalityCoordinatesFromFile("")
 	}
 }
 
