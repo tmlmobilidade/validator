@@ -8,6 +8,7 @@ import (
 	"main/lib"
 	"main/lib/test_helpers"
 	"main/services"
+	municipality_coordinates "main/services/geo/municipalities"
 	"main/types"
 	validations "main/validations/stops/validations"
 )
@@ -23,7 +24,7 @@ func writeMunicipalityCoordinatesFixture(t *testing.T, content string) string {
 
 func TestCoordenatesValidation_ExactMatch(t *testing.T) {
 	services.AppMessageService.Clear()
-	defer services.LoadMunicipalityCoordinatesFromFile("")
+	defer municipality_coordinates.LoadMunicipalityCoordinatesFromFile("")
 
 	filePath := writeMunicipalityCoordinatesFixture(t, `{
 		"type": "FeatureCollection",
@@ -41,7 +42,7 @@ func TestCoordenatesValidation_ExactMatch(t *testing.T) {
 			}
 		]
 	}`)
-	if err := services.LoadMunicipalityCoordinatesFromFile(filePath); err != nil {
+	if err := municipality_coordinates.LoadMunicipalityCoordinatesFromFile(filePath); err != nil {
 		t.Fatalf("failed to load municipality coordinates fixture: %v", err)
 	}
 
@@ -57,7 +58,7 @@ func TestCoordenatesValidation_ExactMatch(t *testing.T) {
 
 func TestCoordenatesValidation_MunicipalityMismatch(t *testing.T) {
 	services.AppMessageService.Clear()
-	defer services.LoadMunicipalityCoordinatesFromFile("")
+	defer municipality_coordinates.LoadMunicipalityCoordinatesFromFile("")
 
 	filePath := writeMunicipalityCoordinatesFixture(t, `{
 		"type": "FeatureCollection",
@@ -75,7 +76,7 @@ func TestCoordenatesValidation_MunicipalityMismatch(t *testing.T) {
 			}
 		]
 	}`)
-	if err := services.LoadMunicipalityCoordinatesFromFile(filePath); err != nil {
+	if err := municipality_coordinates.LoadMunicipalityCoordinatesFromFile(filePath); err != nil {
 		t.Fatalf("failed to load municipality coordinates fixture: %v", err)
 	}
 
@@ -91,7 +92,7 @@ func TestCoordenatesValidation_MunicipalityMismatch(t *testing.T) {
 
 func TestCoordenatesValidation_CoordinateNotMapped(t *testing.T) {
 	services.AppMessageService.Clear()
-	defer services.LoadMunicipalityCoordinatesFromFile("")
+	defer municipality_coordinates.LoadMunicipalityCoordinatesFromFile("")
 
 	filePath := writeMunicipalityCoordinatesFixture(t, `{
 		"type": "FeatureCollection",
@@ -109,7 +110,7 @@ func TestCoordenatesValidation_CoordinateNotMapped(t *testing.T) {
 			}
 		]
 	}`)
-	if err := services.LoadMunicipalityCoordinatesFromFile(filePath); err != nil {
+	if err := municipality_coordinates.LoadMunicipalityCoordinatesFromFile(filePath); err != nil {
 		t.Fatalf("failed to load municipality coordinates fixture: %v", err)
 	}
 
@@ -125,7 +126,7 @@ func TestCoordenatesValidation_CoordinateNotMapped(t *testing.T) {
 
 func TestCoordenatesValidation_LegacyGeometryArrayFormat(t *testing.T) {
 	services.AppMessageService.Clear()
-	defer services.LoadMunicipalityCoordinatesFromFile("")
+	defer municipality_coordinates.LoadMunicipalityCoordinatesFromFile("")
 
 	filePath := writeMunicipalityCoordinatesFixture(t, `{
 		"type": "FeatureCollection",
@@ -139,7 +140,7 @@ func TestCoordenatesValidation_LegacyGeometryArrayFormat(t *testing.T) {
 			}
 		]
 	}`)
-	if err := services.LoadMunicipalityCoordinatesFromFile(filePath); err != nil {
+	if err := municipality_coordinates.LoadMunicipalityCoordinatesFromFile(filePath); err != nil {
 		t.Fatalf("failed to load municipality coordinates fixture: %v", err)
 	}
 
@@ -155,8 +156,8 @@ func TestCoordenatesValidation_LegacyGeometryArrayFormat(t *testing.T) {
 
 func TestCoordenatesValidation_MapNotLoaded_SkipsValidation(t *testing.T) {
 	services.AppMessageService.Clear()
-	_ = services.LoadMunicipalityCoordinatesFromFile("")
-	defer services.LoadMunicipalityCoordinatesFromFile("")
+	_ = municipality_coordinates.LoadMunicipalityCoordinatesFromFile("")
+	defer municipality_coordinates.LoadMunicipalityCoordinatesFromFile("")
 
 	stop := &types.Stop{
 		StopLat:        lib.Ptr(float32(38.71667)),
@@ -170,10 +171,10 @@ func TestCoordenatesValidation_MapNotLoaded_SkipsValidation(t *testing.T) {
 
 func TestCoordenatesValidation_MapLoadError_SkipsValidation(t *testing.T) {
 	services.AppMessageService.Clear()
-	_ = services.LoadMunicipalityCoordinatesFromFile("")
-	defer services.LoadMunicipalityCoordinatesFromFile("")
+	_ = municipality_coordinates.LoadMunicipalityCoordinatesFromFile("")
+	defer municipality_coordinates.LoadMunicipalityCoordinatesFromFile("")
 
-	if err := services.LoadMunicipalityCoordinatesFromFile(filepath.Join(t.TempDir(), "does-not-exist.json")); err == nil {
+	if err := municipality_coordinates.LoadMunicipalityCoordinatesFromFile(filepath.Join(t.TempDir(), "does-not-exist.json")); err == nil {
 		t.Fatalf("expected an error when loading a non-existing municipality coordinates file")
 	}
 
