@@ -34,4 +34,10 @@ func RouteIdValidation(route *types.Route, row int, gtfs *types.Gtfs) {
 		ctx.AddError(ctx.GetTranslatedMessage("route_id_validation.duplicate", *route.RouteId))
 		return
 	}
+
+	// Limit the route_id to 32 characters
+	if len(*route.RouteId) > 32 {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_id_validation.too_long", *route.RouteId))
+		return
+	}
 }

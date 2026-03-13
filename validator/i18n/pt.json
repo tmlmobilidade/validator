@@ -218,7 +218,8 @@
         "forbidden": "O campo \"route_id\" é proibido",
         "required": "O campo \"route_id\" é obrigatório",
         "duplicate": "Campo \"route_id\" \"%s\" duplicado encontrado. O campo \"route_id\" deve ser único",
-        "invalid": "O campo \"route_id\" \"%s\" não é um route_id válido de routes.txt"
+        "invalid": "O campo \"route_id\" \"%s\" não é um route_id válido de routes.txt",
+        "too_long": "O campo \"route_id\" \"%s\" é demasiado longo. Deve ter no máximo 32 caracteres"
     },
     "route_long_name_validation": {
         "forbidden": "O campo \"route_long_name\" é proibido",

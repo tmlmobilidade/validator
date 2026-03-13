@@ -217,7 +217,8 @@
         "forbidden": "Field \"route_id\" is forbidden",
         "required": "Field \"route_id\" is required",
         "duplicate": "Duplicate field \"route_id\" \"%s\" found. Field \"route_id\" must be unique",
-        "invalid": "Field \"route_id\" \"%s\" is not a valid route_id from routes.txt"
+        "invalid": "Field \"route_id\" \"%s\" is not a valid route_id from routes.txt",
+        "too_long": "Field \"route_id\" \"%s\" is too long. It must be 32 characters or less"
     },
     "route_long_name_validation": {
         "forbidden": "Field \"route_long_name\" is forbidden",
