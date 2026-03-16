@@ -279,11 +279,12 @@
     },
     "shape_id_validation": {
         "forbidden": "Field \"shape_id\" is forbidden",
-        "required": "A valid shape_id is required for this trip",
-        "recommended": "A shape_id is recommended for this trip",
-        "continuous_pickup_dropoff": "This trip must include a valid shape_id because continuous pickup or drop-off is defined in routes.txt or stop_times.txt",
-        "not_found": "Invalid shape_id \"%s\": it must match a shape_id in shapes.txt",
-        "invalid": "Field \"shape_id\" \"%s\" is not a valid shape_id from shapes.txt"
+        "required": "Field \"shape_id\" is required",
+        "recommended": "Field \"shape_id\" is recommended",
+        "continuous_pickup_dropoff": "Field \"shape_id\" is required when a continuous pickup or drop-off behavior is defined either in routes.txt or in stop_times.txt",
+        "not_found": "Field \"shape_id\" \"%s\" does not exist in shapes.txt",
+        "invalid": "Field \"shape_id\" \"%s\" is not a valid shape_id from shapes.txt",
+        "different_from_pattern_id": "Field \"shape_id\" \"%s\" is different from field \"pattern_id\" \"%s\""
     },
     "shape_pt_lat_validation": {
         "forbidden": "Field \"shape_pt_lat\" is forbidden",
@@ -388,6 +389,19 @@
         "forbidden_location_group_id_location_id": "Field \"stop_id\" is forbidden if \"location_group_id\" or \"location_id\" are defined",
         "required_location_group_id_location_id": "Field \"stop_id\" is required if \"location_group_id\" and \"location_id\" are not defined",
         "invalid_location_type": "Field \"stop_id\" must reference a stop with location_type 0 or empty (platform/stop)"
+    },
+    "stop_desc_validation": {
+        "forbidden": "Field \"stop_desc\" is forbidden",
+        "required": "Field \"stop_desc\" is required",
+        "recommended": "Field \"stop_desc\" is recommended",
+        "not_allowed": "Field \"stop_desc\" \"%s\" is not allowed",
+        "duplicate": "Field \"stop_desc\" \"%s\" must be different from field \"stop_name\" \"%s\""
+    },
+    "stop_name_validation": {
+        "forbidden": "Field \"stop_name\" is forbidden",
+        "required": "Field \"stop_name\" is required",
+        "recommended": "Field \"stop_name\" is recommended",
+        "not_allowed": "Field \"stop_name\" \"%s\" is not allowed"
     },
     "timepoint_validation": {
         "forbidden": "Field \"timepoint\" is forbidden",

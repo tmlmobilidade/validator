@@ -93,4 +93,10 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.not_found", map[string]any{"shape_id": *trip.ShapeId}))
 		return
 	}
+
+	// check if shape_id is different from pattern_id
+	if *trip.ShapeId != *trip.PatternId {
+		ctx.AddWarning(ctx.GetTranslatedMessage("shape_id_validation.different_from_pattern_id", *trip.ShapeId, *trip.PatternId))
+		return
+	}
 }

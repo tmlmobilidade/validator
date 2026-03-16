@@ -43,7 +43,7 @@ func StopDescValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	}
 
 	if stop.StopName != nil && *stop.StopName == *stop.StopDesc {
-		ctx.AddWarning(ctx.GetTranslatedMessage("stop_desc_validation.duplicate"))
+		ctx.AddWarning(ctx.GetTranslatedMessage("stop_desc_validation.duplicate", *stop.StopDesc, *stop.StopName))
 		return
 	}
 

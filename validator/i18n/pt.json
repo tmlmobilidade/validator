@@ -280,11 +280,12 @@
     },
     "shape_id_validation": {
         "forbidden": "O campo \"shape_id\" é proibido",
-        "required": "O trip precisa de um shape_id válido",
-        "recommended": "É recomendado definir um shape_id para este trip",
-        "continuous_pickup_dropoff": "Este trip precisa de um shape_id válido porque existe embarque ou desembarque contínuo definido em routes.txt ou stop_times.txt",
-        "not_found": "O shape_id \"%s\" é inválido: tem de existir em shapes.txt",
-        "invalid": "O campo \"shape_id\" \"%s\" não é um shape_id válido de shapes.txt"
+        "required": "O campo \"shape_id\" é obrigatório",
+        "recommended": "O campo \"shape_id\" é recomendado",
+        "continuous_pickup_dropoff": "O campo \"shape_id\" é obrigatório quando um comportamento de embarque ou desembarque contínuo é definido em routes.txt ou em stop_times.txt",
+        "not_found": "O campo \"shape_id\" \"%s\" não existe em shapes.txt",
+        "invalid": "O campo \"shape_id\" \"%s\" não é um shape_id válido de shapes.txt",
+        "different_from_pattern_id": "O campo \"shape_id\" \"%s\" é diferente do campo \"pattern_id\" \"%s\""
     },
     "shape_pt_lat_validation": {
         "forbidden": "O campo \"shape_pt_lat\" é proibido",
@@ -390,6 +391,19 @@
         "required_location_group_id_location_id": "O campo \"stop_id\" é obrigatório se \"location_group_id\" e \"location_id\" não estiverem definidos",
         "invalid_location_type": "O campo \"stop_id\" deve referenciar uma paragem com location_type 0 ou vazio (plataforma/paragem)"
     },
+    "stop_desc_validation": {
+        "forbidden": "O campo \"stop_desc\" é proibido",
+        "required": "O campo \"stop_desc\" é obrigatório",
+        "recommended": "O campo \"stop_desc\" é recomendado",
+        "not_allowed": "O campo \"stop_desc\" \"%s\" não é permitido",
+        "duplicate": "O campo \"stop_desc\" \"%s\" deve ser diferente do campo \"stop_name\" \"%s\""
+    },
+    "stop_name_validation": {
+        "forbidden": "O campo \"stop_name\" é proibido",
+        "required": "O campo \"stop_name\" é obrigatório",
+        "recommended": "O campo \"stop_name\" é recomendado",
+        "not_allowed": "O campo \"stop_name\" \"%s\" não é permitido"
+    },  
     "timepoint_validation": {
         "forbidden": "O campo \"timepoint\" é proibido",
         "required": "O campo \"timepoint\" é obrigatório",
