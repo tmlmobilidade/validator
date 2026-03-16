@@ -481,7 +481,7 @@
         "invalid_distance_to_shape": "As coordenadas (%f, %f) estao demasiado distantes relativamente as outras shapes"
     },
     "coordinates_consistent_validation": {
-        "invalid_consistent_distance": "As coordenadas (%f, %f) sao demasiado distantes relativamente as outras shapes"
+        "invalid_consistent_distance": "As coordenadas (%f, %f) da sequencia (%d) estao demasiado distantes relativamente a outra shape com as coordenadas (%f, %f) da sequencia (%d)"
     },
     "coordinates_distances_validation": {
         "invalid_distances": "As distancias entre pontos (%s, %s) e (%s, %s) não correspondem ao incremento de shape_dist_traveled. A distancia esperada é %.2f metros mas a distancia recebida é %.2f metros"

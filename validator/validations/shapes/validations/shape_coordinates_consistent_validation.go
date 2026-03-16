@@ -59,21 +59,7 @@ func ShapeCoordinatesConsistentValidation(shapes []types.Shape) {
 			}
 
 			ctx := lib.NewValidationContext("coordinates", "shapes.txt", "coordinates_consistent_validation", current.row, services.AppMessageService)
-
-			// If the next point is close to the previous one, the current point is likely an isolated outlier.
-			// Mark only this point and skip the immediate next check to avoid cascaded false positives.
-			if i+1 < len(shapeGroup) {
-				next := shapeGroup[i+1]
-				nextShape := buildShapeFromConsistentPoint(next)
-				prevAndNextAreClose, _ := shapes_coordinates.ShapeIsCloseToOtherShape(prevShape, nextShape)
-				if prevAndNextAreClose {
-					ctx.AddError(ctx.GetTranslatedMessage("coordinates_consistent_validation.invalid_consistent_distance", current.lat, current.lon))
-					i++
-					continue
-				}
-			}
-
-			ctx.AddError(ctx.GetTranslatedMessage("coordinates_consistent_validation.invalid_consistent_distance", current.lat, current.lon))
+			ctx.AddError(ctx.GetTranslatedMessage("coordinates_consistent_validation.invalid_consistent_distance", current.lat, current.lon, current.sequence, prev.lat, prev.lon, prev.sequence))
 		}
 	}
 }
