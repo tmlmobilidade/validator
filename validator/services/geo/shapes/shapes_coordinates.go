@@ -54,6 +54,10 @@ func getDistanceBetweenPositions(a, b ShapesDistance) float64 {
 	return 2 * earthRadiusMeters * math.Atan2(math.Sqrt(h), math.Sqrt(1-h))
 }
 
+func GetDistanceBetweenPositionsMeters(a, b ShapesDistance) float64 {
+	return getDistanceBetweenPositions(a, b)
+}
+
 func interpolatePositions(a, b ShapesDistance, ratio float64) ShapesDistance {
 	if ratio < 0 {
 		ratio = 0

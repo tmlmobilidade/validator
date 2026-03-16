@@ -609,6 +609,12 @@
     },
     "shape_pt_sequence": {
       "severity": "error"
+    },
+    "shape_dist_tolerance": {
+      "options": [
+        "0.5"
+      ],
+      "severity": "error"
     }
   },
   "stop_times": {

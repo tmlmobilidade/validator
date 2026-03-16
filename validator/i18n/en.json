@@ -473,14 +473,17 @@
         "not_found": "Field \"municipality_id\" \"%s\" does not exist in municipalities.txt",
         "not_allowed": "Field \"municipality_id\" \"%s\" is not allowed"
     },
-    "coordenates_validation": {
+    "coordinates_validation": {
         "not_mapped": "Coordinates (%f, %f) are not mapped in Portugal Continental",
         "invalid_municipality_id": "Coordinates (%f, %f) do not match mapped municipality. Municipality_id expected \"%s\", received \"%s\"",
         "invalid_distance": "Coordinates (%f, %f) are too far apart relative to other shapes",
         "invalid_distance_to_shape": "Coordinates (%f, %f) are too far apart relative to other shapes"
     },
-    "coordenates_distance_validation": {
-        "invalid_distance": "Coordinates (%f, %f) are too far apart relative to other shapes"
+    "coordinates_distances_validation": {
+        "invalid_distances": "The distances between points (%s, %s) and (%s, %s) do not correspond to the shape_dist_traveled increment. The expected distance is %.2f meters but the received distance is %.2f meters"
+    },
+    "coordinates_consistent_validation": {
+        "invalid_consistent_distance": "Coordinates (%f, %f) are too far apart relative to other shapes"
     },
     "parent_station_validation": {
         "forbidden": "Field \"parent_station\" is forbidden",
