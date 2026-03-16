@@ -391,6 +391,19 @@
         "required_location_group_id_location_id": "O campo \"stop_id\" é obrigatório se \"location_group_id\" e \"location_id\" não estiverem definidos",
         "invalid_location_type": "O campo \"stop_id\" deve referenciar uma paragem com location_type 0 ou vazio (plataforma/paragem)"
     },
+    "stop_desc_validation": {
+        "forbidden": "O campo \"stop_desc\" é proibido",
+        "required": "O campo \"stop_desc\" é obrigatório",
+        "recommended": "O campo \"stop_desc\" é recomendado",
+        "not_allowed": "O campo \"stop_desc\" \"%s\" não é permitido",
+        "duplicate": "O campo \"stop_desc\" \"%s\" deve ser diferente do campo \"stop_name\" \"%s\""
+    },
+    "stop_name_validation": {
+        "forbidden": "O campo \"stop_name\" é proibido",
+        "required": "O campo \"stop_name\" é obrigatório",
+        "recommended": "O campo \"stop_name\" é recomendado",
+        "not_allowed": "O campo \"stop_name\" \"%s\" não é permitido"
+    },  
     "timepoint_validation": {
         "forbidden": "O campo \"timepoint\" é proibido",
         "required": "O campo \"timepoint\" é obrigatório",
