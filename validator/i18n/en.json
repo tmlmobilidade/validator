@@ -480,7 +480,7 @@
         "invalid_distance_to_shape": "Coordinates (%f, %f) are too far apart relative to other shapes"
     },
     "coordinates_consistent_validation": {
-        "invalid_consistent_distance": "Coordinates (%f, %f) sequence (%d) is too far apart relative to other shapes with coordinates (%f, %f) sequence (%d)"
+        "invalid_consistent_distance": "Coordinates (%f, %f) sequence (%d) is too far apart relative to previous with coordinates (%f, %f) sequence (%d)"
     },
     "coordinates_distances_validation": {
         "invalid_distances": "The distances between points (%s, %s) and (%s, %s) do not correspond to the shape_dist_traveled increment. The expected distance is %.2f meters but the received distance is %.2f meters"
