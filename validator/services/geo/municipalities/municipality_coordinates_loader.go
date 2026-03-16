@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -71,6 +72,30 @@ func polygonBBox(points municipalityPolygon) (minLat, maxLat, minLon, maxLon flo
 	return minLat, maxLat, minLon, maxLon
 }
 
+const epsilon = 1e-9
+
+// Municipality polygons are simplified and represent land boundaries.
+// A wider tolerance avoids false negatives for shape points near coastlines
+// and estuaries that still belong to Portugal's operational transit area.
+const portugalBoundaryToleranceMeters = 1000.0
+const metersPerDegreeLatitude = 111320.0
+
+func pointOnSegment(lon, lat float64, a, b point) bool {
+	// Check collinearity first using cross product.
+	cross := (b.Lon-a.Lon)*(lat-a.Lat) - (b.Lat-a.Lat)*(lon-a.Lon)
+	if math.Abs(cross) > epsilon {
+		return false
+	}
+
+	// Then ensure projected point lies on segment bounds.
+	minLon := math.Min(a.Lon, b.Lon) - epsilon
+	maxLon := math.Max(a.Lon, b.Lon) + epsilon
+	minLat := math.Min(a.Lat, b.Lat) - epsilon
+	maxLat := math.Max(a.Lat, b.Lat) + epsilon
+
+	return lon >= minLon && lon <= maxLon && lat >= minLat && lat <= maxLat
+}
+
 func pointInPolygon(lon, lat float64, polygon municipalityPolygon) bool {
 	if len(polygon) < 3 {
 		return false
@@ -81,6 +106,9 @@ func pointInPolygon(lon, lat float64, polygon municipalityPolygon) bool {
 	for i := 0; i < len(polygon); i++ {
 		pi := polygon[i]
 		pj := polygon[j]
+		if pointOnSegment(lon, lat, pj, pi) {
+			return true
+		}
 		intersects := ((pi.Lat > lat) != (pj.Lat > lat)) &&
 			(lon < (pj.Lon-pi.Lon)*(lat-pi.Lat)/(pj.Lat-pi.Lat)+pi.Lon)
 		if intersects {
@@ -89,6 +117,109 @@ func pointInPolygon(lon, lat float64, polygon municipalityPolygon) bool {
 		j = i
 	}
 	return inside
+}
+
+func metersPerDegreeLongitude(lat float64) float64 {
+	return metersPerDegreeLatitude * math.Cos(lat*math.Pi/180.0)
+}
+
+func approxDistancePointToSegmentMeters(lon, lat float64, a, b point) float64 {
+	scaleX := metersPerDegreeLongitude(lat)
+	if math.Abs(scaleX) < epsilon {
+		scaleX = epsilon
+	}
+	scaleY := metersPerDegreeLatitude
+
+	px := lon * scaleX
+	py := lat * scaleY
+	ax := a.Lon * scaleX
+	ay := a.Lat * scaleY
+	bx := b.Lon * scaleX
+	by := b.Lat * scaleY
+
+	abX := bx - ax
+	abY := by - ay
+	abLenSq := abX*abX + abY*abY
+	if abLenSq <= epsilon {
+		dx := px - ax
+		dy := py - ay
+		return math.Sqrt(dx*dx + dy*dy)
+	}
+
+	t := ((px-ax)*abX + (py-ay)*abY) / abLenSq
+	if t < 0 {
+		t = 0
+	} else if t > 1 {
+		t = 1
+	}
+
+	closestX := ax + t*abX
+	closestY := ay + t*abY
+	dx := px - closestX
+	dy := py - closestY
+	return math.Sqrt(dx*dx + dy*dy)
+}
+
+func pointNearPolygonBoundary(lon, lat float64, polygon municipalityPolygon, toleranceMeters float64) bool {
+	if len(polygon) < 2 {
+		return false
+	}
+
+	j := len(polygon) - 1
+	for i := 0; i < len(polygon); i++ {
+		if approxDistancePointToSegmentMeters(lon, lat, polygon[j], polygon[i]) <= toleranceMeters {
+			return true
+		}
+		j = i
+	}
+
+	return false
+}
+
+func findMunicipalityByCoordinates(lat, lon float64) (municipalityID string, found bool) {
+	for _, geometry := range municipalityGeometries {
+		if lat < geometry.MinLat || lat > geometry.MaxLat || lon < geometry.MinLon || lon > geometry.MaxLon {
+			continue
+		}
+
+		for _, polygon := range geometry.Polygons {
+			if pointInPolygon(lon, lat, polygon) {
+				return geometry.MunicipalityID, true
+			}
+		}
+	}
+
+	return "", false
+}
+
+func findMunicipalityByCoordinatesWithTolerance(lat, lon, toleranceMeters float64) (municipalityID string, found bool) {
+	if municipalityID, found = findMunicipalityByCoordinates(lat, lon); found {
+		return municipalityID, true
+	}
+
+	latPadding := toleranceMeters / metersPerDegreeLatitude
+	lonScale := metersPerDegreeLongitude(lat)
+	if math.Abs(lonScale) < epsilon {
+		lonScale = epsilon
+	}
+	lonPadding := toleranceMeters / lonScale
+	if lonPadding < 0 {
+		lonPadding = -lonPadding
+	}
+
+	for _, geometry := range municipalityGeometries {
+		if lat < geometry.MinLat-latPadding || lat > geometry.MaxLat+latPadding || lon < geometry.MinLon-lonPadding || lon > geometry.MaxLon+lonPadding {
+			continue
+		}
+
+		for _, polygon := range geometry.Polygons {
+			if pointNearPolygonBoundary(lon, lat, polygon, toleranceMeters) {
+				return geometry.MunicipalityID, true
+			}
+		}
+	}
+
+	return "", false
 }
 
 func parsePolygonCoordinates(raw json.RawMessage) ([]municipalityPolygon, error) {
@@ -266,22 +397,8 @@ func ResolveMunicipalityByCoordinates(lat, lon float32) (municipalityID string, 
 		return "", false, false
 	}
 
-	lat64 := float64(lat)
-	lon64 := float64(lon)
-
-	for _, geometry := range municipalityGeometries {
-		if lat64 < geometry.MinLat || lat64 > geometry.MaxLat || lon64 < geometry.MinLon || lon64 > geometry.MaxLon {
-			continue
-		}
-
-		for _, polygon := range geometry.Polygons {
-			if pointInPolygon(lon64, lat64, polygon) {
-				return geometry.MunicipalityID, true, true
-			}
-		}
-	}
-
-	return "", false, true
+	municipalityID, found = findMunicipalityByCoordinates(float64(lat), float64(lon))
+	return municipalityID, found, true
 }
 
 func MunicipalityCoordinatesEnabled() bool {

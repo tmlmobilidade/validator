@@ -475,7 +475,12 @@
     },
     "coordenates_validation": {
         "not_mapped": "Coordinates (%f, %f) are not mapped in Portugal Continental",
-        "invalid_municipality_id": "Coordinates (%f, %f) do not match mapped municipality. Municipality_id expected \"%s\", received \"%s\""
+        "invalid_municipality_id": "Coordinates (%f, %f) do not match mapped municipality. Municipality_id expected \"%s\", received \"%s\"",
+        "invalid_distance": "Coordinates (%f, %f) are too far apart relative to other shapes",
+        "invalid_distance_to_shape": "Coordinates (%f, %f) are too far apart relative to other shapes"
+    },
+    "coordenates_distance_validation": {
+        "invalid_distance": "Coordinates (%f, %f) are too far apart relative to other shapes"
     },
     "parent_station_validation": {
         "forbidden": "Field \"parent_station\" is forbidden",
