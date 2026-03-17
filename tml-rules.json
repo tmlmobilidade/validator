@@ -612,7 +612,7 @@
     },
     "shape_dist_tolerance": {
       "options": [
-        "10"
+        "1.0"
       ],
       "severity": "error"
     }

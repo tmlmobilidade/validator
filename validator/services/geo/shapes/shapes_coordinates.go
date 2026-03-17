@@ -14,11 +14,11 @@ const MaxStopDistanceToClosestShapeMeters = 100.0
 const MaxShapePointDistanceMeters = 1000.0
 
 type StopClosestShapeInfo struct {
-	ShapeID             string
-	DistanceMeters      float64
-	ClosestShapePtLat   float64
-	ClosestShapePtLon   float64
-	ClosestShapePtSeq   int
+	ShapeID           string
+	DistanceMeters    float64
+	ClosestShapePtLat float64
+	ClosestShapePtLon float64
+	ClosestShapePtSeq int
 }
 
 type ShapesDistance struct {
@@ -313,7 +313,7 @@ func BuildStopClosestShapeDistanceMap(gtfs *types.Gtfs) (map[string]StopClosestS
 
 			stopClosestShapeDistance[rawStop.StopId] = StopClosestShapeInfo{
 				ShapeID:           closestShapeID,
-				DistanceMeters:     minDistance,
+				DistanceMeters:    minDistance,
 				ClosestShapePtLat: closestLat,
 				ClosestShapePtLon: closestLon,
 				ClosestShapePtSeq: closestSeq,
