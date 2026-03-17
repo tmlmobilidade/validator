@@ -56,8 +56,11 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 	// Group-level validation: shape_pt_sequence must increase for each shape_id
 	validations.ShapeSequenceValidation(allShapes)
+
+	// Validate shape coordinates consistency
 	validations.ShapeCoordinatesConsistentValidation(allShapes)
 
 	// Validate shape coordinates distances
 	validations.ShapeCoordinatesDistancesValidation(allShapes, &rules.Shapes)
+
 }
