@@ -17,13 +17,13 @@ func init() {
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Validations for stops.txt")
 
-	stopClosestShapeDistance := map[string]float64{}
-	closestShapeDistanceMap, err := shapes_coordinates.BuildStopClosestShapeDistanceMap(&gtfs)
+	stopClosestShapeInfo := map[string]shapes_coordinates.StopClosestShapeInfo{}
+	closestShapeInfoMap, err := shapes_coordinates.BuildStopClosestShapeDistanceMap(&gtfs)
 	if err != nil {
 		lib.AppLogger.Error(fmt.Sprintf("Error pre-loading stop closest shape distance map: %v", err))
 	} else {
-		stopClosestShapeDistance = closestShapeDistanceMap
-		lib.AppLogger.Debug(fmt.Sprintf("Pre-loaded closest shape distance for %d stops", len(stopClosestShapeDistance)))
+		stopClosestShapeInfo = closestShapeInfoMap
+		lib.AppLogger.Debug(fmt.Sprintf("Pre-loaded closest shape distance for %d stops", len(stopClosestShapeInfo)))
 	}
 
 	// Create progress tracker
@@ -106,7 +106,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		validations.MunicipalityIdValidation(&stop, row, stopRules)
 
 		// Validate stop coordinates
-		validations.StopCoordinatesValidation(&stop, row, stopClosestShapeDistance)
+		validations.StopCoordinatesValidation(&stop, row, stopClosestShapeInfo)
 
 		// Validate parish_id
 		validations.ParishIdValidation(&stop, row, stopRules)

@@ -477,15 +477,15 @@
         "not_mapped": "Coordinates (%f, %f) are not mapped in Portugal Continental",
         "invalid_municipality_id": "Coordinates (%f, %f) do not match mapped municipality. Municipality_id expected \"%s\", received \"%s\"",
         "invalid_distance": "Coordinates (%f, %f) are too far apart relative to other shapes",
-        "invalid_distance_to_shape": "Coordinates (%f, %f) are too far apart relative to other shapes"
+        "invalid_distance_to_shape": "Coordinates (%f, %f) are too far from the shapes, the closest shape \"%s\" in sequence %d at (%f, %f) (%.2f m)"
     },
     "coordinates_consistent_validation": {
         "invalid_consistent_distance": "Coordinates (%f, %f) sequence (%d) is too far apart relative to previous with coordinates (%f, %f) sequence (%d)",
-        "ManyErrors": "Many errors found in shape coordinates consistency exist several with a large distance relatively to the previous so it has to be verified"
+        "ManyErrors": "Many errors found in shapes.txt file, exist several shapes with a large distance relatively to the previous so it has to be verified"
     },
     "coordinates_distances_validation": {
         "invalid_distances": "The distances between points (%s, %s) and (%s, %s) do not correspond to the shape_dist_traveled increment. The expected distance is %.2f meters but the received distance is %.2f meters",
-        "ManyErrors": "Many errors found in shape coordinates distances exist several with an estimated value (shape_dist_traveled) further or closer relatively to the real value so it has to be verified"
+        "ManyErrors": "Many errors found in shapes.txt file, exist several shapes with an estimated value (shape_dist_traveled) further or closer relatively to the real value so it has to be verified"
     },
     "parish_id_validation": {
         "forbidden": "Field \"parish_id\" is forbidden",

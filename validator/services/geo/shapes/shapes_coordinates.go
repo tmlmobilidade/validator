@@ -13,6 +13,14 @@ const segmentLength = 10.0
 const MaxStopDistanceToClosestShapeMeters = 100.0
 const MaxShapePointDistanceMeters = 1000.0
 
+type StopClosestShapeInfo struct {
+	ShapeID             string
+	DistanceMeters      float64
+	ClosestShapePtLat   float64
+	ClosestShapePtLon   float64
+	ClosestShapePtSeq   int
+}
+
 type ShapesDistance struct {
 	ShapePtLat float64
 	ShapePtLon float64
@@ -157,8 +165,8 @@ func ShapeIsCloseToOtherShape(shape *types.Shape, otherShape *types.Shape, nextS
 	return distanceMeters <= MaxShapePointDistanceMeters, nil
 }
 
-func BuildStopClosestShapeDistanceMap(gtfs *types.Gtfs) (map[string]float64, error) {
-	stopClosestShapeDistance := map[string]float64{}
+func BuildStopClosestShapeDistanceMap(gtfs *types.Gtfs) (map[string]StopClosestShapeInfo, error) {
+	stopClosestShapeDistance := map[string]StopClosestShapeInfo{}
 	if gtfs == nil {
 		return stopClosestShapeDistance, nil
 	}
@@ -265,6 +273,8 @@ func BuildStopClosestShapeDistanceMap(gtfs *types.Gtfs) (map[string]float64, err
 
 		stopPoint := ShapesDistance{ShapePtLat: lat, ShapePtLon: lon}
 		minDistance := math.MaxFloat64
+		closestShapeID := ""
+		closestCoord := ShapesDistance{}
 		foundDistance := false
 
 		for shapeID := range stopShapeIDs {
@@ -277,13 +287,37 @@ func BuildStopClosestShapeDistanceMap(gtfs *types.Gtfs) (map[string]float64, err
 				distance := getDistanceBetweenPositions(stopPoint, coordinate)
 				if distance < minDistance {
 					minDistance = distance
+					closestShapeID = shapeID
+					closestCoord = coordinate
 					foundDistance = true
 				}
 			}
 		}
 
 		if foundDistance {
-			stopClosestShapeDistance[rawStop.StopId] = minDistance
+			closestSeq := 0
+			closestLat := closestCoord.ShapePtLat
+			closestLon := closestCoord.ShapePtLon
+			if shapePoints, ok := shapeCoordinatesByID[closestShapeID]; ok {
+				minDistToOrig := math.MaxFloat64
+				for _, pt := range shapePoints {
+					d := getDistanceBetweenPositions(stopPoint, pt.coordinate)
+					if d < minDistToOrig {
+						minDistToOrig = d
+						closestSeq = pt.sequence
+						closestLat = pt.coordinate.ShapePtLat
+						closestLon = pt.coordinate.ShapePtLon
+					}
+				}
+			}
+
+			stopClosestShapeDistance[rawStop.StopId] = StopClosestShapeInfo{
+				ShapeID:           closestShapeID,
+				DistanceMeters:     minDistance,
+				ClosestShapePtLat: closestLat,
+				ClosestShapePtLon: closestLon,
+				ClosestShapePtSeq: closestSeq,
+			}
 		}
 
 		return nil
