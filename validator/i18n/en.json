@@ -874,7 +874,7 @@
         "not_allowed": "Field \"exact_times\" \"%s\" is not allowed"
     },
     "trip_id_limit_characters_validation": {
-        "too_long": "Field \"trip_id\" must be less than or equal to 32 characters",
+        "too_long": "Field \"trip_id\" must be less than or equal to 36 characters",
         "not_allowed": "Field \"trip_id\" \"%s\" is not allowed"
     }
 }

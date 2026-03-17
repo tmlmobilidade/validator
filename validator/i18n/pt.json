@@ -692,7 +692,7 @@
         "required": "Os campos \"pattern_id\" e \"direction_id\" são obrigatórios para validar a correspondência"
     },
     "trip_id_limit_characters_validation": {
-        "too_long": "O campo \"trip_id\" deve ter no máximo 32 caracteres",
+        "too_long": "O campo \"trip_id\" deve ter no máximo 36 caracteres",
         "not_allowed": "O campo \"trip_id\" \"%s\" não é permitido"
     },
     "eligibility_url_validation": {
