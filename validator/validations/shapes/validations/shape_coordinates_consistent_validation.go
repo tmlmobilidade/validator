@@ -78,10 +78,10 @@ func ShapeCoordinatesConsistentValidation(shapes []types.Shape) {
 			}
 			prev := shapeGroup[i-1]
 			current := shapeGroup[i]
-			prevShape := buildShapeFromConsistentPoint(prev)
-			currentShape := buildShapeFromConsistentPoint(current)
+			prevShapePoint := buildShapeFromConsistentPoint(prev)
+			currentShapePoint := buildShapeFromConsistentPoint(current)
 
-			closeEnough, _ := shapes_coordinates.ShapeIsCloseToOtherShape(prevShape, currentShape)
+			closeEnough, _ := shapes_coordinates.ShapePointIsCloseToBeforeShapePoint(prevShapePoint, currentShapePoint)
 			if closeEnough {
 				continue
 			}

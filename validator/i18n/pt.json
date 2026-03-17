@@ -499,8 +499,8 @@
         "ManyErrors": "Foram encontrados muitos erros em relação às coordenadas introduzidas no ficheiro shapes.txt, existem varias shapes que tem uma distancia muito grande relativamente a anterior por isso tem de ser verificado"
     },
     "coordinates_distances_validation": {
-        "invalid_distances": "As distancias entre pontos (%s, %s) e (%s, %s) não correspondem ao incremento de shape_dist_traveled. A distancia esperada é %.2f metros mas a distancia recebida é %.2f metros",
-        "ManyErrors": "Foram encontrados muitos erros em relação às distancias introduzidas no ficheiro shapes.txt, existem varias shapes com um valor estimado (shape_dist_traveled) mais longe ou mais perto relativamente ao valor real por isso tem de ser verificado"
+        "invalid_distances": "As distâncias entre pontos (%s, %s) e (%s, %s) não correspondem ao incremento de shape_dist_traveled. A distância na shape_dist_traveled é %.2f metros mas a distância geométrica real é %.2f metros",
+        "ManyErrors": "Foram encontrados muitos erros em relação às distâncias introduzidas no ficheiro shapes.txt, existem várias shapes com um valor estimado (shape_dist_traveled) mais longe ou mais perto relativamente ao valor real por isso tem de ser verificado"
     },
     "parent_station_validation": {
         "forbidden": "O campo \"parent_station\" é proibido",

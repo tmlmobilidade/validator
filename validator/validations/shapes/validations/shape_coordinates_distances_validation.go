@@ -40,7 +40,8 @@ type distanceViolation struct {
 	prevLon            float64
 	currentLat         float64
 	currentLon         float64
-	distTraveledDeltaM float64
+	distTraveledDelta  float64 // raw value from file (km or m)
+	distTraveledDeltaM float64 // converted to meters for comparison
 	realDistanceMeters float64
 }
 
@@ -94,34 +95,48 @@ func ShapeCoordinatesDistancesValidation(shapes []types.Shape, rules *types.Shap
 			return shapeGroup[i].sequence < shapeGroup[j].sequence
 		})
 
-		for i := 1; i < len(shapeGroup); i++ {
-			prev := shapeGroup[i-1]
-			current := shapeGroup[i]
+		// Max shape_dist_traveled in shape: used to detect unit (km if < 800, else m)
+		var maxDistTraveled float64
+		for _, pt := range shapeGroup {
+			if pt.distTraveled != nil && *pt.distTraveled > maxDistTraveled {
+				maxDistTraveled = *pt.distTraveled
+			}
+		}
 
-			if prev.distTraveled == nil || current.distTraveled == nil {
+		for i := 1; i < len(shapeGroup); i++ {
+			prevShapePoint := shapeGroup[i-1]
+			currentShapePoint := shapeGroup[i]
+
+			if prevShapePoint.distTraveled == nil || currentShapePoint.distTraveled == nil {
+				continue
+			}
+			// Skip when shape_dist_traveled is 0.0: first point of shape or reset when shape changes.
+			if *prevShapePoint.distTraveled == 0.0 || *currentShapePoint.distTraveled == 0.0 {
 				continue
 			}
 
 			realDistanceMeters := shapes_coordinates.GetDistanceBetweenPositionsMeters(
-				shapes_coordinates.ShapesDistance{ShapePtLat: prev.lat, ShapePtLon: prev.lon},
-				shapes_coordinates.ShapesDistance{ShapePtLat: current.lat, ShapePtLon: current.lon},
+				shapes_coordinates.ShapesDistance{ShapePtLat: prevShapePoint.lat, ShapePtLon: prevShapePoint.lon},
+				shapes_coordinates.ShapesDistance{ShapePtLat: currentShapePoint.lat, ShapePtLon: currentShapePoint.lon},
 			)
-			distTraveledDeltaMeters := *current.distTraveled - *prev.distTraveled
+			distTraveledDelta := *currentShapePoint.distTraveled - *prevShapePoint.distTraveled
+			distTraveledDeltaMeters := shapes_coordinates.ShapeDistTraveledToMeters(distTraveledDelta, maxDistTraveled)
 
 			if math.Abs(realDistanceMeters-distTraveledDeltaMeters) <= toleranceMeters {
 				continue
 			}
 
-			if distTraveledDeltaMeters == 0.0 {
+			if distTraveledDeltaMeters < 0.001 {
 				continue
 			}
 
 			violations = append(violations, distanceViolation{
-				row:                current.row,
-				prevLat:            prev.lat,
-				prevLon:            prev.lon,
-				currentLat:         current.lat,
-				currentLon:         current.lon,
+				row:                currentShapePoint.row,
+				prevLat:            prevShapePoint.lat,
+				prevLon:            prevShapePoint.lon,
+				currentLat:         currentShapePoint.lat,
+				currentLon:         currentShapePoint.lon,
+				distTraveledDelta:  distTraveledDelta,
 				distTraveledDeltaM: distTraveledDeltaMeters,
 				realDistanceMeters: realDistanceMeters,
 			})

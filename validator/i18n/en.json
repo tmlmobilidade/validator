@@ -498,7 +498,7 @@
         "ManyErrors": "Many errors found in shapes.txt file, exist several shapes with a large distance relatively to the previous so it has to be verified"
     },
     "coordinates_distances_validation": {
-        "invalid_distances": "The distances between points (%s, %s) and (%s, %s) do not correspond to the shape_dist_traveled increment. The expected distance is %.2f meters but the received distance is %.2f meters",
+        "invalid_distances": "The distances between points (%s, %s) and (%s, %s) do not correspond to the shape_dist_traveled increment. The distance in shape_dist_traveled is %.2f meters but the actual geometric distance is %.2f meters",
         "ManyErrors": "Many errors found in shapes.txt file, exist several shapes with an estimated value (shape_dist_traveled) further or closer relatively to the real value so it has to be verified"
     },
     "parish_id_validation": {
