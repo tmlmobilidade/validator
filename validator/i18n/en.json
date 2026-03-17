@@ -283,7 +283,8 @@
         "recommended": "Field \"shape_id\" is recommended",
         "continuous_pickup_dropoff": "Field \"shape_id\" is required when a continuous pickup or drop-off behavior is defined either in routes.txt or in stop_times.txt",
         "not_found": "Field \"shape_id\" \"%s\" does not exist in shapes.txt",
-        "invalid": "Field \"shape_id\" \"%s\" is not a valid shape_id from shapes.txt"
+        "invalid": "Field \"shape_id\" \"%s\" is not a valid shape_id from shapes.txt",
+        "different_from_pattern_id": "Field \"shape_id\" \"%s\" is different from field \"pattern_id\" \"%s\""
     },
     "shape_pt_lat_validation": {
         "forbidden": "Field \"shape_pt_lat\" is forbidden",
@@ -389,6 +390,19 @@
         "required_location_group_id_location_id": "Field \"stop_id\" is required if \"location_group_id\" and \"location_id\" are not defined",
         "invalid_location_type": "Field \"stop_id\" must reference a stop with location_type 0 or empty (platform/stop)",
         "not_allowed_by_reference_api": "Field \"stop_id\" \"%s\" is not present in the external reference API"
+    },
+    "stop_desc_validation": {
+        "forbidden": "Field \"stop_desc\" is forbidden",
+        "required": "Field \"stop_desc\" is required",
+        "recommended": "Field \"stop_desc\" is recommended",
+        "not_allowed": "Field \"stop_desc\" \"%s\" is not allowed",
+        "duplicate": "Field \"stop_desc\" \"%s\" must be different from field \"stop_name\" \"%s\""
+    },
+    "stop_name_validation": {
+        "forbidden": "Field \"stop_name\" is forbidden",
+        "required": "Field \"stop_name\" is required",
+        "recommended": "Field \"stop_name\" is recommended",
+        "not_allowed": "Field \"stop_name\" \"%s\" is not allowed"
     },
     "timepoint_validation": {
         "forbidden": "Field \"timepoint\" is forbidden",
@@ -868,7 +882,7 @@
         "not_allowed": "Field \"exact_times\" \"%s\" is not allowed"
     },
     "trip_id_limit_characters_validation": {
-        "too_long": "Field \"trip_id\" must be less than or equal to 32 characters",
+        "too_long": "Field \"trip_id\" must be less than or equal to 36 characters",
         "not_allowed": "Field \"trip_id\" \"%s\" is not allowed"
     }
 }

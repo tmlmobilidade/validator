@@ -284,7 +284,8 @@
         "recommended": "O campo \"shape_id\" é recomendado",
         "continuous_pickup_dropoff": "O campo \"shape_id\" é obrigatório quando um comportamento de embarque ou desembarque contínuo é definido em routes.txt ou em stop_times.txt",
         "not_found": "O campo \"shape_id\" \"%s\" não existe em shapes.txt",
-        "invalid": "O campo \"shape_id\" \"%s\" não é um shape_id válido de shapes.txt"
+        "invalid": "O campo \"shape_id\" \"%s\" não é um shape_id válido de shapes.txt",
+        "different_from_pattern_id": "O campo \"shape_id\" \"%s\" é diferente do campo \"pattern_id\" \"%s\""
     },
     "shape_pt_lat_validation": {
         "forbidden": "O campo \"shape_pt_lat\" é proibido",
@@ -391,6 +392,19 @@
         "invalid_location_type": "O campo \"stop_id\" deve referenciar uma paragem com location_type 0 ou vazio (plataforma/paragem)",
         "not_allowed_by_reference_api": "O campo \"stop_id\" \"%s\" não existe na API externa de referência"
     },
+    "stop_desc_validation": {
+        "forbidden": "O campo \"stop_desc\" é proibido",
+        "required": "O campo \"stop_desc\" é obrigatório",
+        "recommended": "O campo \"stop_desc\" é recomendado",
+        "not_allowed": "O campo \"stop_desc\" \"%s\" não é permitido",
+        "duplicate": "O campo \"stop_desc\" \"%s\" deve ser diferente do campo \"stop_name\" \"%s\""
+    },
+    "stop_name_validation": {
+        "forbidden": "O campo \"stop_name\" é proibido",
+        "required": "O campo \"stop_name\" é obrigatório",
+        "recommended": "O campo \"stop_name\" é recomendado",
+        "not_allowed": "O campo \"stop_name\" \"%s\" não é permitido"
+    },  
     "timepoint_validation": {
         "forbidden": "O campo \"timepoint\" é proibido",
         "required": "O campo \"timepoint\" é obrigatório",
@@ -693,7 +707,7 @@
         "required": "Os campos \"pattern_id\" e \"direction_id\" são obrigatórios para validar a correspondência"
     },
     "trip_id_limit_characters_validation": {
-        "too_long": "O campo \"trip_id\" deve ter no máximo 32 caracteres",
+        "too_long": "O campo \"trip_id\" deve ter no máximo 36 caracteres",
         "not_allowed": "O campo \"trip_id\" \"%s\" não é permitido"
     },
     "eligibility_url_validation": {
