@@ -98,7 +98,7 @@ func ShapeCoordinatesConsistentValidation(shapes []types.Shape) {
 		}
 	}
 
-	if len(violations) > 400 {
+	if len(violations) > 100 {
 		rows := make([]int, 0, len(violations))
 		for _, violation := range violations {
 			rows = append(rows, violation.row)
