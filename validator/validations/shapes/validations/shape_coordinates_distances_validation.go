@@ -34,6 +34,29 @@ func getShapeDistanceToleranceMeters(rules *types.ShapesRules) float64 {
 	return value
 }
 
+type distanceViolation struct {
+	row                int
+	prevLat            float64
+	prevLon            float64
+	currentLat         float64
+	currentLon         float64
+	distTraveledDeltaM float64
+	realDistanceMeters float64
+}
+
+func uniqueDistanceRows(rows []int) []int {
+	seen := make(map[int]struct{}, len(rows))
+	unique := make([]int, 0, len(rows))
+	for _, row := range rows {
+		if _, ok := seen[row]; ok {
+			continue
+		}
+		seen[row] = struct{}{}
+		unique = append(unique, row)
+	}
+	return unique
+}
+
 // ShapeCoordinatesDistancesValidation validates if the geometric distance between
 // consecutive points matches the shape_dist_traveled increment.
 func ShapeCoordinatesDistancesValidation(shapes []types.Shape, rules *types.ShapesRules) {
@@ -44,6 +67,7 @@ func ShapeCoordinatesDistancesValidation(shapes []types.Shape, rules *types.Shap
 
 	shapeGroups := map[string][]shapeDistancePoint{}
 	toleranceMeters := getShapeDistanceToleranceMeters(rules)
+	violations := []distanceViolation{}
 
 	for i, shape := range shapes {
 		ctx := lib.NewValidationContext("coordinates", "shapes.txt", "coordinates_distances_validation", i, services.AppMessageService)
@@ -78,22 +102,57 @@ func ShapeCoordinatesDistancesValidation(shapes []types.Shape, rules *types.Shap
 				continue
 			}
 
-			ctx := lib.NewValidationContext("coordinates", "shapes.txt", "coordinates_distances_validation", current.row, services.AppMessageService)
-			ctx.WithSeverity(severity)
-
 			realDistanceMeters := shapes_coordinates.GetDistanceBetweenPositionsMeters(
 				shapes_coordinates.ShapesDistance{ShapePtLat: prev.lat, ShapePtLon: prev.lon},
 				shapes_coordinates.ShapesDistance{ShapePtLat: current.lat, ShapePtLon: current.lon},
 			)
 			distTraveledDeltaMeters := *current.distTraveled - *prev.distTraveled
 
-			if math.Abs(realDistanceMeters-distTraveledDeltaMeters) <= toleranceMeters && math.Abs(realDistanceMeters-distTraveledDeltaMeters) >= -toleranceMeters {
+			if math.Abs(realDistanceMeters-distTraveledDeltaMeters) <= toleranceMeters {
 				continue
 			}
 
-			if distTraveledDeltaMeters != 0.0 {
-				ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("coordinates_distances_validation.invalid_distances", strconv.FormatFloat(prev.lat, 'f', -1, 64), strconv.FormatFloat(prev.lon, 'f', -1, 64), strconv.FormatFloat(current.lat, 'f', -1, 64), strconv.FormatFloat(current.lon, 'f', -1, 64), distTraveledDeltaMeters, realDistanceMeters))
+			if distTraveledDeltaMeters == 0.0 {
+				continue
 			}
+
+			violations = append(violations, distanceViolation{
+				row:                current.row,
+				prevLat:            prev.lat,
+				prevLon:            prev.lon,
+				currentLat:         current.lat,
+				currentLon:         current.lon,
+				distTraveledDeltaM: distTraveledDeltaMeters,
+				realDistanceMeters: realDistanceMeters,
+			})
 		}
+	}
+
+	if len(violations) > 400 {
+		rows := make([]int, 0, len(violations))
+		for _, violation := range violations {
+			rows = append(rows, violation.row)
+		}
+
+		for _, row := range uniqueDistanceRows(rows) {
+			ctx := lib.NewValidationContext("coordinates", "shapes.txt", "coordinates_distances_validation", row, services.AppMessageService)
+			ctx.WithSeverity(severity)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("coordinates_distances_validation.ManyErrors"))
+		}
+		return
+	}
+
+	for _, violation := range violations {
+		ctx := lib.NewValidationContext("coordinates", "shapes.txt", "coordinates_distances_validation", violation.row, services.AppMessageService)
+		ctx.WithSeverity(severity)
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage(
+			"coordinates_distances_validation.invalid_distances",
+			strconv.FormatFloat(violation.prevLat, 'f', -1, 64),
+			strconv.FormatFloat(violation.prevLon, 'f', -1, 64),
+			strconv.FormatFloat(violation.currentLat, 'f', -1, 64),
+			strconv.FormatFloat(violation.currentLon, 'f', -1, 64),
+			violation.distTraveledDeltaM,
+			violation.realDistanceMeters,
+		))
 	}
 }

@@ -481,10 +481,12 @@
         "invalid_distance_to_shape": "As coordenadas (%f, %f) estao demasiado distantes relativamente as outras shapes"
     },
     "coordinates_consistent_validation": {
-        "invalid_consistent_distance": "As coordenadas (%f, %f) da sequencia (%d) estao demasiado distantes relativamente a anterior com as coordenadas (%f, %f) da sequencia (%d)"
+        "invalid_consistent_distance": "As coordenadas (%f, %f) da sequencia (%d) estao demasiado distantes relativamente a anterior com as coordenadas (%f, %f) da sequencia (%d)",
+        "ManyErrors": "Foram encontrados muitos erros em relação às coordenadas introduzidas nas shapes existindo varias shapes que tem uma distancia muito grande relativamente a anterior por isso tem de ser verificado"
     },
     "coordinates_distances_validation": {
-        "invalid_distances": "As distancias entre pontos (%s, %s) e (%s, %s) não correspondem ao incremento de shape_dist_traveled. A distancia esperada é %.2f metros mas a distancia recebida é %.2f metros"
+        "invalid_distances": "As distancias entre pontos (%s, %s) e (%s, %s) não correspondem ao incremento de shape_dist_traveled. A distancia esperada é %.2f metros mas a distancia recebida é %.2f metros",
+        "ManyErrors": "Foram encontrados muitos erros em relação às distancias introduzidas nas shapes existindo varias shapes com um valor estimado (shape_dist_traveled) mais longe ou mais perto relativamente ao valor real por isso tem de ser verificado"
     },
     "parent_station_validation": {
         "forbidden": "O campo \"parent_station\" é proibido",

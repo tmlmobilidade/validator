@@ -23,9 +23,33 @@ func buildShapeFromConsistentPoint(point shapeConsistentPoint) *types.Shape {
 	}
 }
 
+type consistentViolation struct {
+	row         int
+	currentLat  float64
+	currentLon  float64
+	currentSeq  int
+	previousLat float64
+	previousLon float64
+	previousSeq int
+}
+
+func uniqueConsistentRows(rows []int) []int {
+	seen := make(map[int]struct{}, len(rows))
+	unique := make([]int, 0, len(rows))
+	for _, row := range rows {
+		if _, ok := seen[row]; ok {
+			continue
+		}
+		seen[row] = struct{}{}
+		unique = append(unique, row)
+	}
+	return unique
+}
+
 // ShapeCoordinatesDistanceValidation validates if consecutive points from the same shape are not too far apart.
 func ShapeCoordinatesConsistentValidation(shapes []types.Shape) {
 	shapeGroups := map[string][]shapeConsistentPoint{}
+	violations := []consistentViolation{}
 
 	for i, shape := range shapes {
 		if shape.ShapeId == nil || *shape.ShapeId == "" {
@@ -49,17 +73,54 @@ func ShapeCoordinatesConsistentValidation(shapes []types.Shape) {
 		})
 
 		for i := 1; i < len(shapeGroup); i++ {
+			if shapeGroup[i].sequence == 0 {
+				i++
+			}
 			prev := shapeGroup[i-1]
 			current := shapeGroup[i]
 			prevShape := buildShapeFromConsistentPoint(prev)
 			currentShape := buildShapeFromConsistentPoint(current)
+
 			closeEnough, _ := shapes_coordinates.ShapeIsCloseToOtherShape(prevShape, currentShape)
 			if closeEnough {
 				continue
 			}
 
-			ctx := lib.NewValidationContext("coordinates", "shapes.txt", "coordinates_consistent_validation", current.row, services.AppMessageService)
-			ctx.AddError(ctx.GetTranslatedMessage("coordinates_consistent_validation.invalid_consistent_distance", current.lat, current.lon, current.sequence, prev.lat, prev.lon, prev.sequence))
+			violations = append(violations, consistentViolation{
+				row:         current.row,
+				currentLat:  current.lat,
+				currentLon:  current.lon,
+				currentSeq:  current.sequence,
+				previousLat: prev.lat,
+				previousLon: prev.lon,
+				previousSeq: prev.sequence,
+			})
 		}
+	}
+
+	if len(violations) > 400 {
+		rows := make([]int, 0, len(violations))
+		for _, violation := range violations {
+			rows = append(rows, violation.row)
+		}
+
+		for _, row := range uniqueConsistentRows(rows) {
+			ctx := lib.NewValidationContext("coordinates", "shapes.txt", "coordinates_consistent_validation", row, services.AppMessageService)
+			ctx.AddError(ctx.GetTranslatedMessage("coordinates_consistent_validation.ManyErrors"))
+		}
+		return
+	}
+
+	for _, violation := range violations {
+		ctx := lib.NewValidationContext("coordinates", "shapes.txt", "coordinates_consistent_validation", violation.row, services.AppMessageService)
+		ctx.AddError(ctx.GetTranslatedMessage(
+			"coordinates_consistent_validation.invalid_consistent_distance",
+			violation.currentLat,
+			violation.currentLon,
+			violation.currentSeq,
+			violation.previousLat,
+			violation.previousLon,
+			violation.previousSeq,
+		))
 	}
 }
