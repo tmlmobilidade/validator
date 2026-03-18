@@ -11,7 +11,7 @@ import (
 	"main/types"
 )
 
-type shapeAllPointsDistance struct {
+type shapeDistancesPoint struct {
 	id           string
 	row          int
 	sequence     int
@@ -21,14 +21,13 @@ type shapeAllPointsDistance struct {
 }
 
 const maxAllPointsDistanceDeltaToleranceMeters = 20.0
-const shapeToleranceMeters = 100.0 // tolerance for final total diff (segment-by-segment uses rules)
 
-func getAllPointsDistanceToleranceMeters(rules *types.ShapesRules) float64 {
-	if rules == nil || rules.ShapeCoordinates.Options == nil || len(*rules.ShapeCoordinates.Options) == 0 {
+func getDistanceToleranceMeters(rules *types.ShapesRules) float64 {
+	if rules == nil || rules.ShapeDistances.Options == nil || len(*rules.ShapeDistances.Options) == 0 {
 		return maxAllPointsDistanceDeltaToleranceMeters
 	}
 
-	value, err := strconv.ParseFloat((*rules.ShapeCoordinates.Options)[0], 64)
+	value, err := strconv.ParseFloat((*rules.ShapeDistances.Options)[0], 64)
 	if err != nil || value < 0 {
 		return maxAllPointsDistanceDeltaToleranceMeters
 	}
@@ -36,7 +35,7 @@ func getAllPointsDistanceToleranceMeters(rules *types.ShapesRules) float64 {
 	return value
 }
 
-type allPointsDistanceViolation struct {
+type distancesViolation struct {
 	id             string
 	row            int
 	totalExpectedM float64 // shape_dist_traveled at end of block (meters)
@@ -44,20 +43,20 @@ type allPointsDistanceViolation struct {
 	diffMeters     float64
 }
 
-// ShapeAllPointsDistancesValidation validates total distance per block (from 0.0 reset to next 0.0 or end).
+// ShapeDistancesValidation validates total distance per block (from 0.0 reset to next 0.0 or end).
 // First checks each segment passes tolerance; if all pass, compares total real distance to expected shape_dist_traveled.
-func ShapeAllPointsDistancesValidation(shapes []types.Shape, rules *types.ShapesRules) {
-	severity := types.Severity(rules.ShapeCoordinates.Severity)
-	if rules != nil && rules.ShapeCoordinates.Severity != "" {
-		severity = types.Severity(rules.ShapeCoordinates.Severity)
+func ShapeDistancesValidation(shapes []types.Shape, rules *types.ShapesRules) {
+	severity := types.Severity(rules.ShapeDistances.Severity)
+	if rules != nil && rules.ShapeDistances.Severity != "" {
+		severity = types.Severity(rules.ShapeDistances.Severity)
 	}
 
-	shapeGroups := map[string][]shapeAllPointsDistance{}
-	toleranceMeters := getAllPointsDistanceToleranceMeters(rules)
-	violations := []allPointsDistanceViolation{}
+	shapeGroups := map[string][]shapeDistancesPoint{}
+	toleranceMeters := getDistanceToleranceMeters(rules)
+	violations := []distancesViolation{}
 
 	for i, shape := range shapes {
-		ctx := lib.NewValidationContext("all_points_distances", "shapes.txt", "all_points_distances_validation", i, services.AppMessageService)
+		ctx := lib.NewValidationContext("distances", "shapes.txt", "distances_validation", i, services.AppMessageService)
 		ctx.WithSeverity(severity)
 
 		if shape.ShapeId == nil || *shape.ShapeId == "" {
@@ -67,7 +66,7 @@ func ShapeAllPointsDistancesValidation(shapes []types.Shape, rules *types.Shapes
 			continue
 		}
 
-		shapeGroups[*shape.ShapeId] = append(shapeGroups[*shape.ShapeId], shapeAllPointsDistance{
+		shapeGroups[*shape.ShapeId] = append(shapeGroups[*shape.ShapeId], shapeDistancesPoint{
 			id:           *shape.ShapeId,
 			row:          i,
 			sequence:     *shape.ShapePtSequence,
@@ -148,11 +147,11 @@ func ShapeAllPointsDistancesValidation(shapes []types.Shape, rules *types.Shapes
 			totalExpectedM := shapes_coordinates.ShapeDistTraveledToMeters(*lastPt.distTraveled, maxDistTraveled)
 			diffMeters := math.Abs(totalRealM - totalExpectedM)
 
-			if diffMeters <= shapeToleranceMeters {
+			if diffMeters <= toleranceMeters {
 				continue
 			}
 
-			violations = append(violations, allPointsDistanceViolation{
+			violations = append(violations, distancesViolation{
 				id:             lastPt.id,
 				row:            lastPt.row,
 				totalExpectedM: totalExpectedM,
@@ -166,10 +165,10 @@ func ShapeAllPointsDistancesValidation(shapes []types.Shape, rules *types.Shapes
 	}
 
 	for _, violation := range violations {
-		ctx := lib.NewValidationContext("all_points_distances", "shapes.txt", "all_points_distances_validation", violation.row, services.AppMessageService)
+		ctx := lib.NewValidationContext("distances", "shapes.txt", "distances_validation", violation.row, services.AppMessageService)
 		ctx.WithSeverity(severity)
 		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage(
-			"all_points_distances_validation.invalid_distances",
+			"distances_validation.invalid_distances",
 			violation.id,
 			violation.totalExpectedM,
 			violation.totalRealM,

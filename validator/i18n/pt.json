@@ -502,7 +502,7 @@
         "invalid_distances": "As distâncias entre pontos (%s, %s) e (%s, %s) não correspondem ao incremento de shape_dist_traveled. A distância na shape_dist_traveled é %.2f metros mas a distância geométrica real é %.2f metros",
         "ManyErrors": "Foram encontrados muitos erros em relação às distâncias introduzidas no ficheiro shapes.txt, existem várias shapes com um valor estimado (shape_dist_traveled) mais longe ou mais perto relativamente ao valor real por isso tem de ser verificado"
     },
-    "all_points_distances_validation": {
+    "distances_validation": {
         "invalid_distances": "A distância total esperada (shape_dist_traveled) para a shape \"%s\" é %.2f metros, a distância geométrica real é %.2f metros (diferença: %.2f metros)"
     },
     "parent_station_validation": {

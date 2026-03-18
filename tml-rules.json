@@ -610,9 +610,18 @@
     "shape_pt_sequence": {
       "severity": "error"
     },
-    "shape_coordinates": {
+    "shape_points_coordinates_distances": {
       "options": [
         "1.0"
+      ],
+      "severity": "error"
+    },
+    "shape_points_coordinates_consistent": {
+      "severity": "error"
+    },
+    "shape_distances": {
+      "options": [
+        "100.0"
       ],
       "severity": "error"
     }

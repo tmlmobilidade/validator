@@ -501,7 +501,7 @@
         "invalid_distances": "The distances between points (%s, %s) and (%s, %s) do not correspond to the shape_dist_traveled increment. The distance in shape_dist_traveled is %.2f meters but the actual geometric distance is %.2f meters",
         "ManyErrors": "Many errors found in shapes.txt file, exist several shapes with an estimated value (shape_dist_traveled) further or closer relatively to the real value so it has to be verified"
     },
-    "all_points_distances_validation": {
+    "distances_validation": {
         "invalid_distances": "The total expected distance (shape_dist_traveled) for shape \"%s\" is %.2f meters, the actual geometric distance is %.2f meters (diff: %.2f meters)"
     },
     "parish_id_validation": {
