@@ -3,7 +3,6 @@ package stops
 import (
 	"main/lib"
 	"main/services"
-	municipality_coordinates "main/services/geo/municipalities"
 	shapes_coordinates "main/services/geo/shapes"
 	"main/types"
 )
@@ -25,18 +24,6 @@ func StopCoordinatesValidation(stop *types.Stop, row int, stopClosestShapeInfo m
 	// Other validations already handle mandatory presence and format checks.
 	if stop.StopLat == nil || stop.StopLon == nil {
 		return
-	}
-
-	if municipality_coordinates.MunicipalityCoordinatesEnabled() && stop.MunicipalityId != nil && *stop.MunicipalityId != "" {
-		expectedMunicipalityID, found, _ := municipality_coordinates.ResolveMunicipalityByCoordinates(*stop.StopLat, *stop.StopLon)
-		if !found {
-			ctx.AddError(ctx.GetTranslatedMessage("coordinates_validation.not_mapped", *stop.StopLat, *stop.StopLon))
-			return
-		}
-
-		if expectedMunicipalityID != *stop.MunicipalityId {
-			ctx.AddError(ctx.GetTranslatedMessage("coordinates_validation.invalid_municipality_id", *stop.StopLat, *stop.StopLon, expectedMunicipalityID, *stop.MunicipalityId))
-		}
 	}
 
 	if stop.StopId == nil || *stop.StopId == "" || stopClosestShapeInfo == nil {

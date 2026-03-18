@@ -11,12 +11,9 @@ import (
 	"main/validations"
 	file_validation "main/validations/files"
 	"os"
-	"path/filepath"
-	"strings"
 	"sync"
 
 	// Import all validation packages to trigger their init() functions
-	municipality_coordinates "main/services/geo/municipalities"
 	_ "main/validations/afetacao"
 	_ "main/validations/agency"
 	_ "main/validations/archives"
@@ -54,27 +51,6 @@ import (
 	_ "main/validations/trips"
 	_ "main/validations/vehicles"
 )
-
-func resolveMunicipalityCoordinatesPath(cliPath string) string {
-	if strings.TrimSpace(cliPath) != "" {
-		lib.AppLogger.Info("Using municipalities.json.")
-	}
-
-	candidates := []string{
-		"municipalities.json",
-		filepath.Join("..", "municipalities.json"),
-	}
-
-	for _, candidate := range candidates {
-		if _, err := os.Stat(candidate); err == nil {
-			lib.AppLogger.Info(fmt.Sprintf("Using municipality coordinates file: %s", candidate))
-			return candidate
-		}
-	}
-
-	lib.AppLogger.Info("Municipality coordinates file not found (checked: municipalities.json, ../municipalities.json). Coordinate-to-municipality validation will be skipped.")
-	return ""
-}
 
 func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *types.GtfsRules) {
 	// Create a wait group to wait for all validations to complete
@@ -116,20 +92,6 @@ func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *typ
 	tracker.End()
 }
 
-func preloadMunicipalityCoordinates(cliPath string) {
-	coordinatesPath := resolveMunicipalityCoordinatesPath(cliPath)
-	if coordinatesPath == "" {
-		// Ensure the service remains explicitly disabled when no file is available.
-		_ = municipality_coordinates.LoadMunicipalityCoordinatesFromFile("")
-		return
-	}
-
-	if err := municipality_coordinates.LoadMunicipalityCoordinatesFromFile(coordinatesPath); err != nil {
-		lib.AppLogger.Info(fmt.Sprintf("WARNING: failed to load municipality coordinates from %q: %v. Coordinate-to-municipality validation will be skipped.", coordinatesPath, err))
-		_ = municipality_coordinates.LoadMunicipalityCoordinatesFromFile("")
-	}
-}
-
 func runStartupOrchestrator() (*types.GtfsRules, error) {
 	// 0.1 Initialize CLI
 	services.AppCLI.Run()
@@ -140,10 +102,7 @@ func runStartupOrchestrator() (*types.GtfsRules, error) {
 		i18n.AppTranslator.SetLanguage(services.AppCLI.Options.RulesLang)
 	}
 
-	// 0.3 Pre-load optional municipality coordinates map.
-	preloadMunicipalityCoordinates(services.AppCLI.Options.MunicipalityCoordinatesPath)
-
-	// 0.4 Parse Rules
+	// 0.3 Parse Rules
 	rules, err := services.NewRulesParser(services.AppCLI.Options.RulesPath).ParseRules()
 	if err != nil {
 		return nil, fmt.Errorf("error parsing rules: %w", err)
