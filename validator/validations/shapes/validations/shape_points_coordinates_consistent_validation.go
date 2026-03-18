@@ -48,7 +48,7 @@ func uniquePointsCoordinatesConsistentRows(rows []int) []int {
 	return unique
 }
 
-// ShapeCoordinatesDistanceValidation validates if consecutive points from the same shape are not too far apart.
+// ShapePointsCoordinatesConsistentValidation validates if consecutive points from the same shape are not too far apart.
 func ShapePointsCoordinatesConsistentValidation(shapes []types.Shape, rules *types.ShapesRules) {
 	severity := types.Severity(rules.ShapePointsCoordinatesConsistent.Severity)
 	if rules != nil && rules.ShapePointsCoordinatesConsistent.Severity != "" {
