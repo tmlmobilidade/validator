@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - mostrar 
+      - mostrar-versao-do-validador-ao-validar-um-gtfs
     paths:
       - ".github/workflows/publish-wrapper.yaml"
       - "ts-wrapper/**/*"
