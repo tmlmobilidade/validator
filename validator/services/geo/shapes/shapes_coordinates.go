@@ -13,7 +13,7 @@ const segmentLength = 10.0
 const MaxStopDistanceToClosestShapeMeters = 100.0
 const MaxShapePointDistanceMeters = 1000.0
 
-type StopClosestShapeInfo struct {
+type StopClosestShapePointsInfo struct {
 	ShapeID           string
 	DistanceMeters    float64
 	ClosestShapePtLat float64
@@ -183,10 +183,10 @@ func ShapePointIsCloseToBeforeShapePoint(beforeShapePoint *types.Shape, shapePoi
 }
 
 // BuildStopClosestShapeDistanceMap builds the stop closest shape distance map
-func BuildStopClosestShapeDistanceMap(gtfs *types.Gtfs) (map[string]StopClosestShapeInfo, error) {
-	stopClosestShapeDistance := map[string]StopClosestShapeInfo{}
+func BuildStopClosestShapePointsDistanceMap(gtfs *types.Gtfs) (map[string]StopClosestShapePointsInfo, error) {
+	stopClosestShapePointsDistance := map[string]StopClosestShapePointsInfo{}
 	if gtfs == nil {
-		return stopClosestShapeDistance, nil
+		return stopClosestShapePointsDistance, nil
 	}
 
 	tripToShapeID := make(map[string]string)
@@ -329,7 +329,7 @@ func BuildStopClosestShapeDistanceMap(gtfs *types.Gtfs) (map[string]StopClosestS
 				}
 			}
 
-			stopClosestShapeDistance[rawStop.StopId] = StopClosestShapeInfo{
+			stopClosestShapePointsDistance[rawStop.StopId] = StopClosestShapePointsInfo{
 				ShapeID:           closestShapeID,
 				DistanceMeters:    minDistance,
 				ClosestShapePtLat: closestLat,
@@ -343,5 +343,5 @@ func BuildStopClosestShapeDistanceMap(gtfs *types.Gtfs) (map[string]StopClosestS
 		return nil, err
 	}
 
-	return stopClosestShapeDistance, nil
+	return stopClosestShapePointsDistance, nil
 }
