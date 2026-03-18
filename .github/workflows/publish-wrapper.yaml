@@ -82,9 +82,9 @@ jobs:
           echo "Building validator with version: $VERSION"
           bash compile.sh "$VERSION"
 
-      # - name: Commit Binaries to Releases
-      #   uses: EndBug/add-and-commit@v9
-      #   with:
-      #     add: 'bin/*'
-      #     message: 'chore: build validator binaries'
+      - name: Commit Binaries to Releases
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: 'bin/*'
+          message: 'chore: build validator binaries'
       
