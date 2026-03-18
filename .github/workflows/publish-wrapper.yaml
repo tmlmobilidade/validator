@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - production
+      - mostrar-versao-do-validador-ao-validar-um-gtfs
     paths:
       - ".github/workflows/publish-wrapper.yaml"
       - "ts-wrapper/**/*"
@@ -66,21 +67,21 @@ jobs:
   # # # # # # # # # # # # # # # # # # # # #
   # # # # # # # # # # # # # # # # # # # # #
 
-  release-validator:
-    name: Release Validator Binaries
-    needs: version-number
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  # release-validator:
+  #   name: Release Validator Binaries
+  #   needs: version-number
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-      - name: Build Binaries
-        shell: bash
-        run: sh compile.sh ${{ needs.version-number.outputs.version_number }}
+  #     - name: Build Binaries
+  #       shell: bash
+  #       run: sh compile.sh ${{ needs.version-number.outputs.version_number }}
 
-      - name: Commit Binaries to Releases
-        uses: EndBug/add-and-commit@v9
-        with:
-          add: 'bin/*'
-          message: 'chore: build validator binaries'
+  #     - name: Commit Binaries to Releases
+  #       uses: EndBug/add-and-commit@v9
+  #       with:
+  #         add: 'bin/*'
+  #         message: 'chore: build validator binaries'
       
