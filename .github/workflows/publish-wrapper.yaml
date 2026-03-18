@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - production
+      - mostrar-versao-do-validador-ao-validar-um-gtfs
     paths:
       - ".github/workflows/publish-wrapper.yaml"
       - "ts-wrapper/**/*"
@@ -76,7 +77,10 @@ jobs:
 
       - name: Build Binaries
         shell: bash
-        run: sh compile.sh ${{ needs.version-number.outputs.version_number }}
+        run: |
+          VERSION="${{ needs.version-number.outputs.version_number }}"
+          echo "Building validator with version: $VERSION"
+          bash compile.sh "$VERSION"
 
       - name: Commit Binaries to Releases
         uses: EndBug/add-and-commit@v9

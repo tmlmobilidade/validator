@@ -10,7 +10,9 @@ if [ "$1" ]; then
 fi
 
 # LDFLAGS for version injection at build time (default 0.0.0)
-LDFLAGS=(-ldflags "-X main/config.Version=${1:-0.0.0}")
+VERSION="${1:-0.0.0}"
+echo "Injecting version: $VERSION"
+LDFLAGS=(-ldflags "-X main/config.Version=$VERSION")
 
 # Check for folder bin and create it if it doesn't exist
 if [ ! -d "bin" ]; then
