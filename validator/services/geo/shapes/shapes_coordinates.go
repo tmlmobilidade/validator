@@ -49,15 +49,13 @@ func ShapeDistTraveledToMeters(value float64, maxInShape float64) float64 {
 
 // hasConsecutiveShapeDistanceInconsistency checks if the distance between two consecutive shapes is greater than the maximum allowed distance
 func hasConsecutiveShapeDistanceInconsistency(orderedCoordinates []ShapesDistance) bool {
-	if len(orderedCoordinates) < 2 {
+	if len(orderedCoordinates) != 2 {
 		return false
 	}
 
-	for i := 1; i < len(orderedCoordinates); i++ {
-		distanceMeters := getDistanceBetweenPositions(orderedCoordinates[i-1], orderedCoordinates[i])
-		if distanceMeters > MaxShapePointDistanceMeters {
-			return true
-		}
+	distanceMeters := getDistanceBetweenPositions(orderedCoordinates[0], orderedCoordinates[1])
+	if distanceMeters > MaxShapePointDistanceMeters {
+		return true
 	}
 
 	return false
@@ -130,7 +128,7 @@ func ChunkShapesDistances(distances []ShapesDistance) []ShapesDistance {
 	result := make([]ShapesDistance, 0, nodeCount+1)
 	segIdx := 0
 
-	for i := 0; i < nodeCount; i++ {
+	for i := range nodeCount {
 		targetDist := segmentLength * float64(i)
 
 		for segIdx < len(coordinates)-2 && cumDist[segIdx+1] < targetDist {
@@ -157,9 +155,9 @@ func ChunkShapesDistances(distances []ShapesDistance) []ShapesDistance {
 }
 
 // ShapePointIsCloseToBeforeShapePoint checks if the shape point is close to the before shape point
-func ShapePointIsCloseToBeforeShapePoint(beforeShapePoint *types.Shape, shapePoint *types.Shape) (bool, error) {
+func ShapePointIsCloseToBeforeShapePoint(beforeShapePoint *types.Shape, shapePoint *types.Shape) bool {
 	if shapePoint == nil || beforeShapePoint == nil || shapePoint.ShapePtLat == nil || shapePoint.ShapePtLon == nil || beforeShapePoint.ShapePtLat == nil || beforeShapePoint.ShapePtLon == nil {
-		return false, nil
+		return false
 	}
 
 	beforeShapePointCoordinate := ShapesDistance{
@@ -175,11 +173,11 @@ func ShapePointIsCloseToBeforeShapePoint(beforeShapePoint *types.Shape, shapePoi
 	coordinatesToValidate := []ShapesDistance{shapePointCoordinate, beforeShapePointCoordinate}
 
 	if hasConsecutiveShapeDistanceInconsistency(coordinatesToValidate) {
-		return false, nil
+		return false
 	}
 
 	distanceMeters := getDistanceBetweenPositions(shapePointCoordinate, beforeShapePointCoordinate)
-	return distanceMeters <= MaxShapePointDistanceMeters, nil
+	return distanceMeters <= MaxShapePointDistanceMeters
 }
 
 // BuildStopClosestShapeDistanceMap builds the stop closest shape distance map
