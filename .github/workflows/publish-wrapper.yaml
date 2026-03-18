@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - production
+      - mostrar 
     paths:
       - ".github/workflows/publish-wrapper.yaml"
       - "ts-wrapper/**/*"
@@ -28,11 +28,12 @@ jobs:
           version="$(date +%Y%m%d).$(date +%H%M).$(date +%S)"
           echo "Generated version: $version"
           echo "version_number=$version" >> "$GITHUB_OUTPUT"
-    outputs:
-      version_number: ${{ steps.generate-version-number.outputs.version_number }}
-
-  # # # # # # # # # # # # # # # # # # # # #
-  # # # # # # # # # # # # # # # # # # # # #
+          echo "$version" > version.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: version
+          path: version.txt
+ # # # # # # # # # # # # # # # # # #
 
   ts-wrapper:
     name: 'Publish TS Wrapper'
@@ -78,12 +79,13 @@ jobs:
         shell: bash
         run: |
           VERSION="${{ needs.version-number.outputs.version_number }}"
-          echo "Building validator with version: $VERSION"
-          bash compile.sh "$VERSION"
-
-      - name: Commit Binaries to Releases
-        uses: EndBug/add-and-commit@v9
+          ec      - uses: actions/download-artifact@v4
         with:
-          add: 'bin/*'
-          message: 'chore: build validator binaries'
+          name: version
+      - name: Build Binaries
+        shell: bash
+        run: |
+          VERSION=$(cat version.txt)
+        add: 'bin/*'
+        message: 'chore: build validator binaries'
       
