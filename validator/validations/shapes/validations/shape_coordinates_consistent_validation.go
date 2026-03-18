@@ -10,6 +10,7 @@ import (
 )
 
 type shapeConsistentPoint struct {
+	id       string
 	row      int
 	sequence int
 	lat      float64
@@ -24,6 +25,7 @@ func buildShapeFromConsistentPoint(point shapeConsistentPoint) *types.Shape {
 }
 
 type consistentViolation struct {
+	id          string
 	row         int
 	currentLat  float64
 	currentLon  float64
@@ -115,6 +117,7 @@ func ShapeCoordinatesConsistentValidation(shapes []types.Shape) {
 		ctx := lib.NewValidationContext("coordinates", "shapes.txt", "coordinates_consistent_validation", violation.row, services.AppMessageService)
 		ctx.AddError(ctx.GetTranslatedMessage(
 			"coordinates_consistent_validation.invalid_consistent_distance",
+			violation.id,
 			violation.currentLat,
 			violation.currentLon,
 			violation.currentSeq,

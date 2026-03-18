@@ -63,4 +63,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	// Validate shape coordinates distances
 	validations.ShapeCoordinatesDistancesValidation(allShapes, &rules.Shapes)
 
+	// Validate shape all points distances
+	validations.ShapeAllPointsDistancesValidation(allShapes, &rules.Shapes)
+
 }
