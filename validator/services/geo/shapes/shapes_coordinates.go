@@ -10,7 +10,7 @@ import (
 
 const earthRadiusMeters = 6371000.0
 const segmentLength = 10.0
-const MaxStopDistanceToClosestShapeMeters = 100.0
+const MaxStopDistanceToClosestShapePointMeters = 100.0
 const MaxShapePointDistanceMeters = 1000.0
 
 type StopClosestShapePointsInfo struct {

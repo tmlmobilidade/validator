@@ -18,7 +18,7 @@ import (
 Validate if the stop_lat and stop_lon are valid.
 */
 
-func StopCoordinatesValidation(stop *types.Stop, row int, stopClosestShapeInfo map[string]shapes_coordinates.StopClosestShapeInfo, rules *types.StopsRules) {
+func StopCoordinatesValidation(stop *types.Stop, row int, stopClosestShapeInfo map[string]shapes_coordinates.StopClosestShapePointsInfo, rules *types.StopsRules) {
 	ctx := lib.NewValidationContext("coordinates", "stops.txt", "coordinates_validation", row, services.AppMessageService)
 	if rules != nil && rules.StopCoordinates.Severity != "" {
 		ctx.WithSeverity(rules.StopCoordinates.Severity)
@@ -38,7 +38,7 @@ func StopCoordinatesValidation(stop *types.Stop, row int, stopClosestShapeInfo m
 		return
 	}
 
-	if info.DistanceMeters > shapes_coordinates.MaxStopDistanceToClosestShapeMeters {
+	if info.DistanceMeters > shapes_coordinates.MaxStopDistanceToClosestShapePointMeters {
 		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("coordinates_validation.invalid_distance_to_shape", *stop.StopLat, *stop.StopLon, info.ShapeID, info.ClosestShapePtSeq, info.ClosestShapePtLat, info.ClosestShapePtLon, info.DistanceMeters))
 	}
 }

@@ -17,8 +17,8 @@ func init() {
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Validations for stops.txt")
 
-	stopClosestShapeInfo := map[string]shapes_coordinates.StopClosestShapeInfo{}
-	closestShapeInfoMap, err := shapes_coordinates.BuildStopClosestShapeDistanceMap(&gtfs)
+	stopClosestShapeInfo := map[string]shapes_coordinates.StopClosestShapePointsInfo{}
+	closestShapeInfoMap, err := shapes_coordinates.BuildStopClosestShapePointsDistanceMap(&gtfs)
 	if err != nil {
 		lib.AppLogger.Error(fmt.Sprintf("Error pre-loading stop closest shape distance map: %v", err))
 	} else {
