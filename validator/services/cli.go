@@ -3,6 +3,7 @@ package services
 import (
 	"flag"
 	"fmt"
+	"main/config"
 	"os"
 	"slices"
 )
@@ -66,8 +67,7 @@ func (c *CLI) Run() {
 	c.Parse()
 
 	if c.Options.Version {
-		const version = "0.0.0"
-		fmt.Printf("GTFS Validator v%s\n", version)
+		fmt.Printf("GTFS Validator v%s\n", config.Version)
 		os.Exit(0)
 	}
 
