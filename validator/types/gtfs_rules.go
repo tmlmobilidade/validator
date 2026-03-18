@@ -203,13 +203,13 @@ type FareMediaRules struct {
 }
 
 type ShapesRules struct {
-	File               Severity   `json:"_file"`
-	ShapeId            RuleConfig `json:"shape_id"`
-	ShapePtLat         RuleConfig `json:"shape_pt_lat"`
-	ShapePtLon         RuleConfig `json:"shape_pt_lon"`
-	ShapePtSequence    RuleConfig `json:"shape_pt_sequence"`
-	ShapeDistTraveled  RuleConfig `json:"shape_dist_traveled"`
-	ShapeDistTolerance RuleConfig `json:"shape_dist_tolerance"`
+	File              Severity   `json:"_file"`
+	ShapeId           RuleConfig `json:"shape_id"`
+	ShapePtLat        RuleConfig `json:"shape_pt_lat"`
+	ShapePtLon        RuleConfig `json:"shape_pt_lon"`
+	ShapePtSequence   RuleConfig `json:"shape_pt_sequence"`
+	ShapeDistTraveled RuleConfig `json:"shape_dist_traveled"`
+	ShapeCoordinates  RuleConfig `json:"shape_coordinates"`
 }
 
 type FrequenciesRules struct {

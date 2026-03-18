@@ -610,7 +610,7 @@
     "shape_pt_sequence": {
       "severity": "error"
     },
-    "shape_dist_tolerance": {
+    "shape_coordinates": {
       "options": [
         "1.0"
       ],

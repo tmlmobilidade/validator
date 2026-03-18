@@ -22,11 +22,11 @@ type shapeDistancePoint struct {
 const maxDistanceDeltaToleranceMeters = 20.0
 
 func getShapeDistanceToleranceMeters(rules *types.ShapesRules) float64 {
-	if rules == nil || rules.ShapeDistTolerance.Options == nil || len(*rules.ShapeDistTolerance.Options) == 0 {
+	if rules == nil || rules.ShapeCoordinates.Options == nil || len(*rules.ShapeCoordinates.Options) == 0 {
 		return maxDistanceDeltaToleranceMeters
 	}
 
-	value, err := strconv.ParseFloat((*rules.ShapeDistTolerance.Options)[0], 64)
+	value, err := strconv.ParseFloat((*rules.ShapeCoordinates.Options)[0], 64)
 	if err != nil || value < 0 {
 		return maxDistanceDeltaToleranceMeters
 	}
@@ -61,9 +61,9 @@ func uniqueDistanceRows(rows []int) []int {
 // ShapeCoordinatesDistancesValidation validates if the geometric distance between
 // consecutive points matches the shape_dist_traveled increment.
 func ShapeCoordinatesDistancesValidation(shapes []types.Shape, rules *types.ShapesRules) {
-	severity := types.SEVERITY_ERROR
-	if rules != nil && rules.ShapeDistTolerance.Severity != "" {
-		severity = types.Severity(rules.ShapeDistTolerance.Severity)
+	severity := types.Severity(rules.ShapeCoordinates.Severity)
+	if rules != nil && rules.ShapeCoordinates.Severity != "" {
+		severity = types.Severity(rules.ShapeCoordinates.Severity)
 	}
 
 	shapeGroups := map[string][]shapeDistancePoint{}

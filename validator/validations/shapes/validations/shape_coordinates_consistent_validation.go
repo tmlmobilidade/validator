@@ -49,7 +49,12 @@ func uniqueConsistentRows(rows []int) []int {
 }
 
 // ShapeCoordinatesDistanceValidation validates if consecutive points from the same shape are not too far apart.
-func ShapeCoordinatesConsistentValidation(shapes []types.Shape) {
+func ShapeCoordinatesConsistentValidation(shapes []types.Shape, rules *types.ShapesRules) {
+	severity := types.Severity(rules.ShapeCoordinates.Severity)
+	if rules != nil && rules.ShapeCoordinates.Severity != "" {
+		severity = types.Severity(rules.ShapeCoordinates.Severity)
+	}
+
 	shapeGroups := map[string][]shapeConsistentPoint{}
 	violations := []consistentViolation{}
 
@@ -62,6 +67,7 @@ func ShapeCoordinatesConsistentValidation(shapes []types.Shape) {
 		}
 
 		shapeGroups[*shape.ShapeId] = append(shapeGroups[*shape.ShapeId], shapeConsistentPoint{
+			id:       *shape.ShapeId,
 			row:      i,
 			sequence: *shape.ShapePtSequence,
 			lat:      float64(*shape.ShapePtLat),
@@ -108,14 +114,16 @@ func ShapeCoordinatesConsistentValidation(shapes []types.Shape) {
 
 		for _, row := range uniqueConsistentRows(rows) {
 			ctx := lib.NewValidationContext("coordinates", "shapes.txt", "coordinates_consistent_validation", row, services.AppMessageService)
-			ctx.AddError(ctx.GetTranslatedMessage("coordinates_consistent_validation.ManyErrors"))
+			ctx.WithSeverity(severity)
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("coordinates_consistent_validation.ManyErrors"))
 		}
 		return
 	}
 
 	for _, violation := range violations {
 		ctx := lib.NewValidationContext("coordinates", "shapes.txt", "coordinates_consistent_validation", violation.row, services.AppMessageService)
-		ctx.AddError(ctx.GetTranslatedMessage(
+		ctx.WithSeverity(severity)
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage(
 			"coordinates_consistent_validation.invalid_consistent_distance",
 			violation.id,
 			violation.currentLat,

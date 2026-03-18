@@ -58,7 +58,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	validations.ShapeSequenceValidation(allShapes)
 
 	// Validate shape coordinates consistency
-	validations.ShapeCoordinatesConsistentValidation(allShapes)
+	validations.ShapeCoordinatesConsistentValidation(allShapes, &rules.Shapes)
 
 	// Validate shape coordinates distances
 	validations.ShapeCoordinatesDistancesValidation(allShapes, &rules.Shapes)
