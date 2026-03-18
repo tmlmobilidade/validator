@@ -39,10 +39,7 @@
 		"test:watch": "vitest"
 	},
 	"dependencies": {
-		"@tmlmobilidade/types": "20260302.1453.8",
-		"@turf/boolean-valid": "^7.3.4",
-		"@turf/helpers": "^7.3.4",
-		"mongodb": "6.19.0"
+		"@tmlmobilidade/types": "20260302.1453.8"
 	},
 	"devDependencies": {
 		"@tmlmobilidade/eslint": "20260302.1453.8",
