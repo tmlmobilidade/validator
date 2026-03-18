@@ -3,10 +3,12 @@ package services
 import (
 	"flag"
 	"fmt"
-	"main/config"
 	"os"
 	"slices"
 )
+
+// Version is set at build time via -ldflags "-X main/services.Version=..."
+var Version = "0.0.0"
 
 type CliOptions struct {
 	InputPath  string // Path to the GTFS zip file
@@ -67,7 +69,8 @@ func (c *CLI) Run() {
 	c.Parse()
 
 	if c.Options.Version {
-		fmt.Printf("GTFS Validator v%s\n", config.Version)
+		const version = "0.0.0"
+		fmt.Printf("GTFS Validator v%s\n", version)
 		os.Exit(0)
 	}
 

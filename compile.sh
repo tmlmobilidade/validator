@@ -1,18 +1,10 @@
 #!/bin/bash
 
-# Modify the version number in the validator/services/cli.go file if a version number is provided
-if [ "$1" ]; then
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' 's/const version = "0.0.0"/const version = "'"$1"'"/' validator/services/cli.go
-    else
-        sed -i 's/const version = "0.0.0"/const version = "'"$1"'"/' validator/services/cli.go
-    fi
+# LDFLAGS for version injection at build time (from workflow or manual build)
+LDFLAGS=""
+if [ -n "$1" ]; then
+    LDFLAGS="-ldflags \"-X main/config.Version=$1\""
 fi
-
-# LDFLAGS for version injection at build time (default 0.0.0)
-VERSION="${1:-0.0.0}"
-echo "Injecting version: $VERSION"
-LDFLAGS=(-ldflags "-X main/config.Version=$VERSION")
 
 # Check for folder bin and create it if it doesn't exist
 if [ ! -d "bin" ]; then
@@ -22,19 +14,19 @@ fi
 cd validator
 
 # Compile the validator for linux
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build "${LDFLAGS[@]}" -o ../bin/validator-linux-amd64 ./main.go
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ../bin/validator-linux-amd64 ./main.go
 
 # Compile the validator for linux arm64
-CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build "${LDFLAGS[@]}" -o ../bin/validator-linux-arm64 ./main.go
+CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o ../bin/validator-linux-arm64 ./main.go
 
 # Compile the validator for darwin x86_64
-CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build "${LDFLAGS[@]}" -o ../bin/validator-darwin-amd64 ./main.go
+CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ../bin/validator-darwin-amd64 ./main.go
 
 # Compile the validator for darwin arm64
-CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build "${LDFLAGS[@]}" -o ../bin/validator-darwin-arm64 ./main.go
+CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o ../bin/validator-darwin-arm64 ./main.go
 
 # Compile the validator for windows x86_64
-CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build "${LDFLAGS[@]}" -o ../bin/validator.exe ./main.go
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ../bin/validator.exe ./main.go
 
 # Allow all users to execute the validator
 chmod +x ../bin/validator-linux-amd64
