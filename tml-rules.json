@@ -832,6 +832,9 @@
     },
     "zone_id": {
       "severity": "ignore"
+    },
+    "stop_coordinates": {
+      "severity": "error"
     }
   },
   "transfers": {

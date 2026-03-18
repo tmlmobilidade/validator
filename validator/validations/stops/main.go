@@ -106,7 +106,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		validations.MunicipalityIdValidation(&stop, row, stopRules)
 
 		// Validate stop coordinates
-		validations.StopCoordinatesValidation(&stop, row, stopClosestShapeInfo)
+		validations.StopCoordinatesValidation(&stop, row, stopClosestShapeInfo, stopRules)
 
 		// Validate parish_id
 		validations.ParishIdValidation(&stop, row, stopRules)

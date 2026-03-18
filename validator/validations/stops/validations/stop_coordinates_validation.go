@@ -18,8 +18,11 @@ import (
 Validate if the stop_lat and stop_lon are valid.
 */
 
-func StopCoordinatesValidation(stop *types.Stop, row int, stopClosestShapeInfo map[string]shapes_coordinates.StopClosestShapeInfo) {
+func StopCoordinatesValidation(stop *types.Stop, row int, stopClosestShapeInfo map[string]shapes_coordinates.StopClosestShapeInfo, rules *types.StopsRules) {
 	ctx := lib.NewValidationContext("coordinates", "stops.txt", "coordinates_validation", row, services.AppMessageService)
+	if rules != nil && rules.StopCoordinates.Severity != "" {
+		ctx.WithSeverity(rules.StopCoordinates.Severity)
+	}
 
 	// Other validations already handle mandatory presence and format checks.
 	if stop.StopLat == nil || stop.StopLon == nil {
@@ -36,6 +39,6 @@ func StopCoordinatesValidation(stop *types.Stop, row int, stopClosestShapeInfo m
 	}
 
 	if info.DistanceMeters > shapes_coordinates.MaxStopDistanceToClosestShapeMeters {
-		ctx.AddError(ctx.GetTranslatedMessage("coordinates_validation.invalid_distance_to_shape", *stop.StopLat, *stop.StopLon, info.ShapeID, info.ClosestShapePtSeq, info.ClosestShapePtLat, info.ClosestShapePtLon, info.DistanceMeters))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("coordinates_validation.invalid_distance_to_shape", *stop.StopLat, *stop.StopLon, info.ShapeID, info.ClosestShapePtSeq, info.ClosestShapePtLat, info.ClosestShapePtLon, info.DistanceMeters))
 	}
 }

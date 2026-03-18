@@ -8,13 +8,12 @@ import (
 )
 
 type CliOptions struct {
-	InputPath                   string // Path to the GTFS zip file
-	MunicipalityCoordinatesPath string // Path to municipality coordinates JSON file
-	OutputPath                  string // Path to the output file
-	LogLevel                    string // Log level (debug, info, error)
-	RulesPath                   string // Path to the rules file
-	RulesLang                   string // Rules language (en, pt)
-	Version                     bool   // Show version
+	InputPath  string // Path to the GTFS zip file
+	OutputPath string // Path to the output file
+	LogLevel   string // Log level (debug, info, error)
+	RulesPath  string // Path to the rules file
+	RulesLang  string // Rules language (en, pt)
+	Version    bool   // Show version
 }
 
 type CLI struct {
@@ -37,7 +36,6 @@ func (c *CLI) Parse() {
 	flag.StringVar(&c.Options.OutputPath, "out", "", "Path to the output file")
 	flag.StringVar(&c.Options.OutputPath, "o", "", "Path to the output file")
 	flag.StringVar(&c.Options.LogLevel, "log", "info", "Log level (debug, info, error)")
-	flag.StringVar(&c.Options.MunicipalityCoordinatesPath, "municipality_coordinates", "", "Path to municipality coordinates JSON file")
 	flag.StringVar(&c.Options.RulesPath, "rules", "", "Path to the rules file")
 	flag.StringVar(&c.Options.RulesLang, "lang", "en", "Rules language (en, pt)")
 	flag.BoolVar(&c.Options.Version, "v", false, "Show version")
