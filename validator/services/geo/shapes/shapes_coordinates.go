@@ -54,7 +54,16 @@ func (d *ShapeChunkedData) FindClosestOriginalPoint(stopPoint types.Coordinates)
 	return seq, lat, lon
 }
 
-// hasConsecutiveShapeDistanceInconsistency checks if the distance between two consecutive shapes is greater than the maximum allowed distance
+// hasConsecutiveShapeDistanceInconsistency checks if there is a large distance between two consecutive shape coordinates.
+// It returns true if the distance between the two points exceeds MAX_SHAPE_POINT_DISTANCE_METERS.
+//
+// Args:
+//
+//	orderedCoordinates ([]types.Coordinates): A slice containing exactly two consecutive shape coordinates.
+//
+// Returns:
+//
+//	bool: True if the distance between the consecutive coordinates is inconsistent (too large), false otherwise.
 func hasConsecutiveShapeDistanceInconsistency(orderedCoordinates []types.Coordinates) bool {
 	if len(orderedCoordinates) != 2 {
 		return false
@@ -68,38 +77,70 @@ func hasConsecutiveShapeDistanceInconsistency(orderedCoordinates []types.Coordin
 	return false
 }
 
-// ShapePointIsCloseToBeforeShapePoint checks if the shape point is close to the before shape point
+// ShapePointIsCloseToBeforeShapePoint checks if two consecutive GTFS shape points are "close" to each other,
+// as defined by the MAX_SHAPE_POINT_DISTANCE_METERS constant.
+// It returns true if the points are not too far apart, false otherwise.
+//
+// Args:
+//
+//	beforeShapePoint (*types.Shape): The previous shape point (must not be nil, and lat/lon fields must not be nil).
+//	shapePoint (*types.Shape): The current shape point (must not be nil, and lat/lon fields must not be nil).
+//
+// Returns:
+//
+//	bool: True if the distance between the points is less than or equal to MAX_SHAPE_POINT_DISTANCE_METERS and
+//	      the points are not considered to have an inconsistent gap according to hasConsecutiveShapeDistanceInconsistency,
+//	      false otherwise.
 func ShapePointIsCloseToBeforeShapePoint(beforeShapePoint *types.Shape, shapePoint *types.Shape) bool {
-	if shapePoint == nil || beforeShapePoint == nil || shapePoint.ShapePtLat == nil || shapePoint.ShapePtLon == nil || beforeShapePoint.ShapePtLat == nil || beforeShapePoint.ShapePtLon == nil {
+	// Defensive check for nil pointers and fields
+	if shapePoint == nil || beforeShapePoint == nil ||
+		shapePoint.ShapePtLat == nil || shapePoint.ShapePtLon == nil ||
+		beforeShapePoint.ShapePtLat == nil || beforeShapePoint.ShapePtLon == nil {
 		return false
 	}
 
+	// Convert GTFS shape points to types.Coordinates
 	beforeShapePointCoordinate := types.Coordinates{
 		Lat: float64(*beforeShapePoint.ShapePtLat),
 		Lng: float64(*beforeShapePoint.ShapePtLon),
 	}
-
 	shapePointCoordinate := types.Coordinates{
 		Lat: float64(*shapePoint.ShapePtLat),
 		Lng: float64(*shapePoint.ShapePtLon),
 	}
 
-	coordinatesToValidate := []types.Coordinates{shapePointCoordinate, beforeShapePointCoordinate}
-
+	// Validate there is no excessive jump between consecutive points
+	coordinatesToValidate := []types.Coordinates{
+		shapePointCoordinate,
+		beforeShapePointCoordinate,
+	}
 	if hasConsecutiveShapeDistanceInconsistency(coordinatesToValidate) {
 		return false
 	}
 
+	// Check if distance between points is within allowed threshold
 	distanceMeters := lib.HaversineDistance(shapePointCoordinate, beforeShapePointCoordinate)
 	return distanceMeters <= MAX_SHAPE_POINT_DISTANCE_METERS
 }
 
-// BuildShapeChunkedData builds chunked coordinates and original points from shape coordinates.
-// Used to populate the shape cache for performance.
+// BuildShapeChunkedData constructs shape chunk data by sorting points, parsing their coordinates,
+// and densifying the shape into regularly spaced segments.
+//
+// Args:
+//
+//	points ([]types.ShapeCoordinatesValidation): GTFS shape point records (possibly unsorted).
+//
+// Returns:
+//
+//	*ShapeChunkedData:  Pointer to a data struct including the densified chunked coordinates
+//	                    and the original points with GTFS sequence number.
+//	nil:                If input empty or no valid coordinates parsed.
 func BuildShapeChunkedData(points []types.ShapeCoordinatesValidation) *ShapeChunkedData {
 	if len(points) == 0 {
 		return nil
 	}
+
+	// First, sort input by shape_pt_sequence as integer ascending
 	sorted := make([]types.ShapeCoordinatesValidation, len(points))
 	copy(sorted, points)
 	sort.Slice(sorted, func(i, j int) bool {
@@ -108,25 +149,34 @@ func BuildShapeChunkedData(points []types.ShapeCoordinatesValidation) *ShapeChun
 		return seqI < seqJ
 	})
 
+	// Parse valid coordinates and collect both ordered coordinates and original sequences
 	orderedCoordinates := make([]types.Coordinates, 0, len(sorted))
 	origPoints := make([]shapePointWithSequence, 0, len(sorted))
 	for _, p := range sorted {
 		lat, err := strconv.ParseFloat(p.ShapePtLat, 64)
 		if err != nil {
-			continue
+			continue // skip invalid latitude
 		}
 		lon, err := strconv.ParseFloat(p.ShapePtLon, 64)
 		if err != nil {
-			continue
+			continue // skip invalid longitude
 		}
 		seq, _ := strconv.Atoi(p.ShapePtSeq)
 		coord := types.Coordinates{Lat: lat, Lng: lon}
 		orderedCoordinates = append(orderedCoordinates, coord)
 		origPoints = append(origPoints, shapePointWithSequence{sequence: seq, coordinate: coord})
 	}
+
+	// Return nil if no valid points were parsed
 	if len(orderedCoordinates) == 0 {
 		return nil
 	}
+
+	// Densify the shape using lib.ChunkCoordinates (gap-filling interpolation)
 	chunked := lib.ChunkCoordinates(orderedCoordinates, SEGMENT_LENGTH)
-	return &ShapeChunkedData{ChunkedCoordinates: chunked, OriginalPoints: origPoints}
+
+	return &ShapeChunkedData{
+		ChunkedCoordinates: chunked,
+		OriginalPoints:     origPoints,
+	}
 }
