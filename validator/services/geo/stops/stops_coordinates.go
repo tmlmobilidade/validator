@@ -70,18 +70,18 @@ func BuildStopClosestShapePointsDistanceMapFromCache(
 					closestShapeID = shapeID
 					closestCoord = coordinate
 					foundDistance = true
-					if distance < shapes_coordinates.MaxStopDistanceToClosestShapePointMeters {
+					if distance < shapes_coordinates.MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS {
 						break
 					}
 				}
 			}
-			if foundDistance && minDistance < shapes_coordinates.MaxStopDistanceToClosestShapePointMeters {
+			if foundDistance && minDistance < shapes_coordinates.MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS {
 				break
 			}
 		}
 
 		if foundDistance {
-			if minDistance < shapes_coordinates.MaxStopDistanceToClosestShapePointMeters {
+			if minDistance < shapes_coordinates.MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS {
 				continue
 			}
 			closestSeq := 0
@@ -110,7 +110,7 @@ func StopShapeCacheKey(stopID, shapeID string) string {
 }
 
 // BuildStopClosestShapePointsDistanceMapPerStopShape builds a cache of stop-to-shape distance
-// violations keyed by "stop_id|shape_id". Only stores entries where distance > MaxStopDistanceToClosestShapePointMeters.
+// violations keyed by "stop_id|shape_id". Only stores entries where distance > MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS.
 // Used for performance: compute once for all unique (stop, shape) pairs instead of per-trip.
 func BuildStopClosestShapePointsDistanceMapPerStopShape(
 	stops []types.StopCoordinatesValidation,
@@ -156,13 +156,13 @@ func BuildStopClosestShapePointsDistanceMapPerStopShape(
 					minDistance = distance
 					closestCoord = coordinate
 					foundDistance = true
-					if distance < shapes_coordinates.MaxStopDistanceToClosestShapePointMeters {
+					if distance < shapes_coordinates.MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS {
 						break
 					}
 				}
 			}
 
-			if foundDistance && minDistance > shapes_coordinates.MaxStopDistanceToClosestShapePointMeters {
+			if foundDistance && minDistance > shapes_coordinates.MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS {
 				closestSeq := 0
 				closestLat := closestCoord.ShapePtLat
 				closestLon := closestCoord.ShapePtLon

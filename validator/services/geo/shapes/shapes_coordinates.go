@@ -8,10 +8,10 @@ import (
 	"main/types"
 )
 
-const earthRadiusMeters = 6371000.0
-const segmentLength = 50.0 // 50m segments reduce Haversine calls 5x vs 10m while still validating 100m stop distance
-const MaxStopDistanceToClosestShapePointMeters = 100.0
-const MaxShapePointDistanceMeters = 1000.0
+const EARTH_RADIUS_METERS = 6371000.0
+const SEGMENT_LENGTH = 50.0 // 50m segments reduce Haversine calls 5x vs 10m while still validating 100m stop distance
+const MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS = 100.0
+const MAX_SHAPE_POINT_DISTANCE_METERS = 1000.0
 
 const shapeDistTraveledKilometersThreshold = 800.0
 
@@ -62,7 +62,7 @@ func hasConsecutiveShapeDistanceInconsistency(orderedCoordinates []types.ShapesD
 	}
 
 	distanceMeters := getDistanceBetweenPositions(orderedCoordinates[0], orderedCoordinates[1])
-	if distanceMeters > MaxShapePointDistanceMeters {
+	if distanceMeters > MAX_SHAPE_POINT_DISTANCE_METERS {
 		return true
 	}
 
@@ -83,7 +83,7 @@ func getDistanceBetweenPositions(a, b types.ShapesDistance) float64 {
 	sinLon := math.Sin(dLon / 2)
 	h := sinLat*sinLat + math.Cos(lat1)*math.Cos(lat2)*sinLon*sinLon
 
-	return 2 * earthRadiusMeters * math.Atan2(math.Sqrt(h), math.Sqrt(1-h))
+	return 2 * EARTH_RADIUS_METERS * math.Atan2(math.Sqrt(h), math.Sqrt(1-h))
 }
 
 // GetDistanceBetweenPositionsMeters calculates the distance between two shapes in meters
@@ -132,12 +132,12 @@ func ChunkShapesDistances(distances []types.ShapesDistance) []types.ShapesDistan
 		return distances
 	}
 
-	nodeCount := int(math.Floor(totalLength/segmentLength)) + 1
+	nodeCount := int(math.Floor(totalLength/SEGMENT_LENGTH)) + 1
 	result := make([]types.ShapesDistance, 0, nodeCount+1)
 	segIdx := 0
 
 	for i := range nodeCount {
-		targetDist := segmentLength * float64(i)
+		targetDist := SEGMENT_LENGTH * float64(i)
 
 		for segIdx < len(coordinates)-2 && cumDist[segIdx+1] < targetDist {
 			segIdx++
@@ -185,7 +185,7 @@ func ShapePointIsCloseToBeforeShapePoint(beforeShapePoint *types.Shape, shapePoi
 	}
 
 	distanceMeters := getDistanceBetweenPositions(shapePointCoordinate, beforeShapePointCoordinate)
-	return distanceMeters <= MaxShapePointDistanceMeters
+	return distanceMeters <= MAX_SHAPE_POINT_DISTANCE_METERS
 }
 
 // BuildShapeChunkedData builds chunked coordinates and original points from shape coordinates.
