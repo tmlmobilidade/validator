@@ -123,7 +123,7 @@ func ShapePointIsCloseToBeforeShapePoint(beforeShapePoint *types.Shape, shapePoi
 	return distanceMeters <= MAX_SHAPE_POINT_DISTANCE_METERS
 }
 
-func ShapeDistTraveedToMeters(value float64, maxInShape float64) float64 {
+func ShapeDistTraveledToMeters(value float64, maxInShape float64) float64 {
 	if maxInShape < SHAPE_DIST_TRAVELED_KILOMETERS_THRESHOLD {
 		return value * 1000 // km to m
 	}
