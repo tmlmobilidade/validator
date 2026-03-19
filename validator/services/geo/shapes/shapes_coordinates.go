@@ -24,14 +24,19 @@ type ShapeChunkedData struct {
 	OriginalPoints     []shapePointWithSequence
 }
 
-/*
-Finds the original shape point in the slice whose coordinates are closest to the provided stopPoint.
-
-It returns the sequence number, latitude, and longitude of this closest original point.
-
-This is primarily used to map a chunked/interpolated coordinate back to its source GTFS shape row
-for generating clear validation messages.
-*/
+// FindClosestOriginalPoint finds the original shape point in the slice whose coordinates are closest to the provided stopPoint.
+// It returns the sequence number, latitude, and longitude of this closest original point.
+// This is primarily used to map a chunked/interpolated coordinate back to its source GTFS shape row for generating clear validation messages.
+//
+// Args:
+//
+//	stopPoint (types.Coordinates): The stop point to find the closest original point to.
+//
+// Returns:
+//
+//	seq (int): The sequence number of the closest original point.
+//	lat (float64): The latitude of the closest original point.
+//	lon (float64): The longitude of the closest original point.
 func (d *ShapeChunkedData) FindClosestOriginalPoint(stopPoint types.Coordinates) (seq int, lat, lon float64) {
 	// Initialize minimum distance to the highest possible value.
 	minDist := math.MaxFloat64
@@ -49,15 +54,6 @@ func (d *ShapeChunkedData) FindClosestOriginalPoint(stopPoint types.Coordinates)
 	return seq, lat, lon
 }
 
-// ShapeDistTraveledToMeters converts shape_dist_traveled to meters.
-// Uses heuristic based on last (max) value in shape: if < 800 assume kilometers, else meters.
-func ShapeDistTraveedToMeters(value float64, maxInShape float64) float64 {
-	if maxInShape < SHAPE_DIST_TRAVELED_KILOMETERS_THRESHOLD {
-		return value * 1000 // km to m
-	}
-	return value // already in meters
-}
-
 // hasConsecutiveShapeDistanceInconsistency checks if the distance between two consecutive shapes is greater than the maximum allowed distance
 func hasConsecutiveShapeDistanceInconsistency(orderedCoordinates []types.Coordinates) bool {
 	if len(orderedCoordinates) != 2 {
@@ -70,77 +66,6 @@ func hasConsecutiveShapeDistanceInconsistency(orderedCoordinates []types.Coordin
 	}
 
 	return false
-}
-
-// interpolatePositions interpolates the position between two shapes
-func interpolatePositions(a, b types.Coordinates, ratio float64) types.Coordinates {
-	if ratio < 0 {
-		ratio = 0
-	}
-	if ratio > 1 {
-		ratio = 1
-	}
-
-	return types.Coordinates{
-		Lat: a.Lat + (b.Lat-a.Lat)*ratio,
-		Lng: a.Lng + (b.Lng-a.Lng)*ratio,
-	}
-}
-
-// ChunkCoordinatess chunks the shapes distances into segments
-func ChunkCoordinatess(distances []types.Coordinates) []types.Coordinates {
-
-	if len(distances) == 0 {
-		return distances
-	}
-
-	coordinates := make([]types.Coordinates, 0, len(distances))
-	for _, distance := range distances {
-		coordinates = append(coordinates, types.Coordinates{
-			Lat: distance.Lat,
-			Lng: distance.Lng,
-		})
-	}
-
-	cumDist := make([]float64, 0, len(coordinates))
-	cumDist = append(cumDist, 0)
-	for i := 0; i < len(coordinates)-1; i++ {
-		cumDist = append(cumDist, cumDist[i]+lib.HaversineDistance(coordinates[i], coordinates[i+1]))
-	}
-
-	totalLength := cumDist[len(cumDist)-1]
-	if totalLength == 0 {
-		return distances
-	}
-
-	nodeCount := int(math.Floor(totalLength/SEGMENT_LENGTH)) + 1
-	result := make([]types.Coordinates, 0, nodeCount+1)
-	segIdx := 0
-
-	for i := range nodeCount {
-		targetDist := SEGMENT_LENGTH * float64(i)
-
-		for segIdx < len(coordinates)-2 && cumDist[segIdx+1] < targetDist {
-			segIdx++
-		}
-
-		segStart := cumDist[segIdx]
-		segEnd := cumDist[segIdx+1]
-		ratio := 0.0
-		if segEnd > segStart {
-			ratio = (targetDist - segStart) / (segEnd - segStart)
-		}
-
-		result = append(result, interpolatePositions(coordinates[segIdx], coordinates[segIdx+1], ratio))
-	}
-
-	lastCoord := coordinates[len(coordinates)-1]
-	lastResult := result[len(result)-1]
-	if lastResult.Lat != lastCoord.Lat || lastResult.Lng != lastCoord.Lng {
-		result = append(result, lastCoord)
-	}
-
-	return result
 }
 
 // ShapePointIsCloseToBeforeShapePoint checks if the shape point is close to the before shape point
@@ -202,6 +127,6 @@ func BuildShapeChunkedData(points []types.ShapeCoordinatesValidation) *ShapeChun
 	if len(orderedCoordinates) == 0 {
 		return nil
 	}
-	chunked := ChunkCoordinatess(orderedCoordinates)
+	chunked := lib.ChunkCoordinates(orderedCoordinates, SEGMENT_LENGTH)
 	return &ShapeChunkedData{ChunkedCoordinates: chunked, OriginalPoints: origPoints}
 }
