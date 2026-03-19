@@ -40,6 +40,12 @@ jobs:
           echo "Version to inject: $VERSION"
           bash compile.sh "$VERSION"
 
+      - name: Upload validator binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: validator-${{ steps.version.outputs.version_number }}
+          path: bin/
+
       - name: Verify version in binary
         run: |
           VERSION="${{ steps.version.outputs.version_number }}"
@@ -52,9 +58,3 @@ jobs:
             echo "✗ Version NOT injected - binary shows default v0.0.0"
             exit 1
           fi
-
-      - name: Upload validator binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: validator-${{ steps.version.outputs.version_number }}
-          path: bin/
