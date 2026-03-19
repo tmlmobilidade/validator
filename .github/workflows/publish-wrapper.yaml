@@ -1,79 +1,79 @@
-name: 'Build & Publish GTFS Validator'
+# name: 'Build & Publish GTFS Validator'
 
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - production
-    paths:
-      - ".github/workflows/publish-wrapper.yaml"
-      - "ts-wrapper/**/*"
-      - "validator/**/*"
-      - '!bin/**/*'
+# on:
+#   workflow_dispatch:
+#   push:
+#     branches:
+#       - production
+#     paths:
+#       - ".github/workflows/publish-wrapper.yaml"
+#       - "ts-wrapper/**/*"
+#       - "validator/**/*"
+#       - '!bin/**/*'
 
-permissions:
-  contents: write
+# permissions:
+#   contents: write
 
-jobs:
+# jobs:
 
-  # # # # # # # # # # # # # # # # # # # # #
-  # # # # # # # # # # # # # # # # # # # # #
+#   # # # # # # # # # # # # # # # # # # # # #
+#   # # # # # # # # # # # # # # # # # # # # #
 
-  version-number:
-    name: 'Version Number'
-    runs-on: ubuntu-latest
-    steps:
-      - id: generate-version-number
-        run: |
-          version="$(date +%Y%m%d).$(date +%H%M).$(date +%S)"
-          echo "Generated version: $version"
-          echo "version_number=$version" >> "$GITHUB_OUTPUT"
- # # # # # # # # # # # # # # # # # #
+#   version-number:
+#     name: 'Version Number'
+#     runs-on: ubuntu-latest
+#     steps:
+#       - id: generate-version-number
+#         run: |
+#           version="$(date +%Y%m%d).$(date +%H%M).$(date +%S)"
+#           echo "Generated version: $version"
+#           echo "version_number=$version" >> "$GITHUB_OUTPUT"
+#  # # # # # # # # # # # # # # # # # #
 
-  ts-wrapper:
-    name: 'Publish TS Wrapper'
-    needs: version-number
-    runs-on: ubuntu-latest
-    steps:
+#   ts-wrapper:
+#     name: 'Publish TS Wrapper'
+#     needs: version-number
+#     runs-on: ubuntu-latest
+#     steps:
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
 
-      - uses: tmlmobilidade/core/.github/actions/setup-node@production
-        with:
-          node-version: 20
-          directory: ts-wrapper
-          with-turbo-cache: false
+#       - uses: tmlmobilidade/core/.github/actions/setup-node@production
+#         with:
+#           node-version: 20
+#           directory: ts-wrapper
+#           with-turbo-cache: false
 
-      - name: Build package
-        working-directory: ts-wrapper
-        run: npm run build
+#       - name: Build package
+#         working-directory: ts-wrapper
+#         run: npm run build
 
-      - name: Bump package version
-        working-directory: ts-wrapper
-        run: npm version --no-git-tag-version ${{ needs.version-number.outputs.version_number }}
+#       - name: Bump package version
+#         working-directory: ts-wrapper
+#         run: npm version --no-git-tag-version ${{ needs.version-number.outputs.version_number }}
 
-      - name: Publish package to NPM
-        working-directory: ts-wrapper
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+#       - name: Publish package to NPM
+#         working-directory: ts-wrapper
+#         run: npm publish --access public
+#         env:
+#           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
-  # # # # # # # # # # # # # # # # # # # # #
-  # # # # # # # # # # # # # # # # # # # # #
+#   # # # # # # # # # # # # # # # # # # # # #
+#   # # # # # # # # # # # # # # # # # # # # #
 
-  release-validator:
-    name: Release Validator Binaries
-    needs: version-number
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+#   release-validator:
+#     name: Release Validator Binaries
+#     needs: version-number
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
 
-      - name: Build Binaries
-        shell: bash
-        run: |
-          VERSION="${{ needs.version-number.outputs.version_number }}"
-          ec      - name: Build Binaries
-        shell: bash
-        run: sh compile.sh ${{ needs.version-number.outputs.version_number }}
+#       - name: Build Binaries
+#         shell: bash
+#         run: |
+#           VERSION="${{ needs.version-number.outputs.version_number }}"
+#           ec      - name: Build Binaries
+#         shell: bash
+#         run: sh compile.sh ${{ needs.version-number.outputs.version_number }}
