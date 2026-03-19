@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"slices"
-	"strings"
 )
 
 // Version is set at build time via -ldflags "-X main/services.Version=..."
@@ -66,23 +65,11 @@ func (c *CLI) Validate() error {
 	return nil
 }
 
-// FormatVersion converts YYYYMMDD.HHMM.SS to 2025-03-19 12:00:00 for display.
-func FormatVersion(v string) string {
-	parts := strings.Split(v, ".")
-	if len(parts) != 3 || len(parts[0]) != 8 || len(parts[1]) != 4 || len(parts[2]) != 2 {
-		return v
-	}
-	date, timePart, sec := parts[0], parts[1], parts[2]
-	return fmt.Sprintf("%s-%s-%s %s:%s:%s",
-		date[:4], date[4:6], date[6:8],
-		timePart[:2], timePart[2:4], sec)
-}
-
 func (c *CLI) Run() {
 	c.Parse()
 
 	if c.Options.Version {
-		fmt.Printf("GTFS Validator v%s\n", FormatVersion(Version))
+		fmt.Printf("GTFS Validator v%s\n", Version)
 		os.Exit(0)
 	}
 

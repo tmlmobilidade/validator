@@ -35,7 +35,23 @@ jobs:
           echo "version_number=$version" >> "$GITHUB_OUTPUT"
 
       - name: Build Validator binaries
-        run: sh compile.sh ${{ steps.version.outputs.version_number }}
+        run: |
+          VERSION="${{ steps.version.outputs.version_number }}"
+          echo "Version to inject: $VERSION"
+          bash compile.sh "$VERSION"
+
+      - name: Verify version in binary
+        run: |
+          VERSION="${{ steps.version.outputs.version_number }}"
+          OUTPUT=$(./bin/validator-linux-amd64 -v)
+          echo "Binary output: $OUTPUT"
+          echo "Expected version: v$VERSION"
+          if echo "$OUTPUT" | grep -q "v$VERSION"; then
+            echo "✓ Version correctly injected"
+          else
+            echo "✗ Version NOT injected - binary shows default v0.0.0"
+            exit 1
+          fi
 
       - name: Upload validator binaries
         uses: actions/upload-artifact@v4
