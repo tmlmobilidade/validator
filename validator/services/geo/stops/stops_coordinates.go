@@ -51,10 +51,10 @@ func BuildStopClosestShapePointsDistanceMapFromCache(
 			continue
 		}
 
-		stopPoint := types.ShapesDistance{ShapePtLat: lat, ShapePtLon: lon}
+		stopPoint := types.Coordinates{Lat: lat, Lng: lon}
 		minDistance := math.MaxFloat64
 		closestShapeID := ""
-		closestCoord := types.ShapesDistance{}
+		closestCoord := types.Coordinates{}
 		foundDistance := false
 
 		for _, shapeID := range stopShapeIDs {
@@ -64,7 +64,7 @@ func BuildStopClosestShapePointsDistanceMapFromCache(
 			}
 
 			for _, coordinate := range data.ChunkedCoordinates {
-				distance := shapes_coordinates.GetDistanceBetweenPositionsMeters(stopPoint, coordinate)
+				distance := lib.HaversineDistance(stopPoint, coordinate)
 				if distance < minDistance {
 					minDistance = distance
 					closestShapeID = shapeID
@@ -85,8 +85,8 @@ func BuildStopClosestShapePointsDistanceMapFromCache(
 				continue
 			}
 			closestSeq := 0
-			closestLat := closestCoord.ShapePtLat
-			closestLon := closestCoord.ShapePtLon
+			closestLat := closestCoord.Lat
+			closestLon := closestCoord.Lng
 			if data := shapeChunkedCache[closestShapeID]; data != nil {
 				closestSeq, closestLat, closestLon = data.FindClosestOriginalPoint(stopPoint)
 			}
@@ -138,7 +138,7 @@ func BuildStopClosestShapePointsDistanceMapPerStopShape(
 			continue
 		}
 
-		stopPoint := types.ShapesDistance{ShapePtLat: lat, ShapePtLon: lon}
+		stopPoint := types.Coordinates{Lat: lat, Lng: lon}
 
 		for _, shapeID := range stopShapeIDs {
 			data := shapeChunkedCache[shapeID]
@@ -147,11 +147,11 @@ func BuildStopClosestShapePointsDistanceMapPerStopShape(
 			}
 
 			minDistance := math.MaxFloat64
-			closestCoord := types.ShapesDistance{}
+			closestCoord := types.Coordinates{}
 			foundDistance := false
 
 			for _, coordinate := range data.ChunkedCoordinates {
-				distance := shapes_coordinates.GetDistanceBetweenPositionsMeters(stopPoint, coordinate)
+				distance := lib.HaversineDistance(stopPoint, coordinate)
 				if distance < minDistance {
 					minDistance = distance
 					closestCoord = coordinate
@@ -164,8 +164,8 @@ func BuildStopClosestShapePointsDistanceMapPerStopShape(
 
 			if foundDistance && minDistance > shapes_coordinates.MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS {
 				closestSeq := 0
-				closestLat := closestCoord.ShapePtLat
-				closestLon := closestCoord.ShapePtLon
+				closestLat := closestCoord.Lat
+				closestLon := closestCoord.Lng
 				if data != nil {
 					closestSeq, closestLat, closestLon = data.FindClosestOriginalPoint(stopPoint)
 				}

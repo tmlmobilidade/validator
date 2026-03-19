@@ -5,10 +5,10 @@ import (
 	"sort"
 	"strconv"
 
+	"main/lib"
 	"main/types"
 )
 
-const EARTH_RADIUS_METERS = 6371000.0
 const SEGMENT_LENGTH = 50.0 // 50m segments reduce Haversine calls 5x vs 10m while still validating 100m stop distance
 const MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS = 100.0
 const MAX_SHAPE_POINT_DISTANCE_METERS = 1000.0
@@ -17,25 +17,34 @@ const shapeDistTraveledKilometersThreshold = 800.0
 
 type shapePointWithSequence struct {
 	sequence   int
-	coordinate types.ShapesDistance
+	coordinate types.Coordinates
 }
 
 type ShapeChunkedData struct {
-	ChunkedCoordinates []types.ShapesDistance
+	ChunkedCoordinates []types.Coordinates
 	OriginalPoints     []shapePointWithSequence
 }
 
-// FindClosestOriginalPoint returns the sequence, lat, lon of the original shape point
-// closest to stopPoint. Used when resolving chunked coords back to original for validation messages.
-func (d *ShapeChunkedData) FindClosestOriginalPoint(stopPoint types.ShapesDistance) (seq int, lat, lon float64) {
+/*
+Finds the original shape point in the slice whose coordinates are closest to the provided stopPoint.
+
+It returns the sequence number, latitude, and longitude of this closest original point.
+
+This is primarily used to map a chunked/interpolated coordinate back to its source GTFS shape row
+for generating clear validation messages.
+*/
+func (d *ShapeChunkedData) FindClosestOriginalPoint(stopPoint types.Coordinates) (seq int, lat, lon float64) {
+	// Initialize minimum distance to the highest possible value.
 	minDist := math.MaxFloat64
+
+	// Iterate through each original shape point and find the one closest to stopPoint.
 	for _, pt := range d.OriginalPoints {
-		dist := getDistanceBetweenPositions(stopPoint, pt.coordinate)
+		dist := lib.HaversineDistance(stopPoint, pt.coordinate)
 		if dist < minDist {
 			minDist = dist
 			seq = pt.sequence
-			lat = pt.coordinate.ShapePtLat
-			lon = pt.coordinate.ShapePtLon
+			lat = pt.coordinate.Lat
+			lon = pt.coordinate.Lng
 		}
 	}
 	return seq, lat, lon
@@ -56,12 +65,12 @@ func ShapeDistTraveledToMeters(value float64, maxInShape float64) float64 {
 }
 
 // hasConsecutiveShapeDistanceInconsistency checks if the distance between two consecutive shapes is greater than the maximum allowed distance
-func hasConsecutiveShapeDistanceInconsistency(orderedCoordinates []types.ShapesDistance) bool {
+func hasConsecutiveShapeDistanceInconsistency(orderedCoordinates []types.Coordinates) bool {
 	if len(orderedCoordinates) != 2 {
 		return false
 	}
 
-	distanceMeters := getDistanceBetweenPositions(orderedCoordinates[0], orderedCoordinates[1])
+	distanceMeters := lib.HaversineDistance(orderedCoordinates[0], orderedCoordinates[1])
 	if distanceMeters > MAX_SHAPE_POINT_DISTANCE_METERS {
 		return true
 	}
@@ -69,30 +78,8 @@ func hasConsecutiveShapeDistanceInconsistency(orderedCoordinates []types.ShapesD
 	return false
 }
 
-// getDistanceBetweenPositions calculates the distance between two shapes in meters
-func getDistanceBetweenPositions(a, b types.ShapesDistance) float64 {
-	lat1 := a.ShapePtLat * math.Pi / 180
-	lon1 := a.ShapePtLon * math.Pi / 180
-	lat2 := b.ShapePtLat * math.Pi / 180
-	lon2 := b.ShapePtLon * math.Pi / 180
-
-	dLat := lat2 - lat1
-	dLon := lon2 - lon1
-
-	sinLat := math.Sin(dLat / 2)
-	sinLon := math.Sin(dLon / 2)
-	h := sinLat*sinLat + math.Cos(lat1)*math.Cos(lat2)*sinLon*sinLon
-
-	return 2 * EARTH_RADIUS_METERS * math.Atan2(math.Sqrt(h), math.Sqrt(1-h))
-}
-
-// GetDistanceBetweenPositionsMeters calculates the distance between two shapes in meters
-func GetDistanceBetweenPositionsMeters(a, b types.ShapesDistance) float64 {
-	return getDistanceBetweenPositions(a, b)
-}
-
 // interpolatePositions interpolates the position between two shapes
-func interpolatePositions(a, b types.ShapesDistance, ratio float64) types.ShapesDistance {
+func interpolatePositions(a, b types.Coordinates, ratio float64) types.Coordinates {
 	if ratio < 0 {
 		ratio = 0
 	}
@@ -100,31 +87,31 @@ func interpolatePositions(a, b types.ShapesDistance, ratio float64) types.Shapes
 		ratio = 1
 	}
 
-	return types.ShapesDistance{
-		ShapePtLat: a.ShapePtLat + (b.ShapePtLat-a.ShapePtLat)*ratio,
-		ShapePtLon: a.ShapePtLon + (b.ShapePtLon-a.ShapePtLon)*ratio,
+	return types.Coordinates{
+		Lat: a.Lat + (b.Lat-a.Lat)*ratio,
+		Lng: a.Lng + (b.Lng-a.Lng)*ratio,
 	}
 }
 
-// ChunkShapesDistances chunks the shapes distances into segments
-func ChunkShapesDistances(distances []types.ShapesDistance) []types.ShapesDistance {
+// ChunkCoordinatess chunks the shapes distances into segments
+func ChunkCoordinatess(distances []types.Coordinates) []types.Coordinates {
 
 	if len(distances) == 0 {
 		return distances
 	}
 
-	coordinates := make([]types.ShapesDistance, 0, len(distances))
+	coordinates := make([]types.Coordinates, 0, len(distances))
 	for _, distance := range distances {
-		coordinates = append(coordinates, types.ShapesDistance{
-			ShapePtLat: distance.ShapePtLat,
-			ShapePtLon: distance.ShapePtLon,
+		coordinates = append(coordinates, types.Coordinates{
+			Lat: distance.Lat,
+			Lng: distance.Lng,
 		})
 	}
 
 	cumDist := make([]float64, 0, len(coordinates))
 	cumDist = append(cumDist, 0)
 	for i := 0; i < len(coordinates)-1; i++ {
-		cumDist = append(cumDist, cumDist[i]+getDistanceBetweenPositions(coordinates[i], coordinates[i+1]))
+		cumDist = append(cumDist, cumDist[i]+lib.HaversineDistance(coordinates[i], coordinates[i+1]))
 	}
 
 	totalLength := cumDist[len(cumDist)-1]
@@ -133,7 +120,7 @@ func ChunkShapesDistances(distances []types.ShapesDistance) []types.ShapesDistan
 	}
 
 	nodeCount := int(math.Floor(totalLength/SEGMENT_LENGTH)) + 1
-	result := make([]types.ShapesDistance, 0, nodeCount+1)
+	result := make([]types.Coordinates, 0, nodeCount+1)
 	segIdx := 0
 
 	for i := range nodeCount {
@@ -155,7 +142,7 @@ func ChunkShapesDistances(distances []types.ShapesDistance) []types.ShapesDistan
 
 	lastCoord := coordinates[len(coordinates)-1]
 	lastResult := result[len(result)-1]
-	if lastResult.ShapePtLat != lastCoord.ShapePtLat || lastResult.ShapePtLon != lastCoord.ShapePtLon {
+	if lastResult.Lat != lastCoord.Lat || lastResult.Lng != lastCoord.Lng {
 		result = append(result, lastCoord)
 	}
 
@@ -168,23 +155,23 @@ func ShapePointIsCloseToBeforeShapePoint(beforeShapePoint *types.Shape, shapePoi
 		return false
 	}
 
-	beforeShapePointCoordinate := types.ShapesDistance{
-		ShapePtLat: float64(*beforeShapePoint.ShapePtLat),
-		ShapePtLon: float64(*beforeShapePoint.ShapePtLon),
+	beforeShapePointCoordinate := types.Coordinates{
+		Lat: float64(*beforeShapePoint.ShapePtLat),
+		Lng: float64(*beforeShapePoint.ShapePtLon),
 	}
 
-	shapePointCoordinate := types.ShapesDistance{
-		ShapePtLat: float64(*shapePoint.ShapePtLat),
-		ShapePtLon: float64(*shapePoint.ShapePtLon),
+	shapePointCoordinate := types.Coordinates{
+		Lat: float64(*shapePoint.ShapePtLat),
+		Lng: float64(*shapePoint.ShapePtLon),
 	}
 
-	coordinatesToValidate := []types.ShapesDistance{shapePointCoordinate, beforeShapePointCoordinate}
+	coordinatesToValidate := []types.Coordinates{shapePointCoordinate, beforeShapePointCoordinate}
 
 	if hasConsecutiveShapeDistanceInconsistency(coordinatesToValidate) {
 		return false
 	}
 
-	distanceMeters := getDistanceBetweenPositions(shapePointCoordinate, beforeShapePointCoordinate)
+	distanceMeters := lib.HaversineDistance(shapePointCoordinate, beforeShapePointCoordinate)
 	return distanceMeters <= MAX_SHAPE_POINT_DISTANCE_METERS
 }
 
@@ -202,7 +189,7 @@ func BuildShapeChunkedData(points []types.ShapeCoordinatesValidation) *ShapeChun
 		return seqI < seqJ
 	})
 
-	orderedCoordinates := make([]types.ShapesDistance, 0, len(sorted))
+	orderedCoordinates := make([]types.Coordinates, 0, len(sorted))
 	origPoints := make([]shapePointWithSequence, 0, len(sorted))
 	for _, p := range sorted {
 		lat, err := strconv.ParseFloat(p.ShapePtLat, 64)
@@ -214,13 +201,13 @@ func BuildShapeChunkedData(points []types.ShapeCoordinatesValidation) *ShapeChun
 			continue
 		}
 		seq, _ := strconv.Atoi(p.ShapePtSeq)
-		coord := types.ShapesDistance{ShapePtLat: lat, ShapePtLon: lon}
+		coord := types.Coordinates{Lat: lat, Lng: lon}
 		orderedCoordinates = append(orderedCoordinates, coord)
 		origPoints = append(origPoints, shapePointWithSequence{sequence: seq, coordinate: coord})
 	}
 	if len(orderedCoordinates) == 0 {
 		return nil
 	}
-	chunked := ChunkShapesDistances(orderedCoordinates)
+	chunked := ChunkCoordinatess(orderedCoordinates)
 	return &ShapeChunkedData{ChunkedCoordinates: chunked, OriginalPoints: origPoints}
 }
