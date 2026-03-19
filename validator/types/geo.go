@@ -21,7 +21,7 @@ type ShapeCoordinatesValidation struct {
 	ShapePtSeq string
 }
 
-type ShapesDistance struct {
-	ShapePtLat float64
-	ShapePtLon float64
+type Coordinates struct {
+	Lat float64
+	Lng float64
 }
