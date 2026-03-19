@@ -5,19 +5,19 @@ import (
 	"fmt"
 	"os"
 	"slices"
+	"strings"
 )
 
 // Version is set at build time via -ldflags "-X main/services.Version=..."
 var Version = "0.0.0"
 
 type CliOptions struct {
-	InputPath     string // Path to the GTFS zip file
-	OutputPath    string // Path to the output file
-	LogLevel      string // Log level (debug, info, error)
-	RulesPath     string // Path to the rules file
-	RulesLang     string // Rules language (en, pt)
-	Version       bool   // Show version
-	VersionString string // Version string
+	InputPath  string // Path to the GTFS zip file
+	OutputPath string // Path to the output file
+	LogLevel   string // Log level (debug, info, error)
+	RulesPath  string // Path to the rules file
+	RulesLang  string // Rules language (en, pt)
+	Version    bool   // Show version
 }
 
 type CLI struct {
@@ -44,10 +44,6 @@ func (c *CLI) Parse() {
 	flag.StringVar(&c.Options.RulesLang, "lang", "en", "Rules language (en, pt)")
 	flag.BoolVar(&c.Options.Version, "v", false, "Show version")
 	flag.BoolVar(&c.Options.Version, "version", false, "Show help")
-	flag.StringVar(&c.Options.VersionString, "version-string", "", "Version string")
-	if c.Options.VersionString != "" {
-		Version = c.Options.VersionString
-	}
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
@@ -70,11 +66,23 @@ func (c *CLI) Validate() error {
 	return nil
 }
 
+// FormatVersion converts YYYYMMDD.HHMM.SS to 2025-03-19 12:00:00 for display.
+func FormatVersion(v string) string {
+	parts := strings.Split(v, ".")
+	if len(parts) != 3 || len(parts[0]) != 8 || len(parts[1]) != 4 || len(parts[2]) != 2 {
+		return v
+	}
+	date, timePart, sec := parts[0], parts[1], parts[2]
+	return fmt.Sprintf("%s-%s-%s %s:%s:%s",
+		date[:4], date[4:6], date[6:8],
+		timePart[:2], timePart[2:4], sec)
+}
+
 func (c *CLI) Run() {
 	c.Parse()
 
-	if c.Options.Version || c.Options.VersionString != "" {
-		fmt.Printf("GTFS Validator v%s\n", c.Options.VersionString)
+	if c.Options.Version {
+		fmt.Printf("GTFS Validator v%s\n", FormatVersion(Version))
 		os.Exit(0)
 	}
 

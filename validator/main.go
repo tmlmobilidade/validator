@@ -113,7 +113,7 @@ func main() {
 
 	//
 	// lib.AppLogger.Clear()
-	lib.AppLogger.Divider("GTFS Validator v" + services.Version)
+	lib.AppLogger.Divider("GTFS Validator v" + services.FormatVersion(services.Version))
 
 	//
 	// 0.4 Start Performance Tracker
