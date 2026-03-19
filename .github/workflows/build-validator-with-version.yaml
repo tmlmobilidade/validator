@@ -1,0 +1,44 @@
+name: 'Build Validator with Version'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mostrar-versao-do-validador-ao-validar-um-gtfs
+    paths:
+      - ".github/workflows/build-validator-with-version.yaml"
+      - "validator/**/*"
+      - "compile.sh"
+      - '!bin/**/*'
+
+permissions:
+  contents: read
+
+jobs:
+  version-and-build:
+    name: 'Generate Version & Build Validator'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Generate version number
+        id: version
+        run: |
+          version="$(date +%Y%m%d).$(date +%H%M).$(date +%S)"
+          echo "Generated version: $version"
+          echo "version_number=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Build Validator binaries
+        run: sh compile.sh ${{ steps.version.outputs.version_number }}
+
+      - name: Upload validator binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: validator-${{ steps.version.outputs.version_number }}
+          path: bin/
