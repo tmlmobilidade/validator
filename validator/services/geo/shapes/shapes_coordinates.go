@@ -12,8 +12,7 @@ import (
 const SEGMENT_LENGTH = 50.0 // 50m segments reduce Haversine calls 5x vs 10m while still validating 100m stop distance
 const MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS = 100.0
 const MAX_SHAPE_POINT_DISTANCE_METERS = 1000.0
-
-const shapeDistTraveledKilometersThreshold = 800.0
+const SHAPE_DIST_TRAVELED_KILOMETERS_THRESHOLD = 800.0
 
 type shapePointWithSequence struct {
 	sequence   int
@@ -50,15 +49,10 @@ func (d *ShapeChunkedData) FindClosestOriginalPoint(stopPoint types.Coordinates)
 	return seq, lat, lon
 }
 
-// ShapeDistTraveledKilometersThreshold returns the threshold: if max shape_dist_traveled < this, units are km.
-func ShapeDistTraveledKilometersThreshold() float64 {
-	return shapeDistTraveledKilometersThreshold
-}
-
 // ShapeDistTraveledToMeters converts shape_dist_traveled to meters.
 // Uses heuristic based on last (max) value in shape: if < 800 assume kilometers, else meters.
-func ShapeDistTraveledToMeters(value float64, maxInShape float64) float64 {
-	if maxInShape < shapeDistTraveledKilometersThreshold {
+func ShapeDistTraveedToMeters(value float64, maxInShape float64) float64 {
+	if maxInShape < SHAPE_DIST_TRAVELED_KILOMETERS_THRESHOLD {
 		return value * 1000 // km to m
 	}
 	return value // already in meters
