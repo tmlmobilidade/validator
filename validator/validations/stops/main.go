@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"main/config"
 	"main/lib"
-	shapes_coordinates "main/services/geo/shapes"
 	"main/types"
 	registry "main/validations"
 	validations "main/validations/stops/validations"
@@ -17,19 +16,10 @@ func init() {
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Validations for stops.txt")
 
-	stopClosestShapeInfo := map[string]shapes_coordinates.StopClosestShapePointsInfo{}
-	closestShapeInfoMap, err := shapes_coordinates.BuildStopClosestShapePointsDistanceMap(&gtfs)
-	if err != nil {
-		lib.AppLogger.Error(fmt.Sprintf("Error pre-loading stop closest shape points distance map: %v", err))
-	} else {
-		stopClosestShapeInfo = closestShapeInfoMap
-		lib.AppLogger.Debug(fmt.Sprintf("Pre-loaded closest shape points distance for %d stops", len(stopClosestShapeInfo)))
-	}
-
 	// Create progress tracker
 	tracker := lib.CreateProgressTracker(gtfs, "stops", config.ProgressThresholdLarge)
 
-	err = gtfs.IterateStops(func(row int, rawStop types.StopRaw) error {
+	err := gtfs.IterateStops(func(row int, rawStop types.StopRaw) error {
 		tracker.Track()
 		stop := validations.ParseStop(rawStop, row)
 
@@ -106,7 +96,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		validations.MunicipalityIdValidation(&stop, row, stopRules)
 
 		// Validate stop coordinates
-		validations.StopCoordinatesValidation(&stop, row, stopClosestShapeInfo, stopRules)
+		// validations.StopCoordinatesValidation(&stop, row, stopClosestShapeInfo, stopRules)
 
 		// Validate parish_id
 		validations.ParishIdValidation(&stop, row, stopRules)

@@ -122,8 +122,8 @@ func ShapeDistancesValidation(shapes []types.Shape, rules *types.ShapesRules) {
 				}
 
 				realSegM := shapes_coordinates.GetDistanceBetweenPositionsMeters(
-					shapes_coordinates.ShapesDistance{ShapePtLat: prev.lat, ShapePtLon: prev.lon},
-					shapes_coordinates.ShapesDistance{ShapePtLat: curr.lat, ShapePtLon: curr.lon},
+					types.ShapesDistance{ShapePtLat: prev.lat, ShapePtLon: prev.lon},
+					types.ShapesDistance{ShapePtLat: curr.lat, ShapePtLon: curr.lon},
 				)
 				delta := *curr.distTraveled - *prev.distTraveled
 				deltaM := shapes_coordinates.ShapeDistTraveledToMeters(delta, maxDistTraveled)

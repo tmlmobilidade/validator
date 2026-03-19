@@ -412,8 +412,8 @@ func GetTableRow(db *sql.DB, table string, rowIndex int) (map[string]string, err
 		return nil, fmt.Errorf("failed to get columns: %w", err)
 	}
 
-	// Query specific row using LIMIT and OFFSET
-	rows, err = db.Query(fmt.Sprintf("SELECT * FROM %s ORDER BY rowid LIMIT 1 OFFSET ?", sanitizeTableName(table)), rowIndex)
+	// Query by rowid for O(1) lookup (SQLite rowid is 1-based, rowIndex is 0-based)
+	rows, err = db.Query(fmt.Sprintf("SELECT * FROM %s WHERE rowid = ?", sanitizeTableName(table)), rowIndex+1)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query row: %w", err)
 	}

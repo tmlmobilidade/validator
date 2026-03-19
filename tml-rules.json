@@ -857,9 +857,6 @@
     },
     "zone_id": {
       "severity": "ignore"
-    },
-    "stop_coordinates": {
-      "severity": "error"
     }
   },
   "transfers": {
@@ -946,6 +943,9 @@
       "severity": "error"
     },
     "pattern_id_format": {
+      "severity": "error"
+    },
+    "stop_coordinates_by_trip_id": {
       "severity": "error"
     }
   },

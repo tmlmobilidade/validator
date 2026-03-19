@@ -89,7 +89,7 @@ func ShapePointsCoordinatesConsistentValidation(shapes []types.Shape, rules *typ
 			prevShapePoint := buildShapeFromPointsCoordinatesConsistentPoint(prev)
 			currentShapePoint := buildShapeFromPointsCoordinatesConsistentPoint(current)
 
-			closeEnough, _ := shapes_coordinates.ShapePointIsCloseToBeforeShapePoint(prevShapePoint, currentShapePoint)
+			closeEnough := shapes_coordinates.ShapePointIsCloseToBeforeShapePoint(prevShapePoint, currentShapePoint)
 			if closeEnough {
 				continue
 			}

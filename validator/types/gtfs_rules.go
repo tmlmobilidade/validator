@@ -57,7 +57,6 @@ type StopsRules struct {
 	RegionId              RuleConfig `json:"region_id"`
 	MunicipalityId        RuleConfig `json:"municipality_id"`
 	ParishId              RuleConfig `json:"parish_id"`
-	StopCoordinates       RuleConfig `json:"stop_coordinates"`
 }
 
 type RoutesRules struct {
@@ -101,6 +100,7 @@ type TripsRules struct {
 	DirectionPatternIdMatch RuleConfig `json:"direction_pattern_id_match"`
 	TripIdLimitCharacters   RuleConfig `json:"trip_id_limit_characters"`
 	PatternIdFormat         RuleConfig `json:"pattern_id_format"`
+	StopCoordinatesByTripId RuleConfig `json:"stop_coordinates_by_trip_id"`
 }
 
 type StopTimesRules struct {
