@@ -52,6 +52,10 @@ import (
 	_ "main/validations/vehicles"
 )
 
+func init() {
+	services.SetDisplayVersion(version)
+}
+
 func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *types.GtfsRules) {
 	// Create a wait group to wait for all validations to complete
 	var wg sync.WaitGroup
@@ -113,7 +117,7 @@ func main() {
 
 	//
 	// lib.AppLogger.Clear()
-	lib.AppLogger.Divider("GTFS Validator v" + services.Version)
+	lib.AppLogger.Divider("GTFS Validator v" + version)
 
 	//
 	// 0.4 Start Performance Tracker

@@ -7,8 +7,10 @@ import (
 	"slices"
 )
 
-// Version is set at build time via -ldflags "-X main/services.Version=..."
-var Version = "0.0.0"
+// displayVersion is set by main.init() from build-injected main.version
+var displayVersion string
+
+func SetDisplayVersion(v string) { displayVersion = v }
 
 type CliOptions struct {
 	InputPath  string // Path to the GTFS zip file
@@ -69,7 +71,7 @@ func (c *CLI) Run() {
 	c.Parse()
 
 	if c.Options.Version {
-		fmt.Printf("GTFS Validator v%s\n", Version)
+		fmt.Printf("GTFS Validator v%s\n", displayVersion)
 		os.Exit(0)
 	}
 

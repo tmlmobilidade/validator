@@ -1,11 +1,17 @@
 #!/bin/bash
 
-# LDFLAGS for version injection at build time (from workflow or manual build)
-# LDFLAGS for version injection
-LDFLAGS=""
+# Version from first argument - write to version.go before build
+VERSION="${1:-}"
 if [ -n "$VERSION" ]; then
-    LDFLAGS="-X main/config.Version=$VERSION"
-    echo "Building with version: $VERSION"
+  echo "Building with version: $VERSION"
+  echo 'package main
+
+var version = "'"$VERSION"'"' > validator/version.go
+else
+  echo "WARNING: No version passed - binary will show v0.0.0"
+  echo 'package main
+
+var version = "0.0.0"' > validator/version.go
 fi
 
 # Check for folder bin and create it if it doesn't exist
@@ -15,31 +21,20 @@ fi
 
 cd validator
 
-# Build function to avoid repetition
-build() {
-    GOOS=$1
-    GOARCH=$2
-    OUTPUT=$3
-
-    echo "Building $OUTPUT..."
-    CGO_ENABLED=0 GOOS=$GOOS GOARCH=$GOARCH \
-        go build -ldflags="$LDFLAGS" -o "../bin/$OUTPUT" ./main.go
-}
-
-# Compile the validator for linux
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ../bin/validator-linux-amd64 ./main.go
+# Compile the validator for linux (use . to include version.go)
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ../bin/validator-linux-amd64 .
 
 # Compile the validator for linux arm64
-CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o ../bin/validator-linux-arm64 ./main.go
+CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o ../bin/validator-linux-arm64 .
 
 # Compile the validator for darwin x86_64
-CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ../bin/validator-darwin-amd64 ./main.go
+CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ../bin/validator-darwin-amd64 .
 
 # Compile the validator for darwin arm64
-CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o ../bin/validator-darwin-arm64 ./main.go
+CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o ../bin/validator-darwin-arm64 .
 
 # Compile the validator for windows x86_64
-CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ../bin/validator.exe ./main.go
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ../bin/validator.exe .
 
 # Allow all users to execute the validator
 chmod +x ../bin/validator-linux-amd64
