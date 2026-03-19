@@ -1,7 +1,12 @@
 #!/bin/bash
 
-# Version for ldflags injection (from workflow or manual build)
-VERSION="${1:-}"
+# LDFLAGS for version injection at build time (from workflow or manual build)
+# LDFLAGS for version injection
+LDFLAGS=""
+if [ -n "$VERSION" ]; then
+    LDFLAGS="-X main/config.Version=$VERSION"
+    echo "Building with version: $VERSION"
+fi
 
 # Check for folder bin and create it if it doesn't exist
 if [ ! -d "bin" ]; then
@@ -10,15 +15,19 @@ fi
 
 cd validator
 
-build_binary() {
-    local goos=$1 goarch=$2 output=$3
-    echo "Building binary for $goos $goarch with version $VERSION"
-    if [ -n "$VERSION" ]; then
-        CGO_ENABLED=0 GOOS=$goos GOARCH=$goarch go build -ldflags "-X main/services.Version=$VERSION" -o "$output" ./main.go
-    else
-        CGO_ENABLED=0 GOOS=$goos GOARCH=$goarch go build -o "$output" ./main.go
-    fi
+# Build function to avoid repetition
+build() {
+    GOOS=$1
+    GOARCH=$2
+    OUTPUT=$3
+
+    echo "Building $OUTPUT..."
+    CGO_ENABLED=0 GOOS=$GOOS GOARCH=$GOARCH \
+        go build -ldflags="$LDFLAGS" -o "../bin/$OUTPUT" ./main.go
 }
+
+# Compile the validator for linux
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ../bin/validator-linux-amd64 ./main.go
 
 # Compile the validator for linux arm64
 CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o ../bin/validator-linux-arm64 ./main.go
@@ -46,3 +55,8 @@ if [ $? -ne 0 ]; then
 fi
 
 cd ..
+
+# Make binaries executable (ignore windows if chmod fails)
+chmod +x bin/validator-* || true
+
+echo "Build completed successfully"
