@@ -1,7 +1,6 @@
 package vehicles
 
 import (
-	"fmt"
 	"main/lib"
 	"main/services"
 	"main/types"
@@ -25,7 +24,6 @@ func LicensePlateValidation(vehicle *types.Vehicle, row int, gtfs *types.Gtfs, r
 	ctx := lib.NewValidationContext("license_plate", "vehicles.txt", "license_plate_validation", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.LicensePlate.Severity != "" {
-		fmt.Println("rules.LicensePlate.Severity", rules.LicensePlate.Severity)
 		ctx.WithSeverity(rules.LicensePlate.Severity)
 	}
 
