@@ -92,7 +92,9 @@ func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *typ
 	tracker.End()
 }
 
-func runStartupOrchestrator() (*types.GtfsRules, error) {
+func main() {
+
+	//
 	// 0.1 Initialize CLI
 	services.AppCLI.Run()
 	lib.AppLogger.SetLogLevel(services.AppCLI.Options.LogLevel)
@@ -105,16 +107,7 @@ func runStartupOrchestrator() (*types.GtfsRules, error) {
 	// 0.3 Parse Rules
 	rules, err := services.NewRulesParser(services.AppCLI.Options.RulesPath).ParseRules()
 	if err != nil {
-		return nil, fmt.Errorf("error parsing rules: %w", err)
-	}
-
-	return rules, nil
-}
-
-func main() {
-	rules, err := runStartupOrchestrator()
-	if err != nil {
-		log.Fatalf("Startup orchestrator failed: %v", err)
+		log.Fatalf("Error parsing rules: %v", err)
 	}
 
 	//
@@ -122,7 +115,7 @@ func main() {
 	lib.AppLogger.Divider("GTFS Validator")
 
 	//
-	// 0.5 Start Performance Tracker
+	// 0.4 Start Performance Tracker
 	tracker := lib.AppLogger.StartPerformanceTracker("Reading GTFS")
 
 	//
