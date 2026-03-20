@@ -20,7 +20,7 @@ Identifies a service.
 
 [trips.txt]: https://gtfs.org/schedule/reference/#trips
 */
-func ServiceIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
+func ServiceIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, calendarRowsCache, calendarDatesRowsCache map[string][]int) {
 	ctx := lib.NewValidationContext("service_id", "trips.txt", "service_id_validation", row, services.AppMessageService)
 
 	if trip.ServiceId == nil {
@@ -28,12 +28,12 @@ func ServiceIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
 		return
 	}
 
-	// Check in calendar or calendar_dates without merging the maps
-	calendarRows, err := gtfs.GetRowsById("calendar", *trip.ServiceId)
+	// Check in calendar or calendar_dates (use cache to avoid repeated queries)
+	calendarRows, err := gtfs.GetCachedRowsById(calendarRowsCache, "calendar", *trip.ServiceId)
 	if err == nil && len(calendarRows) > 0 {
 		return
 	}
-	calendarDatesRows, err := gtfs.GetRowsById("calendar_dates", *trip.ServiceId)
+	calendarDatesRows, err := gtfs.GetCachedRowsById(calendarDatesRowsCache, "calendar_dates", *trip.ServiceId)
 	if err == nil && len(calendarDatesRows) > 0 {
 		return
 	}

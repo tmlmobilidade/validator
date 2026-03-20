@@ -389,7 +389,8 @@
         "not_allowed": "O campo \"stop_id\" \"%s\" não é permitido",
         "forbidden_location_group_id_location_id": "O campo \"stop_id\" é proibido se \"location_group_id\" ou \"location_id\" estiverem definidos",
         "required_location_group_id_location_id": "O campo \"stop_id\" é obrigatório se \"location_group_id\" e \"location_id\" não estiverem definidos",
-        "invalid_location_type": "O campo \"stop_id\" deve referenciar uma paragem com location_type 0 ou vazio (plataforma/paragem)"
+        "invalid_location_type": "O campo \"stop_id\" deve referenciar uma paragem com location_type 0 ou vazio (plataforma/paragem)",
+        "not_allowed_by_reference_api": "O campo \"stop_id\" \"%s\" não existe na API externa de referência"
     },
     "stop_desc_validation": {
         "forbidden": "O campo \"stop_desc\" é proibido",
@@ -487,6 +488,23 @@
         "not_found": "O campo \"municipality_id\" \"%s\" não existe em municipalities.txt",
         "not_allowed": "O campo \"municipality_id\" \"%s\" não é permitido"
     },
+    "coordinates_validation": {
+        "not_mapped": "As coordenadas (%f, %f) não estão mapeadas em Portugal Continental",
+        "invalid_municipality_id": "As coordenadas (%f, %f) não correspondem ao município mapeado. Municipality_id esperado \"%s\", recebido \"%s\"",
+        "invalid_distance": "As coordenadas (%f, %f) sao demasiado distantes comparado as outras shapes",
+        "invalid_distance_to_shape": "As coordenadas (%f, %f) estao demasiado distantes das shapes, a shape mais proxima \"%s\" na sequencia %d em (%f, %f) (%.2f m)"
+    },
+    "coordinates_consistent_validation": {
+        "invalid_consistent_distance": "A shape \"%s\" tem as coordenadas (%f, %f) da sequencia (%d) demasiado distantes relativamente a anterior com as coordenadas (%f, %f) da sequencia (%d)",
+        "ManyErrors": "Foram encontrados muitos erros em relação às coordenadas introduzidas no ficheiro shapes.txt, existem varias shapes que tem uma distancia muito grande relativamente a anterior por isso tem de ser verificado"
+    },
+    "coordinates_distances_validation": {
+        "invalid_distances": "As distâncias entre pontos (%s, %s) e (%s, %s) não correspondem ao incremento de shape_dist_traveled. A distância na shape_dist_traveled é %.2f metros mas a distância geométrica real é %.2f metros",
+        "ManyErrors": "Foram encontrados muitos erros em relação às distâncias introduzidas no ficheiro shapes.txt, existem várias shapes com um valor estimado (shape_dist_traveled) mais longe ou mais perto relativamente ao valor real por isso tem de ser verificado"
+    },
+    "distances_validation": {
+        "invalid_distances": "A distância total esperada (shape_dist_traveled) para a shape \"%s\" é %.2f metros, a distância geométrica real é %.2f metros (diferença: %.2f metros)"
+    },
     "parent_station_validation": {
         "forbidden": "O campo \"parent_station\" é proibido",
         "required": "O campo \"parent_station\" é obrigatório",
@@ -519,7 +537,7 @@
         "required": "O campo \"region_id\" é obrigatório",
         "recommended": "O campo \"region_id\" é recomendado",
         "not_found": "O campo \"region_id\" \"%s\" não existe em regions.txt",
-        "not_allowed": "O campo \"region_id\" \"%s\" não é permitido"
+        "not_allowed": "O campo \"region_id\" \"%s\" não é válido"
     },
     "shelter_code_validation": {
         "forbidden": "O campo \"shelter_code\" é proibido",

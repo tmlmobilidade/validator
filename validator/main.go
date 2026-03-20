@@ -104,7 +104,6 @@ func main() {
 		i18n.AppTranslator.SetLanguage(services.AppCLI.Options.RulesLang)
 	}
 
-	//
 	// 0.3 Parse Rules
 	rules, err := services.NewRulesParser(services.AppCLI.Options.RulesPath).ParseRules()
 	if err != nil {

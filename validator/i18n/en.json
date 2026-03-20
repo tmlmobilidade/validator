@@ -388,7 +388,8 @@
         "not_allowed": "Field \"stop_id\" \"%s\" is not allowed",
         "forbidden_location_group_id_location_id": "Field \"stop_id\" is forbidden if \"location_group_id\" or \"location_id\" are defined",
         "required_location_group_id_location_id": "Field \"stop_id\" is required if \"location_group_id\" and \"location_id\" are not defined",
-        "invalid_location_type": "Field \"stop_id\" must reference a stop with location_type 0 or empty (platform/stop)"
+        "invalid_location_type": "Field \"stop_id\" must reference a stop with location_type 0 or empty (platform/stop)",
+        "not_allowed_by_reference_api": "Field \"stop_id\" \"%s\" is not present in the external reference API"
     },
     "stop_desc_validation": {
         "forbidden": "Field \"stop_desc\" is forbidden",
@@ -486,12 +487,22 @@
         "not_found": "Field \"municipality_id\" \"%s\" does not exist in municipalities.txt",
         "not_allowed": "Field \"municipality_id\" \"%s\" is not allowed"
     },
-    "parent_station_validation": {
-        "forbidden": "Field \"parent_station\" is forbidden",
-        "required": "Field \"parent_station\" is required",
-        "recommended": "Field \"parent_station\" is recommended",
-        "not_found": "Field \"parent_station\" \"%s\" does not exist in stops.txt",
-        "not_allowed": "Field \"parent_station\" \"%s\" is not allowed"
+    "coordinates_validation": {
+        "not_mapped": "Coordinates (%f, %f) are not mapped in Portugal Continental",
+        "invalid_municipality_id": "Coordinates (%f, %f) do not match mapped municipality. Municipality_id expected \"%s\", received \"%s\"",
+        "invalid_distance": "Coordinates (%f, %f) are too far apart relative to other shapes",
+        "invalid_distance_to_shape": "Coordinates (%f, %f) are too far from the shapes, the closest shape \"%s\" in sequence %d at (%f, %f) (%.2f m)"
+    },
+    "coordinates_consistent_validation": {
+        "invalid_consistent_distance": "Shape \"%s\" has coordinates (%f, %f) sequence (%d) too far apart relative to previous with coordinates (%f, %f) sequence (%d)",
+        "ManyErrors": "Many errors found in shapes.txt file, exist several shapes with a large distance relatively to the previous so it has to be verified"
+    },
+    "coordinates_distances_validation": {
+        "invalid_distances": "The distances between points (%s, %s) and (%s, %s) do not correspond to the shape_dist_traveled increment. The distance in shape_dist_traveled is %.2f meters but the actual geometric distance is %.2f meters",
+        "ManyErrors": "Many errors found in shapes.txt file, exist several shapes with an estimated value (shape_dist_traveled) further or closer relatively to the real value so it has to be verified"
+    },
+    "distances_validation": {
+        "invalid_distances": "The total expected distance (shape_dist_traveled) for shape \"%s\" is %.2f meters, the actual geometric distance is %.2f meters (diff: %.2f meters)"
     },
     "parish_id_validation": {
         "forbidden": "Field \"parish_id\" is forbidden",
@@ -518,7 +529,7 @@
         "required": "Field \"region_id\" is required",
         "recommended": "Field \"region_id\" is recommended",
         "not_found": "Field \"region_id\" \"%s\" does not exist in regions.txt",
-        "not_allowed": "Field \"region_id\" \"%s\" is not allowed"
+        "not_allowed": "Field \"region_id\" \"%s\" is not valid"
     },
     "shelter_code_validation": {
         "forbidden": "Field \"shelter_code\" is forbidden",
