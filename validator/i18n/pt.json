@@ -626,20 +626,20 @@
         "not_allowed": "O campo \"direction_id\" \"%s\" não é permitido"
     },
     "route_id_group_validation": {
-        "different_route_ids_in_pattern": "pattern_id %s tem viagens com route_ids diferentes: %s. Todas as viagens com o mesmo pattern_id devem ter o mesmo route_id"
+        "different_route_ids_in_pattern": "pattern_id \"%s\" tem viagens com route_ids diferentes: %s. Todas as viagens com o mesmo pattern_id devem ter o mesmo route_id"
     },
     "direction_id_group_validation": {
-        "different_direction_ids_in_pattern": "pattern_id %s tem viagens com direction_ids diferentes: %s. Todas as viagens com o mesmo pattern_id devem ter o mesmo direction_id"
+        "different_direction_ids_in_pattern": "pattern_id \"%s\" tem viagens com direction_ids diferentes: %s. Todas as viagens com o mesmo pattern_id devem ter o mesmo direction_id"
     },
     "shape_id_group_validation": {
-        "different_shape_ids_in_pattern": "pattern_id %s tem viagens com shape_ids diferentes: %s. Todas as viagens com o mesmo pattern_id devem ter o mesmo shape_id",
-        "different_pattern_ids_in_shape": "shape_id %s tem viagens com pattern_ids diferentes: %s. Todas as viagens com o mesmo shape_id devem ter o mesmo pattern_id"
+        "different_shape_ids_in_pattern": "pattern_id \"%s\" tem viagens com shape_ids diferentes: %s. Todas as viagens com o mesmo pattern_id devem ter o mesmo shape_id",
+        "different_pattern_ids_in_shape": "shape_id \"%s\" tem viagens com pattern_ids diferentes: %s. Todas as viagens com o mesmo shape_id devem ter o mesmo pattern_id"
     },
     "pattern_id_group_validation": {
         "shape_id_required": "O campo \"shape_id\" é obrigatório",
         "route_id_required": "O campo \"route_id\" é obrigatório",
         "direction_id_required": "O campo \"direction_id\" é obrigatório",
-        "multiple_stop_sequence_variations": "Para o pattern_id %s, existem viagens com múltiplas variações de sequência de paragens"
+        "multiple_stop_sequence_variations": "Para o pattern_id \"%s\", existem viagens com múltiplas variações de sequência de paragens"
     },
     "pattern_id_validation": {
         "forbidden": "O campo \"pattern_id\" é proibido",

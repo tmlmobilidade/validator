@@ -618,20 +618,20 @@
         "not_allowed": "Field \"direction_id\" \"%s\" is not allowed"
     },
     "route_id_group_validation": {
-        "different_route_ids_in_pattern": "pattern_id %s has trips with different route_ids: %s. All trips with the same pattern_id must have the same route_id"
+        "different_route_ids_in_pattern": "pattern_id \"%s\" has trips with different route_ids: %s. All trips with the same pattern_id must have the same route_id"
     },
     "direction_id_group_validation": {
-        "different_direction_ids_in_pattern": "pattern_id %s has trips with different direction_ids: %s. All trips with the same pattern_id must have the same direction_id"
+        "different_direction_ids_in_pattern": "pattern_id \"%s\" has trips with different direction_ids: %s. All trips with the same pattern_id must have the same direction_id"
     },
     "shape_id_group_validation": {
-        "different_shape_ids_in_pattern": "pattern_id %s has trips with different shape_ids: %s. All trips with the same pattern_id must have the same shape_id",
-        "different_pattern_ids_in_shape": "shape_id %s has trips with different pattern_ids: %s. All trips with the same shape_id must have the same pattern_id"
+        "different_shape_ids_in_pattern": "pattern_id \"%s\" has trips with different shape_ids: %s. All trips with the same pattern_id must have the same shape_id",
+        "different_pattern_ids_in_shape": "shape_id \"%s\" has trips with different pattern_ids: %s. All trips with the same shape_id must have the same pattern_id"
     },
     "pattern_id_group_validation": {
         "shape_id_required": "Field \"shape_id\" is required",
         "route_id_required": "Field \"route_id\" is required",
         "direction_id_required": "Field \"direction_id\" is required",
-        "multiple_stop_sequence_variations": "For pattern_id %s, there are trips with multiple stop sequence variations"
+        "multiple_stop_sequence_variations": "For pattern_id \"%s\", there are trips with multiple stop sequence variations"
     },
     "pattern_id_validation": {
         "forbidden": "Field \"pattern_id\" is forbidden",
