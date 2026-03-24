@@ -271,12 +271,6 @@
         "invalid": "Field \"shape_dist_traveled\" must be a non-negative float",
         "not_increasing": "Field \"shape_dist_traveled\" for shape_id '%s' must increase along the trip"
     },
-    "shape_id_in_unique_pattern_id_validation": {
-        "pattern_id_not_found": "Field \"pattern_id\" is required",
-        "shape_id_not_found": "Field \"shape_id\" is required",
-        "different_pattern_id": "Field \"shape_id\" \"%s\" is used in different pattern_ids: \"%s\" and \"%s\"",
-        "multiple_shape_id_in_unique_pattern_id": "Field \"shape_id\" \"%s\" is used in multiple pattern_ids"
-    },
     "shape_id_validation": {
         "forbidden": "Field \"shape_id\" is forbidden",
         "required": "Field \"shape_id\" is required",
@@ -629,21 +623,20 @@
     "direction_id_group_validation": {
         "different_direction_ids_in_pattern": "pattern_id %s has trips with different direction_ids: %s. All trips with the same pattern_id must have the same direction_id"
     },
+    "shape_id_group_validation": {
+        "different_shape_ids_in_pattern": "pattern_id %s has trips with different shape_ids: %s. All trips with the same pattern_id must have the same shape_id",
+        "different_pattern_ids_in_shape": "shape_id %s has trips with different pattern_ids: %s. All trips with the same shape_id must have the same pattern_id"
+    },
+    "pattern_id_group_validation": {
+        "shape_id_required": "Field \"shape_id\" is required",
+        "route_id_required": "Field \"route_id\" is required",
+        "direction_id_required": "Field \"direction_id\" is required",
+        "multiple_stop_sequence_variations": "For pattern_id %s, there are trips with multiple stop sequence variations"
+    },
     "pattern_id_validation": {
         "forbidden": "Field \"pattern_id\" is forbidden",
         "required": "Field \"pattern_id\" is required",
-        "recommended": "Field \"pattern_id\" is recommended",
-        "not_found": "Field \"pattern_id\" \"%s\" does not exist in patterns.txt",
-        "shape_id_not_found": "Field \"shape_id\" not found",
-        "route_id_not_found": "Field \"route_id\" not found",
-        "direction_id_not_found": "Field \"direction_id\" not found",
-        "not_allowed": "Field \"pattern_id\" \"%s\" is not allowed",
-        "invalid_pattern_id": "Field \"pattern_id\" must be in the format \"XXXX_X_X\", received: %s",
-        "different_direction_id": "Different direction_id's found for the same pattern_id: %s",
-        "different_route_id": "Different route_id's found for the same pattern_id: %s",
-        "different_shape_id": "Different shape_id's found for the same pattern_id: %s",
-        "different_pattern_id_same_shape": "Field \"shape_id\" \"%s\" is used in different pattern_ids: \"%s\" and \"%s\"",
-        "multiple_stop_sequence_variations": "For pattern_id %s, there are trips with multiple stop sequence variations"
+        "recommended": "Field \"pattern_id\" is recommended"
     },
     "stop_sequence_validation": {
         "forbidden": "Field \"stop_sequence\" is forbidden",

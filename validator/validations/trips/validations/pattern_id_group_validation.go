@@ -25,28 +25,30 @@ func PatternIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, 
 			panic("trips is empty")
 		}
 
+		// 1. Validate shape_id, route_id and direction_id
 		for _, trip := range group.Trips {
 			ctx := lib.NewValidationContext("pattern_id", "trips.txt", "pattern_id_validation", trip.Row, services.AppMessageService)
 
 			if trip.ShapeId == nil {
-				ctx.AddError(ctx.GetTranslatedMessage("pattern_id_validation.shape_id_not_found"))
+				ctx.AddError(ctx.GetTranslatedMessage("pattern_id_group_validation.shape_id_required"))
 				continue
 			}
 
 			if trip.RouteId == nil {
-				ctx.AddError(ctx.GetTranslatedMessage("pattern_id_validation.route_id_not_found"))
+				ctx.AddError(ctx.GetTranslatedMessage("pattern_id_group_validation.route_id_required"))
 				continue
 			}
 
 			if trip.DirectionId == nil {
-				ctx.AddError(ctx.GetTranslatedMessage("pattern_id_validation.direction_id_not_found"))
+				ctx.AddError(ctx.GetTranslatedMessage("pattern_id_group_validation.direction_id_required"))
 				continue
 			}
 		}
 
+		// 2. Validate multiple stop sequence variations
 		if len(group.Hash) > 1 {
 			ctx := lib.NewValidationContext("pattern_id", "trips.txt", "pattern_id_validation", group.Trips[0].Row, services.AppMessageService)
-			ctx.AddError(ctx.GetTranslatedMessage("pattern_id_validation.multiple_stop_sequence_variations", patternId))
+			ctx.AddError(ctx.GetTranslatedMessage("pattern_id_group_validation.multiple_stop_sequence_variations", patternId))
 		}
 	}
 }

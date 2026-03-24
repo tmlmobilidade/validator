@@ -272,12 +272,6 @@
         "invalid": "O campo \"shape_dist_traveled\" deve ser um float não negativo",
         "not_increasing": "O campo \"shape_dist_traveled\" para o shape_id '%s' deve ser crescente ao longo da viagem"
     },
-    "shape_id_in_unique_pattern_id_validation": {
-        "pattern_id_not_found": "O campo \"pattern_id\" é obrigatório",
-        "shape_id_not_found": "O campo \"shape_id\" é obrigatório",
-        "different_pattern_id": "O shape_id \"%s\" está a ser utilizada por diferentes pattern_ids: \"%s\" e \"%s\"",
-        "multiple_shape_id_in_unique_pattern_id": "O shape_id \"%s\" é utilizado em múltiplos pattern_ids"
-    },
     "shape_id_validation": {
         "forbidden": "O campo \"shape_id\" é proibido",
         "required": "O campo \"shape_id\" é obrigatório",
@@ -637,21 +631,20 @@
     "direction_id_group_validation": {
         "different_direction_ids_in_pattern": "pattern_id %s tem viagens com direction_ids diferentes: %s. Todas as viagens com o mesmo pattern_id devem ter o mesmo direction_id"
     },
+    "shape_id_group_validation": {
+        "different_shape_ids_in_pattern": "pattern_id %s tem viagens com shape_ids diferentes: %s. Todas as viagens com o mesmo pattern_id devem ter o mesmo shape_id",
+        "different_pattern_ids_in_shape": "shape_id %s tem viagens com pattern_ids diferentes: %s. Todas as viagens com o mesmo shape_id devem ter o mesmo pattern_id"
+    },
+    "pattern_id_group_validation": {
+        "shape_id_required": "O campo \"shape_id\" é obrigatório",
+        "route_id_required": "O campo \"route_id\" é obrigatório",
+        "direction_id_required": "O campo \"direction_id\" é obrigatório",
+        "multiple_stop_sequence_variations": "Para o pattern_id %s, existem viagens com múltiplas variações de sequência de paragens"
+    },
     "pattern_id_validation": {
         "forbidden": "O campo \"pattern_id\" é proibido",
         "required": "O campo \"pattern_id\" é obrigatório",
-        "recommended": "O campo \"pattern_id\" é recomendado",
-        "not_found": "O campo \"pattern_id\" \"%s\" não existe em patterns.txt",
-        "shape_id_not_found": "O campo \"shape_id\" não foi encontrado",
-        "route_id_not_found": "O campo \"route_id\" não foi encontrado",
-        "direction_id_not_found": "O campo \"direction_id\" não foi encontrado",
-        "not_allowed": "O campo \"pattern_id\" \"%s\" não é permitido",
-        "invalid_pattern_id": "O campo \"pattern_id\" deve estar no formato \"XXXX_X_X\", recebido: %s",
-        "different_direction_id": "Encontrados direction_id's diferentes para o mesmo pattern_id: %s",
-        "different_route_id": "Encontrados route_id's diferentes para o mesmo pattern_id: %s",
-        "different_shape_id": "Encontrados shape_id's diferentes para o mesmo pattern_id: %s",
-        "different_pattern_id_same_shape": "O shape_id \"%s\" está a ser utilizado por diferentes pattern_ids: \"%s\" e \"%s\"",
-        "multiple_stop_sequence_variations": "Para o pattern_id %s, existem viagens com múltiplas variações de sequência de paragens"
+        "recommended": "O campo \"pattern_id\" é recomendado"
     },
     "stop_sequence_validation": {
         "forbidden": "O campo \"stop_sequence\" é proibido",
