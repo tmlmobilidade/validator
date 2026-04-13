@@ -100,6 +100,7 @@ type TripsRules struct {
 	DirectionPatternIdMatch RuleConfig `json:"direction_pattern_id_match"`
 	TripIdLimitCharacters   RuleConfig `json:"trip_id_limit_characters"`
 	PatternIdFormat         RuleConfig `json:"pattern_id_format"`
+	StopCoordinatesByTripId RuleConfig `json:"stop_coordinates_by_trip_id"`
 }
 
 type StopTimesRules struct {
@@ -203,12 +204,15 @@ type FareMediaRules struct {
 }
 
 type ShapesRules struct {
-	File              Severity   `json:"_file"`
-	ShapeId           RuleConfig `json:"shape_id"`
-	ShapePtLat        RuleConfig `json:"shape_pt_lat"`
-	ShapePtLon        RuleConfig `json:"shape_pt_lon"`
-	ShapePtSequence   RuleConfig `json:"shape_pt_sequence"`
-	ShapeDistTraveled RuleConfig `json:"shape_dist_traveled"`
+	File                             Severity   `json:"_file"`
+	ShapeId                          RuleConfig `json:"shape_id"`
+	ShapePtLat                       RuleConfig `json:"shape_pt_lat"`
+	ShapePtLon                       RuleConfig `json:"shape_pt_lon"`
+	ShapePtSequence                  RuleConfig `json:"shape_pt_sequence"`
+	ShapeDistTraveled                RuleConfig `json:"shape_dist_traveled"`
+	ShapeDistances                   RuleConfig `json:"shape_distances"`
+	ShapePointsCoordinatesConsistent RuleConfig `json:"shape_points_coordinates_consistent"`
+	ShapePointsCoordinatesDistances  RuleConfig `json:"shape_points_coordinates_distances"`
 }
 
 type FrequenciesRules struct {

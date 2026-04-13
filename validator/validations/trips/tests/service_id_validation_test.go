@@ -27,7 +27,7 @@ func TestAllServiceIdValidationTestCases(t *testing.T) {
 				t.Fatalf("failed to create mock gtfs: %v", err)
 			}
 			defer cleanup()
-			validations.ServiceIdValidation(trip, tc.Row, gtfs)
+			validations.ServiceIdValidation(trip, tc.Row, gtfs, make(map[string][]int), make(map[string][]int))
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
@@ -39,7 +39,7 @@ func TestAllServiceIdValidationTestCases(t *testing.T) {
 			t.Fatalf("failed to create mock gtfs: %v", err)
 		}
 		defer cleanup()
-		validations.ServiceIdValidation(trip, 1, gtfs)
+		validations.ServiceIdValidation(trip, 1, gtfs, make(map[string][]int), make(map[string][]int))
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Service ID is required", types.SEVERITY_ERROR)
 	})
 }

@@ -86,8 +86,7 @@ async function downloadRemoteBinaries(): Promise<void> {
 
 	try {
 		res = await fetch(remoteUrl);
-	}
-	catch (err) {
+	} catch (err) {
 		const errorMessage = err instanceof Error ? err.message : String(err);
 		throw new Error(`Failed to fetch remote binary from ${remoteUrl}: ${errorMessage}`);
 	}
@@ -138,22 +137,19 @@ async function main(): Promise<void> {
 		try {
 			buildDevEnvironment();
 			console.log(`✓ Binary copied from dev environment: ${binaryDistributionFile}`);
-		}
-		catch (error) {
+		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : String(error);
 			console.error(`✗ Error building dev environment: ${errorMessage}`);
 			process.exitCode = 1;
 		}
-	}
-	else {
+	} else {
 		console.info(`Local file not found: ${binaryDistributionFilePath}`);
 		console.info(`Downloading binary from remote server...`);
 
 		try {
 			await downloadRemoteBinaries();
 			console.log(`✓ Binary downloaded successfully: ${binaryDistributionFile}`);
-		}
-		catch (error) {
+		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : String(error);
 			console.error(`✗ Error downloading remote binary: ${errorMessage}`);
 			process.exitCode = 1;

@@ -10,7 +10,7 @@ import (
 )
 
 func TestAllExceptionTypeValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetExceptionTypeValidOptions()
+	validOptions := test_helpers.GetBinaryValidOptions()
 	dateValid := test_helpers.GetDateValidOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("exception_type", validOptions) {
 		if tc.Name == "Recommended_Missing" {

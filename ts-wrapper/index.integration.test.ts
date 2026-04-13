@@ -11,8 +11,7 @@ describe('integration - GTFSValidator', () => {
 		// Verify test data directory exists
 		try {
 			await access(DATA_DIR);
-		}
-		catch {
+		} catch {
 			console.warn(`Test data directory not found: ${DATA_DIR}. Some integration tests may be skipped.`);
 		}
 	});
@@ -56,8 +55,7 @@ describe('integration - GTFSValidator', () => {
 
 			try {
 				await access(gtfsPath);
-			}
-			catch {
+			} catch {
 				console.warn(`GTFS data not found at ${gtfsPath}. Skipping test.`);
 				return;
 			}
@@ -91,8 +89,7 @@ describe('integration - GTFSValidator', () => {
 
 			try {
 				await access(gtfsPath);
-			}
-			catch {
+			} catch {
 				console.warn(`GTFS data not found at ${gtfsPath}. Skipping test.`);
 				return;
 			}
@@ -116,8 +113,7 @@ describe('integration - GTFSValidator', () => {
 
 			try {
 				await access(gtfsPath);
-			}
-			catch {
+			} catch {
 				console.warn(`GTFS data not found at ${gtfsPath}. Skipping test.`);
 				return;
 			}
@@ -143,8 +139,7 @@ describe('integration - GTFSValidator', () => {
 
 			try {
 				await access(gtfsPath);
-			}
-			catch {
+			} catch {
 				console.warn(`GTFS data not found at ${gtfsPath}. Skipping test.`);
 				return;
 			}
@@ -173,8 +168,7 @@ describe('integration - GTFSValidator', () => {
 			);
 			try {
 				await GTFSValidator('/nonexistent/path/that/does/not/exist.zip');
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GTFSValidatorError).code).toBe('INPUT_NOT_ACCESSIBLE');
 			}
 		});
@@ -183,8 +177,7 @@ describe('integration - GTFSValidator', () => {
 			await expect(GTFSValidator('')).rejects.toThrow(GTFSValidatorError);
 			try {
 				await GTFSValidator('');
-			}
-			catch (err) {
+			} catch (err) {
 				expect((err as GTFSValidatorError).code).toBe('INVALID_INPUT');
 			}
 		});
@@ -203,8 +196,7 @@ describe('integration - GTFSValidator', () => {
 
 			try {
 				await access(gtfsPath);
-			}
-			catch {
+			} catch {
 				console.warn(`GTFS data not found at ${gtfsPath}. Skipping test.`);
 				return;
 			}
@@ -221,8 +213,7 @@ describe('integration - GTFSValidator', () => {
 			try {
 				const { unlink } = await import('fs/promises');
 				await unlink(outputPath);
-			}
-			catch {
+			} catch {
 				// Ignore cleanup errors
 			}
 		}, 120000);
@@ -240,8 +231,7 @@ describe('integration - GTFSValidator', () => {
 
 			try {
 				await access(gtfsPath);
-			}
-			catch {
+			} catch {
 				console.warn(`GTFS data not found at ${gtfsPath}. Skipping test.`);
 				return;
 			}
@@ -253,13 +243,11 @@ describe('integration - GTFSValidator', () => {
 					timeout: 1, // 1ms - should timeout immediately
 				});
 				// If we get here, the validation completed very quickly (unlikely but possible)
-			}
-			catch (error) {
+			} catch (error) {
 				if (error instanceof GTFSValidatorError) {
 					// Timeout error is acceptable
 					expect(['VALIDATION_TIMEOUT', 'VALIDATION_FAILED']).toContain(error.code);
-				}
-				else {
+				} else {
 					throw error;
 				}
 			}
@@ -278,8 +266,7 @@ describe('integration - GTFSValidator', () => {
 
 			try {
 				await access(gtfsPath);
-			}
-			catch {
+			} catch {
 				console.warn(`GTFS data not found at ${gtfsPath}. Skipping test.`);
 				return;
 			}

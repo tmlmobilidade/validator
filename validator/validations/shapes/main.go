@@ -43,6 +43,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// Validate shape_dist_traveled
 		validations.ShapeDistTraveledValidation(&shape, row, &rules.Shapes)
 
+		// Add shape to all shapes
 		allShapes = append(allShapes, shape)
 		return nil
 	})
@@ -55,4 +56,14 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 	// Group-level validation: shape_pt_sequence must increase for each shape_id
 	validations.ShapeSequenceValidation(allShapes)
+
+	// Validate shape coordinates consistency
+	validations.ShapePointsCoordinatesConsistentValidation(allShapes, &rules.Shapes)
+
+	// Validate shape coordinates distances
+	validations.ShapePointsCoordinatesDistancesValidation(allShapes, &rules.Shapes)
+
+	// Validate shape all points distances
+	validations.ShapeDistancesValidation(allShapes, &rules.Shapes)
+
 }

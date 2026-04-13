@@ -23,7 +23,7 @@ Conditionally Required:
 
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 */
-func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules, tripStopTimesCache map[string][]types.StopTimeRaw) {
+func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules, tripStopTimesCache map[string][]types.StopTimeRaw, routeRowsCache map[string][]int) {
 	ctx := lib.NewValidationContext("shape_id", "trips.txt", "shape_id_validation", row, services.AppMessageService)
 	if rules != nil && rules.ShapeId.Severity != "" {
 		ctx.WithSeverity(rules.ShapeId.Severity)
@@ -35,8 +35,8 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 		return
 	}
 
-	// Check if the route has continuous pickup/dropoff behavior
-	routeRows, err := gtfs.GetRowsById("routes", *trip.RouteId)
+	// Check if the route has continuous pickup/dropoff behavior (use cache to avoid repeated queries)
+	routeRows, err := gtfs.GetCachedRowsById(routeRowsCache, "routes", *trip.RouteId)
 	if err != nil || len(routeRows) > 1 {
 		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.not_found", map[string]any{"shape_id": *trip.ShapeId}))
 		return
@@ -94,4 +94,10 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.not_found", map[string]any{"shape_id": *trip.ShapeId}))
 		return
 	}
+
+	// // check if shape_id is different from pattern_id
+	// if *trip.ShapeId != *trip.PatternId {
+	// 	ctx.AddWarning(ctx.GetTranslatedMessage("shape_id_validation.different_from_pattern_id", *trip.ShapeId, *trip.PatternId))
+	// 	return
+	// }
 }

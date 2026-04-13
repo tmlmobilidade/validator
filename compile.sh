@@ -17,19 +17,19 @@ fi
 cd validator
 
 # Compile the validator for linux
-GOOS=linux GOARCH=amd64 go build -o ../bin/validator-linux-amd64 ./main.go
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ../bin/validator-linux-amd64 ./main.go
 
 # Compile the validator for linux arm64
-GOOS=linux GOARCH=arm64 go build -o ../bin/validator-linux-arm64 ./main.go
+CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o ../bin/validator-linux-arm64 ./main.go
 
 # Compile the validator for darwin x86_64
-GOOS=darwin GOARCH=amd64 go build -o ../bin/validator-darwin-amd64 ./main.go
+CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ../bin/validator-darwin-amd64 ./main.go
 
 # Compile the validator for darwin arm64
-GOOS=darwin GOARCH=arm64 go build -o ../bin/validator-darwin-arm64 ./main.go
+CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o ../bin/validator-darwin-arm64 ./main.go
 
 # Compile the validator for windows x86_64
-GOOS=windows GOARCH=amd64 go build -o ../bin/validator.exe ./main.go
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ../bin/validator.exe ./main.go
 
 # Allow all users to execute the validator
 chmod +x ../bin/validator-linux-amd64

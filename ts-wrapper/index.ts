@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { GTFSValidatorSummary } from '@tmlmobilidade/types';
 import { access, constants, readFile } from 'fs/promises';
 import { dirname, resolve } from 'path';
@@ -111,8 +113,7 @@ async function getValidatorBinaryPath(): Promise<string> {
 	try {
 		await access(binaryPath, constants.F_OK | constants.X_OK);
 		return binaryPath;
-	}
-	catch (err) {
+	} catch (err) {
 		const error = err instanceof Error ? err : new Error(String(err));
 		throw new GTFSValidatorError(
 			`GTFS validator binary not found or not executable: ${binaryPath}. Please ensure the binary is installed for platform ${platform}`,
@@ -141,8 +142,7 @@ async function validateInput(input: string): Promise<void> {
 	try {
 		const inputPath = resolve(input);
 		await access(inputPath, constants.F_OK | constants.R_OK);
-	}
-	catch (err) {
+	} catch (err) {
 		const error = err instanceof Error ? err : new Error(String(err));
 		throw new GTFSValidatorError(
 			`Input path does not exist or is not readable: ${input}`,
@@ -339,8 +339,7 @@ export async function GTFSValidator(
 		try {
 			result = await runGoBinary<GTFSValidatorSummary>(binaryPath, runOptions);
 			summary = result.data;
-		}
-		catch (err) {
+		} catch (err) {
 			// If output file was specified and we got a JSON parse error or no output,
 			// try reading from the file instead (the validator writes to file, not stdout)
 			if (
@@ -363,8 +362,7 @@ export async function GTFSValidator(
 						stderr: err.stderr || '',
 						stdout: err.stdout || '',
 					};
-				}
-				catch (fileErr) {
+				} catch (fileErr) {
 					const error = fileErr instanceof Error ? fileErr : new Error(String(fileErr));
 					throw new GTFSValidatorError(
 						`Failed to read or parse output file: ${outputFilePath}. ${error.message}`,
@@ -374,8 +372,7 @@ export async function GTFSValidator(
 						err.stderr,
 					);
 				}
-			}
-			else {
+			} else {
 				// Re-throw the original error
 				throw err;
 			}
@@ -388,8 +385,7 @@ export async function GTFSValidator(
 			stdout: result.stdout,
 			summary,
 		};
-	}
-	catch (err) {
+	} catch (err) {
 		// Re-throw GTFSValidatorError as-is
 		if (err instanceof GTFSValidatorError) {
 			throw err;
@@ -472,8 +468,7 @@ export async function getValidatorInfo(): Promise<{
 	try {
 		await access(binaryPath, constants.F_OK | constants.X_OK);
 		isAvailable = true;
-	}
-	catch {
+	} catch {
 		// Binary not available - this is expected in some scenarios
 	}
 

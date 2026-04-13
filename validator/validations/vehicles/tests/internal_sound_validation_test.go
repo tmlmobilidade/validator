@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllInternalSoundValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetInternalSoundValidOptions()
+	validOptions := test_helpers.GetBinaryValidOptions()
 	invalidOptions := test_helpers.GetInvalidIntOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("internal_sound", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {

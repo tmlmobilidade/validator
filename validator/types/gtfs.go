@@ -135,6 +135,16 @@ type TripGroupedByShapeId map[string]struct {
 	Hash  []string
 }
 
+type TripGroupedByRouteId map[string]struct {
+	Trips []Trip
+	Hash  []string
+}
+
+type TripGroupedByDirectionId map[string]struct {
+	Trips []Trip
+	Hash  []string
+}
+
 /* STOP TIME */
 type StopTime struct {
 	TripId                   *string  `json:"trip_id"`

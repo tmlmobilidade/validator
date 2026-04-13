@@ -1,54 +1,53 @@
 {
-  "name": "@tmlmobilidade/gtfs-validator",
-  "description": "A GTFS Validator",
-  "version": "1.0.0",
-  "author": "Jusi Monteiro & João Vasconcelos",
-  "license": "ISC",
-  "keywords": [
-    "gtfs",
-    "validator",
-    "gtfs-validator",
-    "tmlmobilidade",
-    "tml",
-    "cmet",
-    "carrismetropolitana"
-  ],
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
-  },
-  "type": "module",
-  "files": [
-    "dist"
-  ],
-  "main": "dist/index.js",
-  "exports": {
-    "types": "./dist/index.d.ts",
-    "default": "./dist/index.js"
-  },
-  "scripts": {
-    "build": "rm -rf dist && tsc",
-    "lint": "eslint ./src && tsc --noEmit",
-    "lint:fix": "eslint --fix ./src",
-    "postinstall": "if [ ! -d dist ]; then tsx ./scripts/postinstall.ts; else node ./dist/scripts/postinstall.js; fi",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "test:integration": "vitest run --grep integration",
-    "test:unit": "vitest run --grep unit",
-    "test:watch": "vitest"
-  },
-  "dependencies": {
-    "@tmlmobilidade/types": "^20260113.1457.7"
-  },
-  "devDependencies": {
-    "@carrismetropolitana/eslint": "^20251107.1231.48",
-    "@dotenv-run/cli": "^1.3.6",
-    "@tmlmobilidade/tsconfig": "^20260113.1457.7",
-    "@types/node": "^25.0.9",
-    "@vitest/coverage-v8": "^4.0.17",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.17"
-  }
+	"name": "@tmlmobilidade/gtfs-validator",
+	"description": "A GTFS Validator",
+	"version": "1.0.0",
+	"author": "Jusi Monteiro & João Vasconcelos",
+	"license": "ISC",
+	"keywords": [
+		"gtfs",
+		"validator",
+		"gtfs-validator",
+		"tmlmobilidade",
+		"tml",
+		"cmet",
+		"carrismetropolitana"
+	],
+	"publishConfig": {
+		"access": "public",
+		"directory": "dist"
+	},
+	"type": "module",
+	"files": [
+		"dist"
+	],
+	"main": "dist/index.js",
+	"exports": {
+		"types": "./dist/index.d.ts",
+		"default": "./dist/index.js"
+	},
+	"scripts": {
+		"build": "rm -rf dist && tsc",
+		"lint": "eslint ./src && tsc --noEmit",
+		"lint:fix": "eslint --fix ./src",
+		"postinstall": "if [ ! -d dist ]; then tsx ./scripts/postinstall.ts; else node ./dist/scripts/postinstall.js; fi",
+		"rinse": "npx --yes @tmlmobilidade/repo-rinse",
+		"test": "vitest run",
+		"test:coverage": "vitest run --coverage",
+		"test:integration": "vitest run --grep integration",
+		"test:unit": "vitest run --grep unit",
+		"test:watch": "vitest"
+	},
+	"dependencies": {
+		"@tmlmobilidade/types": "20260302.1453.8"
+	},
+	"devDependencies": {
+		"@tmlmobilidade/eslint": "20260302.1453.8",
+		"@tmlmobilidade/tsconfig": "20260302.1453.8",
+		"@types/node": "25.3.3",
+		"@vitest/coverage-v8": "4.0.18",
+		"tsx": "4.21.0",
+		"typescript": "5.9.3",
+		"vitest": "4.0.18"
+	}
 }

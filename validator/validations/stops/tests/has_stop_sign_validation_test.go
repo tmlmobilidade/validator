@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllHasStopSignValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetHasStopSignValidOptions()
+	validOptions := test_helpers.GetFourStateValidOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("has_stop_sign", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()

@@ -428,7 +428,7 @@ function createMockProcess() {
 				mockProcess._closeCallback(args[0] as null | number, args[1] as NodeJS.Signals | null);
 			}
 		}),
-		kill: vi.fn((signal?: string) => {
+		kill: vi.fn(() => {
 			mockProcess.killed = true;
 		}),
 		killed: false,

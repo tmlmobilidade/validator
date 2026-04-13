@@ -17,29 +17,24 @@ func init() {
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Trips Validations...")
 
-	// Pre-compute stop_times data per trip_id for performance
-	// This avoids N+1 queries in stop_sequence and shape_id validations
-	lib.AppLogger.Debug("Pre-computing stop_times data per trip...")
-	tripStopTimesCache := make(map[string][]types.StopTimeRaw)
+	tripStopTimesCache := buildTripStopTimesCache(gtfs)
+	stopsCache := buildStopsCoordinatesCache(gtfs)
+	shapeChunkedCache := buildShapeChunkedCacheForTripShapes(gtfs)
+	stopClosestShapePointsCache := buildStopClosestShapePointsViolationCache(
+		gtfs, tripStopTimesCache, stopsCache, shapeChunkedCache,
+	)
 
-	err := gtfs.IterateStopTimes(func(i int, rawStopTime types.StopTimeRaw) error {
-		if rawStopTime.TripId == "" {
-			return nil
-		}
-		tripStopTimesCache[rawStopTime.TripId] = append(tripStopTimesCache[rawStopTime.TripId], rawStopTime)
-		return nil
-	})
-	if err != nil {
-		lib.AppLogger.Error(fmt.Sprintf("Error pre-computing trip stop times: %v", err))
-	}
-	lib.AppLogger.Debug(fmt.Sprintf("Pre-computed stop_times for %d trips", len(tripStopTimesCache)))
+	// Caches for GetRowsById to avoid repeated DB queries (many trips share route_id and service_id)
+	routeRowsCache := make(map[string][]int)
+	calendarRowsCache := make(map[string][]int)
+	calendarDatesRowsCache := make(map[string][]int)
 
 	// Create progress tracker
 	tracker := lib.CreateProgressTracker(gtfs, "trips", config.ProgressThresholdLarge)
 	var tripsGroupedByPattern types.TripGroupedByPattern = make(types.TripGroupedByPattern)
 	var tripsGroupedByShapeId types.TripGroupedByShapeId = make(types.TripGroupedByShapeId)
 
-	err = gtfs.IterateTrips(func(i int, rawTrips types.TripRaw) error {
+	err := gtfs.IterateTrips(func(i int, rawTrips types.TripRaw) error {
 		tracker.Track()
 		trip := validations.ParseTrips(rawTrips, i)
 
@@ -55,14 +50,14 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// Validate trip_id
 		validations.TripIdValidation(&trip, i, &gtfs)
 
-		// Validate shape_id (pass cached stop_times data)
-		validations.ShapeIdValidation(&trip, i, &gtfs, tripRules, tripStopTimesCache)
+		// Validate shape_id (pass cached stop_times data and route cache)
+		validations.ShapeIdValidation(&trip, i, &gtfs, tripRules, tripStopTimesCache, routeRowsCache)
 
-		// Validate route_id
-		validations.RouteIdValidation(&trip, i, &gtfs)
+		// Validate route_id (pass route cache)
+		validations.RouteIdValidation(&trip, i, &gtfs, routeRowsCache)
 
-		// Validate service_id
-		validations.ServiceIdValidation(&trip, i, &gtfs)
+		// Validate service_id (pass calendar caches)
+		validations.ServiceIdValidation(&trip, i, &gtfs, calendarRowsCache, calendarDatesRowsCache)
 
 		// Validate trip_headsign
 		validations.TripHeadsignValidation(&trip, i, &gtfs, tripRules)
@@ -84,6 +79,9 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 
 		// Validate stop_times.stop_sequence (pass cached stop_times data)
 		groupHash := validations.StopSequenceValidation(&trip, i, &gtfs, tripRules, tripStopTimesCache)
+
+		// Validate stop_coordinates (pass precomputed stop-to-shape distance cache)
+		validations.StopCoordinatesByTripIdValidation(&trip, i, &gtfs, tripStopTimesCache, stopsCache, stopClosestShapePointsCache, tripRules)
 
 		// CMET SPECIFIC VALIDATIONS
 		hasPatternId := validations.PatternIdValidation(&trip, i, &gtfs, tripRules)
@@ -127,9 +125,5 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		lib.AppLogger.Info(fmt.Sprintf("Completed trips.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 
-	//Validate pattern_id_group
-	validations.PatternIdGroupValidation(tripsGroupedByPattern, &gtfs)
-
-	//Validate shape_id uniqueness per pattern_id
-	validations.ShapeIdGroupValidation(tripsGroupedByShapeId, &gtfs)
+	validations.ValidatePatternGroups(tripsGroupedByPattern, tripsGroupedByShapeId, &gtfs)
 }
