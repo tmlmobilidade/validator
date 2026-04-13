@@ -943,7 +943,12 @@
       "severity": "error"
     },
     "pattern_id_format": {
-      "severity": "error"
+      "severity": "error",
+      "options": [
+        "XXXX_X_ASC",
+        "XXXX_X_DESC",
+        "XXXX_X_CIRC"
+      ]
     },
     "stop_coordinates_by_trip_id": {
       "severity": "error"
