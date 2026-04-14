@@ -19,4 +19,5 @@ func ValidatePatternGroups(
 	RouteIdGroupValidation(tripsGroupedByPattern, gtfs)
 	DirectionIdGroupValidation(tripsGroupedByPattern, gtfs)
 	ShapeIdGroupValidation(tripsGroupedByPattern, tripsGroupedByShapeId, gtfs)
+	TripHeadsignGroupValidation(tripsGroupedByPattern, gtfs)
 }
