@@ -945,6 +945,7 @@
     "pattern_id_format": {
       "severity": "error",
       "options": [
+        "XXXX_X_X",
         "XXXX_X_ASC",
         "XXXX_X_DESC",
         "XXXX_X_CIRC"
