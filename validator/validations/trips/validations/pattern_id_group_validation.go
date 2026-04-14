@@ -42,6 +42,11 @@ func PatternIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, 
 				ctx.AddError(ctx.GetTranslatedMessage("pattern_id_validation.direction_id_not_found"))
 				continue
 			}
+
+			if trip.TripHeadsign == nil {
+				ctx.AddError(ctx.GetTranslatedMessage("pattern_id_validation.trip_headsign_not_found"))
+				continue
+			}
 		}
 
 		if len(group.Hash) > 1 {

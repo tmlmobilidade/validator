@@ -637,6 +637,9 @@
     "direction_id_group_validation": {
         "different_direction_ids_in_pattern": "pattern_id %s tem viagens com direction_ids diferentes: %s. Todas as viagens com o mesmo pattern_id devem ter o mesmo direction_id"
     },
+    "trip_headsign_group_validation": {
+        "different_headsigns_in_pattern": "pattern_id %s tem viagens com headsigns diferentes: %s. Todas as viagens com o mesmo pattern_id devem ter o mesmo headsign"
+    },
     "pattern_id_validation": {
         "forbidden": "O campo \"pattern_id\" é proibido",
         "required": "O campo \"pattern_id\" é obrigatório",
@@ -650,6 +653,7 @@
         "different_direction_id": "Encontrados direction_id's diferentes para o mesmo pattern_id: %s",
         "different_route_id": "Encontrados route_id's diferentes para o mesmo pattern_id: %s",
         "different_shape_id": "Encontrados shape_id's diferentes para o mesmo pattern_id: %s",
+        "different_headsign": "Encontrados headsigns diferentes para o mesmo pattern_id: %s",
         "different_pattern_id_same_shape": "O shape_id \"%s\" está a ser utilizado por diferentes pattern_ids: \"%s\" e \"%s\"",
         "multiple_stop_sequence_variations": "Para o pattern_id %s, existem viagens com múltiplas variações de sequência de paragens"
     },
