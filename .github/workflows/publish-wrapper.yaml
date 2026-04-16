@@ -79,13 +79,14 @@ jobs:
       - name: Build Binaries
         shell: bash
         run: sh compile.sh ${{ needs.version-number.outputs.version_number }}
-      - name: commit binaries
+
+      - name: Commit Binaries to Releases
         uses: EndBug/add-and-commit@v9
         with:
           add: 'bin/*'
           message: 'chore: build validator binaries'
 
-      - name: injected version
+      - name: Injected Version
         shell: bash
         run: |
           VERSION="${{ needs.version-number.outputs.version_number }}"
