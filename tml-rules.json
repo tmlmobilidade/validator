@@ -947,6 +947,21 @@
     },
     "stop_coordinates_by_trip_id": {
       "severity": "error"
+    },
+    "pattern_id_group": {
+      "severity": "error"
+    },
+    "route_id_group": {
+      "severity": "error"
+    },
+    "direction_id_group": {
+      "severity": "error"
+    },
+    "shape_id_group": {
+      "severity": "error"
+    },
+    "trip_headsign_group": {
+      "severity": "error"
     }
   },
   "vehicles": {

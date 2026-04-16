@@ -22,7 +22,7 @@ All trips with the same pattern_id must have the same route_id.
 If a pattern_id has trips with different route_ids, report error.
 */
 
-func RouteIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, gtfs *types.Gtfs) {
+func RouteIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, gtfs *types.Gtfs, rules *types.TripsRules) {
 	// Group trips by pattern_id and validate route_id
 	for patternId, group := range tripsGroupedByPattern {
 		if len(group.Trips) == 0 {
@@ -47,6 +47,12 @@ func RouteIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, gt
 		sort.Strings(ids)
 		row := group.Trips[0].Row
 		ctx := lib.NewValidationContext("route_id", "trips.txt", "route_id_group_validation", row, services.AppMessageService)
-		ctx.AddError(ctx.GetTranslatedMessage("route_id_group_validation.different_route_ids_in_pattern", patternId, strings.Join(ids, ", ")))
+		if rules != nil && rules.RouteIdGroup.Severity != "" {
+			ctx.WithSeverity(rules.RouteIdGroup.Severity)
+		}
+		if ctx.ShouldSkip() {
+			return
+		}
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_id_group_validation.different_route_ids_in_pattern", patternId, strings.Join(ids, ", ")))
 	}
 }
