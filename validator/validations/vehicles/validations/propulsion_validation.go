@@ -43,7 +43,7 @@ func PropulsionValidation(vehicle *types.Vehicle, row int, rules *types.Vehicles
 		return
 	}
 
-	validOptions := []int{1, 2, 3, 4, 5, 6, 7, 8}
+	validOptions := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
 	if !slices.Contains(validOptions, *vehicle.Propulsion) {
 		ctx.AddError(ctx.GetTranslatedMessage("propulsion_validation.invalid", strconv.Itoa(*vehicle.Propulsion)))
 		return
