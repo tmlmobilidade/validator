@@ -31,9 +31,6 @@ jobs:
     outputs:
       version_number: ${{ steps.generate-version-number.outputs.version_number }}
 
-  # # # # # # # # # # # # # # # # # # # # #
-  # # # # # # # # # # # # # # # # # # # # #
-
   ts-wrapper:
     name: 'Publish TS Wrapper'
     needs: version-number
@@ -76,6 +73,11 @@ jobs:
 
       - name: Build Binaries
         shell: bash
+        run: |
+          VERSION="${{ needs.version-number.outputs.version_number }}"
+          ec      
+      - name: Build Binaries
+        shell: bash
         run: sh compile.sh ${{ needs.version-number.outputs.version_number }}
 
       - name: Commit Binaries to Releases
@@ -83,4 +85,16 @@ jobs:
         with:
           add: 'bin/*'
           message: 'chore: build validator binaries'
-      
+
+      - name: Injected Version
+        shell: bash
+        run: |
+          VERSION="${{ needs.version-number.outputs.version_number }}"
+          echo "Binary output: $OUTPUT"
+          if echo "$OUTPUT" | grep -q "${{ needs.version-number.outputs.version_number }}"; then
+            echo "✓ Version correctly injected"
+          else
+            echo "✗ Version NOT injected"
+            exit 1
+          fi
+          
