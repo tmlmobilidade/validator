@@ -12,11 +12,7 @@ Processes both pattern_id groups and shape_id groups, and reports the most
 appropriate error for each inconsistency (avoids duplicate errors).
 */
 
-func ShapeIdGroupValidation(
-	tripsGroupedByPattern types.TripGroupedByPattern,
-	tripsGroupedByShapeId types.TripGroupedByShapeId,
-	gtfs *types.Gtfs,
-) {
+func ShapeIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, tripsGroupedByShapeId types.TripGroupedByShapeId, gtfs *types.Gtfs, rules *types.TripsRules) {
 	reportedPairs := make(map[string]bool)
 	key := func(p, s string) string { return p + "|" + s }
 
@@ -36,7 +32,13 @@ func ShapeIdGroupValidation(
 		}
 		row := group.Trips[0].Row
 		ctx := lib.NewValidationContext("pattern_id", "trips.txt", "pattern_id_validation", row, services.AppMessageService)
-		ctx.AddError(ctx.GetTranslatedMessage("pattern_id_validation.different_shape_id", patternId))
+		if rules != nil && rules.PatternIdGroup.Severity != "" {
+			ctx.WithSeverity(rules.PatternIdGroup.Severity)
+		}
+		if ctx.ShouldSkip() {
+			return
+		}
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("pattern_id_validation.different_shape_id", patternId))
 		for _, trip := range group.Trips {
 			if trip.ShapeId != nil {
 				reportedPairs[key(patternId, *trip.ShapeId)] = true
@@ -70,6 +72,12 @@ func ShapeIdGroupValidation(
 		}
 		row := group.Trips[0].Row
 		ctx := lib.NewValidationContext("shape_id", "trips.txt", "shape_id_in_unique_pattern_id_validation", row, services.AppMessageService)
-		ctx.AddError(ctx.GetTranslatedMessage("shape_id_in_unique_pattern_id_validation.multiple_shape_id_in_unique_pattern_id", shapeId))
+		if rules != nil && rules.ShapeIdGroup.Severity != "" {
+			ctx.WithSeverity(rules.ShapeIdGroup.Severity)
+		}
+		if ctx.ShouldSkip() {
+			return
+		}
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("shape_id_in_unique_pattern_id_validation.multiple_shape_id_in_unique_pattern_id", shapeId))
 	}
 }

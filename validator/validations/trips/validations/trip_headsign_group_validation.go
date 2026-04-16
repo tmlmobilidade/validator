@@ -21,7 +21,8 @@ Validates that trip_headsign is unique within each pattern_id.
 All trips with the same pattern_id must have the same trip_headsign (including consistent presence: nil/empty vs non-empty).
 */
 
-func TripHeadsignGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, gtfs *types.Gtfs) {
+func TripHeadsignGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, gtfs *types.Gtfs, rules *types.TripsRules) {
+
 	for patternId, group := range tripsGroupedByPattern {
 		if len(group.Trips) == 0 {
 			panic("trips is empty")
@@ -53,9 +54,14 @@ func TripHeadsignGroupValidation(tripsGroupedByPattern types.TripGroupedByPatter
 				parts[i] = h
 			}
 		}
-
 		row := group.Trips[0].Row
 		ctx := lib.NewValidationContext("trip_headsign", "trips.txt", "trip_headsign_group_validation", row, services.AppMessageService)
-		ctx.AddError(ctx.GetTranslatedMessage("trip_headsign_group_validation.different_headsigns_in_pattern", patternId, strings.Join(parts, ", ")))
+		if rules != nil && rules.TripHeadsignGroup.Severity != "" {
+			ctx.WithSeverity(rules.TripHeadsignGroup.Severity)
+		}
+		if ctx.ShouldSkip() {
+			return
+		}
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("trip_headsign_group_validation.different_headsigns_in_pattern", patternId, strings.Join(parts, ", ")))
 	}
 }
