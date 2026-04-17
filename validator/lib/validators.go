@@ -147,7 +147,7 @@ func ValidateTime(t string) bool {
 	return true
 }
 
-var plateRegex = regexp.MustCompile(`^(?:[A-Z]{2}\d{2}[A-Z]{2}|\d{2}[A-Z]{2}\d{2})$`)
+var plateRegex = regexp.MustCompile(`^(?:[A-Z]{2}\d{2}[A-Z]{2}|\d{2}[A-Z]{2}\d{2}|\d{4}[A-Z]{2}|[A-Z]{2}\d{4})$`)
 
 func ValidateLicensePlate(licensePlate string) bool {
 	licensePlate = strings.ToUpper(licensePlate)
