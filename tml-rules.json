@@ -962,6 +962,9 @@
     },
     "trip_headsign_group": {
       "severity": "error"
+    },
+    "shape_id_same_pattern_id": {
+      "severity": "warning"
     }
   },
   "vehicles": {

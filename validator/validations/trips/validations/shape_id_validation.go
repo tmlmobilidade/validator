@@ -95,9 +95,4 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 		return
 	}
 
-	// // check if shape_id is different from pattern_id
-	// if *trip.ShapeId != *trip.PatternId {
-	// 	ctx.AddWarning(ctx.GetTranslatedMessage("shape_id_validation.different_from_pattern_id", *trip.ShapeId, *trip.PatternId))
-	// 	return
-	// }
 }

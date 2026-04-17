@@ -116,6 +116,9 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// Validate pattern_id_format
 		validations.PatternIdFormatValidation(&trip, i, &gtfs, tripRules)
 
+		// Validate shape_id_same_pattern_id
+		validations.ShapeIdSamePatternIdValidation(&trip, i, &gtfs, tripRules)
+
 		return nil
 	})
 
