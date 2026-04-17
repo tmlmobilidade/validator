@@ -106,6 +106,7 @@ type TripsRules struct {
 	DirectionIdGroup        RuleConfig `json:"direction_id_group"`
 	ShapeIdGroup            RuleConfig `json:"shape_id_group"`
 	TripHeadsignGroup       RuleConfig `json:"trip_headsign_group"`
+	ShapeIdSamePatternId    RuleConfig `json:"shape_id_same_pattern_id"`
 }
 
 type StopTimesRules struct {
