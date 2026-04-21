@@ -70,16 +70,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+        
       - name: Build Binaries
         shell: bash
         run: |
+        
           VERSION="${{ needs.version-number.outputs.version_number }}"
           echo "Version: $VERSION"
-          
-      - name: Build Binaries
-        shell: bash
-        run: sh compile.sh ${{ needs.version-number.outputs.version_number }}
+          sh compile.sh ${{ needs.version-number.outputs.version_number }}
+          echo "Binaries compiled successfully"
 
       - name: Commit Binaries to Releases
         uses: EndBug/add-and-commit@v9
