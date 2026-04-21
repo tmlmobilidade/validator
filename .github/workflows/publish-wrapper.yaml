@@ -70,31 +70,26 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+        
       - name: Build Binaries
         shell: bash
         run: |
+        
           VERSION="${{ needs.version-number.outputs.version_number }}"
-          ec      
-      - name: Build Binaries
-        shell: bash
-        run: sh compile.sh ${{ needs.version-number.outputs.version_number }}
+          echo "Version: $VERSION"
+          sh compile.sh ${{ needs.version-number.outputs.version_number }}
+          echo "Binaries compiled successfully"
 
-      - name: Commit Binaries to Releases
-        uses: EndBug/add-and-commit@v9
-        with:
-          add: 'bin/*'
-          message: 'chore: build validator binaries'
-
-      - name: Injected Version
-        shell: bash
+      - name: Create GitHub Release with Binaries
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION="${{ needs.version-number.outputs.version_number }}"
-          echo "Binary output: $OUTPUT"
-          if echo "$OUTPUT" | grep -q "${{ needs.version-number.outputs.version_number }}"; then
-            echo "✓ Version correctly injected"
-          else
-            echo "✗ Version NOT injected"
-            exit 1
-          fi
-          
+          gh release create "$VERSION" \
+            --title "$VERSION" \
+            --notes "Validator binaries for version $VERSION" \
+            bin/validator-linux-amd64 \
+            bin/validator-linux-arm64 \
+            bin/validator-darwin-amd64 \
+            bin/validator-darwin-arm64 \
+            bin/validator.exe

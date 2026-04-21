@@ -61,7 +61,7 @@ func TestAllLicensePlateValidationTestCases(t *testing.T) {
 			t.Fatalf("failed to create mock gtfs: %v", err)
 		}
 		defer cleanup()
-		validations.LicensePlateValidation(vehicle, 0, gtfs, nil)
+		validations.LicensePlateValidation(vehicle, 0, gtfs, &types.VehiclesRules{LicensePlate: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Duplicate license plate should error", types.SEVERITY_ERROR)
 	})
 
@@ -69,7 +69,7 @@ func TestAllLicensePlateValidationTestCases(t *testing.T) {
 		services.AppMessageService.Clear()
 		plate := lib.Ptr("AA-00-BB-1")
 		vehicle := &types.Vehicle{LicensePlate: plate}
-		validations.LicensePlateValidation(vehicle, 0, nil, nil)
+		validations.LicensePlateValidation(vehicle, 0, nil, &types.VehiclesRules{LicensePlate: types.RuleConfig{Severity: types.SEVERITY_ERROR}})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Duplicate license plate should error", types.SEVERITY_ERROR)
 	})
 }
