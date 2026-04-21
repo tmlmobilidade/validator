@@ -20,8 +20,22 @@ const BINARY_DISTRIBUTIONS_FILES: Record<string, string> = {
 } as const;
 
 const DEV_BIN_PATH = join(__dirname, '..', '..', 'bin');
-const REMOTE_BIN_PATH = 'https://github.com/tmlmobilidade/validator/raw/refs/heads/production/bin/';
 const LOCAL_BIN_PATH = join(__dirname, '..', 'bin');
+
+/**
+ * Resolves the URL to download the binary from.
+ *
+ * Pins to the exact package version when available (via npm_package_version
+ * set by npm during lifecycle scripts), otherwise falls back to the latest
+ * GitHub release.
+ */
+function getRemoteBinPath(): string {
+	const version = process.env.npm_package_version;
+	if (version) {
+		return `https://github.com/tmlmobilidade/validator/releases/download/${version}/`;
+	}
+	return 'https://github.com/tmlmobilidade/validator/releases/latest/download/';
+}
 
 /**
  * Gets the current platform identifier.
@@ -81,7 +95,7 @@ async function downloadRemoteBinaries(): Promise<void> {
 		throw new Error(`No binary distribution file found for platform: ${platform}`);
 	}
 
-	const remoteUrl = REMOTE_BIN_PATH + binaryDistributionFile;
+	const remoteUrl = getRemoteBinPath() + binaryDistributionFile;
 	let res: Response;
 
 	try {
