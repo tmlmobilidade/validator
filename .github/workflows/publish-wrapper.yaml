@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - feature/iso-1551-link-do-validador-para-pagina-de-explicacao-de-cada-regra
+      - production
     paths:
       - ".github/workflows/publish-wrapper.yaml"
       - "ts-wrapper/**/*"
