@@ -75,7 +75,8 @@ jobs:
         shell: bash
         run: |
           VERSION="${{ needs.version-number.outputs.version_number }}"
-          ec      
+          echo "Version: $VERSION"
+          
       - name: Build Binaries
         shell: bash
         run: sh compile.sh ${{ needs.version-number.outputs.version_number }}
