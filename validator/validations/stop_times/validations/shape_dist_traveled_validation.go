@@ -36,7 +36,7 @@ If a bus travels a distance of 5.25 kilometers from the start of the shape to th
 [shapes.txt]: https://gtfs.org/schedule/reference/#shapestxt
 */
 func ShapeDistTraveledValidation(stopTime *types.StopTime, row int, rules *types.StopTimesRules) {
-	ctx := lib.NewValidationContext("shape_dist_traveled", "stop_times.txt", "shape_dist_traveled_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("shape_dist_traveled", "stop_times.txt", "shape_dist_traveled_validation", "shape_dist_traveled_rule", row, services.AppMessageService)
 	if rules != nil && rules.ShapeDistTraveled.Severity != "" {
 		ctx.WithSeverity(rules.ShapeDistTraveled.Severity)
 	}

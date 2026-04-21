@@ -35,7 +35,7 @@ Conditionally Required:
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func ParentStationValidation(stop *types.Stop, row int, gtfs types.Gtfs, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("parent_station", "stops.txt", "parent_station_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("parent_station", "stops.txt", "parent_station_validation", "parent_station_rule", row, services.AppMessageService)
 	if rules != nil && rules.ParentStation.Severity != "" {
 		ctx.WithSeverity(rules.ParentStation.Severity)
 	}

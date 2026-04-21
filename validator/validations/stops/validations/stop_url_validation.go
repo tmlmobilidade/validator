@@ -22,7 +22,7 @@ URL of the transit stop.
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func StopUrlValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("stop_url", "stops.txt", "stop_url_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("stop_url", "stops.txt", "stop_url_validation", "stop_url_rule", row, services.AppMessageService)
 	if rules != nil && rules.StopUrl.Severity != "" {
 		ctx.WithSeverity(rules.StopUrl.Severity)
 	}

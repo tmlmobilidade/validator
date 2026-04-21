@@ -44,6 +44,7 @@ func DestinationIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs
 			Message:      msg,
 			Severity:     severity,
 			ValidationID: "destination_id_validation",
+			RuleID:       "destination_id_rule",
 		})
 	}
 

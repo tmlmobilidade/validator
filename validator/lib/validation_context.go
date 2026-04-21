@@ -27,6 +27,9 @@ type ValidationContext struct {
 	// Validation ID (e.g., "stop_code_validation")
 	ValidationID string
 
+	// Rule ID (e.g., "stop_id_rule")
+	RuleID string
+
 	// Severity from rules (defaults to SEVERITY_IGNORE)
 	Severity types.Severity
 
@@ -35,12 +38,13 @@ type ValidationContext struct {
 }
 
 // NewValidationContext creates a new ValidationContext with default severity
-func NewValidationContext(field, fileName, validationID string, row int, messageAdder MessageAdder) *ValidationContext {
+func NewValidationContext(field, fileName, validationID, ruleID string, row int, messageAdder MessageAdder) *ValidationContext {
 	return &ValidationContext{
 		Field:        field,
 		FileName:     fileName,
 		Row:          row,
 		ValidationID: validationID,
+		RuleID:       ruleID,
 		Severity:     types.SEVERITY_IGNORE,
 		MessageAdder: messageAdder,
 	}
@@ -88,6 +92,7 @@ func (vc *ValidationContext) AddMessage(message string, severity types.Severity)
 		Message:      message,
 		Severity:     severity,
 		ValidationID: vc.ValidationID,
+		RuleID:       vc.RuleID,
 	})
 }
 
@@ -108,4 +113,3 @@ func (vc *ValidationContext) GetRequiredMessage(requiredKey, recommendedKey stri
 	}
 	return vc.GetTranslatedMessage(recommendedKey)
 }
-

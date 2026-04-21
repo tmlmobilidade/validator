@@ -44,6 +44,7 @@ func OriginIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, rul
 			Message:      msg,
 			Severity:     severity,
 			ValidationID: "origin_id_validation",
+			RuleID:       "origin_id_rule",
 		})
 	}
 

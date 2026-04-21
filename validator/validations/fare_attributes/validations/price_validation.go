@@ -21,7 +21,7 @@ Fare price, in the unit specified by currency_type.
 [fare_attributes.txt]: https://gtfs.org/schedule/reference/#fare_attributestxt
 */
 func PriceValidation(fareAttribute *types.FareAttribute, row int) {
-	ctx := lib.NewValidationContext("price", "fare_attributes.txt", "price_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("price", "fare_attributes.txt", "price_validation", "price_rule", row, services.AppMessageService)
 
 	if fareAttribute.Price == nil {
 		ctx.AddError(ctx.GetTranslatedMessage("price_validation.required"))

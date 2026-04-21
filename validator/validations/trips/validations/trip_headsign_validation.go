@@ -24,7 +24,7 @@ If the headsign changes during a trip, values for `trip_headsign` may be overrid
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 */
 func TripHeadsignValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
-	ctx := lib.NewValidationContext("trip_headsign", "trips.txt", "trip_headsign_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("trip_headsign", "trips.txt", "trip_headsign_validation", "trip_headsign_rule", row, services.AppMessageService)
 	if rules != nil && rules.TripHeadsign.Severity != "" {
 		ctx.WithSeverity(rules.TripHeadsign.Severity)
 	}

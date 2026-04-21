@@ -30,7 +30,7 @@ Valid options are:
 */
 
 func EmissionValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("emission", "vehicles.txt", "emission_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("emission", "vehicles.txt", "emission_validation", "emission_rule", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Emission.Severity != "" {
 		ctx.WithSeverity(rules.Emission.Severity)

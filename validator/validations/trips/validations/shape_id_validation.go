@@ -24,7 +24,7 @@ Conditionally Required:
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 */
 func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules, tripStopTimesCache map[string][]types.StopTimeRaw, routeRowsCache map[string][]int) {
-	ctx := lib.NewValidationContext("shape_id", "trips.txt", "shape_id_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("shape_id", "trips.txt", "shape_id_validation", "shape_id_rule", row, services.AppMessageService)
 	if rules != nil && rules.ShapeId.Severity != "" {
 		ctx.WithSeverity(rules.ShapeId.Severity)
 	}

@@ -22,7 +22,7 @@ Region identifier for a stop.
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func RegionIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("region_id", "stops.txt", "region_id_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("region_id", "stops.txt", "region_id_validation", "region_id_rule", row, services.AppMessageService)
 	if rules != nil && rules.RegionId.Severity != "" {
 		ctx.WithSeverity(rules.RegionId.Severity)
 	}

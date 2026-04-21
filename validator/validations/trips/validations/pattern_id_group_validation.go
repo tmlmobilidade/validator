@@ -26,7 +26,7 @@ func PatternIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, 
 		}
 
 		for _, trip := range group.Trips {
-			ctx := lib.NewValidationContext("pattern_id", "trips.txt", "pattern_id_validation", trip.Row, services.AppMessageService)
+			ctx := lib.NewValidationContext("pattern_id", "trips.txt", "pattern_id_validation", "pattern_id_group_rule", trip.Row, services.AppMessageService)
 			if rules != nil && rules.PatternIdGroup.Severity != "" {
 				ctx.WithSeverity(rules.PatternIdGroup.Severity)
 			}
@@ -56,7 +56,7 @@ func PatternIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, 
 
 		if len(group.Hash) > 1 {
 			row := group.Trips[0].Row
-			ctx := lib.NewValidationContext("pattern_id", "trips.txt", "pattern_id_validation", row, services.AppMessageService)
+			ctx := lib.NewValidationContext("pattern_id", "trips.txt", "pattern_id_validation", "pattern_id_group_rule", row, services.AppMessageService)
 			if rules != nil && rules.PatternIdGroup.Severity != "" {
 				ctx.WithSeverity(rules.PatternIdGroup.Severity)
 			}

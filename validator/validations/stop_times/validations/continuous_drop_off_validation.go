@@ -37,7 +37,7 @@ Conditionally Forbidden:
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
 func ContinuousDropOffValidation(stopTime *types.StopTime, row int, rules *types.StopTimesRules) {
-	ctx := lib.NewValidationContext("continuous_drop_off", "stop_times.txt", "continuous_drop_off_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("continuous_drop_off", "stop_times.txt", "continuous_drop_off_validation", "continuous_drop_off_rule", row, services.AppMessageService)
 	if rules != nil && rules.ContinuousDropOff.Severity != "" {
 		ctx.WithSeverity(rules.ContinuousDropOff.Severity)
 	}

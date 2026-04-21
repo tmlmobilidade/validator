@@ -26,7 +26,7 @@ Valid options are:
 */
 
 func StaticInformationValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("static_information", "vehicles.txt", "static_information_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("static_information", "vehicles.txt", "static_information_validation", "static_information_rule", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.StaticInformation.Severity != "" {
 		ctx.WithSeverity(rules.StaticInformation.Severity)

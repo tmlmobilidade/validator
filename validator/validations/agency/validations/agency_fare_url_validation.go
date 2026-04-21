@@ -22,7 +22,7 @@ URL of a web page where a rider can purchase tickets or other fare instruments f
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
 func AgencyFareUrlValidation(agency *types.Agency, row int, rules *types.AgencyRules) {
-	ctx := lib.NewValidationContext("agency_fare_url", "agency.txt", "agency_fare_url_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("agency_fare_url", "agency.txt", "agency_fare_url_validation", "agency_fare_url_rule", row, services.AppMessageService)
 	if rules != nil && rules.AgencyFare.Severity != "" {
 		ctx.WithSeverity(rules.AgencyFare.Severity)
 	}

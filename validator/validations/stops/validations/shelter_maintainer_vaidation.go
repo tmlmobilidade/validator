@@ -22,7 +22,7 @@ Shelter code for a stop.
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func ShelterMaintainerValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("shelter_maintainer", "stops.txt", "shelter_maintainer_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("shelter_maintainer", "stops.txt", "shelter_maintainer_validation", "shelter_maintainer_rule", row, services.AppMessageService)
 	if rules != nil && rules.ShelterMaintainer.Severity != "" {
 		ctx.WithSeverity(rules.ShelterMaintainer.Severity)
 	}

@@ -27,7 +27,7 @@ Consider a dataset from a multilingual country like Switzerland, with the origin
 [feed_info.txt]: https://gtfs.org/schedule/reference/#feed_infotxt
 */
 func FeedLangValidation(feedInfo *types.FeedInfo, row int) {
-	ctx := lib.NewValidationContext("feed_lang", "feed_info.txt", "feed_lang_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("feed_lang", "feed_info.txt", "feed_lang_validation", "feed_lang_rule", row, services.AppMessageService)
 
 	if feedInfo.FeedLang == nil || *feedInfo.FeedLang == "" {
 		ctx.AddError(ctx.GetTranslatedMessage("feed_lang_validation.required"))

@@ -19,7 +19,7 @@ import (
 Agency for the specified vehicle.
 */
 func AgencyIdValidation(vehicle *types.Vehicle, row int, gtfs *types.Gtfs, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("agency_id", "vehicles.txt", "agency_id_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("agency_id", "vehicles.txt", "agency_id_validation", "agency_id_rule", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.AgencyId.Severity != "" {
 		ctx.WithSeverity(rules.AgencyId.Severity)

@@ -23,7 +23,7 @@ Describes if the stop has a bench.
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func HasBenchValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("has_bench", "stops.txt", "has_bench_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("has_bench", "stops.txt", "has_bench_validation", "has_bench_rule", row, services.AppMessageService)
 	if rules != nil && rules.HasBench.Severity != "" {
 		ctx.WithSeverity(rules.HasBench.Severity)
 	}

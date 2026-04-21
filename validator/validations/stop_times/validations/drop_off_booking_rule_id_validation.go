@@ -23,7 +23,7 @@ Recommended when drop_off_type=2.
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
 func DropOffBookingRuleIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs, rules *types.StopTimesRules) {
-	ctx := lib.NewValidationContext("drop_off_booking_rule_id", "stop_times.txt", "drop_off_booking_rule_id_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("drop_off_booking_rule_id", "stop_times.txt", "drop_off_booking_rule_id_validation", "drop_off_booking_rule_id_rule", row, services.AppMessageService)
 	if rules != nil && rules.DropOffBookingRuleId.Severity != "" {
 		ctx.WithSeverity(rules.DropOffBookingRuleId.Severity)
 	}

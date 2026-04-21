@@ -36,7 +36,7 @@ Valid options are:
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
 func RouteTypeValidation(route *types.Route, row int, rules *types.RoutesRules) {
-	ctx := lib.NewValidationContext("route_type", "routes.txt", "route_type_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("route_type", "routes.txt", "route_type_validation", "route_type_rule", row, services.AppMessageService)
 	if rules != nil && rules.RouteType.Severity != "" {
 		ctx.WithSeverity(rules.RouteType.Severity)
 	}

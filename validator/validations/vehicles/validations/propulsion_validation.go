@@ -32,7 +32,7 @@ Valid options are:
 */
 
 func PropulsionValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("propulsion", "vehicles.txt", "propulsion_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("propulsion", "vehicles.txt", "propulsion_validation", "propulsion_rule", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Propulsion.Severity != "" {
 		ctx.WithSeverity(rules.Propulsion.Severity)

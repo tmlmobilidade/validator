@@ -31,7 +31,7 @@ Valid options are:
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func LocationTypeValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("location_type", "stops.txt", "location_type_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("location_type", "stops.txt", "location_type_validation", "location_type_rule", row, services.AppMessageService)
 	if rules != nil && rules.LocationType.Severity != "" {
 		ctx.WithSeverity(rules.LocationType.Severity)
 	}

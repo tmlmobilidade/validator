@@ -28,7 +28,7 @@ This field should be left empty for locations without a code presented to riders
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func StopCodeValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("stop_code", "stops.txt", "stop_code_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("stop_code", "stops.txt", "stop_code_validation", "stop_code_rule", row, services.AppMessageService)
 	if rules != nil && rules.StopCode.Severity != "" {
 		ctx.WithSeverity(rules.StopCode.Severity)
 	}

@@ -27,7 +27,7 @@ Conditionally Forbidden:
 [route_networks.txt]: https://gtfs.org/schedule/reference/#routenetworkstxt
 */
 func NetworkIdValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *types.RoutesRules) {
-	ctx := lib.NewValidationContext("network_id", "routes.txt", "network_id_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("network_id", "routes.txt", "network_id_validation", "network_id_rule", row, services.AppMessageService)
 	if rules != nil && rules.NetworkId.Severity != "" {
 		ctx.WithSeverity(rules.NetworkId.Severity)
 	}

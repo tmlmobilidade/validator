@@ -27,7 +27,7 @@ Conditionally Required:
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
 func RouteShortNameValidation(route *types.Route, row int, rules *types.RoutesRules) {
-	ctx := lib.NewValidationContext("route_short_name", "routes.txt", "route_short_name_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("route_short_name", "routes.txt", "route_short_name_validation", "route_short_name_rule", row, services.AppMessageService)
 	if rules != nil && rules.RouteShortName.Severity != "" {
 		ctx.WithSeverity(rules.RouteShortName.Severity)
 	}

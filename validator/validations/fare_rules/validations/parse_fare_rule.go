@@ -30,6 +30,7 @@ func ParseFareRule(rawFareRule types.FareRuleRaw, row int) types.FareRule {
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
 			ValidationID: "fare_rules_parse",
+			RuleID:       "fare_rules_parse_rule",
 		})
 	}
 

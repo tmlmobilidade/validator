@@ -29,6 +29,7 @@ func ServiceIdValidation(calendar *types.Calendar, row int, gtfs *types.Gtfs) {
 		Rows:         []int{row},
 		Severity:     types.SEVERITY_ERROR,
 		ValidationID: "service_id_validation",
+		RuleID:       "service_id_rule",
 	}
 
 	if calendar.ServiceId != "" {

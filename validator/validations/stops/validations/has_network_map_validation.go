@@ -23,7 +23,7 @@ Describes if the stop has a network map.
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func HasNetworkMapValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("has_network_map", "stops.txt", "has_network_map_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("has_network_map", "stops.txt", "has_network_map_validation", "has_network_map_rule", row, services.AppMessageService)
 	if rules != nil && rules.HasNetworkMap.Severity != "" {
 		ctx.WithSeverity(rules.HasNetworkMap.Severity)
 	}
