@@ -43,7 +43,7 @@ For station entrances/exits:
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func WheelchairBoardingValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("wheelchair_boarding", "stops.txt", "wheelchair_boarding_validation", "wheelchair_boarding_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("wheelchair_boarding", "stops.txt", "wheelchair_boarding_validation", "check_wheelchair_boarding", row, services.AppMessageService)
 	if rules != nil && rules.WheelchairBoarding.Severity != "" {
 		ctx.WithSeverity(rules.WheelchairBoarding.Severity)
 	}

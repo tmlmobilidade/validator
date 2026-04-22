@@ -23,7 +23,7 @@ Describes if the stop has schedules.
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func HasSchedulesValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("has_schedules", "stops.txt", "has_schedules_validation", "has_schedules_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("has_schedules", "stops.txt", "has_schedules_validation", "check_has_schedules", row, services.AppMessageService)
 	if rules != nil && rules.HasSchedules.Severity != "" {
 		ctx.WithSeverity(rules.HasSchedules.Severity)
 	}

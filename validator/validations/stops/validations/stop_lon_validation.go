@@ -27,7 +27,7 @@ Conditionally Required:
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func StopLonValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("stop_lon", "stops.txt", "stop_lon_validation", "stop_lon_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("stop_lon", "stops.txt", "stop_lon_validation", "validate_stop_lon", row, services.AppMessageService)
 	if rules != nil && rules.StopLon.Severity != "" {
 		ctx.WithSeverity(rules.StopLon.Severity)
 	}

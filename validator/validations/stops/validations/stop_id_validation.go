@@ -26,7 +26,7 @@ ID must be unique across all stops.stop_id, locations.geojson id, and location_g
 
 // StopIdValidation validates the presence and uniqueness of stop_id in stops.txt
 func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("stop_id", "stops.txt", "stop_id_validation", "stop_id_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("stop_id", "stops.txt", "stop_id_validation", "validate_exists_stop_id", row, services.AppMessageService)
 
 	// Check if stop_id is missing
 	if stop.StopId == nil || *stop.StopId == "" {
