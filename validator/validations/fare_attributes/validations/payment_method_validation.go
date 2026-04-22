@@ -27,7 +27,7 @@ Valid options are:
 [fare_attributes.txt]: https://gtfs.org/schedule/reference/#fare_attributestxt
 */
 func PaymentMethodValidation(fareAttribute *types.FareAttribute, row int) {
-	ctx := lib.NewValidationContext("payment_method", "fare_attributes.txt", "payment_method_validation", "payment_method_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("payment_method", "fare_attributes.txt", "payment_method_validation", "validate_payment_method", row, services.AppMessageService)
 
 	if fareAttribute.PaymentMethod == nil {
 		ctx.AddError(ctx.GetTranslatedMessage("payment_method_validation.required"))
