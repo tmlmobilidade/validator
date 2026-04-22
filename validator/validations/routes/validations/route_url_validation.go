@@ -22,7 +22,7 @@ URL of a web page about the particular route. Should be different from the agenc
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
 func RouteUrlValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *types.RoutesRules) {
-	ctx := lib.NewValidationContext("route_url", "routes.txt", "route_url_validation", "route_url_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("route_url", "routes.txt", "route_url_validation", "check_route_url", row, services.AppMessageService)
 	if rules != nil && rules.RouteUrl.Severity != "" {
 		ctx.WithSeverity(rules.RouteUrl.Severity)
 	}
