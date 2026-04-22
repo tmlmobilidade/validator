@@ -30,7 +30,7 @@ The type of fare media. Valid options are:
 */
 
 func FareMediaTypeValidation(fareMedia *types.FareMedia, row int, gtfs *types.Gtfs, rules *types.FareMediaRules) {
-	ctx := lib.NewValidationContext("fare_media_type", "fare_media.txt", "fare_media_type_validation", "fare_media_type_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("fare_media_type", "fare_media.txt", "fare_media_type_validation", "validate_fare_media_type", row, services.AppMessageService)
 	if rules != nil && rules.FareMediaType.Severity != "" {
 		ctx.WithSeverity(rules.FareMediaType.Severity)
 	}
