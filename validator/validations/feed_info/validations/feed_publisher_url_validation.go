@@ -21,7 +21,7 @@ URL of the dataset publishing organization's website. This may be the same as on
 [feed_info.txt]: https://gtfs.org/schedule/reference/#feed_infotxt
 */
 func FeedPublisherUrlValidation(feedInfo *types.FeedInfo, row int) {
-	ctx := lib.NewValidationContext("feed_publisher_url", "feed_info.txt", "feed_publisher_url_validation", "feed_publisher_url_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("feed_publisher_url", "feed_info.txt", "feed_publisher_url_validation", "validate_feed_publisher_url", row, services.AppMessageService)
 
 	if feedInfo.FeedPublisherUrl == nil || *feedInfo.FeedPublisherUrl == "" {
 		ctx.AddError(ctx.GetTranslatedMessage("feed_publisher_url_validation.required"))
