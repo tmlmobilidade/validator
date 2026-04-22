@@ -22,7 +22,7 @@ Full name of the transit agency.
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
 func AgencyNameValidation(agency *types.Agency, row int, rules *types.AgencyRules) {
-	ctx := lib.NewValidationContext("agency_name", "agency.txt", "agency_name_validation", "agency_name_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("agency_name", "agency.txt", "agency_name_validation", "check_agency_name", row, services.AppMessageService)
 	if rules != nil && rules.AgencyName.Severity != "" {
 		ctx.WithSeverity(rules.AgencyName.Severity)
 	} else {

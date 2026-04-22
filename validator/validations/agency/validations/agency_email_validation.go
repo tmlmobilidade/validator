@@ -22,8 +22,9 @@ This email address should be a direct contact point where transit riders can rea
 
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
+
 func AgencyEmailValidation(agency *types.Agency, row int, rules *types.AgencyRules) {
-	ctx := lib.NewValidationContext("agency_email", "agency.txt", "agency_email_validation", "agency_email_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("agency_email", "agency.txt", "agency_email_validation", "check_agency_email", row, services.AppMessageService)
 	if rules != nil && rules.AgencyEmail.Severity != "" {
 		ctx.WithSeverity(rules.AgencyEmail.Severity)
 	}

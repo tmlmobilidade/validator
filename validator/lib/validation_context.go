@@ -27,7 +27,8 @@ type ValidationContext struct {
 	// Validation ID (e.g., "stop_code_validation")
 	ValidationID string
 
-	// Rule ID (e.g., "stop_id_rule")
+	// RuleID is the default rule_id in output; use Add* methods' ruleID override for a
+	// more specific id when a validation emits several distinct error kinds.
 	RuleID string
 
 	// Severity from rules (defaults to SEVERITY_IGNORE)
@@ -73,18 +74,24 @@ func (vc *ValidationContext) ShouldSkip() bool {
 	return vc.ShouldIgnore() || vc.IsForbidden()
 }
 
-// AddError adds an error message
-func (vc *ValidationContext) AddError(message string) {
-	vc.AddMessage(message, types.SEVERITY_ERROR)
+// AddError adds an error message. Optional ruleID overrides the context default
+// (used when a single validation reports multiple distinguishable issues).
+func (vc *ValidationContext) AddError(message string, ruleID ...string) {
+	vc.AddMessage(message, types.SEVERITY_ERROR, ruleID...)
 }
 
-// AddWarning adds a warning message
-func (vc *ValidationContext) AddWarning(message string) {
-	vc.AddMessage(message, types.SEVERITY_WARNING)
+// AddWarning adds a warning message. Optional ruleID overrides the default.
+func (vc *ValidationContext) AddWarning(message string, ruleID ...string) {
+	vc.AddMessage(message, types.SEVERITY_WARNING, ruleID...)
 }
 
-// AddMessage adds a message with the specified severity
-func (vc *ValidationContext) AddMessage(message string, severity types.Severity) {
+// AddMessage adds a message with the specified severity. If ruleID is passed,
+// it is used as rule_id; otherwise the context RuleID is used.
+func (vc *ValidationContext) AddMessage(message string, severity types.Severity, ruleID ...string) {
+	rid := vc.RuleID
+	if len(ruleID) > 0 {
+		rid = ruleID[0]
+	}
 	vc.MessageAdder.AddMessage(types.Message{
 		Field:        vc.Field,
 		FileName:     vc.FileName,
@@ -92,13 +99,29 @@ func (vc *ValidationContext) AddMessage(message string, severity types.Severity)
 		Message:      message,
 		Severity:     severity,
 		ValidationID: vc.ValidationID,
-		RuleID:       vc.RuleID,
+		RuleID:       rid,
 	})
 }
 
-// AddMessageWithSeverity adds a message using the context's severity
-func (vc *ValidationContext) AddMessageWithSeverity(message string) {
-	vc.AddMessage(message, vc.Severity)
+// AddMessageWithSeverity adds a message using the context's severity. Optional
+// ruleID overrides the default.
+func (vc *ValidationContext) AddMessageWithSeverity(message string, ruleID ...string) {
+	vc.AddMessage(message, vc.Severity, ruleID...)
+}
+
+// AddMessageWithSeverityForRequiredKeys combines GetRequiredMessage (required vs
+// recommended copy by context severity) with a matching rule_id: requiredRuleID
+// when severity is error, recommendedRuleID otherwise.
+func (vc *ValidationContext) AddMessageWithSeverityForRequiredKeys(
+	requiredKey, recommendedKey string,
+	requiredRuleID, recommendedRuleID string,
+) {
+	message := vc.GetRequiredMessage(requiredKey, recommendedKey)
+	if vc.Severity == types.SEVERITY_ERROR {
+		vc.AddMessageWithSeverity(message, requiredRuleID)
+	} else {
+		vc.AddMessageWithSeverity(message, recommendedRuleID)
+	}
 }
 
 // GetTranslatedMessage gets a translated message by key

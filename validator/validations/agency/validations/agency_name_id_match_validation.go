@@ -21,7 +21,7 @@ Full name of the transit agency.
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
 func AgencyNameIdMatchValidation(agency *types.Agency, row int, rules *types.AgencyRules) {
-	ctx := lib.NewValidationContext("agency_name_id_match", "agency.txt", "agency_name_id_match_validation", "agency_name_id_match_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("agency_name_id_match", "agency.txt", "agency_name_id_match_validation", "agency_id_match_agency_name", row, services.AppMessageService)
 	if rules != nil && rules.AgencyNameIdMatch.Severity != types.SEVERITY_IGNORE {
 		ctx.WithSeverity(rules.AgencyNameIdMatch.Severity)
 	}
