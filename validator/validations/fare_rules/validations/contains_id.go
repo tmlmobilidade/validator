@@ -47,7 +47,7 @@ func ContainsIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, r
 			Message:      msg,
 			Severity:     severity,
 			ValidationID: "contains_id_validation",
-			RuleID:       "validate_existing_contains_id",
+			RuleID:       "check_exists_contains_id",
 		})
 	}
 

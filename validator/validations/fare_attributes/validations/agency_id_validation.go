@@ -26,7 +26,7 @@ Conditionally Required:
 [calendar_dates.txt]: https://gtfs.org/schedule/reference/#calendar_datestxt
 */
 func AgencyIdValidation(fareAttribute *types.FareAttribute, row int, gtfs *types.Gtfs, rules *types.FareAttributesRules) {
-	ctx := lib.NewValidationContext("agency_id", "fare_attributes.txt", "agency_id_validation", "validate_existing_agency_id", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("agency_id", "fare_attributes.txt", "agency_id_validation", "validate_exists_agency_id", row, services.AppMessageService)
 	if rules != nil && rules.AgencyId.Severity != "" {
 		ctx.WithSeverity(rules.AgencyId.Severity)
 	} else {
