@@ -46,7 +46,7 @@ func (v *FileValidation) addError(file, msg string) {
 		Message:      msg,
 		ValidationID: v.ID,
 		Severity:     types.SEVERITY_ERROR,
-		RuleID:       "file_validation_rule",
+		RuleID:       "validate_file_integrity",
 	})
 }
 
@@ -58,7 +58,7 @@ func (v *FileValidation) addWarning(file, msg string) {
 		Message:      msg,
 		ValidationID: v.ID,
 		Severity:     types.SEVERITY_WARNING,
-		RuleID:       "file_validation_rule",
+		RuleID:       "validate_file_integrity",
 	})
 }
 
