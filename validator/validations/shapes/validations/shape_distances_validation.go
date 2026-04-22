@@ -56,7 +56,7 @@ func ShapeDistancesValidation(shapes []types.Shape, rules *types.ShapesRules) {
 	violations := []distancesViolation{}
 
 	for i, shape := range shapes {
-		ctx := lib.NewValidationContext("distances", "shapes.txt", "distances_validation", "distances_rule", i, services.AppMessageService)
+		ctx := lib.NewValidationContext("distances", "shapes.txt", "distances_validation", "validate_shape_distances", i, services.AppMessageService)
 		ctx.WithSeverity(severity)
 
 		if shape.ShapeId == nil || *shape.ShapeId == "" {
@@ -165,7 +165,7 @@ func ShapeDistancesValidation(shapes []types.Shape, rules *types.ShapesRules) {
 	}
 
 	for _, violation := range violations {
-		ctx := lib.NewValidationContext("distances", "shapes.txt", "distances_validation", "distances_rule", violation.row, services.AppMessageService)
+		ctx := lib.NewValidationContext("distances", "shapes.txt", "distances_validation", "validate_shape_distances", violation.row, services.AppMessageService)
 		ctx.WithSeverity(severity)
 		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage(
 			"distances_validation.invalid_distances",

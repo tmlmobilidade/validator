@@ -113,7 +113,7 @@ func ShapePointsCoordinatesConsistentValidation(shapes []types.Shape, rules *typ
 		}
 
 		for _, row := range uniquePointsCoordinatesConsistentRows(rows) {
-			ctx := lib.NewValidationContext("points_coordinates_consistent", "shapes.txt", "points_coordinates_consistent_validation", "points_coordinates_consistent_rule", row, services.AppMessageService)
+			ctx := lib.NewValidationContext("points_coordinates_consistent", "shapes.txt", "points_coordinates_consistent_validation", "validate_points_coordinates_consistent", row, services.AppMessageService)
 			ctx.WithSeverity(severity)
 			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("points_coordinates_consistent_validation.ManyErrors"))
 		}
@@ -121,7 +121,7 @@ func ShapePointsCoordinatesConsistentValidation(shapes []types.Shape, rules *typ
 	}
 
 	for _, violation := range violations {
-		ctx := lib.NewValidationContext("points_coordinates_consistent", "shapes.txt", "points_coordinates_consistent_validation", "points_coordinates_consistent_rule", violation.row, services.AppMessageService)
+		ctx := lib.NewValidationContext("points_coordinates_consistent", "shapes.txt", "points_coordinates_consistent_validation", "validate_points_coordinates_consistent", violation.row, services.AppMessageService)
 		ctx.WithSeverity(severity)
 		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage(
 			"points_coordinates_consistent_validation.invalid_consistent_distance",

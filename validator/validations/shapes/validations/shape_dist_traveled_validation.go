@@ -41,7 +41,7 @@ If a bus travels along the three points defined above for A_shp, the additional 
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
 func ShapeDistTraveledValidation(shape *types.Shape, row int, rules *types.ShapesRules) {
-	ctx := lib.NewValidationContext("shape_dist_traveled", "shapes.txt", "shape_dist_traveled_validation", "shape_dist_traveled_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("shape_dist_traveled", "shapes.txt", "shape_dist_traveled_validation", "check_shape_dist_traveled", row, services.AppMessageService)
 	if rules != nil && rules.ShapeDistTraveled.Severity != "" {
 		ctx.WithSeverity(rules.ShapeDistTraveled.Severity)
 	}
