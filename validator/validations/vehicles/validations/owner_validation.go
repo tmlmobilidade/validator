@@ -19,7 +19,7 @@ import (
 The owner of the vehicle.
 */
 func OwnerValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("owner", "vehicles.txt", "owner_validation", "owner_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("owner", "vehicles.txt", "owner_validation", "validate_owner", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Owner.Severity != "" {
 		ctx.WithSeverity(rules.Owner.Severity)

@@ -34,7 +34,7 @@ func OnboardMonitorValidation(vehicle *types.Vehicle, row int, rules *types.Vehi
 	}
 
 	if vehicle.OnboardMonitor == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("onboard_monitor_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("onboard_monitor_validation.required"))
 		return
 	}
 

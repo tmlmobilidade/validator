@@ -37,7 +37,7 @@ The `trip_headsign` and `direction_id` fields may be used together to assign a n
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 */
 func DirectionIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
-	ctx := lib.NewValidationContext("direction_id", "trips.txt", "direction_id_validation", "direction_id_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("direction_id", "trips.txt", "direction_id_validation", "check_direction_id", row, services.AppMessageService)
 	if rules != nil && rules.DirectionId.Severity != "" {
 		ctx.WithSeverity(rules.DirectionId.Severity)
 	}

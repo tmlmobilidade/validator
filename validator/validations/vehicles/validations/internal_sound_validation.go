@@ -25,7 +25,7 @@ Valid options are:
   - 1 - Yes
 */
 func InternalSoundValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("internal_sound", "vehicles.txt", "internal_sound_validation", "internal_sound_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("internal_sound", "vehicles.txt", "internal_sound_validation", "validate_internal_sound", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.InternalSound.Severity != "" {
 		ctx.WithSeverity(rules.InternalSound.Severity)

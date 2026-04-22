@@ -25,7 +25,7 @@ Valid options are:
   - 1 - Yes
 */
 func BicyclesValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("bicycles", "vehicles.txt", "bicycles_validation", "bicycles_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("bicycles", "vehicles.txt", "bicycles_validation", "validate_bicycles", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Bicycles.Severity != "" {
 		ctx.WithSeverity(rules.Bicycles.Severity)

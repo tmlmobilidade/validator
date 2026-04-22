@@ -26,7 +26,7 @@ Valid options are:
 */
 
 func ExternalSoundValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("external_sound", "vehicles.txt", "external_sound_validation", "external_sound_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("external_sound", "vehicles.txt", "external_sound_validation", "validate_external_sound", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.ExternalSound.Severity != "" {
 		ctx.WithSeverity(rules.ExternalSound.Severity)
