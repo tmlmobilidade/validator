@@ -29,7 +29,7 @@ Valid options are:
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 */
 func BikesAllowedValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
-	ctx := lib.NewValidationContext("bikes_allowed", "trips.txt", "bikes_allowed_validation", "bikes_allowed_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("bikes_allowed", "trips.txt", "bikes_allowed_validation", "check_bikes_allowed", row, services.AppMessageService)
 	if rules != nil && rules.BikesAllowed.Severity != "" {
 		ctx.WithSeverity(rules.BikesAllowed.Severity)
 	}

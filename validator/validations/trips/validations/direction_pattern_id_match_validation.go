@@ -20,7 +20,7 @@ import (
 Ensure the direction_id is consistent with the pattern_id (e.g., pattern_id "1001_0_1" should have direction_id = 0).
 */
 func DirectionPatternIdMatchValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
-	ctx := lib.NewValidationContext("direction_pattern_id_match", "trips.txt", "direction_pattern_id_match", "direction_pattern_id_match_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("direction_pattern_id_match", "trips.txt", "direction_pattern_id_match", "direction_id_match_pattern_id", row, services.AppMessageService)
 	if rules != nil && rules.DirectionPatternIdMatch.Severity != "" {
 		ctx.WithSeverity(rules.DirectionPatternIdMatch.Severity)
 	}

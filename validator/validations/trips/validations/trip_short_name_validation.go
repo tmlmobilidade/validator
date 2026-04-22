@@ -23,7 +23,7 @@ A `trip_short_name` value, if provided, should uniquely identify a trip within a
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 */
 func TripShortNameValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
-	ctx := lib.NewValidationContext("trip_short_name", "trips.txt", "trip_short_name_validation", "trip_short_name_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("trip_short_name", "trips.txt", "trip_short_name_validation", "check_trip_short_name", row, services.AppMessageService)
 	if rules != nil && rules.TripShortName.Severity != "" {
 		ctx.WithSeverity(rules.TripShortName.Severity)
 	}

@@ -31,7 +31,7 @@ func ShapeIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, tr
 			continue
 		}
 		row := group.Trips[0].Row
-		ctx := lib.NewValidationContext("shape_id", "trips.txt", "shape_id_group_validation", "shape_id_group_rule", row, services.AppMessageService)
+		ctx := lib.NewValidationContext("shape_id", "trips.txt", "shape_id_group_validation", "validate_shape_id_grouped_by_pattern_id", row, services.AppMessageService)
 		if rules != nil && rules.ShapeIdGroup.Severity != "" {
 			ctx.WithSeverity(rules.ShapeIdGroup.Severity)
 		}
@@ -71,7 +71,7 @@ func ShapeIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, tr
 			continue
 		}
 		row := group.Trips[0].Row
-		ctx := lib.NewValidationContext("shape_id", "trips.txt", "shape_id_group_validation", "shape_id_group_rule", row, services.AppMessageService)
+		ctx := lib.NewValidationContext("shape_id", "trips.txt", "shape_id_group_validation", "validate_shape_id_grouped_by_shape_id", row, services.AppMessageService)
 		if rules != nil && rules.ShapeIdGroup.Severity != "" {
 			ctx.WithSeverity(rules.ShapeIdGroup.Severity)
 		}

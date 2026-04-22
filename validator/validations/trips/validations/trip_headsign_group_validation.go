@@ -55,7 +55,7 @@ func TripHeadsignGroupValidation(tripsGroupedByPattern types.TripGroupedByPatter
 			}
 		}
 		row := group.Trips[0].Row
-		ctx := lib.NewValidationContext("trip_headsign", "trips.txt", "trip_headsign_group_validation", "trip_headsign_group_rule", row, services.AppMessageService)
+		ctx := lib.NewValidationContext("trip_headsign", "trips.txt", "trip_headsign_group_validation", "validate_trip_headsign_grouped_by_pattern_id", row, services.AppMessageService)
 		if rules != nil && rules.TripHeadsignGroup.Severity != "" {
 			ctx.WithSeverity(rules.TripHeadsignGroup.Severity)
 		}

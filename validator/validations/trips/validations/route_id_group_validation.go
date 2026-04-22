@@ -46,7 +46,7 @@ func RouteIdGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, gt
 		}
 		sort.Strings(ids)
 		row := group.Trips[0].Row
-		ctx := lib.NewValidationContext("route_id", "trips.txt", "route_id_group_validation", "route_id_group_rule", row, services.AppMessageService)
+		ctx := lib.NewValidationContext("route_id", "trips.txt", "route_id_group_validation", "validate_route_id_grouped_by_pattern_id", row, services.AppMessageService)
 		if rules != nil && rules.RouteIdGroup.Severity != "" {
 			ctx.WithSeverity(rules.RouteIdGroup.Severity)
 		}
