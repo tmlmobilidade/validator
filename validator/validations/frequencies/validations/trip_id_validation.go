@@ -22,7 +22,7 @@ Identifies a trip to which the specified headway of service applies.
 [trips.txt]: https://gtfs.org/schedule/reference/#tripstxt
 */
 func TripIdValidation(frequency *types.Frequencies, row int, gtfs *types.Gtfs, rules *types.FrequenciesRules) {
-	ctx := lib.NewValidationContext("trip_id", "frequencies.txt", "trip_id_validation", "trip_id_rule", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("trip_id", "frequencies.txt", "trip_id_validation", "validate_existing_trip_id", row, services.AppMessageService)
 	if rules != nil && rules.TripId.Severity != "" {
 		ctx.WithSeverity(rules.TripId.Severity)
 	}
