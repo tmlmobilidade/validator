@@ -26,7 +26,7 @@ Valid options are:
 */
 
 func ClimatizationValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("climatization", "vehicles.txt", "climatization_validation", "validate_climatization", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("climatization", "vehicles.txt", "climatization_validation", "climatization_valid_enum_and_rules", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Climatization.Severity != "" {
 		ctx.WithSeverity(rules.Climatization.Severity)

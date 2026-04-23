@@ -32,7 +32,7 @@ import (
 
 // StopNameValidation validates the presence of stop_name in stops.txt according to location_type
 func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("stop_name", "stops.txt", "stop_name_validation", "validate_stop_name", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("stop_name", "stops.txt", "stop_name_validation", "stop_name_required_by_location_type", row, services.AppMessageService)
 	if rules != nil && rules.StopName.Severity != "" {
 		ctx.WithSeverity(rules.StopName.Severity)
 	}

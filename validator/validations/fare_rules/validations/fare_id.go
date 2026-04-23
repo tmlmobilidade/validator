@@ -32,7 +32,7 @@ func FareIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, rules
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
 			ValidationID: "fare_id_validation",
-			RuleID:       "validate_exists_fare_id",
+			RuleID:       "fare_rule_fare_id_references_fare_attributes",
 		})
 	}
 

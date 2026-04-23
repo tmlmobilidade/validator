@@ -22,7 +22,7 @@ Municipality identifier for a stop.
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func MunicipalityIdValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("municipality_id", "stops.txt", "municipality_id_validation", "check_municipality_id", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("municipality_id", "stops.txt", "municipality_id_validation", "municipality_id_valid", row, services.AppMessageService)
 	if rules != nil && rules.MunicipalityId.Severity != "" {
 		ctx.WithSeverity(rules.MunicipalityId.Severity)
 	}

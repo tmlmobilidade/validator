@@ -21,7 +21,7 @@ Identifies a fare class.
 [fare_attributes.txt]: https://gtfs.org/schedule/reference/#fare_attributestxt
 */
 func FareIdValidation(fareAttribute *types.FareAttribute, row int, gtfs *types.Gtfs) {
-	ctx := lib.NewValidationContext("fare_id", "fare_attributes.txt", "fare_id_validation", "validate_unique_fare_id", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("fare_id", "fare_attributes.txt", "fare_id_validation", "fare_id_unique", row, services.AppMessageService)
 
 	if fareAttribute.FareId == nil {
 		ctx.AddError(ctx.GetTranslatedMessage("fare_id_validation.required"))

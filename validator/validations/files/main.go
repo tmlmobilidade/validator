@@ -46,7 +46,7 @@ func (v *FileValidation) addError(file, msg string) {
 		Message:      msg,
 		ValidationID: v.ID,
 		Severity:     types.SEVERITY_ERROR,
-		RuleID:       "validate_file_integrity",
+		RuleID:       "gtfs_feed_file_presence_and_integrity_rule",
 	})
 }
 
@@ -58,7 +58,7 @@ func (v *FileValidation) addWarning(file, msg string) {
 		Message:      msg,
 		ValidationID: v.ID,
 		Severity:     types.SEVERITY_WARNING,
-		RuleID:       "validate_file_integrity",
+		RuleID:       "gtfs_feed_file_presence_and_integrity_rule",
 	})
 }
 

@@ -25,7 +25,7 @@ Valid options are:
   - 1 - Yes
 */
 func VideoSurveillanceValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("video_surveillance", "vehicles.txt", "video_surveillance_validation", "validate_video_surveillance", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("video_surveillance", "vehicles.txt", "video_surveillance_validation", "video_surveillance_valid_enum_and_rules", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.VideoSurveillance.Severity != "" {
 		ctx.WithSeverity(rules.VideoSurveillance.Severity)

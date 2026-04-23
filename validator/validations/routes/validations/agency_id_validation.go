@@ -25,7 +25,7 @@ Conditionally Required:
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
 func AgencyIdValidation(route *types.Route, row int, gtfs types.Gtfs, rules *types.RoutesRules) {
-	ctx := lib.NewValidationContext("agency_id", "routes.txt", "agency_id_validation", "validate_exists_agency_id", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("agency_id", "routes.txt", "agency_id_validation", "route_agency_id_references_agency_table", row, services.AppMessageService)
 	if rules != nil && rules.AgencyId.Severity != "" {
 		ctx.WithSeverity(rules.AgencyId.Severity)
 	} else {

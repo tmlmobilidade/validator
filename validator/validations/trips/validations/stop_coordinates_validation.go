@@ -21,7 +21,7 @@ Validate if the stop_lat and stop_lon are valid.
 */
 
 func StopCoordinatesByTripIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, tripStopTimesCache map[string][]types.StopTimeRaw, stopsCache map[string]types.StopCoordinatesValidation, stopClosestShapePointsCache map[string]types.StopClosestShapePointsInfo, rules *types.TripsRules) []types.StopCoordinatesValidation {
-	ctx := lib.NewValidationContext("coordinates", "trips.txt", "coordinates_validation", "validate_stop_coordinates_by_trip_id", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("coordinates", "trips.txt", "coordinates_validation", "trip_path_stop_coordinates_referenced_from_stops", row, services.AppMessageService)
 	if rules != nil && rules.StopCoordinatesByTripId.Severity != "" {
 		ctx.WithSeverity(rules.StopCoordinatesByTripId.Severity)
 	}

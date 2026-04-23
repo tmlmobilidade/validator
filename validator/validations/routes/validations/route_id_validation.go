@@ -21,7 +21,7 @@ Identifies a route.
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
 func RouteIdValidation(route *types.Route, row int, gtfs *types.Gtfs) {
-	ctx := lib.NewValidationContext("route_id", "routes.txt", "route_id_validation", "validate_unique_route_id", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("route_id", "routes.txt", "route_id_validation", "route_id_required_unique", row, services.AppMessageService)
 
 	if route.RouteId == nil || *route.RouteId == "" {
 		ctx.AddError(ctx.GetTranslatedMessage("route_id_validation.required"))

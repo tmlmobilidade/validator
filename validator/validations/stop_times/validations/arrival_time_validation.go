@@ -36,7 +36,7 @@ Conditionally Required:
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
 func ArrivalTimeValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs, rules *types.StopTimesRules, tripStopSequences map[string]types.TripStopSequence) {
-	ctx := lib.NewValidationContext("arrival_time", "stop_times.txt", "arrival_time_validation", "validate_arrival_time", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("arrival_time", "stop_times.txt", "arrival_time_validation", "arrival_time_ordering_with_departure_and_frequencies", row, services.AppMessageService)
 	if rules != nil && rules.ArrivalTime.Severity != "" {
 		ctx.WithSeverity(rules.ArrivalTime.Severity)
 	}

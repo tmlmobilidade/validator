@@ -22,7 +22,7 @@ Identifies a rider category.
 */
 
 func RiderCategoryIdValidation(riderCategory *types.RiderCategory, row int, gtfs *types.Gtfs, rules *types.RiderCategoriesRules) {
-	ctx := lib.NewValidationContext("rider_category_id", "rider_categories.txt", "rider_category_id_validation", "validate_unique_rider_category_id", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("rider_category_id", "rider_categories.txt", "rider_category_id_validation", "rider_category_id_unique", row, services.AppMessageService)
 	if rules != nil && rules.RiderCategoryId.Severity != "" {
 		ctx.WithSeverity(rules.RiderCategoryId.Severity)
 	}
