@@ -99,17 +99,6 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// Validate direction_id matches pattern_id
 		validations.DirectionPatternIdMatchValidation(&trip, i, &gtfs, tripRules)
 
-		// Validate shape_id is unique per pattern_id
-		if trip.ShapeId != nil {
-			group := tripsGroupedByShapeId[*trip.ShapeId]
-			group.Trips = append(group.Trips, trip)
-
-			if !slices.Contains(group.Hash, groupHash) {
-				group.Hash = append(group.Hash, groupHash)
-			}
-
-			tripsGroupedByShapeId[*trip.ShapeId] = group
-		}
 		// Validate trip_id_limit_characters
 		validations.TripIdLimitCharactersValidation(&trip, i, &gtfs, tripRules)
 

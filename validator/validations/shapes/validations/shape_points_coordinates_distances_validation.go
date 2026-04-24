@@ -71,8 +71,6 @@ func ShapePointsCoordinatesDistancesValidation(shapes []types.Shape, rules *type
 	violations := []distanceViolation{}
 
 	for i, shape := range shapes {
-		ctx := lib.NewValidationContext("coordinates", "shapes.txt", "coordinates_distances_validation", "shape_point_row_in_dist_traveled_haversine_grouping", i, services.AppMessageService)
-		ctx.WithSeverity(severity)
 
 		if shape.ShapeId == nil || *shape.ShapeId == "" {
 			continue
@@ -150,7 +148,7 @@ func ShapePointsCoordinatesDistancesValidation(shapes []types.Shape, rules *type
 		}
 
 		for _, row := range uniqueDistanceRows(rows) {
-			ctx := lib.NewValidationContext("shape_points_coordinates_distances", "shapes.txt", "shape_points_coordinates_distances_validation", "shape_dist_mismatch_too_many_rows_summary", row, services.AppMessageService)
+			ctx := lib.NewValidationContext("shape_points_coordinates_distances", "shapes.txt", "shape_points_coordinates_distances_validation", "shape_dist_traveled_delta_mismatches_haversine_segment", row, services.AppMessageService)
 			ctx.WithSeverity(severity)
 			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("coordinates_distances_validation.ManyErrors"))
 		}
