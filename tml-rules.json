@@ -945,10 +945,10 @@
     "pattern_id_format": {
       "severity": "error",
       "options": [
-        "XXXX_X_X",
-        "XXXX_X_ASC",
-        "XXXX_X_DESC",
-        "XXXX_X_CIRC"
+        "^[^_]{1,4}_[^_]_[^_]$",
+        "^[^_]{1,4}_[^_]_ASC$",
+        "^[^_]{1,4}_[^_]_DESC$",
+        "^[^_]{1,4}_[^_]_CIRC$"
       ]
     },
     "stop_coordinates_by_trip_id": {

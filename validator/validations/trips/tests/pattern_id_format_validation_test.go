@@ -55,7 +55,7 @@ func TestAllPatternIdFormatValidationTestCases(t *testing.T) {
 		validations.PatternIdFormatValidation(trip, 1, gtfs, &types.TripsRules{
 			PatternIdFormat: types.RuleConfig{
 				Severity: types.SEVERITY_ERROR,
-				Options:  lib.Ptr([]string{"XXXX_X_ASC", "XXXX_X_DESC"}),
+				Options:  lib.Ptr([]string{"^[^_]{1,4}_[^_]_ASC$", "^[^_]{1,4}_[^_]_DESC$"}),
 			},
 		})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Valid Pattern ID For Multi Format Rules", types.SEVERITY_ERROR)
@@ -72,7 +72,7 @@ func TestAllPatternIdFormatValidationTestCases(t *testing.T) {
 		validations.PatternIdFormatValidation(trip, 1, gtfs, &types.TripsRules{
 			PatternIdFormat: types.RuleConfig{
 				Severity: types.SEVERITY_ERROR,
-				Options:  lib.Ptr([]string{"XXXX_X_ASC", "XXXX_X_DESC"}),
+				Options:  lib.Ptr([]string{"^[^_]{1,4}_[^_]_ASC$", "^[^_]{1,4}_[^_]_DESC$"}),
 			},
 		})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Invalid Pattern ID For Multi Format Rules", types.SEVERITY_ERROR)

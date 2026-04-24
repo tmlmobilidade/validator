@@ -21,12 +21,25 @@ Validates if the pattern_id is in the correct format. Must be in the defalut for
 */
 
 const defaultPatternIDFormat = "XXXX_X_X"
+const defaultPatternIDRegex = `^[^_]{1,4}_[^_]_[^_]$`
 
-var patternIDFormatRegexMap = map[string]*regexp.Regexp{
-	"XXXX_X_X":    regexp.MustCompile(`^[^_]{1,4}_[^_]_[^_]$`),
-	"XXXX_X_ASC":  regexp.MustCompile(`^[^_]{1,4}_[^_]_ASC$`),
-	"XXXX_X_DESC": regexp.MustCompile(`^[^_]{1,4}_[^_]_DESC$`),
-	"XXXX_X_CIRC": regexp.MustCompile(`^[^_]{1,4}_[^_]_CIRC$`),
+var patternIDDisplayReplacer = strings.NewReplacer(
+	`[^_]{1,4}`, "XXXX",
+	`[^_]`, "X",
+	`^`, "",
+	`$`, "",
+	`\`, "",
+	`(`, "",
+	`)`, "",
+)
+
+func toPatternIDDisplayFormat(formatRegex string) string {
+	formatted := patternIDDisplayReplacer.Replace(formatRegex)
+	if strings.TrimSpace(formatted) == "" {
+		return formatRegex
+	}
+
+	return formatted
 }
 
 func PatternIdFormatValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
@@ -40,22 +53,23 @@ func PatternIdFormatValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rule
 	}
 
 	expectedFormat := defaultPatternIDFormat
-	allowedRegexes := []*regexp.Regexp{patternIDFormatRegexMap[defaultPatternIDFormat]}
+	allowedRegexes := []*regexp.Regexp{regexp.MustCompile(defaultPatternIDRegex)}
 
 	if rules != nil && rules.PatternIdFormat.Options != nil && len(*rules.PatternIdFormat.Options) > 0 {
 		expectedFormats := make([]string, 0)
 		allowedRegexes = make([]*regexp.Regexp, 0)
 
-		for _, configuredFormat := range *rules.PatternIdFormat.Options {
-			if configuredRegex, ok := patternIDFormatRegexMap[configuredFormat]; ok {
-				expectedFormats = append(expectedFormats, configuredFormat)
+		for _, configuredFormatRegex := range *rules.PatternIdFormat.Options {
+			configuredRegex, err := regexp.Compile(configuredFormatRegex)
+			if err == nil {
+				expectedFormats = append(expectedFormats, toPatternIDDisplayFormat(configuredFormatRegex))
 				allowedRegexes = append(allowedRegexes, configuredRegex)
 			}
 		}
 
 		// Fallback to default when options are present but none are recognized.
 		if len(allowedRegexes) == 0 {
-			allowedRegexes = []*regexp.Regexp{patternIDFormatRegexMap[defaultPatternIDFormat]}
+			allowedRegexes = []*regexp.Regexp{regexp.MustCompile(defaultPatternIDRegex)}
 		} else {
 			expectedFormat = strings.Join(expectedFormats, " | ")
 		}
