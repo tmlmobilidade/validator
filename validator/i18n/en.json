@@ -630,9 +630,7 @@
         "different_direction_ids_in_pattern": "pattern_id %s has trips with different direction_ids: %s. All trips with the same pattern_id must have the same direction_id"
     },
     "trip_headsign_group_validation": {
-        "different_headsigns_in_pattern": "pattern_id %s has trips with different trip_headsigns: %s. All trips with the same pattern_id must have the same trip_headsign",
-        "same_headsign_on_multiple_pattern_ids": "trip_headsign \"%s\" on pattern_id \"%s\" is used by more than one pattern_id. Each non-empty trip_headsign must be exclusive to a single pattern_id",
-        "same_headsign_on_multiple_pattern_ids_many": "trip_headsign \"%s\" is used in many pattern_ids. Each non-empty trip_headsign must be exclusive to a single pattern_id" 
+        "different_headsigns_in_pattern": "pattern_id %s has trips with different trip_headsigns: %s and another with %d. All trips with the same pattern_id must have the same trip_headsign"
     },
     "pattern_id_validation": {
         "forbidden": "Field \"pattern_id\" is forbidden",
