@@ -658,6 +658,9 @@
         "non_increasing_shape_dist": "The values of \"shape_dist_traveled\" must increase along the trip ('%s')",
         "consecutive_stop_ids": "The same stop_id \"%s\" cannot appear consecutively (one directly after another) in trip \"%s\""
     },
+    "shape_id_same_pattern_id":{
+        "not_matching": "Field \"shape_id\" \"%s\" does not match the field \"pattern_id\" \"%s\""
+    },
     "trip_headsign_validation": {
         "forbidden": "Field \"trip_headsign\" is forbidden",
         "required": "Field \"trip_headsign\" is required",
