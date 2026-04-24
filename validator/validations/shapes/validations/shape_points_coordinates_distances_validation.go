@@ -150,7 +150,7 @@ func ShapePointsCoordinatesDistancesValidation(shapes []types.Shape, rules *type
 		for _, row := range uniqueDistanceRows(rows) {
 			ctx := lib.NewValidationContext("shape_points_coordinates_distances", "shapes.txt", "shape_points_coordinates_distances_validation", "shape_dist_traveled_delta_mismatches_haversine_segment", row, services.AppMessageService)
 			ctx.WithSeverity(severity)
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("coordinates_distances_validation.ManyErrors"))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("shape_points_coordinates_distances_validation.ManyErrors"))
 		}
 		return
 	}
@@ -159,7 +159,7 @@ func ShapePointsCoordinatesDistancesValidation(shapes []types.Shape, rules *type
 		ctx := lib.NewValidationContext("shape_points_coordinates_distances", "shapes.txt", "shape_points_coordinates_distances_validation", "shape_dist_traveled_delta_mismatches_haversine_segment", violation.row, services.AppMessageService)
 		ctx.WithSeverity(severity)
 		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage(
-			"coordinates_distances_validation.invalid_distances",
+			"shape_points_coordinates_distances_validation.invalid_distances",
 			strconv.FormatFloat(violation.prevLat, 'f', -1, 64),
 			strconv.FormatFloat(violation.prevLon, 'f', -1, 64),
 			strconv.FormatFloat(violation.currentLat, 'f', -1, 64),
