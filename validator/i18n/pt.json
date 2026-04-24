@@ -638,7 +638,9 @@
         "different_direction_ids_in_pattern": "pattern_id %s tem viagens com direction_ids diferentes: %s. Todas as viagens com o mesmo pattern_id devem ter o mesmo direction_id"
     },
     "trip_headsign_group_validation": {
-        "different_headsigns_in_pattern": "pattern_id %s tem viagens com headsigns diferentes: %s. Todas as viagens com o mesmo pattern_id devem ter o mesmo headsign"
+        "different_headsigns_in_pattern": "pattern_id %s tem viagens com headsigns diferentes: %s. Todas as viagens com o mesmo pattern_id devem ter o mesmo headsign",
+        "same_headsign_on_multiple_pattern_ids": "O trip_headsign \"%s\" no pattern_id \"%s\" está a ser usado em mais do que um pattern_id. Cada trip_headsign não vazio tem de ser exclusivo de um único pattern_id",
+        "same_headsign_on_multiple_pattern_ids_many": "O trip_headsign \"%s\" está a ser usado em muitos pattern_ids. Cada trip_headsign não vazio tem de ser exclusivo de um único pattern_id"
     },
     "pattern_id_validation": {
         "forbidden": "O campo \"pattern_id\" é proibido",
