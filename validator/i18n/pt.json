@@ -490,9 +490,8 @@
     },
     "coordinates_validation": {
         "not_mapped": "As coordenadas (%f, %f) não estão mapeadas em Portugal Continental",
-        "invalid_municipality_id": "As coordenadas (%f, %f) não correspondem ao município mapeado. Municipality_id esperado \"%s\", recebido \"%s\"",
         "invalid_distance": "As coordenadas (%f, %f) sao demasiado distantes comparado as outras shapes",
-        "invalid_distance_to_shape": "As coordenadas (%f, %f) estao demasiado distantes das shapes, a shape mais proxima \"%s\" na sequencia %d em (%f, %f) (%.2f m)"
+        "invalid_distance_to_shape": "As coordenadas (%f, %f) desta paragem (%s) estao demasiado distantes das shapes, a shape mais proxima \"%s\" na sequencia %d em (%f, %f) (%.2f m)"
     },
     "coordinates_consistent_validation": {
         "invalid_consistent_distance": "A shape \"%s\" tem as coordenadas (%f, %f) da sequencia (%d) demasiado distantes relativamente a anterior com as coordenadas (%f, %f) da sequencia (%d)",

@@ -113,7 +113,7 @@ func ShapePointsCoordinatesConsistentValidation(shapes []types.Shape, rules *typ
 		}
 
 		for _, row := range uniquePointsCoordinatesConsistentRows(rows) {
-			ctx := lib.NewValidationContext("points_coordinates_consistent", "shapes.txt", "points_coordinates_consistent_validation", "points_coordinates_too_many_consistency_errors", row, services.AppMessageService)
+			ctx := lib.NewValidationContext("shape_points_coordinates_consistent", "shapes.txt", "shape_points_coordinates_consistent_validation", "shape_points_coordinates_too_many_consistency_errors", row, services.AppMessageService)
 			ctx.WithSeverity(severity)
 			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("points_coordinates_consistent_validation.ManyErrors"))
 		}
