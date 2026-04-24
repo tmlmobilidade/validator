@@ -12,7 +12,7 @@ run: build
 	./../bin/$(APP_NAME) $(ARGS)
 
 dev:
-	go run main.go -out=output.json -rules=../tml-rules.json -lang=pt -log=debug --input=$(INPUT)
+	go run main.go version.go -out=output.json -rules=../tml-rules.json -lang=pt -log=debug --input=$(INPUT)
 test:
 	go test ./...
 

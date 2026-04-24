@@ -101,6 +101,12 @@ type TripsRules struct {
 	TripIdLimitCharacters   RuleConfig `json:"trip_id_limit_characters"`
 	PatternIdFormat         RuleConfig `json:"pattern_id_format"`
 	StopCoordinatesByTripId RuleConfig `json:"stop_coordinates_by_trip_id"`
+	PatternIdGroup          RuleConfig `json:"pattern_id_group"`
+	RouteIdGroup            RuleConfig `json:"route_id_group"`
+	DirectionIdGroup        RuleConfig `json:"direction_id_group"`
+	ShapeIdGroup            RuleConfig `json:"shape_id_group"`
+	TripHeadsignGroup       RuleConfig `json:"trip_headsign_group"`
+	ShapeIdSamePatternId    RuleConfig `json:"shape_id_same_pattern_id"`
 }
 
 type StopTimesRules struct {

@@ -116,6 +116,9 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// Validate pattern_id_format
 		validations.PatternIdFormatValidation(&trip, i, &gtfs, tripRules)
 
+		// Validate shape_id_same_pattern_id
+		validations.ShapeIdSamePatternIdValidation(&trip, i, &gtfs, tripRules)
+
 		return nil
 	})
 
@@ -125,5 +128,10 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		lib.AppLogger.Info(fmt.Sprintf("Completed trips.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 
-	validations.ValidatePatternGroups(tripsGroupedByPattern, tripsGroupedByShapeId, &gtfs)
+	var tripsRules *types.TripsRules
+	if rules != nil {
+		tripsRules = &rules.Trips
+	}
+
+	validations.ValidatePatternGroups(tripsGroupedByPattern, tripsGroupedByShapeId, &gtfs, tripsRules)
 }
