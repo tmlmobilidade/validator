@@ -14,16 +14,21 @@ import (
   - File: [stops.txt]
   - Field: has_shelter
   - Presence: Optional
-  - Type: Boolean
+  - Type: Enum
 
 # Description
 
 Describes if the stop has a shelter.
 
+- 0 - Not Applicable for this stop
+- 1 - Stop has no shelter
+- 2 - Has shelter but is in bad condition
+- 3 - Has shelter and is in good condition
+
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func HasShelterValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("has_shelter", "stops.txt", "has_shelter_validation", "has_shelter_valid", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("has_shelter", "stops.txt", "has_shelter_validation", "has_shelter_valid_enum", row, services.AppMessageService)
 	if rules != nil && rules.HasShelter.Severity != "" {
 		ctx.WithSeverity(rules.HasShelter.Severity)
 	}
@@ -44,7 +49,7 @@ func HasShelterValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	}
 
 	// Validate value
-	validValues := []int{0, 1}
+	validValues := []int{0, 1, 2, 3}
 	if !slices.Contains(validValues, *stop.HasShelter) {
 		ctx.AddError(ctx.GetTranslatedMessage("has_shelter_validation.invalid", *stop.HasShelter))
 		return

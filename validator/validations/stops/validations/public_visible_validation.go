@@ -14,16 +14,19 @@ import (
   - File: [stops.txt]
   - Field: public_visible
   - Presence: Optional
-  - Type: Boolean
+  - Type: Enum
 
 # Description
 
 Describes if the stop is visible to the public.
 
+- 0 - No
+- 1 - Yes
+
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func PublicVisibleValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("public_visible", "stops.txt", "public_visible_validation", "public_visible_valid", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("public_visible", "stops.txt", "public_visible_validation", "public_visible_valid_enum", row, services.AppMessageService)
 	if rules != nil && rules.PublicVisible.Severity != "" {
 		ctx.WithSeverity(rules.PublicVisible.Severity)
 	}

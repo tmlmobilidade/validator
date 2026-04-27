@@ -14,16 +14,21 @@ import (
   - File: [stops.txt]
   - Field: has_schedules
   - Presence: Optional
-  - Type: Boolean
+  - Type: Enum
 
 # Description
 
 Describes if the stop has schedules.
 
+- 0 - Not Applicable for this stop
+- 1 - Stop has no schedules
+- 2 - Has schedules but is in bad condition
+- 3 - Has schedules and is in good condition
+
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func HasSchedulesValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("has_schedules", "stops.txt", "has_schedules_validation", "has_schedules_valid", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("has_schedules", "stops.txt", "has_schedules_validation", "has_schedules_valid_enum", row, services.AppMessageService)
 	if rules != nil && rules.HasSchedules.Severity != "" {
 		ctx.WithSeverity(rules.HasSchedules.Severity)
 	}
