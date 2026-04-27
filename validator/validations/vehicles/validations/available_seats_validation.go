@@ -20,7 +20,7 @@ The number of seats available on the vehicle.
 */
 
 func AvailableSeatsValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("available_seats", "vehicles.txt", "available_seats_validation", "available_seats_non_negative_and_rules", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("available_seats", "vehicles.txt", "available_seats_validation", "available_seats_non_negative", row, services.AppMessageService)
 	if rules != nil && rules.AvailableSeats.Severity != "" {
 		ctx.WithSeverity(rules.AvailableSeats.Severity)
 	} else {

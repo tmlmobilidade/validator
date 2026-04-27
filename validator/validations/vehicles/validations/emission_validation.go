@@ -21,6 +21,7 @@ The emission of the vehicle.
 
 Valid options are:
 
+  - 0 - No emission
   - 1 - Euro I
   - 2 - Euro II
   - 3 - Euro III
@@ -41,7 +42,7 @@ func EmissionValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 		return
 	}
 
-	validOptions := []int{0, 1, 2, 3, 4, 5, 6, 7, 0}
+	validOptions := []int{0, 1, 2, 3, 4, 5, 6, 0}
 	if !slices.Contains(validOptions, *vehicle.Emission) {
 		ctx.AddError(ctx.GetTranslatedMessage("emission_validation.invalid", strconv.Itoa(*vehicle.Emission)))
 		return
