@@ -659,7 +659,7 @@
         "consecutive_stop_ids": "The same stop_id \"%s\" cannot appear consecutively (one directly after another) in trip \"%s\""
     },
     "shape_id_same_pattern_id":{
-        "not_matching": "Field \"shape_id\" \"%s\" does not match the field \"pattern_id\" \"%s\""
+        "not_matching": "Field \"shape_id\" \"%s\" is different from the field \"pattern_id\" \"%s\", they need to be the same"
     },
     "trip_headsign_validation": {
         "forbidden": "Field \"trip_headsign\" is forbidden",
