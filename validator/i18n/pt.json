@@ -632,7 +632,7 @@
         "not_allowed": "O campo \"direction_id\" \"%s\" não é permitido"
     },
     "shape_id_same_pattern_id":{
-        "not_matching": "O campo \"shape_id\" \"%s\" é diferente do campo \"pattern_id\" \"%s\", devem ser o iguais."
+        "not_matching": "O campo \"shape_id\" \"%s\" é diferente do campo \"pattern_id\" \"%s\", devem ser iguais."
     },
     "route_id_group_validation": {
         "different_route_ids_in_pattern": "pattern_id %s tem viagens com route_ids diferentes: %s. Todas as viagens com o mesmo pattern_id devem ter o mesmo route_id"
