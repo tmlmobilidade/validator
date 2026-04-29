@@ -109,21 +109,6 @@ func (vc *ValidationContext) AddMessageWithSeverity(message string, ruleID ...st
 	vc.AddMessage(message, vc.Severity, ruleID...)
 }
 
-// AddMessageWithSeverityForRequiredKeys combines GetRequiredMessage (required vs
-// recommended copy by context severity) with a matching rule_id: requiredRuleID
-// when severity is error, recommendedRuleID otherwise.
-func (vc *ValidationContext) AddMessageWithSeverityForRequiredKeys(
-	requiredKey, recommendedKey string,
-	requiredRuleID, recommendedRuleID string,
-) {
-	message := vc.GetRequiredMessage(requiredKey, recommendedKey)
-	if vc.Severity == types.SEVERITY_ERROR {
-		vc.AddMessageWithSeverity(message, requiredRuleID)
-	} else {
-		vc.AddMessageWithSeverity(message, recommendedRuleID)
-	}
-}
-
 // GetTranslatedMessage gets a translated message by key
 func (vc *ValidationContext) GetTranslatedMessage(key string, args ...interface{}) string {
 	return i18n.AppTranslator.Get(key, args...)
