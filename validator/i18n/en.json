@@ -655,6 +655,9 @@
         "non_increasing_shape_dist": "The values of \"shape_dist_traveled\" must increase along the trip ('%s')",
         "consecutive_stop_ids": "The same stop_id \"%s\" cannot appear consecutively (one directly after another) in trip \"%s\""
     },
+    "shape_id_same_pattern_id":{
+        "not_matching": "Field \"shape_id\" \"%s\" does not match the field \"pattern_id\" \"%s\""
+    },
     "trip_headsign_validation": {
         "forbidden": "Field \"trip_headsign\" is forbidden",
         "required": "Field \"trip_headsign\" is required",
@@ -717,7 +720,7 @@
         "duplicate": "Duplicate field \"rider_category_id\" \"%s\" found. Field \"rider_category_id\" must be unique"
     },
     "pattern_id_format_validation": {
-        "invalid": "Field \"pattern_id\" must be a valid ID in the format \"XXXX_X_X\", received: \"%s\""
+        "invalid": "Field \"pattern_id\" must be a valid ID in the format \"%s\", received: \"%s\""
     },
     "fare_media_id_validation": {
         "required": "Field \"fare_media_id\" is required",

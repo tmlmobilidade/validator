@@ -17,12 +17,20 @@ import (
 
 # Description
 
-Validates that trip_headsign is unique within each pattern_id.
-All trips with the same pattern_id must have the same trip_headsign (including consistent presence: nil/empty vs non-empty).
+1) All trips with the same pattern_id must have the same trip_headsign
+   (including consistent presence: nil/empty vs non-empty).
 */
+
+func tripHeadsignKey(trip types.Trip) string {
+	if trip.TripHeadsign != nil {
+		return *trip.TripHeadsign
+	}
+	return ""
+}
 
 func TripHeadsignGroupValidation(tripsGroupedByPattern types.TripGroupedByPattern, gtfs *types.Gtfs, rules *types.TripsRules) {
 
+	// 1) All trips with the same pattern_id must have the same trip_headsign
 	for patternId, group := range tripsGroupedByPattern {
 		if len(group.Trips) == 0 {
 			panic("trips is empty")
@@ -30,11 +38,7 @@ func TripHeadsignGroupValidation(tripsGroupedByPattern types.TripGroupedByPatter
 
 		headsigns := make(map[string]bool)
 		for _, trip := range group.Trips {
-			key := ""
-			if trip.TripHeadsign != nil {
-				key = *trip.TripHeadsign
-			}
-			headsigns[key] = true
+			headsigns[tripHeadsignKey(trip)] = true
 		}
 
 		if len(headsigns) <= 1 {
