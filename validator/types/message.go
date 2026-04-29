@@ -15,6 +15,7 @@ type Message struct {
 	FileName     string   `json:"file_name"`
 	Message      string   `json:"message"`
 	ValidationID string   `json:"validation_id"`
+	RuleID       string   `json:"rule_id"`
 	Severity     Severity `json:"severity"`
 }
 

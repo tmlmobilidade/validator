@@ -24,7 +24,7 @@ func ShapeSequenceValidation(shapes []types.Shape) {
 	shapeGroups := make(map[string][]ShapePtSequenceGroup)
 
 	for i, shape := range shapes {
-		ctx := lib.NewValidationContext("shape_pt_sequence", "shapes.txt", "shape_pt_sequence_validation", i, services.AppMessageService)
+		ctx := lib.NewValidationContext("shape_pt_sequence", "shapes.txt", "shape_pt_sequence_validation", "shape_id_and_point_sequence_required", i, services.AppMessageService)
 
 		if shape.ShapeId == nil || shape.ShapePtSequence == nil {
 			ctx.AddError(ctx.GetTranslatedMessage("shape_pt_sequence_validation.required"))
@@ -54,14 +54,14 @@ func ShapeSequenceValidation(shapes []types.Shape) {
 		// Check if the shape_pt_sequence values are increasing
 		for i, shape := range shapeGroup {
 			if i > 0 {
-				ctx := lib.NewValidationContext("shape_pt_sequence", "shapes.txt", "shape_pt_sequence_validation", shape.row, services.AppMessageService)
+				ctx := lib.NewValidationContext("shape_pt_sequence", "shapes.txt", "shape_pt_sequence_validation", "shape_pt_sequence_strictly_increasing", shape.row, services.AppMessageService)
 				if shape.sequence <= shapeGroup[i-1].sequence {
 					ctx.AddError(ctx.GetTranslatedMessage("shape_pt_sequence_validation.not_increasing", shape.shapeId))
 				}
 				// Only check dist if both current and previous are present
 				if shape.dist >= 0 && shapeGroup[i-1].dist >= 0 {
 					if shape.dist < shapeGroup[i-1].dist {
-						ctxDist := lib.NewValidationContext("shape_dist_traveled", "shapes.txt", "shape_dist_traveled_validation", shape.row, services.AppMessageService)
+						ctxDist := lib.NewValidationContext("shape_dist_traveled", "shapes.txt", "shape_dist_traveled_validation", "shape_dist_traveled_non_decreasing_with_sequence", shape.row, services.AppMessageService)
 						ctxDist.AddError(ctxDist.GetTranslatedMessage("shape_dist_traveled_validation.not_increasing", shape.shapeId))
 					}
 				}

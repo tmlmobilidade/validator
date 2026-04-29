@@ -14,16 +14,21 @@ import (
   - File: [stops.txt]
   - Field: has_stop_sign
   - Presence: Optional
-  - Type: Boolean
+  - Type: Enum
 
 # Description
 
 Describes if the stop has a stop sign.
 
+- 0 - Not Applicable for this stop
+- 1 - Stop has no stop sign
+- 2 - Has stop sign but is in bad condition
+- 3 - Has stop sign and is in good condition
+
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func HasStopSignValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("has_stop_sign", "stops.txt", "has_stop_sign_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("has_stop_sign", "stops.txt", "has_stop_sign_validation", "has_stop_sign_valid_enum", row, services.AppMessageService)
 	if rules != nil && rules.HasStopSign.Severity != "" {
 		ctx.WithSeverity(rules.HasStopSign.Severity)
 	}

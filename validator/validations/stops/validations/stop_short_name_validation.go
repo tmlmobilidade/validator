@@ -25,7 +25,7 @@ import (
 
 // StopShortNameValidation validates the presence of stop_short_name in stops.txt according to location_type
 func StopShortNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("stop_short_name", "stops.txt", "stop_short_name_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("stop_short_name", "stops.txt", "stop_short_name_validation", "stop_short_name_valid", row, services.AppMessageService)
 	if rules != nil && rules.StopShortName.Severity != "" {
 		ctx.WithSeverity(rules.StopShortName.Severity)
 	}

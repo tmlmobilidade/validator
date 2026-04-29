@@ -19,7 +19,7 @@ import (
 The model of the vehicle.
 */
 func ModelValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("model", "vehicles.txt", "model_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("model", "vehicles.txt", "model_validation", "vehicle_model_required", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Model.Severity != "" {
 		ctx.WithSeverity(rules.Model.Severity)

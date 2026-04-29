@@ -20,7 +20,7 @@ Date when service exception occurs.
 [calendar_dates.txt]: https://gtfs.org/schedule/reference/#calendar_datestxt
 */
 func DateValidation(calendarDate *types.CalendarDates, row int) {
-	ctx := lib.NewValidationContext("date", "calendar_dates.txt", "date_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("date", "calendar_dates.txt", "date_validation", "exception_date_valid_yyyymmdd", row, services.AppMessageService)
 
 	date := calendarDate.Date
 

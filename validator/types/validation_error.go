@@ -18,6 +18,9 @@ type ValidationError struct {
 	// Validation ID (e.g., "stop_id_validation")
 	ValidationID string
 
+	// Rule ID (e.g., "stop_id_rule")
+	RuleID string
+
 	// Error message
 	Message string
 
@@ -39,23 +42,25 @@ func (e *ValidationError) Unwrap() error {
 }
 
 // NewValidationError creates a new ValidationError
-func NewValidationError(field, fileName, validationID, message string, row int) *ValidationError {
+func NewValidationError(field, fileName, validationID, ruleID, message string, row int) *ValidationError {
 	return &ValidationError{
 		Field:        field,
 		FileName:     fileName,
 		Row:          row,
 		ValidationID: validationID,
+		RuleID:       ruleID,
 		Message:      message,
 	}
 }
 
 // WrapValidationError wraps an existing error with validation context
-func WrapValidationError(err error, field, fileName, validationID string, row int) *ValidationError {
+func WrapValidationError(err error, field, fileName, validationID, ruleID string, row int) *ValidationError {
 	return &ValidationError{
 		Field:        field,
 		FileName:     fileName,
 		Row:          row,
 		ValidationID: validationID,
+		RuleID:       ruleID,
 		Message:      err.Error(),
 		Err:          err,
 	}

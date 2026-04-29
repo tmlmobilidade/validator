@@ -21,7 +21,7 @@ String that indicates the current version of their GTFS dataset. GTFS-consuming 
 [feed_info.txt]: https://gtfs.org/schedule/reference/#feed_infotxt
 */
 func FeedVersionValidation(severity *types.Severity, feedInfo *types.FeedInfo, row int) {
-	ctx := lib.NewValidationContext("feed_version", "feed_info.txt", "feed_version_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("feed_version", "feed_info.txt", "feed_version_validation", "feed_version_valid_identifier", row, services.AppMessageService)
 	if severity != nil {
 		ctx.WithSeverity(*severity)
 	} else {

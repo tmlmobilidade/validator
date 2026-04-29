@@ -7,7 +7,7 @@ import (
 )
 
 func ShapeIdSamePatternIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
-	ctx := lib.NewValidationContext("shape_id_same_pattern_id", "trips.txt", "shape_id_same_pattern_id", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("shape_id_same_pattern_id", "trips.txt", "shape_id_same_pattern_id", "shape_id_needs_to_be_the_same_as_pattern_id", row, services.AppMessageService)
 	if rules != nil && rules.ShapeIdSamePatternId.Severity != "" {
 		ctx.WithSeverity(rules.ShapeIdSamePatternId.Severity)
 	}

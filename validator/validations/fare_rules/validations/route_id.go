@@ -50,6 +50,7 @@ func RouteIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, rule
 			Message:      msg,
 			Severity:     severity,
 			ValidationID: "route_id_validation",
+			RuleID:       "fare_rule_route_id_references_routes",
 		})
 	}
 

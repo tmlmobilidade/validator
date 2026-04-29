@@ -21,7 +21,7 @@ Validate if the stop_lat and stop_lon are valid.
 */
 
 func StopCoordinatesByTripIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, tripStopTimesCache map[string][]types.StopTimeRaw, stopsCache map[string]types.StopCoordinatesValidation, stopClosestShapePointsCache map[string]types.StopClosestShapePointsInfo, rules *types.TripsRules) []types.StopCoordinatesValidation {
-	ctx := lib.NewValidationContext("coordinates", "trips.txt", "coordinates_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("stop_coordinates", "trips.txt", "stop_coordinates_validation", "trip_path_stop_coordinates_referenced_from_stops", row, services.AppMessageService)
 	if rules != nil && rules.StopCoordinatesByTripId.Severity != "" {
 		ctx.WithSeverity(rules.StopCoordinatesByTripId.Severity)
 	}
@@ -71,7 +71,7 @@ func StopCoordinatesByTripIdValidation(trip *types.Trip, row int, gtfs *types.Gt
 		if info, ok := stopClosestShapePointsCache[key]; ok {
 			stopLat, _ := strconv.ParseFloat(stop.StopLat, 64)
 			stopLon, _ := strconv.ParseFloat(stop.StopLon, 64)
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("coordinates_validation.invalid_distance_to_shape", stopLat, stopLon, info.ShapeID, info.ClosestShapePtSeq, info.ClosestShapePtLat, info.ClosestShapePtLon, info.DistanceMeters))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("stop_coordinates_validation.invalid_distance_to_shape", stopLat, stopLon, stop.StopId, info.ShapeID, info.ClosestShapePtSeq, info.ClosestShapePtLat, info.ClosestShapePtLon, info.DistanceMeters))
 		}
 	}
 

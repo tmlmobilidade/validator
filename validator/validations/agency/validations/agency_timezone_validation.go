@@ -23,7 +23,7 @@ If multiple agencies are specified in the dataset, each must have the same 'agen
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
 func AgencyTimezoneValidation(agency *types.Agency, row int, rules *types.AgencyRules) {
-	ctx := lib.NewValidationContext("agency_timezone", "agency.txt", "agency_timezone_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("agency_timezone", "agency.txt", "agency_timezone_validation", "agency_timezone_valid_id", row, services.AppMessageService)
 	if agency.AgencyTimezone == nil {
 		ctx.AddError(ctx.GetTranslatedMessage("agency_timezone_validation.required"))
 		return

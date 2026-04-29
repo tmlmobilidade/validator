@@ -26,8 +26,7 @@ Valid options are:
 */
 
 func WheelchairValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("wheelchair", "vehicles.txt", "wheelchair_validation", row, services.AppMessageService)
-	ctx.Severity = types.SEVERITY_ERROR
+	ctx := lib.NewValidationContext("wheelchair", "vehicles.txt", "wheelchair_validation", "wheelchair_spots_valid_enum", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Wheelchair.Severity != "" {
 		ctx.WithSeverity(rules.Wheelchair.Severity)

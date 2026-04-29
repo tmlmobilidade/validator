@@ -20,10 +20,15 @@ import (
 
 Describes if the stop has tariffs information.
 
+- 0 - Not Applicable for this stop
+- 1 - Stop has no tariffs information
+- 2 - Has tariffs information but is in bad condition
+- 3 - Has tariffs information and is in good condition
+
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func HasTariffsInformationValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("has_tariffs_information", "stops.txt", "has_tariffs_information_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("has_tariffs_information", "stops.txt", "has_tariffs_information_validation", "has_tariffs_information_valid_enum", row, services.AppMessageService)
 	if rules != nil && rules.HasTariffsInformation.Severity != "" {
 		ctx.WithSeverity(rules.HasTariffsInformation.Severity)
 	}
