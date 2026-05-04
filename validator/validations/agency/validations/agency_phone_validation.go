@@ -46,6 +46,11 @@ func AgencyPhoneValidation(agency *types.Agency, row int, rules *types.AgencyRul
 		return
 	}
 
+	if !lib.ValidatePhone(*agency.AgencyPhone) {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("agency_phone_validation.invalid", *agency.AgencyPhone))
+		return
+	}
+
 	// Validate rules
 	if rules != nil && rules.AgencyPhone.Options != nil {
 		if slices.Contains(*rules.AgencyPhone.Options, types.ALL_OPTIONS) {
