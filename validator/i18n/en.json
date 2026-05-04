@@ -74,7 +74,7 @@
         "not_allowed": "Field \"agency_url\" \"%s\" is not allowed"
     },
     "parser": {
-        "forbidden": "ed to parse \"%s forbidden",
+        "forbidden": "Failed to parse \"%s\" forbidden",
         "int8": "Failed to parse \"%s\" to int8",
         "int16": "Failed to parse \"%s\" to int16",
         "int32": "Failed to parse \"%s\" to int32",
