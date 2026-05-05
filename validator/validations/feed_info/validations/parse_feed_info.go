@@ -34,7 +34,7 @@ func ParseFeedInfo(rawFeedInfo types.FeedInfoRaw, row int) types.FeedInfo {
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
 			ValidationID: "feed_info_parse",
-			RuleID:       "feed_info_parse_rule",
+			RuleID:       "feed_info_values_parse",
 		})
 	}
 

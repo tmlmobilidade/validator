@@ -33,7 +33,7 @@ func ParseAgency(rawAgency types.AgencyRaw, row int) types.Agency {
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
 			ValidationID: "agency_parse",
-			RuleID:       "agency_parse_rule",
+			RuleID:       "agency_values_parse",
 		})
 	}
 

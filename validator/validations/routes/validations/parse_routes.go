@@ -43,6 +43,7 @@ func ParseRoutes(rawRoute types.RouteRaw, row int) types.Route {
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
 			ValidationID: "routes_parse",
+			RuleID:       "routes_values_parse",
 		})
 	}
 
