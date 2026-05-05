@@ -34,11 +34,11 @@ func ParseCalendar(rawCalendar types.CalendarRaw, row int, gtfs *types.Gtfs) typ
 	addMessage := func(field, msg string) {
 		messages = append(messages, types.Message{
 			Field:        field,
-			FileName:     "trips.txt",
+			FileName:     "calendar.txt",
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "trips_parse",
+			ValidationID: "calendar_parse",
 			RuleID:       "calendar_values_parse",
 		})
 	}
