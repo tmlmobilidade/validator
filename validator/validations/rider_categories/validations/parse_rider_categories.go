@@ -33,6 +33,7 @@ func ParseRiderCategories(rawRiderCategories types.RiderCategoryRaw, row int) ty
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
 			ValidationID: "rider_categories_parse",
+			RuleID:       "rider_categories_parse_rule",
 		})
 	}
 

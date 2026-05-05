@@ -62,6 +62,7 @@ func ParseStop(rawStop types.StopRaw, row int) types.Stop {
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
 			ValidationID: "stops_parse",
+			RuleID:       "stops_parse_rule",
 		})
 	}
 

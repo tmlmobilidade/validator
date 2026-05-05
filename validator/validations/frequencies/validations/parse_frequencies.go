@@ -37,6 +37,7 @@ func ParseFrequencies(rawFrequencies *types.FrequenciesRaw, row int) *types.Freq
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
 			ValidationID: "frequencies_parse",
+			RuleID:       "frequencies_parse_rule",
 		})
 	}
 

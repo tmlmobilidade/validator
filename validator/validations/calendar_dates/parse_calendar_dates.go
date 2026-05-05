@@ -8,21 +8,20 @@ import (
 
 func ParseCalendarDates(rawCalendarDates types.CalendarDatesRaw, row int) types.CalendarDates {
 	var (
-		calendarDates    types.CalendarDates = types.CalendarDates{}
-		serviceId, date  string
-		exceptionType    int
-		messages         []types.Message
+		calendarDates   types.CalendarDates = types.CalendarDates{}
+		serviceId, date string
+		exceptionType   int
+		messages        []types.Message
 	)
 
 	stringFields := map[string]*string{
-		"service_id":      &serviceId,
-		"date":            &date,
+		"service_id": &serviceId,
+		"date":       &date,
 	}
 
 	intFields := map[string]*int{
-		"exception_type":  &exceptionType,
+		"exception_type": &exceptionType,
 	}
-
 
 	// Helper to collect error messages
 	addMessage := func(field, msg string) {
@@ -33,6 +32,7 @@ func ParseCalendarDates(rawCalendarDates types.CalendarDatesRaw, row int) types.
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
 			ValidationID: "calendar_dates_parse",
+			RuleID:       "calendar_dates_parse_rule",
 		})
 	}
 

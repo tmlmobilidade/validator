@@ -40,6 +40,7 @@ func ParseShape(rawShape types.ShapeRaw, row int) types.Shape {
 			Message:      i18n.AppTranslator.Get("parse_shapes.parsing_error", msg),
 			Severity:     types.SEVERITY_ERROR,
 			ValidationID: "shapes_parse",
+			RuleID:       "shapes_parse_rule",
 		})
 	}
 

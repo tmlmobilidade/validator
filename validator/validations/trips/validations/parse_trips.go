@@ -41,6 +41,7 @@ func ParseTrips(rawTrips types.TripRaw, row int) types.Trip {
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
 			ValidationID: "trips_parse",
+			RuleID:       "trips_parse_rule",
 		})
 	}
 

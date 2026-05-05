@@ -7,23 +7,23 @@ import (
 )
 
 func ParseFareAttributes(rawFareAttributes types.FareAttributeRaw, row int) types.FareAttribute {
-	var (	
-		fareAttribute types.FareAttribute = types.FareAttribute{}
-		fareId, currencyType, agencyId string
+	var (
+		fareAttribute                              types.FareAttribute = types.FareAttribute{}
+		fareId, currencyType, agencyId             string
 		paymentMethod, transfers, transferDuration int
-		price float64
-		messages []types.Message
+		price                                      float64
+		messages                                   []types.Message
 	)
-	
+
 	stringFields := map[string]*string{
-		"fare_id": &fareId,
+		"fare_id":       &fareId,
 		"currency_type": &currencyType,
-		"agency_id": &agencyId,
+		"agency_id":     &agencyId,
 	}
 
 	intFields := map[string]*int{
-		"payment_method": &paymentMethod,
-		"transfers": &transfers,
+		"payment_method":    &paymentMethod,
+		"transfers":         &transfers,
 		"transfer_duration": &transferDuration,
 	}
 
@@ -39,6 +39,7 @@ func ParseFareAttributes(rawFareAttributes types.FareAttributeRaw, row int) type
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
+			RuleID:       "fare_attributes_parse_rule",
 			ValidationID: "fare_attributes_parse",
 		})
 	}
@@ -54,22 +55,21 @@ func ParseFareAttributes(rawFareAttributes types.FareAttributeRaw, row int) type
 	for field, target := range intFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawFareAttributes, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
-		}			
+		}
 	}
-	
+
 	// Parse float fields
 	for field, target := range floatFields {
 		if errMsg := lib.ParseStringToPrimitive(lib.GetFieldByTag(&rawFareAttributes, "gtfs", field), target); errMsg != "" {
 			addMessage(field, errMsg)
 		}
 	}
-	
-	
+
 	if len(messages) > 0 {
 		services.AppMessageService.AddMessages(messages)
 		return fareAttribute
 	}
-	
+
 	fareAttribute.FareId = lib.IfThenElse(rawFareAttributes.FareId != "", &fareId, nil)
 	fareAttribute.CurrencyType = lib.IfThenElse(rawFareAttributes.CurrencyType != "", &currencyType, nil)
 	fareAttribute.Price = lib.IfThenElse(rawFareAttributes.Price != "", &price, nil)

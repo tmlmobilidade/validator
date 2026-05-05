@@ -32,6 +32,7 @@ func ParseFareMedia(rawFareMedia types.FareMediaRaw, row int) types.FareMedia {
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
 			ValidationID: "fare_media_parse",
+			RuleID:       "fare_media_parse_rule",
 		})
 	}
 
