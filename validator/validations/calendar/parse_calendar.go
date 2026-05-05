@@ -8,38 +8,38 @@ import (
 
 func ParseCalendar(rawCalendar types.CalendarRaw, row int, gtfs *types.Gtfs) types.Calendar {
 	var (
-		calendar                                           types.Calendar = types.Calendar{}
-		serviceId, startDate, endDate                      string
-		monday, tuesday, wednesday, thursday, friday, saturday, sunday                     bool
-		messages                                           []types.Message
+		calendar                                                       types.Calendar = types.Calendar{}
+		serviceId, startDate, endDate                                  string
+		monday, tuesday, wednesday, thursday, friday, saturday, sunday bool
+		messages                                                       []types.Message
 	)
 
 	stringFields := map[string]*string{
-		"service_id":      &serviceId,
-		"start_date":      &startDate,
-		"end_date":        &endDate,
+		"service_id": &serviceId,
+		"start_date": &startDate,
+		"end_date":   &endDate,
 	}
 
 	boolFields := map[string]*bool{
-		"monday":     &monday,
-		"tuesday":    &tuesday,
-		"wednesday":  &wednesday,
-		"thursday":   &thursday,
-		"friday":     &friday,
-		"saturday":   &saturday,
-		"sunday":     &sunday,
+		"monday":    &monday,
+		"tuesday":   &tuesday,
+		"wednesday": &wednesday,
+		"thursday":  &thursday,
+		"friday":    &friday,
+		"saturday":  &saturday,
+		"sunday":    &sunday,
 	}
-	
 
 	// Helper to collect error messages
 	addMessage := func(field, msg string) {
 		messages = append(messages, types.Message{
 			Field:        field,
-			FileName:     "trips.txt",
+			FileName:     "calendar.txt",
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "trips_parse",
+			ValidationID: "calendar_parse",
+			RuleID:       "calendar_values_parse",
 		})
 	}
 
