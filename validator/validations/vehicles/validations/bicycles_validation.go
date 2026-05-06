@@ -38,7 +38,7 @@ func BicyclesValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 
 	validOptions := []int{0, 1}
 	if !slices.Contains(validOptions, *vehicle.Bicycles) {
-		ctx.AddError(ctx.GetTranslatedMessage("bicycles_validation.invalid", strconv.Itoa(*vehicle.Bicycles)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("bicycles_validation.invalid", strconv.Itoa(*vehicle.Bicycles)))
 		return
 	}
 

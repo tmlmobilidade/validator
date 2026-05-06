@@ -39,7 +39,7 @@ func PassengerCountingValidation(vehicle *types.Vehicle, row int, rules *types.V
 
 	validOptions := []int{0, 1}
 	if !slices.Contains(validOptions, *vehicle.PassengerCounting) {
-		ctx.AddError(ctx.GetTranslatedMessage("passenger_counting_validation.invalid", strconv.Itoa(*vehicle.PassengerCounting)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("passenger_counting_validation.invalid", strconv.Itoa(*vehicle.PassengerCounting)))
 		return
 	}
 

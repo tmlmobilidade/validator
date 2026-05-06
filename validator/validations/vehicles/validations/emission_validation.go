@@ -45,7 +45,7 @@ func EmissionValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 
 	validOptions := []int{0, 1, 2, 3, 4, 5, 6, 7}
 	if !slices.Contains(validOptions, *vehicle.Emission) {
-		ctx.AddError(ctx.GetTranslatedMessage("emission_validation.invalid", strconv.Itoa(*vehicle.Emission)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("emission_validation.invalid", strconv.Itoa(*vehicle.Emission)))
 		return
 	}
 

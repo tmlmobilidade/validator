@@ -42,7 +42,7 @@ func RampValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules)
 
 	validOptions := []int{0, 1, 2, 3}
 	if !slices.Contains(validOptions, *vehicle.Ramp) {
-		ctx.AddError(ctx.GetTranslatedMessage("ramp_validation.invalid", strconv.Itoa(*vehicle.Ramp)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("ramp_validation.invalid", strconv.Itoa(*vehicle.Ramp)))
 		return
 	}
 

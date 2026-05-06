@@ -40,7 +40,7 @@ func RearDisplayValidation(vehicle *types.Vehicle, row int, rules *types.Vehicle
 
 	validOptions := []int{0, 1, 2}
 	if !slices.Contains(validOptions, *vehicle.RearDisplay) {
-		ctx.AddError(ctx.GetTranslatedMessage("rear_display_validation.invalid", strconv.Itoa(*vehicle.RearDisplay)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("rear_display_validation.invalid", strconv.Itoa(*vehicle.RearDisplay)))
 		return
 	}
 

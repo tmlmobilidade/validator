@@ -40,7 +40,7 @@ func FrontDisplayValidation(vehicle *types.Vehicle, row int, rules *types.Vehicl
 
 	validOptions := []int{0, 1, 2}
 	if !slices.Contains(validOptions, *vehicle.FrontDisplay) {
-		ctx.AddError(ctx.GetTranslatedMessage("front_display_validation.invalid", strconv.Itoa(*vehicle.FrontDisplay)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("front_display_validation.invalid", strconv.Itoa(*vehicle.FrontDisplay)))
 		return
 	}
 

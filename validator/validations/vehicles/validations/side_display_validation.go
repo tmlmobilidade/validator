@@ -40,7 +40,7 @@ func SideDisplayValidation(vehicle *types.Vehicle, row int, rules *types.Vehicle
 
 	validOptions := []int{0, 1, 2}
 	if !slices.Contains(validOptions, *vehicle.SideDisplay) {
-		ctx.AddError(ctx.GetTranslatedMessage("side_display_validation.invalid", strconv.Itoa(*vehicle.SideDisplay)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("side_display_validation.invalid", strconv.Itoa(*vehicle.SideDisplay)))
 		return
 	}
 

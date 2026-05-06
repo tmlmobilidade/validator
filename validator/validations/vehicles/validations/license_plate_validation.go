@@ -22,6 +22,7 @@ The license plate must be in the format XXXXXX.
 */
 func LicensePlateValidation(vehicle *types.Vehicle, row int, gtfs *types.Gtfs, rules *types.VehiclesRules) {
 	ctx := lib.NewValidationContext("license_plate", "vehicles.txt", "license_plate_validation", "license_plate_format_per_market_rules", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.LicensePlate.Severity != "" {
 		ctx.WithSeverity(rules.LicensePlate.Severity)
 	}
@@ -43,7 +44,7 @@ func LicensePlateValidation(vehicle *types.Vehicle, row int, gtfs *types.Gtfs, r
 	if gtfs != nil {
 		rows, err := gtfs.GetRowsByField("vehicles", "license_plate", *vehicle.LicensePlate)
 		if err == nil && len(rows) > 1 {
-			ctx.AddError(ctx.GetTranslatedMessage("license_plate_validation.duplicate", *vehicle.LicensePlate))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("license_plate_validation.duplicate", *vehicle.LicensePlate))
 			return
 		}
 	}

@@ -39,7 +39,7 @@ func StaticInformationValidation(vehicle *types.Vehicle, row int, rules *types.V
 
 	validOptions := []int{0, 1}
 	if !slices.Contains(validOptions, *vehicle.StaticInformation) {
-		ctx.AddError(ctx.GetTranslatedMessage("static_information_validation.invalid", strconv.Itoa(*vehicle.StaticInformation)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("static_information_validation.invalid", strconv.Itoa(*vehicle.StaticInformation)))
 		return
 	}
 

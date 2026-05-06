@@ -41,7 +41,7 @@ func KneelingValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 
 	validOptions := []int{0, 1, 2}
 	if !slices.Contains(validOptions, *vehicle.Kneeling) {
-		ctx.AddError(ctx.GetTranslatedMessage("kneeling_validation.invalid", strconv.Itoa(*vehicle.Kneeling)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("kneeling_validation.invalid", strconv.Itoa(*vehicle.Kneeling)))
 		return
 	}
 

@@ -38,7 +38,7 @@ func ConsumptionMeterValidation(vehicle *types.Vehicle, row int, rules *types.Ve
 
 	validOptions := []int{0, 1}
 	if !slices.Contains(validOptions, *vehicle.ConsumptionMeter) {
-		ctx.AddError(ctx.GetTranslatedMessage("consumption_meter_validation.invalid", strconv.Itoa(*vehicle.ConsumptionMeter)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("consumption_meter_validation.invalid", strconv.Itoa(*vehicle.ConsumptionMeter)))
 		return
 	}
 
