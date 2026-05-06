@@ -43,7 +43,6 @@ func DestinationIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     severity,
-			ValidationID: "destination_id_validation",
 			RuleID:       "fare_rule_destination_id_references_zones_stops",
 		})
 	}

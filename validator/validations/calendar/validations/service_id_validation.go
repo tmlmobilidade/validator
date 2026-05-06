@@ -28,7 +28,6 @@ func ServiceIdValidation(calendar *types.Calendar, row int, gtfs *types.Gtfs) {
 		Message:      "Service ID is required",
 		Rows:         []int{row},
 		Severity:     types.SEVERITY_ERROR,
-		ValidationID: "service_id_validation",
 		RuleID:       "calendar_service_id_unique_non_empty",
 	}
 

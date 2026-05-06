@@ -581,9 +581,10 @@ func TestFileValidation(t *testing.T) {
 				t.Errorf("[%v] FileValidation.Validate() hasErrors = %v, want %v", tt.name, hasErrors, expectedHasErrors)
 			}
 
+			const fileValidationRuleID = "gtfs_feed_file_presence_and_integrity_rule"
 			for _, msg := range summary.Messages {
-				if msg.ValidationID != v.ID {
-					t.Errorf("[%v] FileValidation.Validate() got message with validation ID %v, want %v", tt.name, msg.ValidationID, v.ID)
+				if msg.RuleID != fileValidationRuleID {
+					t.Errorf("[%v] FileValidation.Validate() got message with rule_id %v, want %v", tt.name, msg.RuleID, fileValidationRuleID)
 				}
 			}
 
@@ -790,12 +791,13 @@ func TestCheckWarningFiles(t *testing.T) {
 				}
 			}
 
+			const fileValidationRuleID = "gtfs_feed_file_presence_and_integrity_rule"
 			for _, msg := range summary.Messages {
 				if msg.Severity != types.SEVERITY_WARNING {
 					t.Errorf("[%v] FileValidation.checkWarningFiles() got message with severity %v, want %v", tt.name, msg.Severity, types.SEVERITY_WARNING)
 				}
-				if msg.ValidationID != v.ID {
-					t.Errorf("[%v] FileValidation.checkWarningFiles() got message with validation ID %v, want %v", tt.name, msg.ValidationID, v.ID)
+				if msg.RuleID != fileValidationRuleID {
+					t.Errorf("[%v] FileValidation.checkWarningFiles() got message with rule_id %v, want %v", tt.name, msg.RuleID, fileValidationRuleID)
 				}
 			}
 

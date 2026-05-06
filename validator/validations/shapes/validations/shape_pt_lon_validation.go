@@ -21,7 +21,7 @@ Longitude of a shape point.
 [shapes.txt]: https://gtfs.org/schedule/reference/#shapestxt
 */
 func ShapePtLonValidation(shape *types.Shape, row int) {
-	ctx := lib.NewValidationContext("shape_pt_lon", "shapes.txt", "shape_pt_lon_validation", "shape_pt_lon_valid_longitude", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("shape_pt_lon", "shapes.txt", "shape_pt_lon_valid_longitude", row, services.AppMessageService)
 
 	if shape.ShapePtLon == nil {
 		ctx.AddError(ctx.GetTranslatedMessage("shape_pt_lon_validation.required"))

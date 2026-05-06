@@ -32,7 +32,7 @@ Conditionally Required:
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
 func StopIdValidation(stopTime *types.StopTime, row int, gtfs *types.Gtfs, stopLocationTypeCache map[string]string) {
-	ctx := lib.NewValidationContext("stop_id", "stop_times.txt", "stop_id_validation", "stop_times_stop_id_references_stops_table", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("stop_id", "stop_times.txt", "stop_times_stop_id_references_stops_table", row, services.AppMessageService)
 
 	// Forbidden if location_group_id or location_id are defined
 	if (stopTime.LocationGroupId != nil && *stopTime.LocationGroupId != "") || (stopTime.LocationId != nil && *stopTime.LocationId != "") {

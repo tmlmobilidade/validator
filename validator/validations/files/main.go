@@ -44,7 +44,6 @@ func (v *FileValidation) addError(file, msg string) {
 		Rows:         []int{},
 		FileName:     file,
 		Message:      msg,
-		ValidationID: v.ID,
 		Severity:     types.SEVERITY_ERROR,
 		RuleID:       "gtfs_feed_file_presence_and_integrity_rule",
 	})
@@ -56,7 +55,6 @@ func (v *FileValidation) addWarning(file, msg string) {
 		Rows:         []int{},
 		FileName:     file,
 		Message:      msg,
-		ValidationID: v.ID,
 		Severity:     types.SEVERITY_WARNING,
 		RuleID:       "gtfs_feed_file_presence_and_integrity_rule",
 	})

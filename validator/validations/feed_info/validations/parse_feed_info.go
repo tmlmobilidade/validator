@@ -33,7 +33,6 @@ func ParseFeedInfo(rawFeedInfo types.FeedInfoRaw, row int) types.FeedInfo {
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "feed_info_parse",
 			RuleID:       "feed_info_values_parse",
 		})
 	}

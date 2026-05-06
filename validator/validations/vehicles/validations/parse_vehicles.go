@@ -56,7 +56,6 @@ func ParseVehicles(rawVehicles types.VehicleRaw, row int) types.Vehicle {
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "vehicles_parse",
 			RuleID:       "vehicles_values_parse",
 		})
 	}

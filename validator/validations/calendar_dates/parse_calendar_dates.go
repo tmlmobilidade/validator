@@ -31,7 +31,6 @@ func ParseCalendarDates(rawCalendarDates types.CalendarDatesRaw, row int) types.
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "calendar_dates_parse",
 			RuleID:       "calendar_dates_values_parse",
 		})
 	}

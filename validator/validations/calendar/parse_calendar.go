@@ -38,7 +38,6 @@ func ParseCalendar(rawCalendar types.CalendarRaw, row int, gtfs *types.Gtfs) typ
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "calendar_parse",
 			RuleID:       "calendar_values_parse",
 		})
 	}

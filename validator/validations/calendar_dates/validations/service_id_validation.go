@@ -23,7 +23,7 @@ If a service_id value appears in both [calendar.txt] and [calendar_dates.txt], t
 [calendar.txt]: https://gtfs.org/schedule/reference/#calendartxt
 */
 func ServiceIdValidation(calendarDate *types.CalendarDates, row int) {
-	ctx := lib.NewValidationContext("service_id", "calendar_dates.txt", "service_id_validation", "calendar_dates_service_id_references_calendar", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("service_id", "calendar_dates.txt", "calendar_dates_service_id_references_calendar", row, services.AppMessageService)
 
 	serviceId := calendarDate.ServiceId
 

@@ -39,7 +39,6 @@ func ParseFareAttributes(rawFareAttributes types.FareAttributeRaw, row int) type
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "fare_attributes_parse",
 			RuleID:       "fare_attributes_values_parse",
 		})
 	}
