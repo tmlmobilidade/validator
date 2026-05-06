@@ -25,11 +25,12 @@ jobs:
     steps:
       - id: generate-version-number
         run: |
-          version="$(date +%Y%m%d).$(date +%H%M).$(date +%S)"
+          version="$(date +%Y%m%d).$(date +%-H%-M).$(date +%-S)"
           echo "Generated version: $version"
           echo "version_number=$version" >> "$GITHUB_OUTPUT"
     outputs:
       version_number: ${{ steps.generate-version-number.outputs.version_number }}
+ 
 
   ts-wrapper:
     name: 'Publish TS Wrapper'
