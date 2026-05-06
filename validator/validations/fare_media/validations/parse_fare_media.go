@@ -26,12 +26,12 @@ func ParseFareMedia(rawFareMedia types.FareMediaRaw, row int) types.FareMedia {
 	// Helper to collect error messages
 	addMessage := func(field, msg string) {
 		messages = append(messages, types.Message{
-			Field:        field,
-			FileName:     "fare_media.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			RuleID:       "fare_media_values_parse",
+			Field:    field,
+			FileName: "fare_media.txt",
+			Rows:     []int{row},
+			Message:  msg,
+			Severity: types.SEVERITY_ERROR,
+			RuleID:   "fare_media_values_parse",
 		})
 	}
 

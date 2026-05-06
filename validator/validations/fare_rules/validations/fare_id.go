@@ -26,12 +26,12 @@ func FareIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, rules
 
 	addMessage := func(msg string) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field:        "fare_id",
-			FileName:     "fare_rules.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			RuleID:       "fare_rule_fare_id_references_fare_attributes",
+			Field:    "fare_id",
+			FileName: "fare_rules.txt",
+			Rows:     []int{row},
+			Message:  msg,
+			Severity: types.SEVERITY_ERROR,
+			RuleID:   "fare_rule_fare_id_references_fare_attributes",
 		})
 	}
 

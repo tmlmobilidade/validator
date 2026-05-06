@@ -1,13 +1,13 @@
 {
   "agency": {
     "_file": "error",
-    "agency_email": {
+    "agency_email_valid_address": {
       "severity": "warning"
     },
-    "agency_fare_url": {
+    "agency_fare_url_valid_url": {
       "severity": "warning"
     },
-    "agency_id": {
+    "agency_id_unique": {
       "options": [
         "0",
         "1",
@@ -40,10 +40,10 @@
       ],
       "severity": "error"
     },
-    "agency_lang": {
+    "agency_lang_valid_language_tag": {
       "severity": "ignore"
     },
-    "agency_name": {
+    "agency_name_present": {
       "options": [
         "Área Metropolitana de Lisboa",
         "Carris",
@@ -74,7 +74,7 @@
       ],
       "severity": "warning"
     },
-    "agency_name_id_match": {
+    "agency_id_matched_with_agency_name": {
       "compare": [
         {
           "key": "0",
@@ -191,13 +191,13 @@
       ],
       "severity": "error"
     },
-    "agency_phone": {
+    "agency_phone_valid_phone_number": {
       "severity": "error"
     },
-    "agency_timezone": {
+    "agency_timezone_valid_id": {
       "severity": "error"
     },
-    "agency_url": {
+    "agency_url_valid_url": {
       "severity": "error"
     }
   },
@@ -239,7 +239,7 @@
   },
   "calendar": {
     "_file": "ignore",
-    "end_date": {
+    "calendar_end_date_valid_yyyymmdd": {
       "severity": "error"
     },
     "friday": {
@@ -251,10 +251,10 @@
     "saturday": {
       "severity": "error"
     },
-    "service_id": {
+    "calendar_service_id_unique_non_empty": {
       "severity": "error"
     },
-    "start_date": {
+    "calendar_start_date_valid_yyyymmdd": {
       "severity": "error"
     },
     "sunday": {
@@ -272,7 +272,7 @@
   },
   "calendar_dates": {
     "_file": "ignore",
-    "date": {
+    "exception_date_valid_yyyymmdd": {
       "severity": "error"
     },
     "day_type": {
@@ -283,7 +283,7 @@
       ],
       "severity": "error"
     },
-    "exception_type": {
+    "exception_type_add_or_remove_service": {
       "severity": "error"
     },
     "holiday": {
@@ -301,37 +301,37 @@
       ],
       "severity": "error"
     },
-    "service_id": {
+    "calendar_dates_service_id_references_calendar": {
       "severity": "error"
     }
   },
   "fare_attributes": {
     "_file": "warning",
-    "agency_id": {
+    "fare_attributes_agency_id_references_agency_table": {
       "severity": "error"
     },
-    "currency_type": {
+    "currency_type_valid": {
       "options": [
         "EUR"
       ],
       "severity": "error"
     },
-    "fare_id": {
+    "fare_id_unique": {
       "severity": "error"
     },
-    "payment_method": {
+    "payment_method_valid_gtfs_enum": {
       "options": [
         "0"
       ],
       "severity": "error"
     },
-    "price": {
+    "fare_price_valid_non_negative_decimal": {
       "severity": "error"
     },
-    "transfer_duration": {
+    "transfer_duration_valid_seconds_range": {
       "severity": "ignore"
     },
-    "transfers": {
+    "transfers_valid_gtfs_enum": {
       "options": [
         "0"
       ],
@@ -340,31 +340,31 @@
   },
   "fare_rules": {
     "_file": "warning",
-    "contains_id": {
+    "fare_rule_contains_id_references_zones_stops": {
       "severity": "forbidden"
     },
-    "destination_id": {
+    "fare_rule_destination_id_references_zones_stops": {
       "severity": "forbidden"
     },
-    "fare_id": {
+    "fare_rule_fare_id_references_fare_attributes": {
       "severity": "error"
     },
-    "origin_id": {
+    "fare_rule_origin_id_references_zones_stops": {
       "severity": "forbidden"
     },
-    "route_id": {
+    "fare_rule_route_id_references_routes": {
       "severity": "error"
     }
   },
   "fare_media": {
     "_file": "ignore",
-    "fare_id": {
+    "fare_media_id_unique": {
       "severity": "error"
     },
-    "fare_media_name": {
+    "fare_media_name_non_empty": {
       "severity": "warning"
     },
-    "fare_media_type": {
+    "fare_media_type_valid": {
       "severity": "error",
       "options": [
         "0",
@@ -377,34 +377,34 @@
   },
   "feed_info": {
     "_file": "error",
-    "default_lang": {
+    "default_lang_matches_feed_lang_when_present": {
       "severity": "error"
     },
-    "feed_contact_email": {
+    "feed_contact_email_valid_address": {
       "severity": "error"
     },
-    "feed_contact_url": {
+    "feed_contact_url_valid_http_url": {
       "severity": "error"
     },
-    "feed_end_date": {
+    "feed_end_date_valid_yyyymmdd_not_before_start": {
       "severity": "error"
     },
-    "feed_lang": {
+    "feed_lang_valid_tag": {
       "options": [
         "pt"
       ],
       "severity": "error"
     },
-    "feed_publisher_name": {
+    "feed_publisher_name_non_empty": {
       "severity": "error"
     },
-    "feed_publisher_url": {
+    "feed_publisher_url_valid_http_url": {
       "severity": "error"
     },
     "feed_remarks": {
       "severity": "ignore"
     },
-    "feed_start_date": {
+    "feed_start_date_valid_yyyymmdd": {
       "severity": "error"
     },
     "feed_type": {
@@ -415,25 +415,25 @@
       ],
       "severity": "error"
     },
-    "feed_version": {
+    "feed_version_valid_identifier": {
       "severity": "error"
     }
   },
   "frequencies": {
     "_file": "forbidden",
-    "end_time": {
+    "frequency_end_time_valid": {
       "severity": "error"
     },
-    "exact_times": {
+    "exact_times_zero_when_timed_trip_uses_frequencies": {
       "severity": "error"
     },
-    "headway_secs": {
+    "headway_secs_positive_and_aligns_trip": {
       "severity": "error"
     },
-    "start_time": {
+    "frequency_start_time_valid": {
       "severity": "error"
     },
-    "trip_id": {
+    "frequencies_trip_id_references_trips_table": {
       "severity": "error"
     }
   },
@@ -490,84 +490,55 @@
   },
   "rider_categories": {
     "_file": "ignore",
-    "rider_category_id": {
+    "rider_category_id_unique": {
       "severity": "ignore"
     },
-    "rider_category_name": {
+    "rider_category_name_non_empty": {
       "severity": "ignore"
     },
-    "eligibility_url": {
+    "at_most_one_default_fare_category": {
       "severity": "ignore"
     },
-    "is_default_fare_category": {
+    "eligibility_url_valid_http_url": {
       "severity": "ignore"
     }
   },
   "routes": {
     "_file": "error",
-    "agency_id": {
-      "severity": "error"
-    },
-    "circular": {
-      "options": [
-        "0",
-        "1"
-      ],
-      "severity": "error"
-    },
-    "continuous_drop_off": {
-      "options": [
-        "0",
-        "1"
-      ],
-      "severity": "warning"
-    },
-    "continuous_pickup": {
-      "options": [
-        "0",
-        "1"
-      ],
-      "severity": "warning"
-    },
     "line_id": {
-      "severity": "error"
-    },
-    "line_long_name": {
       "severity": "error"
     },
     "line_short_name": {
       "severity": "error"
     },
-    "path_type": {
-      "options": [
-        "1",
-        "2",
-        "3"
-      ],
+    "line_long_name": {
       "severity": "error"
     },
-    "route_color": {
+    "route_id_unique": {
       "severity": "error"
     },
-    "route_desc": {
+    "route_agency_id_references_agency_table": {
+      "severity": "error"
+    },
+    "route_short_name_or_long_name_present": {
+      "severity": "error"
+    },
+    "route_long_name_or_short_name_present": {
+      "severity": "error"
+    },
+    "route_desc_per_severity_and_content_rules": {
       "severity": "ignore"
     },
-    "route_id": {
-      "severity": "error"
-    },
-    "route_long_name": {
-      "severity": "error"
+    "route_sort_order_non_negative_integer": {
+      "severity": "ignore"
     },
     "route_remarks": {
       "severity": "ignore"
     },
-    "route_short_name": {
-      "severity": "error"
+    "network_id_references_networks_table": {
+      "severity": "ignore"
     },
-    "route_text_color": {
-      "severity": "error"
-    },
-    "route_type": {
+    "route_type_valid_gtfs_enum": {
       "options": [
         "0",
         "1",
@@ -582,10 +553,45 @@
       ],
       "severity": "error"
     },
-    "route_url": {
-      "severity": "ignore"
+    "path_type_valid_enum": {
+      "options": [
+        "1",
+        "2",
+        "3"
+      ],
+      "severity": "error"
+    },
+    "circular": {
+      "options": [
+        "0",
+        "1"
+      ],
+      "severity": "error"
     },
     "school": {
+      "options": [
+        "0",
+        "1"
+      ],
+      "severity": "warning"
+    },
+    "route_url_valid_http_url": {
+      "severity": "ignore"
+    },
+    "route_color_valid_hex_string": {
+      "severity": "error"
+    },
+    "route_text_color_valid_hex_contrast": {
+      "severity": "error"
+    },
+    "continuous_pickup_valid_gtfs_enum": {
+      "options": [
+        "0",
+        "1"
+      ],
+      "severity": "warning"
+    },
+    "continuous_drop_off_valid_gtfs_enum": {
       "options": [
         "0",
         "1"
@@ -595,31 +601,46 @@
   },
   "shapes": {
     "_file": "error",
-    "shape_dist_traveled": {
+    "shape_id_required": {
       "severity": "error"
     },
-    "shape_id": {
+    "shape_pt_lat_valid_latitude": {
       "severity": "error"
     },
-    "shape_pt_lat": {
+    "shape_pt_lon_valid_longitude": {
       "severity": "error"
     },
-    "shape_pt_lon": {
+    "shape_pt_sequence_not_repeated_within_shape": {
       "severity": "error"
     },
-    "shape_pt_sequence": {
+    "shape_dist_traveled_non_negative_monotonic": {
       "severity": "error"
     },
-    "shape_points_coordinates_distances": {
+    "shape_id_and_point_sequence_required": {
+      "severity": "error"
+    },
+    "shape_pt_sequence_strictly_increasing": {
+      "severity": "error"
+    },
+    "shape_dist_traveled_non_decreasing_with_sequence": {
+      "severity": "error"
+    },
+    "shape_sequence_position_mismatches_cumulative_traveled_distance": {
+      "severity": "error"
+    },
+    "shape_dist_traveled_delta_mismatches_haversine_segment": {
       "options": [
         "50.0"
       ],
       "severity": "error"
     },
-    "shape_points_coordinates_consistent": {
+    "shape_block_distance_rows_aggregated": {
+      "options": [
+        "100.0"
+      ],
       "severity": "error"
     },
-    "shape_distances": {
+    "shape_dist_traveled_delta_mismatches_haversine_block": {
       "options": [
         "100.0"
       ],
@@ -628,58 +649,114 @@
   },
   "stop_times": {
     "_file": "error",
-    "arrival_time": {
+    "stop_times_trip_id_references_trips_table": {
       "severity": "error"
     },
-    "continuous_drop_off": {
-      "severity": "warning"
-    },
-    "continuous_pickup": {
-      "severity": "warning"
-    },
-    "departure_time": {
+    "arrival_time_ordering_with_departure_and_frequencies": {
       "severity": "error"
     },
-    "drop_off_booking_rule_id": {
-      "severity": "ignore"
-    },
-    "drop_off_type": {
+    "departure_time_ordering_with_arrival_and_timepoint": {
       "severity": "error"
     },
-    "end_pickup_drop_off_window": {
-      "severity": "ignore"
-    },
-    "pickup_booking_rule_id": {
-      "severity": "ignore"
-    },
-    "pickup_type": {
+    "stop_times_stop_id_references_stops_table": {
       "severity": "error"
     },
-    "shape_dist_traveled": {
-      "severity": "error"
-    },
-    "start_pickup_drop_off_window": {
-      "severity": "ignore"
-    },
-    "stop_headsign": {
+    "stop_headsign_present": {
       "severity": "forbidden"
     },
-    "stop_id": {
+    "pickup_type_valid_gtfs_enum": {
       "severity": "error"
     },
-    "stop_sequence": {
+    "drop_off_type_valid_gtfs_enum": {
       "severity": "error"
     },
-    "timepoint": {
+    "stop_times_continuous_pickup_valid_gtfs_enum": {
       "severity": "warning"
     },
-    "trip_id": {
+    "stop_times_continuous_drop_off_valid_gtfs_enum": {
+      "severity": "warning"
+    },
+    "stop_times_shape_dist_traveled_non_decreasing_on_trip": {
+      "severity": "error"
+    },
+    "start_pickup_drop_off_window_valid": {
+      "severity": "ignore"
+    },
+    "end_pickup_drop_off_window_valid": {
+      "severity": "ignore"
+    },
+    "timepoint_valid_gtfs_enum": {
+      "severity": "warning"
+    },
+    "pickup_booking_rule_id_references_booking_rules": {
+      "severity": "ignore"
+    },
+    "drop_off_booking_rule_id_references_booking_rules_or_empty": {
+      "severity": "ignore"
+    },
+    "location_group_id_consistent_with_trip_id_and_stops": {
       "severity": "error"
     }
   },
   "stops": {
     "_file": "error",
-    "has_bench": {
+    "stop_id_unique": {
+      "severity": "error"
+    },
+    "stop_code_valid": {
+      "severity": "error"
+    },
+    "stop_name_required_by_location_type": {
+      "severity": "error"
+    },
+    "stop_short_name_valid": {
+      "severity": "ignore"
+    },
+    "tts_stop_name_valid": {
+      "severity": "ignore"
+    },
+    "stop_desc_valid": {
+      "severity": "ignore"
+    },
+    "stop_lat_valid_latitude_range": {
+      "severity": "error"
+    },
+    "stop_lon_valid_longitude_range": {
+      "severity": "error"
+    },
+    "zone_id_valid": {
+      "severity": "ignore"
+    },
+    "stop_url_valid_url": {
+      "severity": "ignore"
+    },
+    "location_type_valid_enum": {
+      "severity": "ignore"
+    },
+    "parent_station_id_valid_for_stop_hierarchy": {
+      "severity": "ignore"
+    },
+    "stop_timezone_valid": {
+      "severity": "ignore"
+    },
+    "wheelchair_boarding_valid_enum": {
+      "options": [
+        "0",
+        "1",
+        "2"
+      ],
+      "severity": "warning"
+    },
+    "level_id_valid_id": {
+      "severity": "ignore"
+    },
+    "platform_code_valid": {
+      "severity": "ignore"
+    },
+    "public_visible_valid_enum": {
+      "severity": "ignore"
+    },
+    "has_stop_sign_valid_enum": {
       "options": [
         "0",
         "1",
@@ -688,7 +765,7 @@
       ],
       "severity": "ignore"
     },
-    "has_network_map": {
+    "has_shelter_valid_enum": {
       "options": [
         "0",
         "1",
@@ -697,7 +774,40 @@
       ],
       "severity": "ignore"
     },
-    "has_pip_real_time": {
+    "shelter_code_valid": {
+      "severity": "ignore"
+    },
+    "shelter_maintainer_valid": {
+      "severity": "ignore"
+    },
+    "has_bench_valid_enum": {
+      "options": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "severity": "ignore"
+    },
+    "has_network_map_valid_enum": {
+      "options": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "severity": "ignore"
+    },
+    "has_schedules_valid_enum": {
+      "options": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "severity": "ignore"
+    },
+    "has_pip_real_time_valid_enum": {
       "options": [
         "0",
         "1",
@@ -705,84 +815,13 @@
       ],
       "severity": "ignore"
     },
-    "has_schedules": {
+    "has_tariffs_information_valid_enum": {
+      "severity": "ignore"
+    },
+    "region_id_valid": {
       "options": [
-        "0",
-        "1",
-        "2",
-        "3"
-      ],
-      "severity": "ignore"
-    },
-    "has_shelter": {
-      "options": [
-        "0",
-        "1",
-        "2",
-        "3"
-      ],
-      "severity": "ignore"
-    },
-    "has_stop_sign": {
-      "options": [
-        "0",
-        "1",
-        "2",
-        "3"
-      ],
-      "severity": "ignore"
-    },
-    "has_tariffs_information": {
-      "severity": "ignore"
-    },
-    "level_id": {
-      "severity": "ignore"
-    },
-    "location_type": {
-      "severity": "ignore"
-    },
-    "municipality_id": {
-			"options": [
-        "1502", 
-        "1503", 
-        "1504", 
-        "1115", 
-        "1105", 
-        "1106", 
-        "1107", 
-        "1109", 
-        "1506", 
-        "1507", 
-        "1116", 
-        "1110", 
-        "1508", 
-        "1510", 
-        "1111", 
-        "1511", 
-        "1512", 
-        "1114", 
-        "0712", 
-        "1102", 
-        "1112"
-      ],
-      "severity": "warning"
-    },
-    "parent_station": {
-      "severity": "ignore"
-    },
-    "parish_id": {
-      "severity": "warning"
-    },
-    "platform_code": {
-      "severity": "ignore"
-    },
-    "public_visible": {
-      "severity": "ignore"
-    },
-    "region_id": {
-      "options": [
-        "PT170",  
-        "P185", 
+        "PT170",
+        "P185",
         "PT16B",
         "PT111",
         "PT112",
@@ -790,73 +829,55 @@
         "PT11A",
         "PT11B",
         "PT11C",
-        "PT11D", 
-        "PT11E", 
-        "PT150", 
-        "PT1191", 
-        "PT1192", 
-        "PT1193", 
-        "PT1194", 
-        "PT1195", 
-        "PT1196", 
-        "PT1A0", 
-        "PT1B0", 
-        "PT1C1", 
-        "PT1C2", 
-        "PT1C3", 
-        "PT1C4", 
-        "PT1D1", 
-        "PT1D2", 
+        "PT11D",
+        "PT11E",
+        "PT150",
+        "PT1191",
+        "PT1192",
+        "PT1193",
+        "PT1194",
+        "PT1195",
+        "PT1196",
+        "PT1A0",
+        "PT1B0",
+        "PT1C1",
+        "PT1C2",
+        "PT1C3",
+        "PT1C4",
+        "PT1D1",
+        "PT1D2",
         "PT1D3"
       ],
       "severity": "warning"
     },
-    "shelter_code": {
-      "severity": "ignore"
-    },
-    "shelter_maintainer": {
-      "severity": "ignore"
-    },
-    "stop_code": {
-      "severity": "error"
-    },
-    "stop_desc": {
-      "severity": "ignore"
-    },
-    "stop_id": {
-      "severity": "error"
-    },
-    "stop_lat": {
-      "severity": "error"
-    },
-    "stop_lon": {
-      "severity": "error"
-    },
-    "stop_name": {
-      "severity": "error"
-    },
-    "stop_short_name": {
-      "severity": "ignore"
-    },
-    "stop_timezone": {
-      "severity": "ignore"
-    },
-    "stop_url": {
-      "severity": "ignore"
-    },
-    "tts_stop_name": {
-      "severity": "ignore"
-    },
-    "wheelchair_boarding": {
+    "municipality_id_valid": {
       "options": [
-        "0",
-        "1",
-        "2"
+        "1502",
+        "1503",
+        "1504",
+        "1115",
+        "1105",
+        "1106",
+        "1107",
+        "1109",
+        "1506",
+        "1507",
+        "1116",
+        "1110",
+        "1508",
+        "1510",
+        "1111",
+        "1511",
+        "1512",
+        "1114",
+        "0712",
+        "1102",
+        "1112"
       ],
       "severity": "warning"
     },
-    "zone_id": {
-      "severity": "ignore"
+    "parish_id_valid": {
+      "severity": "warning"
     }
   },
   "transfers": {
@@ -900,49 +921,49 @@
   },
   "trips": {
     "_file": "error",
-    "bikes_allowed": {
+    "route_id_references_routes_table": {
+      "severity": "error"
+    },
+    "pattern_id_present_and_references_consistent": {
+      "severity": "error"
+    },
+    "service_id_references_calendar_service": {
+      "severity": "error"
+    },
+    "trip_id_unique": {
+      "severity": "error"
+    },
+    "trip_headsign_present_when_short_name_absent": {
+      "severity": "error"
+    },
+    "trip_short_name_exclusivity": {
+      "severity": "ignore"
+    },
+    "direction_id_valid_enum": {
+      "severity": "error"
+    },
+    "block_id_in_allowed_set": {
+      "severity": "ignore"
+    },
+    "shape_id_references_shapes_table_when_present": {
+      "severity": "error"
+    },
+    "wheelchair_accessible_valid_gtfs_enum": {
       "severity": "warning"
     },
-    "block_id": {
-      "severity": "ignore"
-    },
-    "direction_id": {
-      "severity": "error"
-    },
-    "direction_pattern_id_match": {
-      "severity": "ignore"
-    },
-    "pattern_id": {
-      "severity": "error"
-    },
-    "route_id": {
-      "severity": "error"
-    },
-    "service_id": {
-      "severity": "error"
-    },
-    "shape_id": {
-      "severity": "error"
-    },
-    "stop_sequence": {
-      "severity": "error"
-    },
-    "trip_headsign": {
-      "severity": "error"
-    },
-    "trip_id": {
-      "severity": "error"
-    },
-    "trip_short_name": {
-      "severity": "ignore"
-    },
-    "wheelchair_accessible": {
+    "bikes_allowed_valid_gtfs_enum": {
       "severity": "warning"
     },
-    "trip_id_limit_characters": {
+    "stop_sequence_increasing_by_one_along_trip": {
       "severity": "error"
     },
-    "pattern_id_format": {
+    "direction_id_matches_feed_pattern_direction": {
+      "severity": "ignore"
+    },
+    "trip_id_limit_max_length": {
+      "severity": "error"
+    },
+    "pattern_id_matches_feed_pattern_id_syntax": {
       "severity": "error",
       "options": [
         "^[^_]{1,4}_[^_]_[^_]$",
@@ -951,186 +972,64 @@
         "^[^_]{1,4}_[^_]_CIRC$"
       ]
     },
-    "stop_coordinates_by_trip_id": {
+    "trip_path_stop_coordinates_referenced_from_stops": {
       "severity": "error"
     },
-    "pattern_id_group": {
+    "pattern_id_trip_has_required_fields_for_grouping": {
       "severity": "error"
     },
-    "route_id_group": {
+    "pattern_id_single_trip_signature_per_pattern": {
       "severity": "error"
     },
-    "direction_id_group": {
+    "route_id_consistent_for_all_patterns_in_trips": {
       "severity": "error"
     },
-    "shape_id_group": {
+    "direction_id_consistent_for_all_patterns_in_trips": {
       "severity": "error"
     },
-    "trip_headsign_group": {
+    "one_shape_id_per_pattern_id_group": {
       "severity": "error"
     },
-    "shape_id_same_pattern_id": {
+    "one_pattern_id_per_shape_id_group": {
+      "severity": "error"
+    },
+    "trip_headsign_consistent_for_all_patterns_in_trips": {
+      "severity": "error"
+    },
+    "shape_id_needs_to_be_the_same_as_pattern_id": {
       "severity": "warning"
     }
   },
   "vehicles": {
     "_file": "warning",
-    "agency_id": {
+    "vehicle_id_unique": {
       "severity": "error"
     },
-    "available_seats": {
-      "severity": "error"
+    "vehicle_agency_id_references_agency_table": {
+      "severity": "warning"
     },
-    "available_standing": {
-      "severity": "error"
-    },
-    "bicycles": {
-      "options": [
-        "0",
-        "1"
-      ],
-      "severity": "error"
-    },
-    "climatization": {
-      "options": [
-        "0",
-        "1"
-      ],
-      "severity": "error"
-    },
-    "consumption_meter": {
-      "options": [
-        "0",
-        "1"
-      ],
-      "severity": "error"
-    },
-    "emission": {
-      "options": [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "0"
-      ],
-      "severity": "error"
-    },
-    "external_sound": {
-      "options": [
-        "0",
-        "1"
-      ],
-      "severity": "error"
-    },
-    "front_display": {
-      "options": [
-        "0",
-        "1"
-      ],
-      "severity": "error"
-    },
-    "internal_sound": {
-      "options": [
-        "0",
-        "1"
-      ],
-      "severity": "error"
-    },
-    "kneeling": {
-      "options": [
-        "0",
-        "1",
-        "2"
-      ],
-      "severity": "error"
-    },
-    "license_plate": {
+    "license_plate_format_per_market_rules": {
       "severity": "ignore"
     },
-    "lowered_floor": {
-      "options": [
-        "0",
-        "1",
-        "2"
-      ],
+    "vehicle_make_required": {
       "severity": "error"
     },
-    "make": {
+    "vehicle_model_required": {
       "severity": "error"
     },
-    "model": {
+    "vehicle_owner_required": {
       "severity": "error"
     },
-    "onboard_monitor": {
-      "options": [
-        "0",
-        "1"
-      ],
+    "registration_date_valid_day_granularity": {
       "severity": "error"
     },
-    "owner": {
+    "available_seats_non_negative": {
       "severity": "error"
     },
-    "passenger_counting": {
-      "options": [
-        "0",
-        "1"
-      ],
+    "available_standing_non_negative": {
       "severity": "error"
     },
-    "propulsion": {
-      "options": [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9"
-      ],
-      "severity": "error"
-    },
-    "ramp": {
-      "options": [
-        "0",
-        "1",
-        "2",
-        "3"
-      ],
-      "severity": "error"
-    },
-    "rear_display": {
-      "options": [
-        "0",
-        "1",
-        "2"
-      ],
-      "severity": "error"
-    },
-    "registration_date": {
-      "severity": "error"
-    },
-    "side_display": {
-      "options": [
-        "0",
-        "1",
-        "2"
-      ],
-      "severity": "error"
-    },
-    "static_information": {
-      "options": [
-        "0",
-        "1"
-      ],
-      "severity": "error"
-    },
-    "typology": {
+    "typology_in_allowed_vehicle_types": {
       "severity": "warning",
       "options": [
         "0.1",
@@ -1157,22 +1056,150 @@
         "7.3"
       ]
     },
-    "vehicle_id": {
+    "propulsion_type_valid_enum": {
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9"
+      ],
       "severity": "error"
     },
-    "video_surveillance": {
+    "emission_code_valid_for_propulsion_type": {
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "0"
+      ],
+      "severity": "error"
+    },
+    "climatization_valid_enum": {
+      "options": [
+        "0",
+        "1"
+      ],
+      "severity": "error"
+    },
+    "wheelchair_spots_valid_enum": {
+      "options": [
+        "0",
+        "1"
+      ],
+      "severity": "error"
+    },
+    "lowered_floor_valid_enum": {
+      "options": [
+        "0",
+        "1",
+        "2"
+      ],
+      "severity": "error"
+    },
+    "ramp_valid_enum": {
+      "options": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "severity": "error"
+    },
+    "kneeling_valid_enum": {
+      "options": [
+        "0",
+        "1",
+        "2"
+      ],
+      "severity": "error"
+    },
+    "static_information_valid_enum": {
+      "options": [
+        "0",
+        "1"
+      ],
+      "severity": "error"
+    },
+    "onboard_monitor_valid_enum": {
+      "options": [
+        "0",
+        "1"
+      ],
+      "severity": "error"
+    },
+    "front_display_valid_enum": {
+      "options": [
+        "0",
+        "1"
+      ],
+      "severity": "error"
+    },
+    "rear_display_valid_enum": {
+      "options": [
+        "0",
+        "1",
+        "2"
+      ],
+      "severity": "error"
+    },
+    "side_display_valid_enum": {
+      "options": [
+        "0",
+        "1",
+        "2"
+      ],
+      "severity": "error"
+    },
+    "internal_sound_level_valid_enum": {
+      "options": [
+        "0",
+        "1"
+      ],
+      "severity": "error"
+    },
+    "external_sound_valid_enum": {
+      "options": [
+        "0",
+        "1"
+      ],
+      "severity": "error"
+    },
+    "consumption_meter_valid_format": {
+      "options": [
+        "0",
+        "1"
+      ],
+      "severity": "error"
+    },
+    "bicycles_rack_count_non_negative": {
+      "options": [
+        "0",
+        "1"
+      ],
+      "severity": "error"
+    },
+    "passenger_counting_valid_enum": {
+      "options": [
+        "0",
+        "1"
+      ],
+      "severity": "error"
+    },
+    "video_surveillance_valid_enum": {
       "options": [
         "0",
         "1"
       ],
       "severity": "warning"
-    },
-    "wheelchair": {
-      "options": [
-        "0",
-        "1"
-      ],
-      "severity": "error"
     }
   }
 }

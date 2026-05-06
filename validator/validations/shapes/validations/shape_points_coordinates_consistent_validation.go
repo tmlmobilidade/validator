@@ -50,7 +50,7 @@ func uniquePointsCoordinatesConsistentRows(rows []int) []int {
 
 // ShapePointsCoordinatesConsistentValidation validates if consecutive points from the same shape are not too far apart.
 func ShapePointsCoordinatesConsistentValidation(shapes []types.Shape, rules *types.ShapesRules) {
-	severity := types.Severity(rules.ShapePointsCoordinatesConsistent.Severity)
+	severity := types.SEVERITY_ERROR
 	if rules != nil && rules.ShapePointsCoordinatesConsistent.Severity != "" {
 		severity = types.Severity(rules.ShapePointsCoordinatesConsistent.Severity)
 	}

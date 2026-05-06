@@ -38,12 +38,12 @@ func OriginIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, rul
 
 	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field:        "origin_id",
-			FileName:     "fare_rules.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			RuleID:       "fare_rule_origin_id_references_zones_stops",
+			Field:    "origin_id",
+			FileName: "fare_rules.txt",
+			Rows:     []int{row},
+			Message:  msg,
+			Severity: severity,
+			RuleID:   "fare_rule_origin_id_references_zones_stops",
 		})
 	}
 

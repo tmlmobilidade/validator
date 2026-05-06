@@ -28,12 +28,12 @@ func ParseFeedInfo(rawFeedInfo types.FeedInfoRaw, row int) types.FeedInfo {
 
 	addMessage := func(field, msg string) {
 		messages = append(messages, types.Message{
-			Field:        field,
-			FileName:     "feed_info.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			RuleID:       "feed_info_values_parse",
+			Field:    field,
+			FileName: "feed_info.txt",
+			Rows:     []int{row},
+			Message:  msg,
+			Severity: types.SEVERITY_ERROR,
+			RuleID:   types.RuleIDFeedInfoValuesParse,
 		})
 	}
 

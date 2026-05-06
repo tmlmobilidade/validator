@@ -12,7 +12,7 @@ import (
 /*
 # Attributes
   - File: [trips.txt]
-  - Field: stop_coordinates_by_trip_id
+  - Rule ID: trip_path_stop_coordinates_referenced_from_stops
   - Presence: optional
   - Type: coordinates
 

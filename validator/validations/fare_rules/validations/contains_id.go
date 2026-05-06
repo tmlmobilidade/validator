@@ -41,12 +41,12 @@ func ContainsIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs, r
 
 	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field:        "contains_id",
-			FileName:     "fare_rules.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			RuleID:       "fare_rule_contains_id_references_zones_stops",
+			Field:    "contains_id",
+			FileName: "fare_rules.txt",
+			Rows:     []int{row},
+			Message:  msg,
+			Severity: severity,
+			RuleID:   "fare_rule_contains_id_references_zones_stops",
 		})
 	}
 

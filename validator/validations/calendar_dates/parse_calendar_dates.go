@@ -26,12 +26,12 @@ func ParseCalendarDates(rawCalendarDates types.CalendarDatesRaw, row int) types.
 	// Helper to collect error messages
 	addMessage := func(field, msg string) {
 		messages = append(messages, types.Message{
-			Field:        field,
-			FileName:     "calendar_dates.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			RuleID:       "calendar_dates_values_parse",
+			Field:    field,
+			FileName: "calendar_dates.txt",
+			Rows:     []int{row},
+			Message:  msg,
+			Severity: types.SEVERITY_ERROR,
+			RuleID:   "calendar_dates_values_parse",
 		})
 	}
 
