@@ -612,7 +612,7 @@
     },
     "shape_points_coordinates_distances": {
       "options": [
-        "1.0"
+        "50.0"
       ],
       "severity": "error"
     },
