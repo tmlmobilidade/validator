@@ -26,7 +26,7 @@ func VehicleIdValidation(vehicle *types.Vehicle, row int, gtfs *types.Gtfs, rule
 	}
 
 	if vehicle.VehicleId == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("vehicle_id_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("vehicle_id_validation.required"))
 		return
 	}
 

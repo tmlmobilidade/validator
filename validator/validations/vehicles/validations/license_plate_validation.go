@@ -32,7 +32,7 @@ func LicensePlateValidation(vehicle *types.Vehicle, row int, gtfs *types.Gtfs, r
 	}
 
 	if vehicle.LicensePlate == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("license_plate_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("license_plate_validation.required"))
 		return
 	}
 
