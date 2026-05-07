@@ -26,14 +26,13 @@ func VehicleIdValidation(vehicle *types.Vehicle, row int, gtfs *types.Gtfs, rule
 	}
 
 	if vehicle.VehicleId == nil {
-		message := ctx.GetTranslatedMessage("vehicle_id_validation.required")
-		ctx.AddMessageWithSeverity(message)
+		ctx.AddError(ctx.GetTranslatedMessage("vehicle_id_validation.required"))
 		return
 	}
 
 	rows, err := gtfs.GetRowsById("vehicles", *vehicle.VehicleId)
 	if err == nil && len(rows) > 1 {
-		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("vehicle_id_validation.duplicate", *vehicle.VehicleId))
+		ctx.AddError(ctx.GetTranslatedMessage("vehicle_id_validation.duplicate", *vehicle.VehicleId))
 		return
 	}
 }

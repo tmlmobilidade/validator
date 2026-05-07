@@ -32,7 +32,7 @@ func LicensePlateValidation(vehicle *types.Vehicle, row int, gtfs *types.Gtfs, r
 	}
 
 	if vehicle.LicensePlate == nil {
-		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("license_plate_validation.required"))
+		ctx.AddError(ctx.GetTranslatedMessage("license_plate_validation.required"))
 		return
 	}
 
@@ -44,7 +44,7 @@ func LicensePlateValidation(vehicle *types.Vehicle, row int, gtfs *types.Gtfs, r
 	if gtfs != nil {
 		rows, err := gtfs.GetRowsByField("vehicles", "license_plate", *vehicle.LicensePlate)
 		if err == nil && len(rows) > 1 {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("license_plate_validation.duplicate", *vehicle.LicensePlate))
+			ctx.AddError(ctx.GetTranslatedMessage("license_plate_validation.duplicate", *vehicle.LicensePlate))
 			return
 		}
 	}
