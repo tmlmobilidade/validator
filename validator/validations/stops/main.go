@@ -16,7 +16,7 @@ func init() {
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Validations for stops.txt")
 
-	validStopIDs := buildValidStopIDsSet()
+	stopsData := BuildStopsDataCache()
 
 	// Create progress tracker
 	tracker := lib.CreateProgressTracker(gtfs, "stops", config.ProgressThresholdLarge)
@@ -35,13 +35,13 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		}
 
 		// Validate stop_id
-		validations.StopIdValidation(&stop, row, &gtfs, stopRules, validStopIDs)
+		validations.StopIdValidation(&stop, row, &gtfs, stopRules, stopsData)
 
 		// Validate stop_code
 		validations.StopCodeValidation(&stop, row, &gtfs, stopRules)
 
 		// Validate stop_name
-		validations.StopNameValidation(&stop, row, stopRules)
+		validations.StopNameValidation(&stop, row, stopRules, stopsData)
 
 		// Validate tts_stop_name
 		validations.TtsStopNameValidation(&stop, row, stopRules)
@@ -50,10 +50,10 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		validations.StopDescValidation(&stop, row, stopRules)
 
 		// Validate stop_lat
-		validations.StopLatValidation(&stop, row, stopRules)
+		validations.StopLatValidation(&stop, row, stopRules, stopsData)
 
 		// Validate stop_lon
-		validations.StopLonValidation(&stop, row, stopRules)
+		validations.StopLonValidation(&stop, row, stopRules, stopsData)
 
 		// Validate zone_id
 		validations.ZoneIdValidation(&stop, row, stopRules)

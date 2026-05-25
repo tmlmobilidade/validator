@@ -25,7 +25,7 @@ func TestAllStopLonValidationTestCases(t *testing.T) {
 				stop = &types.Stop{StopLon: nil, LocationType: lib.Ptr(0)}
 			}
 
-			validations.StopLonValidation(stop, tc.Row, nil)
+			validations.StopLonValidation(stop, tc.Row, nil, nil)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
@@ -33,7 +33,7 @@ func TestAllStopLonValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			stop := &types.Stop{StopLon: nil}
-			validations.StopLonValidation(stop, tc.Row, &types.StopsRules{StopLon: types.RuleConfig{Severity: tc.Severity}})
+			validations.StopLonValidation(stop, tc.Row, &types.StopsRules{StopLon: types.RuleConfig{Severity: tc.Severity}}, nil)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedWarnings, tc.Name, types.SEVERITY_WARNING)
 		})
@@ -41,38 +41,38 @@ func TestAllStopLonValidationTestCases(t *testing.T) {
 	t.Run("DefaultSeverity", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		stop := &types.Stop{StopLon: nil}
-		validations.StopLonValidation(stop, 1, nil)
+		validations.StopLonValidation(stop, 1, nil, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "DefaultSeverity", types.SEVERITY_ERROR)
 	})
 
 	t.Run("LocationType_0", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		stop := &types.Stop{StopLon: nil, LocationType: lib.Ptr(0)}
-		validations.StopLonValidation(stop, 1, nil)
+		validations.StopLonValidation(stop, 1, nil, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "LocationType_0", types.SEVERITY_ERROR)
 	})
 	t.Run("LocationType_1", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		stop := &types.Stop{StopLon: nil, LocationType: lib.Ptr(1)}
-		validations.StopLonValidation(stop, 1, nil)
+		validations.StopLonValidation(stop, 1, nil, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "LocationType_1", types.SEVERITY_ERROR)
 	})
 	t.Run("LocationType_2", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		stop := &types.Stop{StopLon: nil, LocationType: lib.Ptr(2)}
-		validations.StopLonValidation(stop, 1, nil)
+		validations.StopLonValidation(stop, 1, nil, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "LocationType_2", types.SEVERITY_ERROR)
 	})
 	t.Run("LocationType_3", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		stop := &types.Stop{StopLon: nil, LocationType: lib.Ptr(3)}
-		validations.StopLonValidation(stop, 1, nil)
+		validations.StopLonValidation(stop, 1, nil, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "LocationType_3", types.SEVERITY_ERROR)
 	})
 	t.Run("LocationType_4", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		stop := &types.Stop{StopLon: nil, LocationType: lib.Ptr(4)}
-		validations.StopLonValidation(stop, 1, nil)
+		validations.StopLonValidation(stop, 1, nil, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "LocationType_4", types.SEVERITY_ERROR)
 	})
 }

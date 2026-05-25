@@ -4,58 +4,77 @@ import (
 	"encoding/json"
 	"fmt"
 	"main/lib"
+	"main/types"
 	"os"
 	"path/filepath"
-	"strconv"
 )
 
-// buildValidStopIDsSet loads the root-level stops_ids.json into a set for fast stop_id lookups.
-//
-// Accepted JSON formats:
-//   - [100001, 100002, ...]
-//   - [{"_id":100001}, {"_id":100002}, ...] (legacy support)
-func buildValidStopIDsSet() map[string]struct{} {
-	lib.AppLogger.Debug("Pre-computing valid stop IDs from stops_ids.json...")
-
-	fileBytes, sourcePath, err := readStopIDsFile()
-	if err != nil {
-		lib.AppLogger.Error(fmt.Sprintf("Error reading stops_ids.json: %v", err))
-		return map[string]struct{}{}
-	}
-	lib.AppLogger.Debug(fmt.Sprintf("Loaded stops_ids.json from %s", sourcePath))
-
-	validIDs := make(map[string]struct{})
-
-	var ids []int
-	if err := json.Unmarshal(fileBytes, &ids); err == nil {
-		for _, id := range ids {
-			validIDs[strconv.Itoa(id)] = struct{}{}
-		}
-		lib.AppLogger.Debug(fmt.Sprintf("Pre-computed %d valid stop IDs", len(validIDs)))
-		return validIDs
-	}
-
-	var legacyIDs []struct {
-		ID int `json:"_id"`
-	}
-	if err := json.Unmarshal(fileBytes, &legacyIDs); err != nil {
-		lib.AppLogger.Error(fmt.Sprintf("Error parsing stops_ids.json: %v", err))
-		return map[string]struct{}{}
-	}
-
-	for _, entry := range legacyIDs {
-		validIDs[strconv.Itoa(entry.ID)] = struct{}{}
-	}
-
-	lib.AppLogger.Debug(fmt.Sprintf("Pre-computed %d valid stop IDs", len(validIDs)))
-	return validIDs
+type StopsDataFlag struct {
+	AgencyIDs    []string `json:"agency_ids"`
+	IsHarmonized bool     `json:"is_harmonized"`
+	ShortName    string   `json:"short_name"`
+	StopID       string   `json:"stop_id"`
 }
 
-func readStopIDsFile() ([]byte, string, error) {
+type StopsDataEntry struct {
+	Name      string          `json:"name"`
+	Latitude  float64         `json:"latitude"`
+	Longitude float64         `json:"longitude"`
+	Flags     []StopsDataFlag `json:"flags"`
+}
+
+// buildStopsIds loads the root-level stops_data.json and indexes stop_id values from flags.
+func BuildStopsDataCache() *types.StopsDataCache {
+	lib.AppLogger.Debug("Pre-computing stops_data cache...")
+
+	fileBytes, sourcePath, err := readStopsDataFile()
+	if err != nil {
+		lib.AppLogger.Error(fmt.Sprintf("Error reading stops_data.json: %v", err))
+		return &types.StopsDataCache{ByStopID: make(map[string]types.StopsDataRecord)}
+	}
+	lib.AppLogger.Debug(fmt.Sprintf("Loaded stops_data.json from %s", sourcePath))
+
+	var entries []StopsDataEntry
+	if err := json.Unmarshal(fileBytes, &entries); err != nil {
+		lib.AppLogger.Error(fmt.Sprintf("Error parsing stops_data.json: %v", err))
+		return &types.StopsDataCache{ByStopID: make(map[string]types.StopsDataRecord)}
+	}
+
+	cache := &types.StopsDataCache{
+		ByStopID: make(map[string]types.StopsDataRecord),
+	}
+
+	for _, entry := range entries {
+		for _, flag := range entry.Flags {
+			if flag.StopID != "" {
+				if _, exists := cache.ByStopID[flag.StopID]; !exists {
+					cache.ByStopID[flag.StopID] = types.StopsDataRecord{
+						Name:      entry.Name,
+						Latitude:  float32(entry.Latitude),
+						Longitude: float32(entry.Longitude),
+						Flags: []types.StopsDataFlag{
+							{
+								AgencyIDs:    flag.AgencyIDs,
+								IsHarmonized: flag.IsHarmonized,
+								ShortName:    flag.ShortName,
+								StopID:       flag.StopID,
+							},
+						},
+					}
+				}
+			}
+		}
+	}
+
+	lib.AppLogger.Debug(fmt.Sprintf("Pre-computed stops_data cache for %d stops", len(cache.ByStopID)))
+	return cache
+}
+
+func readStopsDataFile() ([]byte, string, error) {
 	possiblePaths := []string{
-		"stops_ids.json",
-		filepath.Join("..", "stops_ids.json"),
-		filepath.Join("..", "..", "stops_ids.json"),
+		"stops_data.json",
+		filepath.Join("..", "stops_data.json"),
+		filepath.Join("..", "..", "stops_data.json"),
 	}
 
 	for _, path := range possiblePaths {

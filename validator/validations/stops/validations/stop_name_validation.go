@@ -31,7 +31,7 @@ import (
 )
 
 // StopNameValidation validates the presence of stop_name in stops.txt according to location_type
-func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
+func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules, stopsData *types.StopsDataCache) {
 	ctx := lib.NewValidationContext("stop_name", "stops.txt", "stop_name_validation", "stop_name_required_by_location_type", row, services.AppMessageService)
 	if rules != nil && rules.StopName.Severity != "" {
 		ctx.WithSeverity(rules.StopName.Severity)
@@ -68,6 +68,24 @@ func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 
 		if !slices.Contains(*rules.StopName.Options, *stop.StopName) {
 			ctx.AddError(ctx.GetTranslatedMessage("stop_short_name_validation.not_allowed", *stop.StopName))
+			return
+		}
+	}
+
+	// Check if stop_name matches the pre-computed stops_data.json cache
+	ctx = lib.NewValidationContext("stop_name", "stops.txt", "stop_name_validation", "stop_name_matches_stops_data", row, services.AppMessageService)
+	if stop.StopId != nil && *stop.StopId != "" && stopsData != nil && len(stopsData.ByStopID) > 0 {
+		record, exists := stopsData.ByStopID[*stop.StopId]
+		if !exists {
+			return
+		}
+
+		if record.Name != *stop.StopName {
+			if ctx.ShouldSkip() {
+				return
+			}
+
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("stop_name_validation.does_not_match_stops_data", *stop.StopName))
 			return
 		}
 	}

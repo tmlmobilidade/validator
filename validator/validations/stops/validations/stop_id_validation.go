@@ -25,7 +25,7 @@ ID must be unique across all stops.stop_id, locations.geojson id, and location_g
 */
 
 // StopIdValidation validates the presence and uniqueness of stop_id in stops.txt
-func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.StopsRules, validStopIDs map[string]struct{}) {
+func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.StopsRules, stopsData *types.StopsDataCache) {
 	ctx := lib.NewValidationContext("stop_id", "stops.txt", "stop_id_validation", "stop_id_unique", row, services.AppMessageService)
 
 	// Check if stop_id is missing
@@ -47,14 +47,6 @@ func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.
 		}
 	}
 
-	// Check if stop_id exists in the pre-computed valid IDs list
-	if stop.StopId != nil && len(validStopIDs) > 0 {
-		if _, exists := validStopIDs[*stop.StopId]; !exists {
-			ctx.AddError(ctx.GetTranslatedMessage("stop_id_validation.does_not_exist", *stop.StopId))
-			return
-		}
-	}
-
 	// Validate rules
 	if rules != nil && rules.StopId.Options != nil {
 		if slices.Contains(*rules.StopId.Options, types.ALL_OPTIONS) {
@@ -63,6 +55,19 @@ func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.
 
 		if !slices.Contains(*rules.StopId.Options, *stop.StopId) {
 			ctx.AddError(ctx.GetTranslatedMessage("stop_id_validation.not_allowed", *stop.StopId))
+			return
+		}
+	}
+
+	// Check if stop_id exists in the pre-computed stops_data.json cache
+	ctx = lib.NewValidationContext("stop_id", "stops.txt", "stop_id_validation", "stop_id_exists", row, services.AppMessageService)
+	if stop.StopId != nil && stopsData != nil && len(stopsData.ByStopID) > 0 {
+		if _, exists := stopsData.ByStopID[*stop.StopId]; !exists {
+			// if ctx.ShouldSkip() {
+			// 	return
+			// }
+
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("stop_id_validation.does_not_exist", *stop.StopId))
 			return
 		}
 	}
