@@ -703,10 +703,16 @@
     "stop_id_unique": {
       "severity": "error"
     },
+    "stop_id_exists": {
+      "severity": "error"
+    },
     "stop_code_valid": {
       "severity": "error"
     },
     "stop_name_required_by_location_type": {
+      "severity": "error"
+    },
+    "stop_name_matches_stops_data": {
       "severity": "error"
     },
     "stop_short_name_valid": {
@@ -721,7 +727,13 @@
     "stop_lat_valid_latitude_range": {
       "severity": "error"
     },
+    "stop_lat_matches_stops_data": {
+      "severity": "error"
+    },
     "stop_lon_valid_longitude_range": {
+      "severity": "error"
+    },
+    "stop_lon_matches_stops_data": {
       "severity": "error"
     },
     "zone_id_valid": {

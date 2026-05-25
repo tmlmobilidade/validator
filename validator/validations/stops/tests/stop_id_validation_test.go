@@ -73,7 +73,9 @@ func TestAllStopIdValidationTestCases(t *testing.T) {
 		defer cleanup()
 
 		stop := &types.Stop{StopId: &stopID}
-		validations.StopIdValidation(stop, 1, gtfs, nil, &types.StopsDataCache{
+		validations.StopIdValidation(stop, 1, gtfs, &types.StopsRules{
+			StopIdExists: types.RuleConfig{Severity: types.SEVERITY_ERROR},
+		}, &types.StopsDataCache{
 			ByStopID: map[string]types.StopsDataRecord{"100001": {}},
 		})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "InvalidStopIdAgainstPrecomputedValidIds", types.SEVERITY_ERROR)

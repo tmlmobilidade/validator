@@ -402,7 +402,8 @@
         "forbidden": "Field \"stop_name\" is forbidden",
         "required": "Field \"stop_name\" is required",
         "recommended": "Field \"stop_name\" is recommended",
-        "not_allowed": "Field \"stop_name\" \"%s\" is not allowed"
+        "not_allowed": "Field \"stop_name\" \"%s\" is not allowed",
+        "does_not_match_stops_data": "Field \"stop_name\" \"%s\" does not match stops_data.json"
     },
     "timepoint_validation": {
         "forbidden": "Field \"timepoint\" is forbidden",
@@ -550,13 +551,15 @@
         "forbidden": "Field \"stop_lat\" is forbidden",
         "required": "Field \"stop_lat\" is required",
         "recommended": "Field \"stop_lat\" is recommended",
-        "invalid": "Field \"stop_lat\" must be a valid latitude, expected range: -90 to 90, got: %f"
+        "invalid": "Field \"stop_lat\" must be a valid latitude, expected range: -90 to 90, got: %f",
+        "does_not_match_stops_data": "Field \"stop_lat\" %f does not match stops_data.json"
     },
     "stop_lon_validation": {
         "forbidden": "Field \"stop_lon\" is forbidden",
         "required": "Field \"stop_lon\" is required",
         "recommended": "Field \"stop_lon\" is recommended",
-        "invalid": "Field \"stop_lon\" must be a valid longitude, expected range: -180 to 180, got: %f"
+        "invalid": "Field \"stop_lon\" must be a valid longitude, expected range: -180 to 180, got: %f",
+        "does_not_match_stops_data": "Field \"stop_lon\" %f does not match stops_data.json"
     },
     "stop_short_name_validation": {
         "forbidden": "Field \"stop_short_name\" is forbidden",

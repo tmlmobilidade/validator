@@ -100,13 +100,17 @@ func (rp *RulesParser) validateRules(rules *types.GtfsRules) error {
 	// Validate stops rules
 	if rules.Stops.File != types.SEVERITY_FORBIDDEN {
 		validateRuleConfig(rules.Stops.StopId, "stops.stop_id_unique")
+		validateRuleConfig(rules.Stops.StopIdExists, "stops.stop_id_exists")
 		validateRuleConfig(rules.Stops.StopCode, "stops.stop_code_valid")
 		validateRuleConfig(rules.Stops.StopName, "stops.stop_name_required_by_location_type")
+		validateRuleConfig(rules.Stops.StopNameMatchesData, "stops.stop_name_matches_data_cache")
 		validateRuleConfig(rules.Stops.StopShortName, "stops.stop_short_name_valid")
 		validateRuleConfig(rules.Stops.TtsStopName, "stops.tts_stop_name_valid")
 		validateRuleConfig(rules.Stops.StopDesc, "stops.stop_desc_valid")
 		validateRuleConfig(rules.Stops.StopLat, "stops.stop_lat_valid_latitude_range")
+		validateRuleConfig(rules.Stops.StopLatMatchesData, "stops.stop_lat_matches_stops_data")
 		validateRuleConfig(rules.Stops.StopLon, "stops.stop_lon_valid_longitude_range")
+		validateRuleConfig(rules.Stops.StopLonMatchesData, "stops.stop_lon_matches_stops_data")
 		validateRuleConfig(rules.Stops.ZoneId, "stops.zone_id_valid")
 		validateRuleConfig(rules.Stops.StopUrl, "stops.stop_url_valid_url")
 		validateRuleConfig(rules.Stops.LocationType, "stops.location_type_valid_enum")
