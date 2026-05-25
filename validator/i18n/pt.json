@@ -384,7 +384,7 @@
         "forbidden": "O campo \"stop_id\" é proibido",
         "required": "O campo \"stop_id\" é obrigatório",
         "recommended": "O campo \"stop_id\" é recomendado",
-        "not_found": "O campo \"stop_id\" \"%s\" não existe em stops.txt",
+        "does_not_exist": "O campo \"stop_id\" \"%s\" não existe, verifique se o id está correto",
         "duplicate": "Campo \"stop_id\" \"%s\" duplicado encontrado. O campo \"stop_id\" deve ser único",
         "not_allowed": "O campo \"stop_id\" \"%s\" não é permitido",
         "forbidden_location_group_id_location_id": "O campo \"stop_id\" é proibido se \"location_group_id\" ou \"location_id\" estiverem definidos",

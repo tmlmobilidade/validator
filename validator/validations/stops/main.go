@@ -16,6 +16,8 @@ func init() {
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Validations for stops.txt")
 
+	validStopIDs := buildValidStopIDsSet()
+
 	// Create progress tracker
 	tracker := lib.CreateProgressTracker(gtfs, "stops", config.ProgressThresholdLarge)
 
@@ -33,7 +35,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		}
 
 		// Validate stop_id
-		validations.StopIdValidation(&stop, row, &gtfs, stopRules)
+		validations.StopIdValidation(&stop, row, &gtfs, stopRules, validStopIDs)
 
 		// Validate stop_code
 		validations.StopCodeValidation(&stop, row, &gtfs, stopRules)
