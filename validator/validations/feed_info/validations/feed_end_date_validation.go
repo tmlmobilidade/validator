@@ -29,7 +29,7 @@ If feed_start_date or feed_end_date extend beyond the active calendar dates defi
 [feed_info.txt]: https://gtfs.org/schedule/reference/#feed_infotxt
 */
 func FeedEndDateValidation(severity *types.Severity, feedInfo *types.FeedInfo, row int) {
-	ctx := lib.NewValidationContext("feed_end_date", "feed_info.txt", "feed_end_date_validation", "feed_end_date_valid_yyyymmdd_not_before_start", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("feed_end_date", "feed_info.txt", "feed_end_date_valid_yyyymmdd_not_before_start", row, services.AppMessageService)
 	if severity != nil {
 		ctx.WithSeverity(*severity)
 	} else {

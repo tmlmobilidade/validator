@@ -27,7 +27,7 @@ Valid options are:
 */
 
 func SideDisplayValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("side_display", "vehicles.txt", "side_display_validation", "side_display_valid_enum", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("side_display", "vehicles.txt", "side_display_valid_enum", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.SideDisplay.Severity != "" {
 		ctx.WithSeverity(rules.SideDisplay.Severity)
@@ -40,7 +40,7 @@ func SideDisplayValidation(vehicle *types.Vehicle, row int, rules *types.Vehicle
 
 	validOptions := []int{0, 1, 2}
 	if !slices.Contains(validOptions, *vehicle.SideDisplay) {
-		ctx.AddError(ctx.GetTranslatedMessage("side_display_validation.invalid", strconv.Itoa(*vehicle.SideDisplay)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("side_display_validation.invalid", strconv.Itoa(*vehicle.SideDisplay)))
 		return
 	}
 

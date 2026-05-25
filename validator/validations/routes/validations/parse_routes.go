@@ -42,7 +42,6 @@ func ParseRoutes(rawRoute types.RouteRaw, row int) types.Route {
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "routes_parse",
 			RuleID:       "routes_values_parse",
 		})
 	}

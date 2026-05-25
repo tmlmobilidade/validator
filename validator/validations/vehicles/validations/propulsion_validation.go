@@ -33,7 +33,7 @@ Valid options are:
 */
 
 func PropulsionValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("propulsion", "vehicles.txt", "propulsion_validation", "propulsion_type_valid_enum", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("propulsion", "vehicles.txt", "propulsion_type_valid_enum", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Propulsion.Severity != "" {
 		ctx.WithSeverity(rules.Propulsion.Severity)
@@ -46,7 +46,7 @@ func PropulsionValidation(vehicle *types.Vehicle, row int, rules *types.Vehicles
 
 	validOptions := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
 	if !slices.Contains(validOptions, *vehicle.Propulsion) {
-		ctx.AddError(ctx.GetTranslatedMessage("propulsion_validation.invalid", strconv.Itoa(*vehicle.Propulsion)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("propulsion_validation.invalid", strconv.Itoa(*vehicle.Propulsion)))
 		return
 	}
 

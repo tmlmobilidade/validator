@@ -26,7 +26,7 @@ Valid options are:
 */
 
 func InternalSoundValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("internal_sound", "vehicles.txt", "internal_sound_validation", "internal_sound_level_valid_enum", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("internal_sound", "vehicles.txt", "internal_sound_level_valid_enum", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.InternalSound.Severity != "" {
 		ctx.WithSeverity(rules.InternalSound.Severity)
@@ -39,7 +39,7 @@ func InternalSoundValidation(vehicle *types.Vehicle, row int, rules *types.Vehic
 
 	validOptions := []int{0, 1}
 	if !slices.Contains(validOptions, *vehicle.InternalSound) {
-		ctx.AddError(ctx.GetTranslatedMessage("internal_sound_validation.invalid", strconv.Itoa(*vehicle.InternalSound)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("internal_sound_validation.invalid", strconv.Itoa(*vehicle.InternalSound)))
 		return
 	}
 

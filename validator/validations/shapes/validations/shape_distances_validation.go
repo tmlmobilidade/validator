@@ -23,11 +23,11 @@ type shapeDistancesPoint struct {
 const maxAllPointsDistanceDeltaToleranceMeters = 20.0
 
 func getDistanceToleranceMeters(rules *types.ShapesRules) float64 {
-	if rules == nil || rules.ShapeDistances.Options == nil || len(*rules.ShapeDistances.Options) == 0 {
+	if rules == nil || rules.ShapeDistTraveledDeltaMismatchesHaversineBlock.Options == nil || len(*rules.ShapeDistTraveledDeltaMismatchesHaversineBlock.Options) == 0 {
 		return maxAllPointsDistanceDeltaToleranceMeters
 	}
 
-	value, err := strconv.ParseFloat((*rules.ShapeDistances.Options)[0], 64)
+	value, err := strconv.ParseFloat((*rules.ShapeDistTraveledDeltaMismatchesHaversineBlock.Options)[0], 64)
 	if err != nil || value < 0 {
 		return maxAllPointsDistanceDeltaToleranceMeters
 	}
@@ -46,9 +46,9 @@ type distancesViolation struct {
 // ShapeDistancesValidation validates total distance per block (from 0.0 reset to next 0.0 or end).
 // First checks each segment passes tolerance; if all pass, compares total real distance to expected shape_dist_traveled.
 func ShapeDistancesValidation(shapes []types.Shape, rules *types.ShapesRules) {
-	severity := types.Severity(rules.ShapeDistances.Severity)
-	if rules != nil && rules.ShapeDistances.Severity != "" {
-		severity = types.Severity(rules.ShapeDistances.Severity)
+	severity := types.SEVERITY_ERROR
+	if rules != nil && rules.ShapeDistTraveledDeltaMismatchesHaversineBlock.Severity != "" {
+		severity = types.Severity(rules.ShapeDistTraveledDeltaMismatchesHaversineBlock.Severity)
 	}
 
 	shapeGroups := map[string][]shapeDistancesPoint{}
@@ -56,8 +56,6 @@ func ShapeDistancesValidation(shapes []types.Shape, rules *types.ShapesRules) {
 	violations := []distancesViolation{}
 
 	for i, shape := range shapes {
-		ctx := lib.NewValidationContext("shape_distances", "shapes.txt", "shape_distances_validation", "shape_block_distance_rows_aggregated", i, services.AppMessageService)
-		ctx.WithSeverity(severity)
 
 		if shape.ShapeId == nil || *shape.ShapeId == "" {
 			continue
@@ -165,7 +163,7 @@ func ShapeDistancesValidation(shapes []types.Shape, rules *types.ShapesRules) {
 	}
 
 	for _, violation := range violations {
-		ctx := lib.NewValidationContext("shape_distances", "shapes.txt", "shape_distances_validation", "shape_dist_traveled_delta_mismatches_haversine_block", violation.row, services.AppMessageService)
+		ctx := lib.NewValidationContext("shape_dist_traveled", "shapes.txt", "shape_dist_traveled_delta_mismatches_haversine_block", violation.row, services.AppMessageService)
 		ctx.WithSeverity(severity)
 		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage(
 			"shape_distances_validation.invalid_distances",

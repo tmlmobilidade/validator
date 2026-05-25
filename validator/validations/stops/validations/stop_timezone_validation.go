@@ -30,7 +30,7 @@ import (
 
 // StopTimezoneValidation validates the stop_timezone field in stops.txt
 func StopTimezoneValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("stop_timezone", "stops.txt", "stop_timezone_validation", "stop_timezone_valid", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("stop_timezone", "stops.txt", "stop_timezone_valid", row, services.AppMessageService)
 	if rules != nil && rules.StopTimezone.Severity != "" {
 		ctx.WithSeverity(rules.StopTimezone.Severity)
 	}

@@ -50,7 +50,7 @@ func uniquePointsCoordinatesConsistentRows(rows []int) []int {
 
 // ShapePointsCoordinatesConsistentValidation validates if consecutive points from the same shape are not too far apart.
 func ShapePointsCoordinatesConsistentValidation(shapes []types.Shape, rules *types.ShapesRules) {
-	severity := types.Severity(rules.ShapePointsCoordinatesConsistent.Severity)
+	severity := types.SEVERITY_ERROR
 	if rules != nil && rules.ShapePointsCoordinatesConsistent.Severity != "" {
 		severity = types.Severity(rules.ShapePointsCoordinatesConsistent.Severity)
 	}
@@ -113,7 +113,7 @@ func ShapePointsCoordinatesConsistentValidation(shapes []types.Shape, rules *typ
 		}
 
 		for _, row := range uniquePointsCoordinatesConsistentRows(rows) {
-			ctx := lib.NewValidationContext("shape_points_coordinates_consistent", "shapes.txt", "shape_points_coordinates_consistent_validation", "shape_sequence_position_mismatches_cumulative_traveled_distance", row, services.AppMessageService)
+			ctx := lib.NewValidationContext("shape_sequence", "shapes.txt", "shape_sequence_position_mismatches_cumulative_traveled_distance", row, services.AppMessageService)
 			ctx.WithSeverity(severity)
 			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("shape_points_coordinates_consistent_validation.ManyErrors"))
 		}
@@ -121,7 +121,7 @@ func ShapePointsCoordinatesConsistentValidation(shapes []types.Shape, rules *typ
 	}
 
 	for _, violation := range violations {
-		ctx := lib.NewValidationContext("shape_points_coordinates_consistent", "shapes.txt", "shape_points_coordinates_consistent_validation", "shape_sequence_position_mismatches_cumulative_traveled_distance", violation.row, services.AppMessageService)
+		ctx := lib.NewValidationContext("shape_sequence", "shapes.txt", "shape_sequence_position_mismatches_cumulative_traveled_distance", violation.row, services.AppMessageService)
 		ctx.WithSeverity(severity)
 		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage(
 			"shape_points_coordinates_consistent_validation.invalid_consistent_distance",

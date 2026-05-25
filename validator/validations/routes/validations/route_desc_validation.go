@@ -30,7 +30,7 @@ Conditionally Required:
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
 func RouteDescValidation(route *types.Route, row int, rules *types.RoutesRules) {
-	ctx := lib.NewValidationContext("route_desc", "routes.txt", "route_desc_validation", "route_desc_per_severity_and_content_rules", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("route_desc", "routes.txt", "route_desc_per_severity_and_content_rules", row, services.AppMessageService)
 	if rules != nil && rules.RouteDesc.Severity != "" {
 		ctx.WithSeverity(rules.RouteDesc.Severity)
 	}

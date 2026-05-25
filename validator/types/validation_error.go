@@ -15,9 +15,6 @@ type ValidationError struct {
 	// Row number (0-based index)
 	Row int
 
-	// Validation ID (e.g., "stop_id_validation")
-	ValidationID string
-
 	// Rule ID (e.g., "stop_id_rule")
 	RuleID string
 
@@ -31,9 +28,9 @@ type ValidationError struct {
 // Error implements the error interface
 func (e *ValidationError) Error() string {
 	if e.Err != nil {
-		return fmt.Sprintf("%s:%d [%s] %s: %v", e.FileName, e.Row, e.ValidationID, e.Message, e.Err)
+		return fmt.Sprintf("%s:%d [%s] %s: %v", e.FileName, e.Row, e.RuleID, e.Message, e.Err)
 	}
-	return fmt.Sprintf("%s:%d [%s] %s", e.FileName, e.Row, e.ValidationID, e.Message)
+	return fmt.Sprintf("%s:%d [%s] %s", e.FileName, e.Row, e.RuleID, e.Message)
 }
 
 // Unwrap returns the underlying error for error wrapping support
@@ -42,27 +39,25 @@ func (e *ValidationError) Unwrap() error {
 }
 
 // NewValidationError creates a new ValidationError
-func NewValidationError(field, fileName, validationID, ruleID, message string, row int) *ValidationError {
+func NewValidationError(field, fileName, ruleID, message string, row int) *ValidationError {
 	return &ValidationError{
-		Field:        field,
-		FileName:     fileName,
-		Row:          row,
-		ValidationID: validationID,
-		RuleID:       ruleID,
-		Message:      message,
+		Field:    field,
+		FileName: fileName,
+		Row:      row,
+		RuleID:   ruleID,
+		Message:  message,
 	}
 }
 
 // WrapValidationError wraps an existing error with validation context
-func WrapValidationError(err error, field, fileName, validationID, ruleID string, row int) *ValidationError {
+func WrapValidationError(err error, field, fileName, ruleID string, row int) *ValidationError {
 	return &ValidationError{
-		Field:        field,
-		FileName:     fileName,
-		Row:          row,
-		ValidationID: validationID,
-		RuleID:       ruleID,
-		Message:      err.Error(),
-		Err:          err,
+		Field:    field,
+		FileName: fileName,
+		Row:      row,
+		RuleID:   ruleID,
+		Message:  err.Error(),
+		Err:      err,
 	}
 }
 

@@ -26,8 +26,8 @@ Conditionally Required:
 
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
-func StopLonValidation(stop *types.Stop, row int, rules *types.StopsRules, stopsData *types.StopsDataCache) {
-	ctx := lib.NewValidationContext("stop_lon", "stops.txt", "stop_lon_validation", "stop_lon_valid_longitude_range", row, services.AppMessageService)
+func StopLonValidation(stop *types.Stop, row int, rules *types.StopsRules) {
+	ctx := lib.NewValidationContext("stop_lon", "stops.txt", "stop_lon_valid_longitude_range", row, services.AppMessageService)
 	if rules != nil && rules.StopLon.Severity != "" {
 		ctx.WithSeverity(rules.StopLon.Severity)
 	}
@@ -60,7 +60,7 @@ func StopLonValidation(stop *types.Stop, row int, rules *types.StopsRules, stops
 	}
 
 	// Check if stop_lon matches the pre-computed stops_data.json cache
-	ctx = lib.NewValidationContext("stop_lon", "stops.txt", "stop_lon_validation", "stop_lon_matches_stops_data", row, services.AppMessageService)
+	ctx = lib.NewValidationContext("stop_lon", "stops.txt", "stop_lon_exists", row, services.AppMessageService)
 	if stop.StopId != nil && *stop.StopId != "" && stopsData != nil && len(stopsData.ByStopID) > 0 {
 		record, exists := stopsData.ByStopID[*stop.StopId]
 		if !exists {

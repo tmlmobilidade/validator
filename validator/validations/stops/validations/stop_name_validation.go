@@ -31,8 +31,8 @@ import (
 )
 
 // StopNameValidation validates the presence of stop_name in stops.txt according to location_type
-func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules, stopsData *types.StopsDataCache) {
-	ctx := lib.NewValidationContext("stop_name", "stops.txt", "stop_name_validation", "stop_name_required_by_location_type", row, services.AppMessageService)
+func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules) {
+	ctx := lib.NewValidationContext("stop_name", "stops.txt", "stop_name_required_by_location_type", row, services.AppMessageService)
 	if rules != nil && rules.StopName.Severity != "" {
 		ctx.WithSeverity(rules.StopName.Severity)
 	}
@@ -73,7 +73,7 @@ func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules, stop
 	}
 
 	// Check if stop_name matches the pre-computed stops_data.json cache
-	ctx = lib.NewValidationContext("stop_name", "stops.txt", "stop_name_validation", "stop_name_matches_stops_data", row, services.AppMessageService)
+	ctx = lib.NewValidationContext("stop_name", "stops.txt", "stop_name_exists", row, services.AppMessageService)
 	if stop.StopId != nil && *stop.StopId != "" && stopsData != nil && len(stopsData.ByStopID) > 0 {
 		record, exists := stopsData.ByStopID[*stop.StopId]
 		if !exists {

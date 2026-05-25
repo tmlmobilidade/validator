@@ -23,7 +23,7 @@ Should be provided to help GTFS consumers choose capitalization rules and other 
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
 func AgencyLangValidation(agency *types.Agency, row int, rules *types.AgencyRules) {
-	ctx := lib.NewValidationContext("agency_lang", "agency.txt", "agency_lang_validation", "agency_lang_valid_language_tag", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("agency_lang", "agency.txt", "agency_lang_valid_language_tag", row, services.AppMessageService)
 	if rules != nil && rules.AgencyLang.Severity != "" {
 		ctx.WithSeverity(rules.AgencyLang.Severity)
 	}

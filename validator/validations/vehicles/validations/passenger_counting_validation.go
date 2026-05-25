@@ -26,7 +26,7 @@ Valid options are:
 */
 
 func PassengerCountingValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("passenger_counting", "vehicles.txt", "passenger_counting_validation", "passenger_counting_valid_enum", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("passenger_counting", "vehicles.txt", "passenger_counting_valid_enum", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.PassengerCounting.Severity != "" {
 		ctx.WithSeverity(rules.PassengerCounting.Severity)
@@ -39,7 +39,7 @@ func PassengerCountingValidation(vehicle *types.Vehicle, row int, rules *types.V
 
 	validOptions := []int{0, 1}
 	if !slices.Contains(validOptions, *vehicle.PassengerCounting) {
-		ctx.AddError(ctx.GetTranslatedMessage("passenger_counting_validation.invalid", strconv.Itoa(*vehicle.PassengerCounting)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("passenger_counting_validation.invalid", strconv.Itoa(*vehicle.PassengerCounting)))
 		return
 	}
 

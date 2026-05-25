@@ -27,7 +27,7 @@ Valid options are:
 */
 
 func LoweredFloorValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("lowered_floor", "vehicles.txt", "lowered_floor_validation", "lowered_floor_valid_enum", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("lowered_floor", "vehicles.txt", "lowered_floor_valid_enum", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.LoweredFloor.Severity != "" {
 		ctx.WithSeverity(rules.LoweredFloor.Severity)
@@ -40,7 +40,7 @@ func LoweredFloorValidation(vehicle *types.Vehicle, row int, rules *types.Vehicl
 
 	validOptions := []int{0, 1, 2}
 	if !slices.Contains(validOptions, *vehicle.LoweredFloor) {
-		ctx.AddError(ctx.GetTranslatedMessage("lowered_floor_validation.invalid", strconv.Itoa(*vehicle.LoweredFloor)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("lowered_floor_validation.invalid", strconv.Itoa(*vehicle.LoweredFloor)))
 		return
 	}
 

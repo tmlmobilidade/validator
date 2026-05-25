@@ -20,6 +20,11 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	tracker := lib.CreateProgressTracker(gtfs, "shapes", config.ProgressThresholdLarge)
 	var allShapes []types.Shape
 
+	var shapesRules *types.ShapesRules
+	if rules != nil {
+		shapesRules = &rules.Shapes
+	}
+
 	err := gtfs.IterateShapes(func(row int, rawShape types.ShapeRaw) error {
 		tracker.Track()
 		shape := validations.ParseShape(rawShape, row)
@@ -41,7 +46,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		validations.ShapePtSequenceValidation(&shape, row)
 
 		// Validate shape_dist_traveled
-		validations.ShapeDistTraveledValidation(&shape, row, &rules.Shapes)
+		validations.ShapeDistTraveledValidation(&shape, row, shapesRules)
 
 		// Add shape to all shapes
 		allShapes = append(allShapes, shape)
@@ -55,15 +60,15 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	}
 
 	// Group-level validation: shape_pt_sequence must increase for each shape_id
-	validations.ShapeSequenceValidation(allShapes)
+	validations.ShapeSequenceValidation(allShapes, shapesRules)
 
 	// Validate shape coordinates consistency
-	validations.ShapePointsCoordinatesConsistentValidation(allShapes, &rules.Shapes)
+	validations.ShapePointsCoordinatesConsistentValidation(allShapes, shapesRules)
 
 	// Validate shape coordinates distances
-	validations.ShapePointsCoordinatesDistancesValidation(allShapes, &rules.Shapes)
+	validations.ShapePointsCoordinatesDistancesValidation(allShapes, shapesRules)
 
 	// Validate shape all points distances
-	validations.ShapeDistancesValidation(allShapes, &rules.Shapes)
+	validations.ShapeDistancesValidation(allShapes, shapesRules)
 
 }
