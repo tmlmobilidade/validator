@@ -40,25 +40,23 @@ func (v *FileValidation) Validate(gtfs types.Gtfs, rules *types.GtfsRules) bool 
 
 func (v *FileValidation) addError(file, msg string) {
 	services.AppMessageService.AddMessage(types.Message{
-		Field:        "N/A",
-		Rows:         []int{},
-		FileName:     file,
-		Message:      msg,
-		ValidationID: v.ID,
-		Severity:     types.SEVERITY_ERROR,
-		RuleID:       "gtfs_feed_file_presence_and_integrity_rule",
+		Field:    "N/A",
+		Rows:     []int{},
+		FileName: file,
+		Message:  msg,
+		Severity: types.SEVERITY_ERROR,
+		RuleID:   types.RuleIDGtfsFeedFilePresenceAndIntegrity,
 	})
 }
 
 func (v *FileValidation) addWarning(file, msg string) {
 	services.AppMessageService.AddMessage(types.Message{
-		Field:        "N/A",
-		Rows:         []int{},
-		FileName:     file,
-		Message:      msg,
-		ValidationID: v.ID,
-		Severity:     types.SEVERITY_WARNING,
-		RuleID:       "gtfs_feed_file_presence_and_integrity_rule",
+		Field:    "N/A",
+		Rows:     []int{},
+		FileName: file,
+		Message:  msg,
+		Severity: types.SEVERITY_WARNING,
+		RuleID:   types.RuleIDGtfsFeedFilePresenceAndIntegrity,
 	})
 }
 

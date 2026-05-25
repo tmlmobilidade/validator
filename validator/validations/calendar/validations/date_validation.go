@@ -22,7 +22,7 @@ End service day for the service interval. This service day is included in the in
 [calendar.txt]: https://gtfs.org/schedule/reference/#calendartxt
 */
 func DateValidation(date string, dateType string, row int) {
-	ctx := lib.NewValidationContext(dateType, "calendar.txt", "date_validation", "calendar_start_end_dates_valid_yyyymmdd_order", row, services.AppMessageService)
+	ctx := lib.NewValidationContext(dateType, "calendar.txt", "calendar_start_end_dates_valid_yyyymmdd_order", row, services.AppMessageService)
 
 	if date == "" {
 		ctx.AddError(ctx.GetTranslatedMessage("date_validation.required"))

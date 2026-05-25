@@ -24,9 +24,6 @@ type ValidationContext struct {
 	// Row number (0-based index)
 	Row int
 
-	// Validation ID (e.g., "stop_code_validation")
-	ValidationID string
-
 	// RuleID is the default rule_id in output; use Add* methods' ruleID override for a
 	// more specific id when a validation emits several distinct error kinds.
 	RuleID string
@@ -39,12 +36,11 @@ type ValidationContext struct {
 }
 
 // NewValidationContext creates a new ValidationContext with default severity
-func NewValidationContext(field, fileName, validationID, ruleID string, row int, messageAdder MessageAdder) *ValidationContext {
+func NewValidationContext(field, fileName, ruleID string, row int, messageAdder MessageAdder) *ValidationContext {
 	return &ValidationContext{
 		Field:        field,
 		FileName:     fileName,
 		Row:          row,
-		ValidationID: validationID,
 		RuleID:       ruleID,
 		Severity:     types.SEVERITY_IGNORE,
 		MessageAdder: messageAdder,
@@ -93,13 +89,12 @@ func (vc *ValidationContext) AddMessage(message string, severity types.Severity,
 		rid = ruleID[0]
 	}
 	vc.MessageAdder.AddMessage(types.Message{
-		Field:        vc.Field,
-		FileName:     vc.FileName,
-		Rows:         []int{vc.Row},
-		Message:      message,
-		Severity:     severity,
-		ValidationID: vc.ValidationID,
-		RuleID:       rid,
+		Field:    vc.Field,
+		FileName: vc.FileName,
+		Rows:     []int{vc.Row},
+		Message:  message,
+		Severity: severity,
+		RuleID:   rid,
 	})
 }
 

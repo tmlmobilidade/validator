@@ -17,15 +17,15 @@ type WithCompare<T> = T & {
 type GtfsRules = {
     agency: {
         _file: Severity;
-        agency_id: WithOptions<RuleConfig>;
-        agency_name: WithOptions<RuleConfig>;
-        agency_name_id_match: WithCompare<RuleConfig>;
-        agency_url: RuleConfig;
-        agency_timezone: RuleConfig;
-        agency_lang: RuleConfig;
-        agency_phone: RuleConfig;
-        agency_fare_url: RuleConfig;
-        agency_email: RuleConfig;
+        agency_id_unique: WithOptions<RuleConfig>;
+        agency_name_present: WithOptions<RuleConfig>;
+        agency_id_matched_with_agency_name: WithCompare<RuleConfig>;
+        agency_url_valid_url: RuleConfig;
+        agency_timezone_valid_id: RuleConfig;
+        agency_lang_valid_language_tag: RuleConfig;
+        agency_phone_valid_phone_number: RuleConfig;
+        agency_fare_url_valid_url: RuleConfig;
+        agency_email_valid_address: RuleConfig;
     }
     stops: {
         _file: Severity;
@@ -122,7 +122,7 @@ type GtfsRules = {
     }
     calendar: {
         _file: Severity;
-        service_id: RuleConfig;
+        calendar_service_id_unique_non_empty: RuleConfig;
         monday: RuleConfig;
         tuesday: RuleConfig;
         wednesday: RuleConfig;
@@ -130,14 +130,17 @@ type GtfsRules = {
         friday: RuleConfig;
         saturday: RuleConfig;
         sunday: RuleConfig;
-        start_date: RuleConfig;
-        end_date: RuleConfig;
+        calendar_start_date_valid_yyyymmdd: RuleConfig;
+        calendar_end_date_valid_yyyymmdd: RuleConfig;
     }
     calendar_dates: {
         _file: Severity;
-        service_id: RuleConfig;
-        date: RuleConfig;
-        exception_type: RuleConfig;
+        calendar_dates_service_id_references_calendar: RuleConfig;
+        exception_date_valid_yyyymmdd: RuleConfig;
+        exception_type_add_or_remove_service: RuleConfig;
+        day_type: WithOptions<RuleConfig>;
+        holiday: WithOptions<RuleConfig>;
+        period: WithOptions<RuleConfig>;
     }
     vehicles: {
         _file: Severity;
@@ -172,27 +175,27 @@ type GtfsRules = {
     }
     fare_attributes: {
         _file: Severity;
-        fare_id: RuleConfig;
-        price: RuleConfig;
-        currency_type: RuleConfig;
-        payment_method: WithOptions<RuleConfig>;
-        transfers: WithOptions<RuleConfig>;
-        agency_id: RuleConfig;
-        transfer_duration: RuleConfig;
+        fare_id_unique: RuleConfig;
+        fare_price_valid_non_negative_decimal: RuleConfig;
+        currency_type_valid: WithOptions<RuleConfig>;
+        payment_method_valid_gtfs_enum: WithOptions<RuleConfig>;
+        transfers_valid_gtfs_enum: WithOptions<RuleConfig>;
+        fare_attributes_agency_id_references_agency_table: RuleConfig;
+        transfer_duration_valid_seconds_range: RuleConfig;
     }
     fare_rules: {
         _file: Severity;
-        fare_id: RuleConfig;
-        route_id: RuleConfig;
-        origin_id: RuleConfig;
-        destination_id: RuleConfig;
-        contains_id: RuleConfig;
+        fare_rule_fare_id_references_fare_attributes: RuleConfig;
+        fare_rule_route_id_references_routes: RuleConfig;
+        fare_rule_origin_id_references_zones_stops: RuleConfig;
+        fare_rule_destination_id_references_zones_stops: RuleConfig;
+        fare_rule_contains_id_references_zones_stops: RuleConfig;
     }
     fare_media: {
         _file: Severity;
-        fare_id: RuleConfig;
-        fare_media_name: RuleConfig;
-        fare_media_type:WithOptions<RuleConfig>;
+        fare_media_id_unique: RuleConfig;
+        fare_media_name_non_empty: RuleConfig;
+        fare_media_type_valid: WithOptions<RuleConfig>;
     }
     shapes: {
         _file: Severity;
@@ -288,15 +291,15 @@ type GtfsRules = {
 const rules: GtfsRules = {
     agency: {
         _file: "error",
-        agency_id: {
+        agency_id_unique: {
             severity: "error",
             options: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "18", "21", "23", "24", "34", "41", "42", "43", "44", "49", "54"]
         },
-       "agency_name": {
+       "agency_name_present": {
             "severity": "error",
             "options": ["Área Metropolitana de Lisboa","Carris","Metropolitano Olissipo","Comboios de Portugal","Transtejo / Soflusa","Transportes Sul do Tejo","Rodoviária de Lisboa","Soflusa","Transportes Coletivos do Barreiro","Vimeca Transportes","Scotturb","ID/JJ/HLM","Isidoro Duarte","Barraqueiro Transportes","Joaquim Jerónimo","Fertagus","Metro Transportes do Sul","Henrique Leonardo da Mota","Cascais Próxima","Portal VIVA","Rodoviária do Tejo","Câmara Municipal de Lisboa","Viação Alvorada","Alsa Todi","Município de Oeiras","Municipio de Setúbal"]
         },
-        "agency_name_id_match": {
+        "agency_id_matched_with_agency_name": {
             "severity": "error",
             "compare": [
                 {"key": "0","value": "Área Metropolitana de Lisboa"},
@@ -329,23 +332,23 @@ const rules: GtfsRules = {
                 {"key": "54","value": "Municipio de Setúbal"}
             ]
         },
-        agency_url: {
+        agency_url_valid_url: {
             severity: "error",
         },
-        agency_timezone: {
+        agency_timezone_valid_id: {
             severity: "error",
         },
-        agency_lang: {
+        agency_lang_valid_language_tag: {
             severity: "ignore",
         },
-        agency_phone: {
+        agency_phone_valid_phone_number: {
             severity: "error",
         },
-        agency_fare_url: {
-            severity: "error",
+        agency_fare_url_valid_url: {
+            severity: "warning",
         },
-        agency_email: {
-            severity: "error",
+        agency_email_valid_address: {
+            severity: "warning",
         }
     },
     stops: {
@@ -621,8 +624,8 @@ const rules: GtfsRules = {
         }
     },
     calendar: {
-        _file: "error",
-        service_id: {
+        _file: "ignore",
+        calendar_service_id_unique_non_empty: {
             severity: "error",
         },
         monday: {
@@ -646,24 +649,36 @@ const rules: GtfsRules = {
         sunday: {
             severity: "error",
         },
-        start_date: {
+        calendar_start_date_valid_yyyymmdd: {
             severity: "error",
         },
-        end_date: {
+        calendar_end_date_valid_yyyymmdd: {
             severity: "error",
         }
     },
     calendar_dates: {
-        _file: "error",
-        service_id: {
+        _file: "ignore",
+        calendar_dates_service_id_references_calendar: {
             severity: "error",
         },
-        date: {
+        exception_date_valid_yyyymmdd: {
             severity: "error",
         },
-        exception_type: {
+        exception_type_add_or_remove_service: {
             severity: "error",
-        }
+        },
+        day_type: {
+            severity: "error",
+            options: ["1", "2", "3"],
+        },
+        holiday: {
+            severity: "error",
+            options: ["0", "1"],
+        },
+        period: {
+            severity: "error",
+            options: ["1", "2", "3"],
+        },
     },
     vehicles: {
         _file: "error",
@@ -772,58 +787,59 @@ const rules: GtfsRules = {
         }
     },
     fare_attributes: {
-        _file: "error",
-        fare_id: {
+        _file: "warning",
+        fare_id_unique: {
             severity: "error",
         },
-        price: {
+        fare_price_valid_non_negative_decimal: {
             severity: "error",
         },
-        currency_type: {
+        currency_type_valid: {
             severity: "error",
+            options: ["EUR"]
         },
-        payment_method: {
+        payment_method_valid_gtfs_enum: {
             severity: "error",
             options: ["0"]
         },
-        transfers: {
-            severity: "error",
+        transfers_valid_gtfs_enum: {
+            severity: "warning",
             options: ["0"]
         },
-        agency_id: {
+        fare_attributes_agency_id_references_agency_table: {
             severity: "error",
         },
-        transfer_duration: {
-            severity: "error",
+        transfer_duration_valid_seconds_range: {
+            severity: "ignore",
         }
     },
     fare_rules: {
-        _file: "error",
-        fare_id: {
+        _file: "warning",
+        fare_rule_fare_id_references_fare_attributes: {
             severity: "error",
         },
-        route_id: {
+        fare_rule_route_id_references_routes: {
             severity: "error",
         },
-        origin_id: {
+        fare_rule_origin_id_references_zones_stops: {
             severity: "forbidden",
         },
-        destination_id: {
+        fare_rule_destination_id_references_zones_stops: {
             severity: "forbidden",
         },
-        contains_id: {
+        fare_rule_contains_id_references_zones_stops: {
             severity: "forbidden",
         }
     },
     fare_media: {
         _file: "ignore",
-        fare_id: {
+        fare_media_id_unique: {
             severity: "error",
         },
-        fare_media_name:{
+        fare_media_name_non_empty: {
             severity: "warning",
         },
-        fare_media_type: {
+        fare_media_type_valid: {
             severity: "error",
             options: ["0", "1", "2", "3", "4"]
         }

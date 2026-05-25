@@ -10,13 +10,12 @@ const (
 )
 
 type Message struct {
-	Rows         []int    `json:"rows"`
-	Field        string   `json:"field"`
-	FileName     string   `json:"file_name"`
-	Message      string   `json:"message"`
-	ValidationID string   `json:"validation_id"`
-	RuleID       string   `json:"rule_id"`
-	Severity     Severity `json:"severity"`
+	Rows     []int    `json:"rows"`
+	Field    string   `json:"field"`
+	FileName string   `json:"file_name"`
+	Message  string   `json:"message"`
+	RuleID   string   `json:"rule_id"`
+	Severity Severity `json:"severity"`
 }
 
 type Summary struct {

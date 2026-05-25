@@ -21,7 +21,7 @@ Identifies a trip.
 [trips.txt]: https://gtfs.org/schedule/reference/#trips
 */
 func TripIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs) {
-	ctx := lib.NewValidationContext("trip_id", "trips.txt", "trip_id_validation", "trip_id_unique", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("trip_id", "trips.txt", "trip_id_unique", row, services.AppMessageService)
 
 	if trip.TripId == nil {
 		ctx.AddError(ctx.GetTranslatedMessage("trip_id_validation.required"))

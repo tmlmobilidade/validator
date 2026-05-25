@@ -19,15 +19,14 @@ import (
 Identifies a vehicle.
 */
 func VehicleIdValidation(vehicle *types.Vehicle, row int, gtfs *types.Gtfs, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("vehicle_id", "vehicles.txt", "vehicle_id_validation", "vehicle_id_unique", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("vehicle_id", "vehicles.txt", "vehicle_id_unique", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.VehicleId.Severity != "" {
 		ctx.WithSeverity(rules.VehicleId.Severity)
 	}
 
 	if vehicle.VehicleId == nil {
-		message := ctx.GetTranslatedMessage("vehicle_id_validation.required")
-		ctx.AddMessageWithSeverity(message)
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("vehicle_id_validation.required"))
 		return
 	}
 

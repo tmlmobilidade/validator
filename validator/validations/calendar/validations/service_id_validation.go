@@ -23,13 +23,12 @@ Identifies a set of dates when service is available for one or more routes.
 func ServiceIdValidation(calendar *types.Calendar, row int, gtfs *types.Gtfs) {
 
 	message := types.Message{
-		Field:        "service_id",
-		FileName:     "calendar.txt",
-		Message:      "Service ID is required",
-		Rows:         []int{row},
-		Severity:     types.SEVERITY_ERROR,
-		ValidationID: "service_id_validation",
-		RuleID:       "calendar_service_id_unique_non_empty",
+		Field:    "service_id",
+		FileName: "calendar.txt",
+		Message:  "Service ID is required",
+		Rows:     []int{row},
+		Severity: types.SEVERITY_ERROR,
+		RuleID:   "calendar_service_id_unique_non_empty",
 	}
 
 	if calendar.ServiceId != "" {

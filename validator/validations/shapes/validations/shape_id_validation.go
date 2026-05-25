@@ -28,7 +28,6 @@ func ShapeIdValidation(shape *types.Shape, row int) {
 			Rows:         []int{row},
 			Message:      i18n.AppTranslator.Get("shape_id_validation.required"),
 			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "shape_id_validation",
 			RuleID:       "shape_id_required",
 		}
 		services.AppMessageService.AddMessage(message)

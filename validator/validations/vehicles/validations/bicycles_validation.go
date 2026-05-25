@@ -25,7 +25,7 @@ Valid options are:
   - 1 - Yes
 */
 func BicyclesValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("bicycles", "vehicles.txt", "bicycles_validation", "bicycles_rack_count_non_negative", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("bicycles", "vehicles.txt", "bicycles_rack_count_non_negative", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Bicycles.Severity != "" {
 		ctx.WithSeverity(rules.Bicycles.Severity)
@@ -38,7 +38,7 @@ func BicyclesValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 
 	validOptions := []int{0, 1}
 	if !slices.Contains(validOptions, *vehicle.Bicycles) {
-		ctx.AddError(ctx.GetTranslatedMessage("bicycles_validation.invalid", strconv.Itoa(*vehicle.Bicycles)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("bicycles_validation.invalid", strconv.Itoa(*vehicle.Bicycles)))
 		return
 	}
 

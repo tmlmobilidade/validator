@@ -101,7 +101,7 @@ func (ms *MessageService) PrintTable() {
 		for i, row := range message.Rows {
 			rows[i] = strconv.Itoa(row)
 		}
-		table.Append([]string{message.ValidationID, message.Message, string(message.Severity), message.Field, message.FileName, strings.Join(rows, ", ")})
+		table.Append([]string{message.RuleID, message.Message, string(message.Severity), message.Field, message.FileName, strings.Join(rows, ", ")})
 	}
 	table.Render()
 }

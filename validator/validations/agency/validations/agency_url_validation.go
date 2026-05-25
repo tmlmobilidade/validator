@@ -22,7 +22,7 @@ URL of the transit agency.
 [agency.txt]: https://gtfs.org/schedule/reference/#agencytxt
 */
 func AgencyUrlValidation(agency *types.Agency, row int, rules *types.AgencyRules) {
-	ctx := lib.NewValidationContext("agency_url", "agency.txt", "agency_url_validation", "agency_url_valid_url", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("agency_url", "agency.txt", "agency_url_valid_url", row, services.AppMessageService)
 
 	if agency.AgencyUrl == nil {
 		ctx.AddError(ctx.GetTranslatedMessage("agency_url_validation.required"))

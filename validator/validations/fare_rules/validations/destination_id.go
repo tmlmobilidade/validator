@@ -38,13 +38,12 @@ func DestinationIdValidation(fareRule *types.FareRule, row int, gtfs *types.Gtfs
 
 	addMessage := func(msg string, severity types.Severity) {
 		services.AppMessageService.AddMessage(types.Message{
-			Field:        "destination_id",
-			FileName:     "fare_rules.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     severity,
-			ValidationID: "destination_id_validation",
-			RuleID:       "fare_rule_destination_id_references_zones_stops",
+			Field:    "destination_id",
+			FileName: "fare_rules.txt",
+			Rows:     []int{row},
+			Message:  msg,
+			Severity: severity,
+			RuleID:   "fare_rule_destination_id_references_zones_stops",
 		})
 	}
 
