@@ -2,7 +2,7 @@ import { access, readFile } from 'fs/promises';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { getValidatorInfo, GtfsValidationError, GtfsValidator } from './index.js';
-import { GoBinaryError, runGoBinary } from './src/utils.js';
+import { GoBinaryError, runGoBinary } from './utils.js';
 
 // Mock dependencies
 vi.mock('fs/promises', () => ({

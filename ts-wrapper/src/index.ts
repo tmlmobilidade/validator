@@ -68,7 +68,7 @@ export class GtfsValidationError extends Error {
 		public readonly stderr?: string,
 	) {
 		super(message);
-		this.name = 'GTFSValidatorError';
+		this.name = 'GtfsValidationError';
 	}
 }
 
