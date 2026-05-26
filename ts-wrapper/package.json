@@ -2,8 +2,11 @@
 	"name": "@tmlmobilidade/gtfs-validator",
 	"description": "A GTFS Validator",
 	"version": "1.0.0",
-	"author": "Jusi Monteiro & João Vasconcelos",
-	"license": "ISC",
+	"author": {
+		"email": "iso@tmlmobilidade.pt",
+		"name": "TML-ISO"
+	},
+	"license": "AGPL-3.0-or-later",
 	"keywords": [
 		"gtfs",
 		"validator",
@@ -18,16 +21,11 @@
 		"directory": "dist"
 	},
 	"type": "module",
-	"files": [
-		"dist"
-	],
-	"main": "dist/index.js",
-	"exports": {
-		"types": "./dist/index.d.ts",
-		"default": "./dist/index.js"
-	},
+	"files": ["dist"],
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
 	"scripts": {
-		"build": "rm -rf dist && tsc",
+		"build": "tsc && resolve-tspaths",
 		"lint": "eslint ./src && tsc --noEmit",
 		"lint:fix": "eslint --fix ./src",
 		"postinstall": "if [ ! -d dist ]; then tsx ./scripts/postinstall.ts; else node ./dist/scripts/postinstall.js; fi",
@@ -38,16 +36,15 @@
 		"test:unit": "vitest run --grep unit",
 		"test:watch": "vitest"
 	},
-	"dependencies": {
-		"@tmlmobilidade/types": "20260526.939.0"
-	},
 	"devDependencies": {
 		"@tmlmobilidade/eslint": "20260526.939.0",
 		"@tmlmobilidade/tsconfig": "20260526.939.0",
+		"@tmlmobilidade/types": "20260526.939.0",
 		"@types/node": "25.9.1",
 		"@vitest/coverage-v8": "4.1.7",
+		"resolve-tspaths": "0.8.23",
 		"tsx": "4.22.3",
-		"typescript": "6.0.3",
+		"typescript": "5.9.3",
 		"vitest": "4.1.7"
 	}
 }

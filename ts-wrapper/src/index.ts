@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
+import { GoBinaryError, runGoBinary, type RunGoBinaryOptions } from '@/utils.js';
 import { GtfsValidationSummary } from '@tmlmobilidade/types';
 import { access, constants, readFile } from 'fs/promises';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
-
-import { GoBinaryError, runGoBinary, type RunGoBinaryOptions } from './src/utils.js';
 
 const BINARY_DISTRIBUTIONS = {
 	'darwin-arm64': 'validator-darwin-arm64',
