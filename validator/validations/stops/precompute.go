@@ -9,18 +9,11 @@ import (
 	"path/filepath"
 )
 
-type StopsDataFlag struct {
-	AgencyIDs    []string `json:"agency_ids"`
-	IsHarmonized bool     `json:"is_harmonized"`
-	ShortName    string   `json:"short_name"`
-	StopID       string   `json:"stop_id"`
-}
-
 type StopsDataEntry struct {
-	Name      string          `json:"name"`
-	Latitude  float64         `json:"latitude"`
-	Longitude float64         `json:"longitude"`
-	Flags     []StopsDataFlag `json:"flags"`
+	Name      string                 `json:"name"`
+	Latitude  float64                `json:"latitude"`
+	Longitude float64                `json:"longitude"`
+	Flags     []types.StopsDataFlag  `json:"flags"`
 }
 
 // buildStopsIds loads the root-level stops_data.json and indexes stop_id values from flags.
