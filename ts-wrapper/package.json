@@ -39,15 +39,15 @@
 		"test:watch": "vitest"
 	},
 	"dependencies": {
-		"@tmlmobilidade/types": "20260302.1453.8"
+		"@tmlmobilidade/types": "20260526.939.0"
 	},
 	"devDependencies": {
-		"@tmlmobilidade/eslint": "20260302.1453.8",
-		"@tmlmobilidade/tsconfig": "20260302.1453.8",
-		"@types/node": "25.3.3",
-		"@vitest/coverage-v8": "4.0.18",
-		"tsx": "4.21.0",
-		"typescript": "5.9.3",
-		"vitest": "4.0.18"
+		"@tmlmobilidade/eslint": "20260526.939.0",
+		"@tmlmobilidade/tsconfig": "20260526.939.0",
+		"@types/node": "25.9.1",
+		"@vitest/coverage-v8": "4.1.7",
+		"tsx": "4.22.3",
+		"typescript": "6.0.3",
+		"vitest": "4.1.7"
 	}
 }
