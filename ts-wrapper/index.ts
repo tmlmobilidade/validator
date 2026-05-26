@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { GTFSValidatorSummary } from '@tmlmobilidade/types';
+import { GtfsValidationSummary } from '@tmlmobilidade/types';
 import { access, constants, readFile } from 'fs/promises';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
@@ -47,7 +47,7 @@ export interface GTFSValidatorOptions {
 	timeout?: number
 }
 
-export interface GTFSValidatorResult {
+export interface GtfsValidationResult {
 	/** Arguments passed to the validator */
 	args: string[]
 	/** Execution time in milliseconds */
@@ -57,10 +57,10 @@ export interface GTFSValidatorResult {
 	/** Raw stdout from the validator */
 	stdout: string
 	/** Parsed validation summary */
-	summary: GTFSValidatorSummary
+	summary: GtfsValidationSummary
 }
 
-export class GTFSValidatorError extends Error {
+export class GtfsValidationError extends Error {
 	constructor(
 		message: string,
 		public readonly code: string,
@@ -77,7 +77,7 @@ export class GTFSValidatorError extends Error {
  * Gets the current platform identifier in the format expected by the binary distributions.
  *
  * @returns The platform key matching the current system
- * @throws {GTFSValidatorError} If the platform is not supported
+ * @throws {GtfsValidationError} If the platform is not supported
  *
  * @internal
  */
@@ -88,7 +88,7 @@ function getCurrentPlatform(): SupportedPlatform {
 
 	if (!(platformKey in BINARY_DISTRIBUTIONS)) {
 		const supportedPlatforms = Object.keys(BINARY_DISTRIBUTIONS).join(', ');
-		throw new GTFSValidatorError(
+		throw new GtfsValidationError(
 			`Unsupported platform: ${platformKey}. Supported platforms: ${supportedPlatforms}`,
 			'UNSUPPORTED_PLATFORM',
 		);
@@ -101,7 +101,7 @@ function getCurrentPlatform(): SupportedPlatform {
  * Gets the path to the validator binary for the current platform.
  *
  * @returns The absolute path to the validator binary
- * @throws {GTFSValidatorError} If the binary is not found or not executable
+ * @throws {GtfsValidationError} If the binary is not found or not executable
  *
  * @internal
  */
@@ -115,7 +115,7 @@ async function getValidatorBinaryPath(): Promise<string> {
 		return binaryPath;
 	} catch (err) {
 		const error = err instanceof Error ? err : new Error(String(err));
-		throw new GTFSValidatorError(
+		throw new GtfsValidationError(
 			`GTFS validator binary not found or not executable: ${binaryPath}. Please ensure the binary is installed for platform ${platform}`,
 			'BINARY_NOT_FOUND',
 			error,
@@ -127,13 +127,13 @@ async function getValidatorBinaryPath(): Promise<string> {
  * Validates input parameters before running the validator.
  *
  * @param input - The input path to validate
- * @throws {GTFSValidatorError} If the input is invalid or not accessible
+ * @throws {GtfsValidationError} If the input is invalid or not accessible
  *
  * @internal
  */
 async function validateInput(input: string): Promise<void> {
 	if (typeof input !== 'string' || input.trim().length === 0) {
-		throw new GTFSValidatorError(
+		throw new GtfsValidationError(
 			'Input path is required and must be a non-empty string',
 			'INVALID_INPUT',
 		);
@@ -144,7 +144,7 @@ async function validateInput(input: string): Promise<void> {
 		await access(inputPath, constants.F_OK | constants.R_OK);
 	} catch (err) {
 		const error = err instanceof Error ? err : new Error(String(err));
-		throw new GTFSValidatorError(
+		throw new GtfsValidationError(
 			`Input path does not exist or is not readable: ${input}`,
 			'INPUT_NOT_ACCESSIBLE',
 			error,
@@ -157,7 +157,7 @@ async function validateInput(input: string): Promise<void> {
  *
  * @param options - The options to validate
  * @returns Normalized options
- * @throws {GTFSValidatorError} If options are invalid
+ * @throws {GtfsValidationError} If options are invalid
  *
  * @internal
  */
@@ -165,42 +165,42 @@ function validateOptions(options: GTFSValidatorOptions = {}): GTFSValidatorOptio
 	const { cwd, env, lang, out_file, rules_path, timeout } = options;
 
 	if (timeout !== undefined && (typeof timeout !== 'number' || timeout <= 0 || !Number.isFinite(timeout))) {
-		throw new GTFSValidatorError(
+		throw new GtfsValidationError(
 			'Timeout must be a positive finite number',
 			'INVALID_OPTIONS',
 		);
 	}
 
 	if (lang !== undefined && typeof lang !== 'string') {
-		throw new GTFSValidatorError(
+		throw new GtfsValidationError(
 			'Language must be a string',
 			'INVALID_OPTIONS',
 		);
 	}
 
 	if (out_file !== undefined && (typeof out_file !== 'string' || out_file.trim().length === 0)) {
-		throw new GTFSValidatorError(
+		throw new GtfsValidationError(
 			'Output file path must be a non-empty string',
 			'INVALID_OPTIONS',
 		);
 	}
 
 	if (rules_path !== undefined && (typeof rules_path !== 'string' || rules_path.trim().length === 0)) {
-		throw new GTFSValidatorError(
+		throw new GtfsValidationError(
 			'Rules path must be a non-empty string',
 			'INVALID_OPTIONS',
 		);
 	}
 
 	if (cwd !== undefined && typeof cwd !== 'string') {
-		throw new GTFSValidatorError(
+		throw new GtfsValidationError(
 			'Working directory must be a string',
 			'INVALID_OPTIONS',
 		);
 	}
 
 	if (env !== undefined && (typeof env !== 'object' || env === null || Array.isArray(env))) {
-		throw new GTFSValidatorError(
+		throw new GtfsValidationError(
 			'Environment variables must be an object',
 			'INVALID_OPTIONS',
 		);
@@ -273,7 +273,7 @@ function buildValidatorArgs(input: string, options: GTFSValidatorOptions = {}): 
  * @param options - Validation options
  * @returns Promise resolving to validation results
  *
- * @throws {GTFSValidatorError} If validation fails or input is invalid
+ * @throws {GtfsValidationError} If validation fails or input is invalid
  *
  * @example
  * ```ts
@@ -287,17 +287,17 @@ function buildValidatorArgs(input: string, options: GTFSValidatorOptions = {}): 
  *   console.log(`Validation completed in ${result.executionTime}ms`);
  *   console.log(`Found ${result.summary.errorCount} errors`);
  * } catch (err) {
- *   if (err instanceof GTFSValidatorError) {
+ *   if (err instanceof GtfsValidationError) {
  *     console.error(`Validation failed: ${err.message}`);
  *     console.error(`Error code: ${err.code}`);
  *   }
  * }
  * ```
  */
-export async function GTFSValidator(
+export async function GtfsValidator(
 	input: string,
 	options: GTFSValidatorOptions = {},
-): Promise<GTFSValidatorResult> {
+): Promise<GtfsValidationResult> {
 	// Validate and normalize options
 	const validatedOptions = validateOptions(options);
 	const {
@@ -333,11 +333,11 @@ export async function GTFSValidator(
 		};
 
 		const startTime = Date.now();
-		let result: Awaited<ReturnType<typeof runGoBinary<GTFSValidatorSummary>>>;
-		let summary: GTFSValidatorSummary;
+		let result: Awaited<ReturnType<typeof runGoBinary<GtfsValidationSummary>>>;
+		let summary: GtfsValidationSummary;
 
 		try {
-			result = await runGoBinary<GTFSValidatorSummary>(binaryPath, runOptions);
+			result = await runGoBinary<GtfsValidationSummary>(binaryPath, runOptions);
 			summary = result.data;
 		} catch (err) {
 			// If output file was specified and we got a JSON parse error or no output,
@@ -351,7 +351,7 @@ export async function GTFSValidator(
 					// Wait a bit for the file to be written (in case of race condition)
 					await new Promise(resolve => setTimeout(resolve, 100));
 					const fileContent = await readFile(outputFilePath, 'utf-8');
-					summary = JSON.parse(fileContent.trim()) as GTFSValidatorSummary;
+					summary = JSON.parse(fileContent.trim()) as GtfsValidationSummary;
 					// Calculate execution time from when we started
 					const executionTime = Date.now() - startTime;
 					// Create a result object with the file data, preserving error info for stderr/stdout
@@ -364,7 +364,7 @@ export async function GTFSValidator(
 					};
 				} catch (fileErr) {
 					const error = fileErr instanceof Error ? fileErr : new Error(String(fileErr));
-					throw new GTFSValidatorError(
+					throw new GtfsValidationError(
 						`Failed to read or parse output file: ${outputFilePath}. ${error.message}`,
 						'OUTPUT_FILE_READ_ERROR',
 						error,
@@ -387,7 +387,7 @@ export async function GTFSValidator(
 		};
 	} catch (err) {
 		// Re-throw GTFSValidatorError as-is
-		if (err instanceof GTFSValidatorError) {
+		if (err instanceof GtfsValidationError) {
 			throw err;
 		}
 
@@ -420,7 +420,7 @@ export async function GTFSValidator(
 					break;
 			}
 
-			throw new GTFSValidatorError(
+			throw new GtfsValidationError(
 				errorMessage,
 				errorCode,
 				err,
@@ -431,7 +431,7 @@ export async function GTFSValidator(
 
 		// Handle unexpected errors
 		const errorMessage = err instanceof Error ? err.message : String(err);
-		throw new GTFSValidatorError(
+		throw new GtfsValidationError(
 			`Unexpected error during GTFS validation: ${errorMessage}`,
 			'UNEXPECTED_ERROR',
 			err instanceof Error ? err : new Error(String(err)),

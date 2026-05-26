@@ -2,11 +2,11 @@ import { access } from 'fs/promises';
 import { resolve } from 'path';
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { getValidatorInfo, GTFSValidator, GTFSValidatorError } from './index.js';
+import { getValidatorInfo, GtfsValidationError, GtfsValidator } from './index.js';
 
 const DATA_DIR = resolve(process.cwd(), '..', 'data');
 
-describe('integration - GTFSValidator', () => {
+describe('integration - GtfsValidator', () => {
 	beforeAll(async () => {
 		// Verify test data directory exists
 		try {
@@ -60,7 +60,7 @@ describe('integration - GTFSValidator', () => {
 				return;
 			}
 
-			const result = await GTFSValidator(gtfsPath, {
+			const result = await GtfsValidator(gtfsPath, {
 				timeout: 60000, // 1 minute timeout
 			});
 
@@ -94,7 +94,7 @@ describe('integration - GTFSValidator', () => {
 				return;
 			}
 
-			const result = await GTFSValidator(gtfsPath, {
+			const result = await GtfsValidator(gtfsPath, {
 				timeout: 60000,
 			});
 
@@ -118,7 +118,7 @@ describe('integration - GTFSValidator', () => {
 				return;
 			}
 
-			const result = await GTFSValidator(gtfsPath, {
+			const result = await GtfsValidator(gtfsPath, {
 				lang: 'pt',
 				timeout: 60000,
 			});
@@ -144,7 +144,7 @@ describe('integration - GTFSValidator', () => {
 				return;
 			}
 
-			const result = await GTFSValidator(gtfsPath, {
+			const result = await GtfsValidator(gtfsPath, {
 				log_level: 'info',
 				timeout: 60000,
 			});
@@ -156,29 +156,29 @@ describe('integration - GTFSValidator', () => {
 	});
 
 	describe('integration - error handling', () => {
-		it('should throw GTFSValidatorError for non-existent file', async () => {
+		it('should throw GtfsValidationError for non-existent file', async () => {
 			const info = await getValidatorInfo();
 			if (!info.isAvailable) {
 				console.warn('Binary not available. Skipping test.');
 				return;
 			}
 
-			await expect(GTFSValidator('/nonexistent/path/that/does/not/exist.zip')).rejects.toThrow(
-				GTFSValidatorError,
+			await expect(GtfsValidator('/nonexistent/path/that/does/not/exist.zip')).rejects.toThrow(
+				GtfsValidationError,
 			);
 			try {
-				await GTFSValidator('/nonexistent/path/that/does/not/exist.zip');
+				await GtfsValidator('/nonexistent/path/that/does/not/exist.zip');
 			} catch (err) {
-				expect((err as GTFSValidatorError).code).toBe('INPUT_NOT_ACCESSIBLE');
+				expect((err as GtfsValidationError).code).toBe('INPUT_NOT_ACCESSIBLE');
 			}
 		});
 
 		it('should throw GTFSValidatorError for empty input', async () => {
-			await expect(GTFSValidator('')).rejects.toThrow(GTFSValidatorError);
+			await expect(GtfsValidator('')).rejects.toThrow(GtfsValidationError);
 			try {
-				await GTFSValidator('');
+				await GtfsValidator('');
 			} catch (err) {
-				expect((err as GTFSValidatorError).code).toBe('INVALID_INPUT');
+				expect((err as GtfsValidationError).code).toBe('INVALID_INPUT');
 			}
 		});
 	});
@@ -201,7 +201,7 @@ describe('integration - GTFSValidator', () => {
 				return;
 			}
 
-			const result = await GTFSValidator(gtfsPath, {
+			const result = await GtfsValidator(gtfsPath, {
 				out_file: outputPath,
 				timeout: 60000,
 			});
@@ -239,12 +239,12 @@ describe('integration - GTFSValidator', () => {
 			// Use a very short timeout to test timeout handling
 			// Note: This might timeout on slow systems, so we'll catch and verify the error type
 			try {
-				await GTFSValidator(gtfsPath, {
+				await GtfsValidator(gtfsPath, {
 					timeout: 1, // 1ms - should timeout immediately
 				});
 				// If we get here, the validation completed very quickly (unlikely but possible)
 			} catch (error) {
-				if (error instanceof GTFSValidatorError) {
+				if (error instanceof GtfsValidationError) {
 					// Timeout error is acceptable
 					expect(['VALIDATION_TIMEOUT', 'VALIDATION_FAILED']).toContain(error.code);
 				} else {
@@ -271,7 +271,7 @@ describe('integration - GTFSValidator', () => {
 				return;
 			}
 
-			const result = await GTFSValidator(gtfsPath, {
+			const result = await GtfsValidator(gtfsPath, {
 				timeout: 60000,
 			});
 
