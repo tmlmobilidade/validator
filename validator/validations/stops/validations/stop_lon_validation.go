@@ -54,7 +54,7 @@ func StopLonValidation(stop *types.Stop, row int, rules *types.StopsRules, stops
 		return
 	}
 
-	if !lib.ValidateLongitude(*stop.StopLon) || stop.StopLon == nil {
+	if !lib.ValidateLongitude(*stop.StopLon) {
 		ctx.AddError(ctx.GetTranslatedMessage("stop_lon_validation.invalid", *stop.StopLon))
 		return
 	}

@@ -50,8 +50,8 @@ func BuildStopsDataCache() *types.StopsDataCache {
 				if _, exists := cache.ByStopID[flag.StopID]; !exists {
 					cache.ByStopID[flag.StopID] = types.StopsDataRecord{
 						Name:      entry.Name,
-						Latitude:  float32(entry.Latitude),
-						Longitude: float32(entry.Longitude),
+						Latitude:  entry.Latitude,
+						Longitude: entry.Longitude,
 						Flags: []types.StopsDataFlag{
 							{
 								AgencyIDs:    flag.AgencyIDs,
