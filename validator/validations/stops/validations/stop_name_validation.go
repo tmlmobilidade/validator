@@ -56,18 +56,18 @@ func StopNameValidation(stop *types.Stop, row int, rules *types.StopsRules, stop
 			return
 		}
 
-		if rules != nil && rules.StopName.Options != nil {
-			if slices.Contains(*rules.StopName.Options, types.ALL_OPTIONS) {
-				return
-			}
+		return
+	}
 
-			if !slices.Contains(*rules.StopName.Options, *stop.StopName) {
-				ctx.AddError(ctx.GetTranslatedMessage("stop_short_name_validation.not_allowed", *stop.StopName))
-				return
-			}
+	if rules != nil && rules.StopName.Options != nil {
+		if slices.Contains(*rules.StopName.Options, types.ALL_OPTIONS) {
+			return
 		}
 
-		return
+		if !slices.Contains(*rules.StopName.Options, *stop.StopName) {
+			ctx.AddError(ctx.GetTranslatedMessage("stop_short_name_validation.not_allowed", *stop.StopName))
+			return
+		}
 	}
 
 	// Check if stop_name matches the pre-computed stops_data.json cache
