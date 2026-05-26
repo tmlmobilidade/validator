@@ -10,8 +10,8 @@ type TripStopSequence struct {
 // StopsDataRecord is a pre-rendered stop entry from stops_data.json.
 type StopsDataRecord struct {
 	Name      string          `json:"name"`
-	Latitude  float32         `json:"latitude"`
-	Longitude float32         `json:"longitude"`
+	Latitude  float64         `json:"latitude"`
+	Longitude float64         `json:"longitude"`
 	Flags     []StopsDataFlag `json:"flags"`
 }
 type StopsDataFlag struct {
