@@ -30,7 +30,7 @@ export type SupportedLanguage = 'en' | 'pt';
  */
 const DEFAULT_TIMEOUT_MS = 30 * 60 * 1000;
 
-export interface GTFSValidatorOptions {
+export interface GtfsValidatorOptions {
 	/** Working directory for the validation process */
 	cwd?: string
 	/** Additional environment variables */
@@ -161,7 +161,7 @@ async function validateInput(input: string): Promise<void> {
  *
  * @internal
  */
-function validateOptions(options: GTFSValidatorOptions = {}): GTFSValidatorOptions {
+function validateOptions(options: GtfsValidatorOptions = {}): GtfsValidatorOptions {
 	const { cwd, env, lang, out_file, rules_path, timeout } = options;
 
 	if (timeout !== undefined && (typeof timeout !== 'number' || timeout <= 0 || !Number.isFinite(timeout))) {
@@ -218,7 +218,7 @@ function validateOptions(options: GTFSValidatorOptions = {}): GTFSValidatorOptio
  *
  * @internal
  */
-function buildValidatorArgs(input: string, options: GTFSValidatorOptions = {}): string[] {
+function buildValidatorArgs(input: string, options: GtfsValidatorOptions = {}): string[] {
 	const { lang, log_level, out_file, rules_path } = options;
 	const args: string[] = ['-input', input];
 
@@ -296,7 +296,7 @@ function buildValidatorArgs(input: string, options: GTFSValidatorOptions = {}): 
  */
 export async function GtfsValidator(
 	input: string,
-	options: GTFSValidatorOptions = {},
+	options: GtfsValidatorOptions = {},
 ): Promise<GtfsValidationResult> {
 	// Validate and normalize options
 	const validatedOptions = validateOptions(options);
