@@ -6,8 +6,8 @@
 			"@/*": ["./src/*"],
 			"pjson": ["./package.json"]
 		},
-		"rootDir": "src"
+		"rootDir": "."
 	},
-	"include": ["src"],
+	"include": ["src", "scripts"],
 	"exclude": ["node_modules", "dist"]
 }
