@@ -32,7 +32,7 @@ type StopsRules struct {
 	StopIdExists          RuleConfig `json:"stop_id_exists"`
 	StopCode              RuleConfig `json:"stop_code_valid"`
 	StopName              RuleConfig `json:"stop_name_required_by_location_type"`
-	StopNameMatchesData   RuleConfig `json:"stop_name_matches_data_cache"`
+	StopNameMatchesData   RuleConfig `json:"stop_name_matches_stops_data"`
 	StopShortName         RuleConfig `json:"stop_short_name_valid"`
 	TtsStopName           RuleConfig `json:"tts_stop_name_valid"`
 	StopDesc              RuleConfig `json:"stop_desc_valid"`

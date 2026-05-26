@@ -103,7 +103,7 @@ func (rp *RulesParser) validateRules(rules *types.GtfsRules) error {
 		validateRuleConfig(rules.Stops.StopIdExists, "stops.stop_id_exists")
 		validateRuleConfig(rules.Stops.StopCode, "stops.stop_code_valid")
 		validateRuleConfig(rules.Stops.StopName, "stops.stop_name_required_by_location_type")
-		validateRuleConfig(rules.Stops.StopNameMatchesData, "stops.stop_name_matches_data_cache")
+		validateRuleConfig(rules.Stops.StopNameMatchesData, "stops.stop_name_matches_stops_data")
 		validateRuleConfig(rules.Stops.StopShortName, "stops.stop_short_name_valid")
 		validateRuleConfig(rules.Stops.TtsStopName, "stops.tts_stop_name_valid")
 		validateRuleConfig(rules.Stops.StopDesc, "stops.stop_desc_valid")
