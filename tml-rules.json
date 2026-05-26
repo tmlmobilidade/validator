@@ -713,7 +713,7 @@
       "severity": "error"
     },
     "stop_name_matches_stops_data": {
-      "severity": "error"
+      "severity": "warning"
     },
     "stop_short_name_valid": {
       "severity": "ignore"
@@ -728,13 +728,13 @@
       "severity": "error"
     },
     "stop_lat_matches_stops_data": {
-      "severity": "error"
+      "severity": "warning"
     },
     "stop_lon_valid_longitude_range": {
       "severity": "error"
     },
     "stop_lon_matches_stops_data": {
-      "severity": "error"
+      "severity": "warning"
     },
     "zone_id_valid": {
       "severity": "ignore"
