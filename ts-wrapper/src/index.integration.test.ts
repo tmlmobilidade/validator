@@ -27,6 +27,9 @@ describe('integration - GtfsValidator', () => {
 			expect(typeof info.isAvailable).toBe('boolean');
 			expect(info.binaryPath).toContain('bin');
 			expect(info.binaryPath).toContain(info.binaryName);
+			// Regression: binary must live next to src/ (package bin/), not under src/bin/
+			expect(info.binaryPath).not.toMatch(/[/\\]src[/\\]bin[/\\]/);
+			expect(info.binaryPath).toMatch(/[/\\]bin[/\\][^/\\]+$/);
 		});
 	});
 

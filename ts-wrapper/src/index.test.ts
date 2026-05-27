@@ -15,7 +15,7 @@ vi.mock('fs/promises', () => ({
 	readFile: vi.fn(),
 }));
 
-vi.mock('./src/utils.js', () => ({
+vi.mock('@/utils.js', () => ({
 	GoBinaryError: class GoBinaryError extends Error {
 		constructor(
 			message: string,

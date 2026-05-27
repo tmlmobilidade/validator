@@ -35,11 +35,11 @@
 		"lint:fix": "eslint --fix ./src",
 		"postinstall": "if [ ! -d dist ]; then tsx ./scripts/postinstall.ts; else node ./dist/scripts/postinstall.js; fi",
 		"rinse": "npx --yes @tmlmobilidade/repo-rinse",
-		"test": "vitest run",
-		"test:coverage": "vitest run --coverage",
-		"test:integration": "vitest run --grep integration",
-		"test:unit": "vitest run --grep unit",
-		"test:watch": "vitest"
+		"test": "vitest run --config vitest.config.ts",
+		"test:coverage": "vitest run --config vitest.config.ts --coverage",
+		"test:integration": "vitest run --config vitest.config.ts -t integration",
+		"test:unit": "vitest run --config vitest.config.ts -t unit",
+		"test:watch": "vitest --config vitest.config.ts"
 	},
 	"dependencies": {
 		"@tmlmobilidade/types": "20260526.939.0"

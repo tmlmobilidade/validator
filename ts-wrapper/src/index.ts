@@ -17,6 +17,9 @@ const BINARY_DISTRIBUTIONS = {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+/** Matches postinstall output: `<package>/bin` (i.e. `dist/bin` when published). */
+const LOCAL_BIN_PATH = resolve(__dirname, '..', 'bin');
+
 type SupportedPlatform = keyof typeof BINARY_DISTRIBUTIONS;
 
 /**
@@ -107,7 +110,7 @@ function getCurrentPlatform(): SupportedPlatform {
 async function getValidatorBinaryPath(): Promise<string> {
 	const platform = getCurrentPlatform();
 	const binaryName = BINARY_DISTRIBUTIONS[platform];
-	const binaryPath = resolve(__dirname, 'bin', binaryName);
+	const binaryPath = resolve(LOCAL_BIN_PATH, binaryName);
 
 	try {
 		await access(binaryPath, constants.F_OK | constants.X_OK);
@@ -461,7 +464,7 @@ export async function getValidatorInfo(): Promise<{
 }> {
 	const platform = getCurrentPlatform();
 	const binaryName = BINARY_DISTRIBUTIONS[platform];
-	const binaryPath = resolve(__dirname, 'bin', binaryName);
+	const binaryPath = resolve(LOCAL_BIN_PATH, binaryName);
 
 	let isAvailable = false;
 	try {
