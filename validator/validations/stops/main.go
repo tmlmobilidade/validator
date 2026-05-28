@@ -11,12 +11,18 @@ import (
 
 func init() {
 	registry.Register("stops", RunValidations)
+
 }
 
 func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	lib.AppLogger.Debug("Running Validations for stops.txt")
 
 	stopsData := BuildStopsDataCache()
+	if stopsData == nil {
+		lib.AppLogger.Error("Error pre-computing stops data cache")
+		return
+	}
+	lib.AppLogger.Debug(fmt.Sprintf("Pre-computed stops data cache for %d stops", len(stopsData.ByStopID)))
 
 	// Create progress tracker
 	tracker := lib.CreateProgressTracker(gtfs, "stops", config.ProgressThresholdLarge)
