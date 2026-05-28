@@ -4,6 +4,8 @@ import (
 	"main/lib"
 	"main/services"
 	"main/types"
+	"math"
+	"strconv"
 )
 
 /*
@@ -71,6 +73,12 @@ func StopLonValidation(stop *types.Stop, row int, rules *types.StopsRules, stops
 		}
 
 		if record.Longitude != *stop.StopLon {
+			if rules != nil && rules.StopLonMatchesData.Options != nil && len(*rules.StopLonMatchesData.Options) > 0 {
+				toleranceFloat, err := strconv.ParseFloat((*rules.StopLonMatchesData.Options)[0], 64)
+				if err == nil && math.Abs(record.Longitude-*stop.StopLon) <= toleranceFloat {
+					return
+				}
+			}
 			if ctx.ShouldSkip() {
 				return
 			}
