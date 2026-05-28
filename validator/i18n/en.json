@@ -383,7 +383,7 @@
         "forbidden": "Field \"stop_id\" is forbidden",
         "required": "Field \"stop_id\" is required",
         "recommended": "Field \"stop_id\" is recommended",
-        "does_not_exist": "Field \"stop_id\" \"%s\" does not exist, verify if id are correct",
+        "does_not_exist": "Field \"stop_id\" \"%s\" does not exist, verify if id is correct",
         "duplicate": "Duplicate field \"stop_id\" \"%s\" found. Field \"stop_id\" must be unique",
         "not_allowed": "Field \"stop_id\" \"%s\" is not allowed",
         "forbidden_location_group_id_location_id": "Field \"stop_id\" is forbidden if \"location_group_id\" or \"location_id\" are defined",
