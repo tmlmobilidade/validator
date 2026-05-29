@@ -59,13 +59,13 @@ func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.
 		}
 	}
 
-	// Check if stop_id exists in the pre-computed stops_data.json cache
+	// Check if stop_id exists in stops_data.json (indexed by flags[].stop_id only, not entry._id)
 	ctx = lib.NewValidationContext("stop_id", "stops.txt", "stop_id_exists", row, services.AppMessageService)
 	if rules != nil && rules.StopIdExists.Severity != "" {
 		ctx.WithSeverity(rules.StopIdExists.Severity)
 	}
-	if stop.StopId != nil && *stop.StopId != "" && stopsData != nil && len(stopsData.ByStopID) > 0 {
-		if _, exists := stopsData.ByStopID[*stop.StopId]; !exists {
+	if stop.StopId != nil && *stop.StopId != "" && stopsData != nil && len(stopsData.ValidStopIDs) > 0 {
+		if _, exists := stopsData.ValidStopIDs[*stop.StopId]; !exists {
 			if ctx.ShouldSkip() {
 				return
 			}

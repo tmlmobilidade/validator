@@ -76,8 +76,26 @@ func TestAllStopIdValidationTestCases(t *testing.T) {
 		validations.StopIdValidation(stop, 1, gtfs, &types.StopsRules{
 			StopIdExists: types.RuleConfig{Severity: types.SEVERITY_ERROR},
 		}, &types.StopsDataCache{
-			ByStopID: map[string]types.StopsDataRecord{"100001": {}},
+			ValidStopIDs: map[string]struct{}{"010129": {}},
 		})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "InvalidStopIdAgainstPrecomputedValidIds", types.SEVERITY_ERROR)
+	})
+
+	t.Run("InternalIdNotValidAsStopId", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		internalID := "760509"
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": {"760509": {1}}}}.ToGtfsWithDB()
+		if err != nil {
+			t.Fatalf("failed to create mock gtfs: %v", err)
+		}
+		defer cleanup()
+
+		stop := &types.Stop{StopId: &internalID}
+		validations.StopIdValidation(stop, 1, gtfs, &types.StopsRules{
+			StopIdExists: types.RuleConfig{Severity: types.SEVERITY_ERROR},
+		}, &types.StopsDataCache{
+			ValidStopIDs: map[string]struct{}{"010129": {}},
+		})
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "InternalIdNotValidAsStopId", types.SEVERITY_ERROR)
 	})
 }

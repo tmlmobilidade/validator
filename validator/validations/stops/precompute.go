@@ -18,7 +18,10 @@ type StopsDataEntry struct {
 
 // BuildStopsDataCache loads stops_data.json from the CLI -stops path and indexes stop_id values from flags.
 func BuildStopsDataCache() *types.StopsDataCache {
-	empty := &types.StopsDataCache{ByStopID: make(map[string]types.StopsDataRecord)}
+	empty := &types.StopsDataCache{
+		ByStopID:     make(map[string]types.StopsDataRecord),
+		ValidStopIDs: make(map[string]struct{}),
+	}
 
 	stopsPath := services.AppCLI.Options.StopsPath
 	if stopsPath == "" {
@@ -41,12 +44,14 @@ func BuildStopsDataCache() *types.StopsDataCache {
 	}
 
 	cache := &types.StopsDataCache{
-		ByStopID: make(map[string]types.StopsDataRecord),
+		ByStopID:     make(map[string]types.StopsDataRecord),
+		ValidStopIDs: make(map[string]struct{}),
 	}
 
 	for _, entry := range entries {
 		for _, flag := range entry.Flags {
 			if flag.StopID != "" {
+				cache.ValidStopIDs[flag.StopID] = struct{}{}
 				if _, exists := cache.ByStopID[flag.StopID]; !exists {
 					cache.ByStopID[flag.StopID] = types.StopsDataRecord{
 						Name:      entry.Name,

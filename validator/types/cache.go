@@ -23,5 +23,6 @@ type StopsDataFlag struct {
 
 // StopsDataCache holds pre-rendered stops_data.json lookups for validations.
 type StopsDataCache struct {
-	ByStopID map[string]StopsDataRecord
+	ByStopID     map[string]StopsDataRecord
+	ValidStopIDs map[string]struct{} // GTFS stop_ids from flags[].stop_id only
 }
