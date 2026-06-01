@@ -254,6 +254,8 @@
         "not_allowed": "Field \"route_type\" \"%s\" is not allowed"
     },
     "path_type_validation": {
+        "required": "Field \"path_type\" is required",
+        "recommended": "Field \"path_type\" is recommended",
         "forbidden": "Field \"path_type\" is forbidden",
         "invalid": "Field \"path_type\" must be one of the valid values (1, 2, or 3). Got \"%s\"",
         "not_allowed": "Field \"path_type\" \"%s\" is not allowed"

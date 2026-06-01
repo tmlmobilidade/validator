@@ -255,6 +255,8 @@
         "not_allowed": "O campo \"route_type\" \"%s\" não é permitido"
     },
     "path_type_validation": {
+        "required": "O campo \"path_type\" é obrigatório",
+        "recommended": "O campo \"path_type\" é recomendado",
         "forbidden": "O campo \"path_type\" é proibido",
         "invalid": "O campo \"path_type\" deve ser um dos valores válidos (1, 2 ou 3). Recebido: \"%s\"",
         "not_allowed": "O campo \"path_type\" \"%s\" não é permitido"
