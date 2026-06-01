@@ -99,7 +99,8 @@
         "forbidden": "O campo \"service_id\" é proibido",
         "required": "O campo \"service_id\" é obrigatório",
         "duplicate": "Campo \"service_id\" \"%s\" duplicado encontrado. O campo \"service_id\" deve ser único",
-        "invalid": "O campo \"service_id\" \"%s\" não é um service_id válido de calendar.txt ou calendar_dates.txt"
+        "invalid": "O campo \"service_id\" \"%s\" não é um service_id válido de calendar.txt ou calendar_dates.txt",
+        "not_found": "O campo \"service_id\" \"%s\" não existe em calendar.txt ou calendar_dates.txt"
     },
     "exception_type_validation": {
         "required": "O campo \"exception_type\" é obrigatório",
