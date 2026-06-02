@@ -259,7 +259,8 @@
         "recommended": "O campo \"path_type\" é recomendado",
         "forbidden": "O campo \"path_type\" é proibido",
         "invalid": "O campo \"path_type\" deve ser um dos valores válidos (1, 2 ou 3). Recebido: \"%s\"",
-        "not_allowed": "O campo \"path_type\" \"%s\" não é permitido"
+        "not_allowed": "O campo \"path_type\" \"%s\" não é permitido",
+        "too_long": "O campo \"path_type\" \"%s\" é demasiado longo, deve ter menos de 12 caracteres"
     },
     "route_url_validation": {
         "forbidden": "O campo \"route_url\" é proibido",

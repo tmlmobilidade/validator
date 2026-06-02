@@ -232,7 +232,8 @@
         "required": "Field \"route_short_name\" is required",
         "recommended": "Field \"route_short_name\" is recommended",
         "not_allowed": "Field \"route_short_name\" \"%s\" is not allowed",
-        "duplicate": "Field \"route_short_name\" \"%s\" should not duplicate route_long_name"
+        "duplicate": "Field \"route_short_name\" \"%s\" should not duplicate route_long_name",
+        "too_long": "Field \"route_short_name\" \"%s\" is too long, must be less than 12 characters"
     },
     "route_sort_order_validation": {
         "forbidden": "Field \"route_sort_order\" is forbidden",
