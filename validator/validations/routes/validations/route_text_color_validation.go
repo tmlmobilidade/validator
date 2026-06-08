@@ -47,7 +47,7 @@ func RouteTextColorValidation(route *types.Route, row int, rules *types.RoutesRu
 	color := strings.ToUpper(*route.RouteTextColor)
 	matched, _ := regexp.MatchString(`^[0-9A-F]{6}$`, color)
 	if !matched {
-		ctx.AddError(ctx.GetTranslatedMessage("route_text_color_validation.invalid"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_text_color_validation.invalid"))
 		return
 	}
 
