@@ -636,6 +636,10 @@
     "trip_headsign_group_validation": {
         "different_headsigns_in_pattern": "pattern_id %s has trips with different trip_headsigns: %s. All trips with the same pattern_id must have the same trip_headsign"
     },
+    "shape_id_group_validation": {
+        "different_shape_id": "Different shape_id's found for the same pattern_id: %s",
+        "multiple_shape_id_in_unique_pattern_id": "Field \"shape_id\" \"%s\" is used in multiple pattern_ids"
+    },
     "pattern_id_validation": {
         "forbidden": "Field \"pattern_id\" is forbidden",
         "required": "Field \"pattern_id\" is required",
@@ -648,7 +652,6 @@
         "invalid_pattern_id": "Field \"pattern_id\" must be in the format \"XXXX_X_X\", received: %s",
         "different_direction_id": "Different direction_id's found for the same pattern_id: %s",
         "different_route_id": "Different route_id's found for the same pattern_id: %s",
-        "different_shape_id": "Different shape_id's found for the same pattern_id: %s",
         "different_pattern_id_same_shape": "Field \"shape_id\" \"%s\" is used in different pattern_ids: \"%s\" and \"%s\"",
         "multiple_stop_sequence_variations": "For pattern_id %s, there are trips with multiple stop sequence variations"
     },
