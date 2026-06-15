@@ -108,15 +108,15 @@ func (l *Logger) emitSentryLog(lvl Level, message string) {
 	logger := sentry.NewLogger(context.Background())
 	switch lvl {
 	case Error:
-		logger.Error().Emit(message)
+		logger.Error().Emitf("%s", message)
 		sentry.WithScope(func(scope *sentry.Scope) {
 			scope.SetLevel(sentry.LevelError)
 			sentry.CaptureMessage(message)
 		})
 	case Info:
-		logger.Info().Emit(message)
+		logger.Info().Emitf("%s", message)
 	case Debug:
-		logger.Debug().Emit(message)
+		logger.Debug().Emitf("%s", message)
 	}
 }
 
