@@ -1,11 +1,14 @@
 package lib
 
 import (
+	"context"
 	"fmt"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/getsentry/sentry-go"
 )
 
 // Level defines the severity of the log message
@@ -14,10 +17,12 @@ type Level int
 const (
 	Info Level = iota
 	Error
-	Debug 
+	Debug
 )
 
 var levelNames = []string{"info", "error", "debug"}
+
+var sentryEnabled atomic.Bool
 
 func ParseLevel(level string) Level {
 	for i, name := range levelNames {
@@ -55,11 +60,33 @@ func NewLogger(withTimestamp bool, level ...Level) *Logger {
 	}
 }
 
+func InitSentry(dsn string) {
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn:        dsn,
+		EnableLogs: true,
+	})
+	if err != nil {
+		fmt.Printf("sentry.Init: %s\n", err)
+		return
+	}
+
+	sentryEnabled.Store(true)
+	AppLogger.Info("Sentry initialized")
+}
+
+func FlushSentry() {
+	if sentryEnabled.Load() {
+		sentry.Flush(2 * time.Second)
+	}
+}
+
 // log prints a message with the specified color and level
 func (l *Logger) log(c *color.Color, lvl Level, message string) {
 	if lvl > l.Level {
 		return
 	}
+
+	l.emitSentryLog(lvl, message)
 
 	prefix := fmt.Sprintf("[%s]", levelNames[lvl])
 
@@ -71,6 +98,37 @@ func (l *Logger) log(c *color.Color, lvl Level, message string) {
 	}
 
 	c.Println(message)
+}
+
+func (l *Logger) emitSentryLog(lvl Level, message string) {
+	if !sentryEnabled.Load() {
+		return
+	}
+
+	logger := sentry.NewLogger(context.Background())
+	switch lvl {
+	case Error:
+		logger.Error().Emit(message)
+		sentry.WithScope(func(scope *sentry.Scope) {
+			scope.SetLevel(sentry.LevelError)
+			sentry.CaptureMessage(message)
+		})
+	case Info:
+		logger.Info().Emit(message)
+	case Debug:
+		logger.Debug().Emit(message)
+	}
+}
+
+func CaptureSentryError(message string) {
+	if !sentryEnabled.Load() {
+		return
+	}
+
+	sentry.WithScope(func(scope *sentry.Scope) {
+		scope.SetLevel(sentry.LevelError)
+		sentry.CaptureMessage(message)
+	})
 }
 
 // Divider prints a nice divider, with optional centered text

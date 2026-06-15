@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"main/config"
 	"main/i18n"
 	"main/lib"
@@ -96,10 +95,30 @@ func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *typ
 	tracker.End()
 }
 
+func captureValidationSummary() {
+	summary := services.AppMessageService.GetSummary()
+	if summary.TotalErrors == 0 {
+		return
+	}
+
+	lib.CaptureSentryError(fmt.Sprintf("GTFS validation failed with %d errors and %d warnings", summary.TotalErrors, summary.TotalWarnings))
+}
+
+func fatalWithSentry(message string, err error) {
+	fullMessage := fmt.Sprintf("%s: %v", message, err)
+	lib.CaptureSentryError(fullMessage)
+	lib.FlushSentry()
+	fmt.Fprintf(os.Stderr, "%s\n", fullMessage)
+	os.Exit(1)
+}
+
 func main() {
 
 	//
 	// 0.1 Initialize CLI
+	lib.InitSentry(sentryDSN)
+	defer lib.FlushSentry()
+
 	services.AppCLI.Run()
 	lib.AppLogger.SetLogLevel(services.AppCLI.Options.LogLevel)
 
@@ -111,7 +130,7 @@ func main() {
 	// 0.3 Parse Rules
 	rules, err := services.NewRulesParser(services.AppCLI.Options.RulesPath).ParseRules()
 	if err != nil {
-		log.Fatalf("Error parsing rules: %v", err)
+		fatalWithSentry("Error parsing rules", err)
 	}
 
 	//
@@ -126,11 +145,12 @@ func main() {
 	// 1. Read GTFS from zip file
 	gtfs, err := services.ReadGTFSZip(services.AppCLI.Options.InputPath)
 	if err != nil {
-		log.Fatalf("Error reading GTFS: %v", err)
+		fatalWithSentry("Error reading GTFS", err)
 	}
 
 	// If there are errors in the GTFS, print the errors and exit
 	if services.AppMessageService.GetSummary().TotalErrors > 0 {
+		captureValidationSummary()
 		services.AppMessageService.PrintJSON()
 		return
 	}
@@ -140,6 +160,7 @@ func main() {
 	// File validations add messages directly to AppMessageService
 	// Only exit early if there are errors (warnings are ok to continue)
 	if hasErrors := file_validation.NewFileValidation().Validate(gtfs, rules); hasErrors {
+		captureValidationSummary()
 		services.AppMessageService.WriteToFile(services.AppCLI.Options.OutputPath)
 		lib.AppLogger.Error("File validations found errors. Exiting.")
 		return
@@ -164,6 +185,7 @@ func main() {
 
 	//
 	// 5. Output Summary
+	captureValidationSummary()
 	if services.AppCLI.Options.OutputPath != "" {
 		services.AppMessageService.WriteToFile(services.AppCLI.Options.OutputPath)
 		lib.AppLogger.Info("Summary written to: " + services.AppCLI.Options.OutputPath)
