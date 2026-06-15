@@ -36,7 +36,8 @@
         "43",
         "44",
         "49",
-        "54"
+        "54",
+        "crtm"
       ],
       "severity": "error"
     },
@@ -70,7 +71,8 @@
         "Viação Alvorada",
         "Alsa Todi",
         "Município de Oeiras",
-        "Municipio de Setúbal"
+        "Municipio de Setúbal",
+        "Consorcio Regional de Transportes de Madrid"
       ],
       "severity": "warning"
     },
@@ -187,6 +189,10 @@
         {
           "key": "54",
           "value": "Municipio de Setúbal"
+        },
+        {
+          "key": "crtm",
+          "value": "Consorcio Regional de Transportes de Madrid"
         }
       ],
       "severity": "error"
