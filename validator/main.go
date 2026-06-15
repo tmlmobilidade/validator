@@ -116,6 +116,7 @@ func main() {
 
 	//
 	// 0.1 Initialize CLI
+	lib.AppLogger.SetValidationID(lib.GenerateValidationID())
 	lib.InitSentry(sentryDSN)
 	defer lib.FlushSentry()
 

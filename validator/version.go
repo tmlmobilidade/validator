@@ -4,4 +4,4 @@ package main
 // this are the last version number of the validator
 var version = "20260319.1551.27"
 
-var sentryDSN = "https://d183692ed98a308755308d2f46d2ebc9@o4511383083679744.ingest.de.sentry.io/4511568312795216"
+var sentryDSN = "https://b6e10869a96d309777f60890f0b4221f@o4511571034439680.ingest.de.sentry.io/4511571039879248"

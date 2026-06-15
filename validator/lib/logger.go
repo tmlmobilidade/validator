@@ -9,6 +9,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/getsentry/sentry-go"
+	"github.com/getsentry/sentry-go/attribute"
 )
 
 // Level defines the severity of the log message
@@ -46,6 +47,7 @@ var (
 type Logger struct {
 	WithTimestamp bool
 	Level         Level
+	ValidationID  string
 }
 
 // NewLogger creates a new Logger instance
@@ -89,6 +91,9 @@ func (l *Logger) log(c *color.Color, lvl Level, message string) {
 	l.emitSentryLog(lvl, message)
 
 	prefix := fmt.Sprintf("[%s]", levelNames[lvl])
+	if l.ValidationID != "" {
+		prefix = fmt.Sprintf("%s [validation_id=%s]", prefix, l.ValidationID)
+	}
 
 	if l.WithTimestamp {
 		timestamp := time.Now().Format("2006-01-02 15:04:05")
@@ -100,12 +105,20 @@ func (l *Logger) log(c *color.Color, lvl Level, message string) {
 	c.Println(message)
 }
 
+func (l *Logger) SetValidationID(validationID string) {
+	l.ValidationID = validationID
+}
+
 func (l *Logger) emitSentryLog(lvl Level, message string) {
 	if !sentryEnabled.Load() {
 		return
 	}
 
 	logger := sentry.NewLogger(context.Background())
+	if l.ValidationID != "" {
+		logger.SetAttributes(attribute.String("validation_id", l.ValidationID))
+	}
+
 	switch lvl {
 	case Error:
 		logger.Error().Emitf("%s", message)
