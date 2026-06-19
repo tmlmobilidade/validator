@@ -203,7 +203,7 @@ type PathwaysRaw struct {
 /* LEVELS */
 type LevelsRaw struct {
 	LevelId    string `gtfs:"level_id"`
-	LevelIndex uint16 `gtfs:"level_index"`
+	LevelIndex string `gtfs:"level_index"`
 	LevelName  string `gtfs:"level_name"`
 }
 
@@ -1019,6 +1019,14 @@ func (g *Gtfs) IterateVehicles(fn func(int, VehicleRaw) error) error {
 	return g.iterateTable("vehicles", func(rowIndex int, row map[string]string) error {
 		vehicleRaw := convertRowToStruct[VehicleRaw](row)
 		return fn(rowIndex, vehicleRaw)
+	})
+}
+
+// IterateLevels iterates over all levels, calling fn for each
+func (g *Gtfs) IterateLevels(fn func(int, LevelsRaw) error) error {
+	return g.iterateTable("levels", func(rowIndex int, row map[string]string) error {
+		levelRaw := convertRowToStruct[LevelsRaw](row)
+		return fn(rowIndex, levelRaw)
 	})
 }
 
