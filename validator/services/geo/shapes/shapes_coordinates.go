@@ -10,7 +10,6 @@ import (
 )
 
 const SEGMENT_LENGTH = 50.0 // 50m segments reduce Haversine calls 5x vs 10m while still validating 100m stop distance
-const MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS = 100.0
 const MAX_SHAPE_POINT_DISTANCE_METERS = 1000.0
 const SHAPE_DIST_TRAVELED_KILOMETERS_THRESHOLD = 800.0
 
