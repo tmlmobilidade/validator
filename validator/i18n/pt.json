@@ -493,10 +493,10 @@
         "not_allowed": "O campo \"municipality_id\" \"%s\" não é permitido"
     },
     "stop_coordinates_validation": {
-        "invalid_distance_to_shape": "As coordenadas (%f, %f) desta paragem (%s) estao demasiado distantes das shapes, a shape mais proxima \"%s\" na sequencia %d em (%f, %f) (%.2f m)"
+        "invalid_distance_to_shape": "As coordenadas (%.6f, %.6f) desta paragem (%s) estao demasiado distantes das shapes, a shape mais proxima \"%s\" na sequencia %d em (%.6f, %.6f) (%.2f m)"
     },
     "shape_points_coordinates_consistent_validation": {
-        "invalid_consistent_distance": "A shape \"%s\" tem as coordenadas (%f, %f) da sequencia (%d) demasiado distantes relativamente a anterior com as coordenadas (%f, %f) da sequencia (%d)",
+        "invalid_consistent_distance": "A shape %s tem as coordenadas (%.6f, %.6f) da sequencia (%d) demasiado distantes relativamente a anterior com as coordenadas (%.6f, %.6f) da sequencia (%d)",
         "ManyErrors": "Foram encontrados muitos erros em relação às coordenadas introduzidas no ficheiro shapes.txt, existem varias shapes que tem uma distancia muito grande relativamente a anterior por isso tem de ser verificado"
     },
     "shape_points_coordinates_distances_validation": {

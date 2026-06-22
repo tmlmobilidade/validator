@@ -25,7 +25,7 @@ func buildShapeFromPointsCoordinatesConsistentPoint(point shapePointsCoordinates
 }
 
 type pointsCoordinatesConsistentViolation struct {
-	id          string
+	shapeId     string
 	row         int
 	currentLat  float64
 	currentLon  float64
@@ -95,6 +95,7 @@ func ShapePointsCoordinatesConsistentValidation(shapes []types.Shape, rules *typ
 			}
 
 			violations = append(violations, pointsCoordinatesConsistentViolation{
+				shapeId:     current.id,
 				row:         current.row,
 				currentLat:  current.lat,
 				currentLon:  current.lon,
@@ -125,7 +126,7 @@ func ShapePointsCoordinatesConsistentValidation(shapes []types.Shape, rules *typ
 		ctx.WithSeverity(severity)
 		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage(
 			"shape_points_coordinates_consistent_validation.invalid_consistent_distance",
-			violation.id,
+			violation.shapeId,
 			violation.currentLat,
 			violation.currentLon,
 			violation.currentSeq,

@@ -493,10 +493,10 @@
         "not_allowed": "Field \"municipality_id\" \"%s\" is not allowed"
     },
     "stop_coordinates_validation": {
-        "invalid_distance_to_shape": "Coordinates (%f, %f) of stop \"%s\" are too far from the shapes, the closest shape \"%s\" in sequence %d at (%f, %f) (%.2f m)"
+        "invalid_distance_to_shape": "Coordinates (%.6f, %.6f) of stop \"%s\" are too far from the shapes, the closest shape \"%s\" in sequence %d at (%.6f, %.6f) (%.2f m)"
     },
     "shape_points_coordinates_consistent_validation": {
-        "invalid_consistent_distance": "Shape \"%s\" has coordinates (%f, %f) sequence (%d) too far apart relative to previous with coordinates (%f, %f) sequence (%d)",
+        "invalid_consistent_distance": "Shape %s has coordinates (%.6f, %.6f) sequence (%d) too far apart relative to previous with coordinates (%.6f, %.6f) sequence (%d)",
         "ManyErrors": "Many errors found in shapes.txt file, exist several shapes with a large distance relatively to the previous so it has to be verified"
     },
     "shape_points_coordinates_distances_validation": {
