@@ -29,13 +29,17 @@ type AgencyRules struct {
 type StopsRules struct {
 	File                  Severity   `json:"_file"`
 	StopId                RuleConfig `json:"stop_id_unique"`
+	StopIdExists          RuleConfig `json:"stop_id_exists"`
 	StopCode              RuleConfig `json:"stop_code_valid"`
 	StopName              RuleConfig `json:"stop_name_required_by_location_type"`
+	StopNameMatchesData   RuleConfig `json:"stop_name_matches_stops_data"`
 	StopShortName         RuleConfig `json:"stop_short_name_valid"`
 	TtsStopName           RuleConfig `json:"tts_stop_name_valid"`
 	StopDesc              RuleConfig `json:"stop_desc_valid"`
 	StopLat               RuleConfig `json:"stop_lat_valid_latitude_range"`
+	StopLatMatchesData    RuleConfig `json:"stop_lat_matches_stops_data"`
 	StopLon               RuleConfig `json:"stop_lon_valid_longitude_range"`
+	StopLonMatchesData    RuleConfig `json:"stop_lon_matches_stops_data"`
 	ZoneId                RuleConfig `json:"zone_id_valid"`
 	StopUrl               RuleConfig `json:"stop_url_valid_url"`
 	LocationType          RuleConfig `json:"location_type_valid_enum"`

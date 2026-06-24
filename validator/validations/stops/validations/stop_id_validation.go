@@ -25,7 +25,7 @@ ID must be unique across all stops.stop_id, locations.geojson id, and location_g
 */
 
 // StopIdValidation validates the presence and uniqueness of stop_id in stops.txt
-func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.StopsRules) {
+func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.StopsRules, stopsData *types.StopsDataCache) {
 	ctx := lib.NewValidationContext("stop_id", "stops.txt", "stop_id_unique", row, services.AppMessageService)
 
 	// Check if stop_id is missing
@@ -55,6 +55,22 @@ func StopIdValidation(stop *types.Stop, row int, gtfs *types.Gtfs, rules *types.
 
 		if !slices.Contains(*rules.StopId.Options, *stop.StopId) {
 			ctx.AddError(ctx.GetTranslatedMessage("stop_id_validation.not_allowed", *stop.StopId))
+			return
+		}
+	}
+
+	// Check if stop_id exists in stops_data.json (indexed by flags[].stop_id only, not entry._id)
+	ctx = lib.NewValidationContext("stop_id", "stops.txt", "stop_id_exists", row, services.AppMessageService)
+	if rules != nil && rules.StopIdExists.Severity != "" {
+		ctx.WithSeverity(rules.StopIdExists.Severity)
+	}
+	if stop.StopId != nil && *stop.StopId != "" && stopsData != nil && len(stopsData.ValidStopIDs) > 0 {
+		if _, exists := stopsData.ValidStopIDs[*stop.StopId]; !exists {
+			if ctx.ShouldSkip() {
+				return
+			}
+
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("stop_id_validation.does_not_exist", *stop.StopId))
 			return
 		}
 	}

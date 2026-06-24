@@ -26,7 +26,7 @@ func TestAllStopNameValidationTestCases(t *testing.T) {
 				stop = &types.Stop{StopName: lib.Ptr(""), LocationType: lib.Ptr(0)}
 			}
 
-			validations.StopNameValidation(stop, tc.Row, nil)
+			validations.StopNameValidation(stop, tc.Row, nil, nil)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}
@@ -38,7 +38,7 @@ func TestAllStopNameValidationTestCases(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()
 			stop := &types.Stop{StopName: nil, LocationType: lib.Ptr(0)}
-			validations.StopNameValidation(stop, tc.Row, &types.StopsRules{StopName: types.RuleConfig{Severity: tc.Severity}})
+			validations.StopNameValidation(stop, tc.Row, &types.StopsRules{StopName: types.RuleConfig{Severity: tc.Severity}}, nil)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, tc.Severity)
 		})
 	}
@@ -46,7 +46,7 @@ func TestAllStopNameValidationTestCases(t *testing.T) {
 	t.Run("Optional_LocationType3", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		stop := &types.Stop{StopName: nil, LocationType: lib.Ptr(3)}
-		validations.StopNameValidation(stop, 2, nil)
+		validations.StopNameValidation(stop, 2, nil, nil)
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Optional_LocationType3", types.SEVERITY_ERROR)
 	})
 
