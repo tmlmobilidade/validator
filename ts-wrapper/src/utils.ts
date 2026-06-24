@@ -73,8 +73,8 @@ export class GoBinaryError extends Error {
  */
 const DEFAULT_MAX_STDERR_SIZE = 1024 * 1024; // 1MB
 const DEFAULT_MAX_STDOUT_SIZE = 10 * 1024 * 1024; // 10MB
-const DEFAULT_TIMEOUT_MS = 1000 * 60 * 30; // 30 minutes
-const FORCE_KILL_DELAY_MS = 5000; // 5 seconds
+const DEFAULT_TIMEOUT_MS = 1000 * 60 * 60 * 24; // 24 hours
+const FORCE_KILL_DELAY_MS = 1000 * 60; // 1 minute
 
 export async function runGoBinary<T = unknown>(
 	binaryPath: string,
