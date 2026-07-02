@@ -512,7 +512,7 @@
   "routes": {
     "_file": "error",
     "line_id": {
-      "severity": "error"
+      "severity": "warning"
     },
     "line_short_name": {
       "severity": "error"

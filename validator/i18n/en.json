@@ -220,6 +220,9 @@
         "duplicate": "Duplicate field \"route_id\" \"%s\" found. Field \"route_id\" must be unique",
         "invalid": "Field \"route_id\" \"%s\" is not a valid route_id from routes.txt"
     },
+    "line_id_validation": {
+        "required": "Field \"line_id\" is required"
+    },
     "route_long_name_validation": {
         "forbidden": "Field \"route_long_name\" is forbidden",
         "required": "Field \"route_long_name\" is required",
