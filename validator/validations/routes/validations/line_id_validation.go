@@ -11,12 +11,16 @@ import (
 
 - File: [routes.txt]
 - Field: line_id
-- Presence: Required
+- Presence: Conditionally Required
 - Type: string
 
 # Description
 
 Line ID for the specified route.
+
+Conditionally Required:
+  - Required if line_id column contains a value.
+  - Ignored if line_id column is empty.
 
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
@@ -36,7 +40,7 @@ func LineIdValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *type
 	}
 
 	// Check if line_id are same route_short_name
-	if route.LineId != nil && *route.LineId == *route.RouteShortName {
+	if *route.LineId != *route.RouteShortName {
 		ctx.AddError(ctx.GetTranslatedMessage("line_id_required.same_as_route_short_name", *route.LineId, *route.RouteShortName))
 	}
 }

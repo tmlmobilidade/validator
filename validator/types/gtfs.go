@@ -97,6 +97,8 @@ type Route struct {
 	AgencyId          *string `json:"agency_id"`
 	ContinuousDropOff *string `json:"continuous_drop_off"`
 	ContinuousPickup  *string `json:"continuous_pickup"`
+	LineShortName     *string `json:"line_short_name"`
+	LineLongName      *string `json:"line_long_name"`
 	RouteColor        *string `json:"route_color"`
 	RouteDesc         *string `json:"route_desc"`
 	RouteLongName     *string `json:"route_long_name"`

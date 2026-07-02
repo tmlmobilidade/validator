@@ -64,6 +64,8 @@ type RouteRaw struct {
 	AgencyId          string `gtfs:"agency_id"`
 	ContinuousDropOff string `gtfs:"continuous_drop_off"`
 	ContinuousPickup  string `gtfs:"continuous_pickup"`
+	LineShortName     string `gtfs:"line_short_name"`
+	LineLongName      string `gtfs:"line_long_name"`
 	RouteColor        string `gtfs:"route_color"`
 	RouteDesc         string `gtfs:"route_desc"`
 	RouteLongName     string `gtfs:"route_long_name"`
