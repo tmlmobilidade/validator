@@ -72,6 +72,9 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// Validate route_id
 		validations.RouteIdValidation(&route, i, &gtfs)
 
+		// Validate line_id
+		validations.LineIdValidation(&route, i, &gtfs, routeRules)
+
 		// Validate agency_id
 		validations.AgencyIdValidation(&route, i, gtfs, routeRules)
 

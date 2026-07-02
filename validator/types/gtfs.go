@@ -91,6 +91,7 @@ type Route struct {
 	// Required fields
 	RouteId   *string `json:"route_id"`
 	RouteType *int    `json:"route_type"`
+	LineId    *string `json:"line_id"`
 
 	// Optional fields
 	AgencyId          *string `json:"agency_id"`

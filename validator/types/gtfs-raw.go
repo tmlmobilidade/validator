@@ -58,6 +58,7 @@ type RouteRaw struct {
 	// Required fields
 	RouteId   string `gtfs:"route_id"`
 	RouteType string `gtfs:"route_type"`
+	LineId    string `gtfs:"line_id"`
 
 	// Optional fields
 	AgencyId          string `gtfs:"agency_id"`

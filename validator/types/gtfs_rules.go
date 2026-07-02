@@ -61,7 +61,7 @@ type StopsRules struct {
 
 type RoutesRules struct {
 	File              Severity   `json:"_file"`
-	LineId            RuleConfig `json:"line_id"`
+	LineId            RuleConfig `json:"line_id_required"`
 	LineShortName     RuleConfig `json:"line_short_name"`
 	LineLongName      RuleConfig `json:"line_long_name"`
 	RouteId           RuleConfig `json:"route_id_unique"`
