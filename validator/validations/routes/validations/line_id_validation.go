@@ -24,17 +24,19 @@ func LineIdValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *type
 	ctx := lib.NewValidationContext("line_id", "routes.txt", "line_id_required", row, services.AppMessageService)
 	if rules != nil && rules.LineId.Severity != "" {
 		ctx.WithSeverity(rules.LineId.Severity)
-	} else {
-		ctx.WithSeverity(types.SEVERITY_WARNING)
 	}
 
 	// Check if line_id is required
 	if route.LineId == nil || *route.LineId == "" {
-		ctx.AddMessageWithSeverity(ctx.GetRequiredMessage("line_id_validation.required", "line_id_validation.recommended"))
+		if ctx.ShouldSkip() {
+			return
+		}
+
+		ctx.AddMessageWithSeverity(ctx.GetRequiredMessage("line_id_required.required", "line_id_required.recommended"))
 	}
 
 	// Check if line_id are same route_short_name
 	if route.LineId != nil && *route.LineId == *route.RouteShortName {
-		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("line_id_validation.same_as_route_short_name"))
+		ctx.AddError(ctx.GetTranslatedMessage("line_id_required.same_as_route_short_name", *route.LineId, *route.RouteShortName))
 	}
 }

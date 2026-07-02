@@ -511,8 +511,8 @@
   },
   "routes": {
     "_file": "error",
-    "line_id": {
-      "severity": "warning"
+    "line_id_required": {
+      "severity": "error"
     },
     "line_short_name": {
       "severity": "error"

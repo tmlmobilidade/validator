@@ -72,7 +72,7 @@ type GtfsRules = {
     };
     routes: {
         _file: Severity;
-        line_id: RuleConfig;
+        line_id_required: RuleConfig;
         line_short_name: RuleConfig;
         line_long_name: RuleConfig;
         route_id_unique: RuleConfig;
@@ -721,7 +721,7 @@ const rules: GtfsRules = {
     },
     "routes": {
         "_file": "error",
-        "line_id": {
+        "line_id_required": {
             "severity": "error"
         },
         "line_short_name": {

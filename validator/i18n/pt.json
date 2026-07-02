@@ -221,9 +221,10 @@
         "duplicate": "Campo \"route_id\" \"%s\" duplicado encontrado. O campo \"route_id\" deve ser único",
         "invalid": "O campo \"route_id\" \"%s\" não é um route_id válido de routes.txt"
     },
-    "line_id_validation": {
+    "line_id_required": {
         "required": "O campo \"line_id\" é obrigatório",
-        "recommended": "O campo \"line_id\" é recomendado"
+        "recommended": "O campo \"line_id\" é recomendado",
+        "same_as_route_short_name": "O campo \"line_id\" \"%s\" não deve ser igual ao campo \"route_short_name\" \"%s\""
     },
     "route_long_name_validation": {
         "forbidden": "O campo \"route_long_name\" é proibido",
