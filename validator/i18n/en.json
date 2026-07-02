@@ -228,7 +228,10 @@
     "line_short_name_validation": {
         "required": "Field \"line_short_name\" is required",
         "recommended": "Field \"line_short_name\" is recommended",
-        "same_as_line_long_name": "Field \"line_short_name\" should not be the same as \"line_long_name\""
+        "same_as_line_long_name": "Field \"line_short_name\" should be the same as \"line_long_name\""
+    },
+    "line_long_name_validation": {
+        "required": "Field \"line_long_name\" is required"
     },
     "route_long_name_validation": {
         "forbidden": "Field \"route_long_name\" is forbidden",
