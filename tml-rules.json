@@ -514,10 +514,10 @@
     "line_id_required": {
       "severity": "error"
     },
-    "line_short_name": {
+    "line_short_name_present_when_line_id_present": {
       "severity": "error"
     },
-    "line_long_name": {
+    "line_long_name_present_when_line_id_present": {
       "severity": "error"
     },
     "route_id_unique": {
