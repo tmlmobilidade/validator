@@ -125,6 +125,7 @@ type GtfsRules = {
         stop_times_trip_id_references_trips_table: RuleConfig;
         arrival_time_ordering_with_departure_and_frequencies: RuleConfig;
         departure_time_ordering_with_arrival_and_timepoint: RuleConfig;
+        arrival_departure_time_non_decreasing_by_stop_sequence: RuleConfig;
         stop_times_stop_id_references_stops_table: RuleConfig;
         stop_headsign_present: RuleConfig;
         pickup_type_valid_gtfs_enum: RuleConfig;
@@ -905,6 +906,9 @@ const rules: GtfsRules = {
             "severity": "error"
         },
         "departure_time_ordering_with_arrival_and_timepoint": {
+            "severity": "error"
+        },
+        "arrival_departure_time_non_decreasing_by_stop_sequence": {
             "severity": "error"
         },
         "stop_times_stop_id_references_stops_table": {

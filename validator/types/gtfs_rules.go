@@ -116,6 +116,7 @@ type StopTimesRules struct {
 	TripId                   RuleConfig `json:"stop_times_trip_id_references_trips_table"`
 	ArrivalTime              RuleConfig `json:"arrival_time_ordering_with_departure_and_frequencies"`
 	DepartureTime            RuleConfig `json:"departure_time_ordering_with_arrival_and_timepoint"`
+	ArrivalDepartureSequence RuleConfig `json:"arrival_departure_time_non_decreasing_by_stop_sequence"`
 	StopId                   RuleConfig `json:"stop_times_stop_id_references_stops_table"`
 	StopHeadsign             RuleConfig `json:"stop_headsign_present"`
 	PickupType               RuleConfig `json:"pickup_type_valid_gtfs_enum"`
