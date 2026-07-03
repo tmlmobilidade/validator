@@ -75,7 +75,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 			return nil
 		}
 
-		if stopTime.TripId != nil && stopTime.StopSequence != nil {
+		if stopTime.TripId != nil && *stopTime.TripId != "" && stopTime.StopSequence != nil {
 			tripStopTimes[*stopTime.TripId] = append(tripStopTimes[*stopTime.TripId], validations.TimeSequenceStop{
 				Row:           i,
 				StopSequence:  *stopTime.StopSequence,
