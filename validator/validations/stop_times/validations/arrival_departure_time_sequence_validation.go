@@ -120,6 +120,10 @@ func parseStopTimeSeconds(value string) (int, bool) {
 	}
 
 	parts := strings.Split(value, ":")
+	if len(parts) != 3 {
+		return 0, false
+	}
+
 	hours, err := strconv.Atoi(parts[0])
 	if err != nil {
 		return 0, false
