@@ -32,22 +32,18 @@ func LineShortNameValidation(route *types.Route, row int, gtfs *types.Gtfs, rule
 
 	// Check if line_id is present
 	if route.LineId == nil || *route.LineId == "" {
-		if ctx.ShouldSkip() {
-			return
-		}
 		return
 	}
 
 	// Check if line_short_name is present
 	if route.LineShortName == nil || *route.LineShortName == "" {
-		if ctx.ShouldSkip() {
-			return
+		if !ctx.ShouldSkip() {
+			ctx.AddError(ctx.GetTranslatedMessage("line_short_name_validation.required"))
 		}
-
-		ctx.AddError(ctx.GetTranslatedMessage("line_short_name_validation.required"))
+		return
 	}
 
-	// Validate are different from line_long_name
+	// Validate line_short_name is different from line_long_name
 	if route.LineId != nil && *route.LineId != "" && route.LineLongName != nil && *route.LineLongName == *route.LineShortName {
 		ctx.AddError(ctx.GetTranslatedMessage("line_short_name_validation.same_as_line_long_name"))
 	}

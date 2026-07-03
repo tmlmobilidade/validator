@@ -11,16 +11,16 @@ import (
 
 - File: [routes.txt]
 - Field: line_id
-- Presence: Conditionally Required
+- Presence: Optional
 - Type: string
 
 # Description
 
 Line ID for the specified route.
 
-Conditionally Required:
-  - Required if line_id column contains a value.
-  - Ignored if line_id column is empty.
+Optional:
+  - Ignored if line_id is empty.
+  - Validated if line_id contains a value.
 
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
@@ -30,17 +30,13 @@ func LineIdValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *type
 		ctx.WithSeverity(rules.LineId.Severity)
 	}
 
-	// Check if line_id is required
+	// If line_id is not present, there is nothing to validate.
 	if route.LineId == nil || *route.LineId == "" {
-		if ctx.ShouldSkip() {
-			return
-		}
-
-		ctx.AddMessageWithSeverity(ctx.GetRequiredMessage("line_id_required.required", "line_id_required.recommended"))
+		return
 	}
 
-	// Check if line_id are same route_short_name
-	if *route.LineId != *route.RouteShortName {
+	// Check if line_id is the same as route_short_name
+	if route.RouteShortName != nil && *route.LineId == *route.RouteShortName {
 		ctx.AddError(ctx.GetTranslatedMessage("line_id_required.same_as_route_short_name", *route.LineId, *route.RouteShortName))
 	}
 }

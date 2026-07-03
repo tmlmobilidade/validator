@@ -32,18 +32,14 @@ func LineLongNameValidation(route *types.Route, row int, gtfs *types.Gtfs, rules
 
 	// Check if line_id is present
 	if route.LineId == nil || *route.LineId == "" {
-		if ctx.ShouldSkip() {
-			return
-		}
 		return
 	}
 
-	// Check if line_short_name is present
+	// Check if line_long_name is present
 	if route.LineLongName == nil || *route.LineLongName == "" {
-		if ctx.ShouldSkip() {
-			return
+		if !ctx.ShouldSkip() {
+			ctx.AddError(ctx.GetTranslatedMessage("line_long_name_validation.required"))
 		}
-
-		ctx.AddError(ctx.GetTranslatedMessage("line_long_name_validation.required"))
+		return
 	}
 }
