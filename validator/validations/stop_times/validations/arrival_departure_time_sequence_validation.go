@@ -33,7 +33,7 @@ stops of the same trip when ordered by stop_sequence.
 */
 func ArrivalDepartureTimeSequenceValidation(stopTimesByTrip map[string][]TimeSequenceStop, rules *types.StopTimesRules) {
 	for tripId, stopTimes := range stopTimesByTrip {
-		sort.SliceStable(stopTimes, func(i, j int) bool {
+		sort.Slice(stopTimes, func(i, j int) bool {
 			if stopTimes[i].StopSequence == stopTimes[j].StopSequence {
 				return stopTimes[i].Row < stopTimes[j].Row
 			}
