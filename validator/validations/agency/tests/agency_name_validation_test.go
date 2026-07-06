@@ -45,4 +45,14 @@ func TestAllAgencyNameValidationTestCases(t *testing.T) {
 		validations.AgencyNameValidation(agency, 1, &types.AgencyRules{AgencyName: types.RuleConfig{Severity: types.SEVERITY_ERROR, Options: &options}})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "NotAllowedOption", types.SEVERITY_ERROR)
 	})
+
+	t.Run("AllowedOption", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		name := "Allowed Agency"
+		options := []string{name}
+		agency := &types.Agency{AgencyName: &name}
+
+		validations.AgencyNameValidation(agency, 1, &types.AgencyRules{AgencyName: types.RuleConfig{Severity: types.SEVERITY_ERROR, Options: &options}})
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "AllowedOption", types.SEVERITY_ERROR)
+	})
 }

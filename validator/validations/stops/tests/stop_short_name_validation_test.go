@@ -37,4 +37,14 @@ func TestAllStopShortNameValidationTestCases(t *testing.T) {
 		validations.StopShortNameValidation(stop, 1, &types.StopsRules{StopShortName: types.RuleConfig{Severity: types.SEVERITY_ERROR, Options: &options}})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "NotAllowedOption", types.SEVERITY_ERROR)
 	})
+
+	t.Run("AllowedOption", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		shortName := "ALLOWED"
+		options := []string{shortName}
+		stop := &types.Stop{StopShortName: &shortName}
+
+		validations.StopShortNameValidation(stop, 1, &types.StopsRules{StopShortName: types.RuleConfig{Severity: types.SEVERITY_ERROR, Options: &options}})
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "AllowedOption", types.SEVERITY_ERROR)
+	})
 }

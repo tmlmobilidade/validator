@@ -33,4 +33,14 @@ func TestAllShelterMaintainerValidationTestCases(t *testing.T) {
 		validations.ShelterMaintainerValidation(stop, 1, &types.StopsRules{ShelterMaintainer: types.RuleConfig{Severity: types.SEVERITY_ERROR, Options: &options}})
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "NotAllowedOption", types.SEVERITY_ERROR)
 	})
+
+	t.Run("AllowedOption", func(t *testing.T) {
+		services.AppMessageService.Clear()
+		maintainer := "Allowed Maintainer"
+		options := []string{maintainer}
+		stop := &types.Stop{ShelterMaintainer: &maintainer}
+
+		validations.ShelterMaintainerValidation(stop, 1, &types.StopsRules{ShelterMaintainer: types.RuleConfig{Severity: types.SEVERITY_ERROR, Options: &options}})
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "AllowedOption", types.SEVERITY_ERROR)
+	})
 }
