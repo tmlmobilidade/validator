@@ -102,10 +102,10 @@ func sortedMessages(messages []types.Message) []types.Message {
 		right := sorted[j]
 
 		switch {
-		case left.RuleID != right.RuleID:
-			return left.RuleID < right.RuleID
 		case left.FileName != right.FileName:
 			return left.FileName < right.FileName
+		case left.RuleID != right.RuleID:
+			return left.RuleID < right.RuleID
 		case left.Field != right.Field:
 			return left.Field < right.Field
 		case left.Severity != right.Severity:
