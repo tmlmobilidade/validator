@@ -24,7 +24,7 @@ func NewFileValidation() *FileValidation {
 // Validate runs all file validations and adds messages directly to AppMessageService.
 // Returns true if there are any errors (not warnings).
 func (v *FileValidation) Validate(gtfs types.Gtfs, rules *types.GtfsRules) bool {
-	initialErrors := services.AppMessageService.GetSummary().TotalErrors
+	initialErrors := services.AppMessageService.TotalErrors()
 
 	v.checkForbiddenFiles(gtfs, rules)
 	v.checkWarningFiles(gtfs, rules)
@@ -35,7 +35,7 @@ func (v *FileValidation) Validate(gtfs types.Gtfs, rules *types.GtfsRules) bool 
 	v.checkFeedInfoWithTranslations(gtfs)
 	v.checkForbiddenNetworks(gtfs)
 
-	return services.AppMessageService.GetSummary().TotalErrors > initialErrors
+	return services.AppMessageService.TotalErrors() > initialErrors
 }
 
 func (v *FileValidation) addError(file, msg string) {

@@ -22,6 +22,8 @@ type MessageServiceInterface interface {
 	AddMessage(message types.Message)
 	AddMessages(messages []types.Message)
 	GetSummary() types.Summary
+	TotalErrors() int
+	TotalWarnings() int
 	Clear()
 }
 
@@ -93,6 +95,14 @@ func (ms *MessageService) GetSummary() types.Summary {
 		TotalErrors:   ms.errorCount,
 		TotalWarnings: ms.warningCount,
 	}
+}
+
+func (ms *MessageService) TotalErrors() int {
+	return ms.errorCount
+}
+
+func (ms *MessageService) TotalWarnings() int {
+	return ms.warningCount
 }
 
 func sortedMessages(messages []types.Message) []types.Message {
