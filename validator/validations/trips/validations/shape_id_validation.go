@@ -38,7 +38,7 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 	// Check if the route has continuous pickup/dropoff behavior (use cache to avoid repeated queries)
 	routeRows, err := gtfs.GetCachedRowsById(routeRowsCache, "routes", *trip.RouteId)
 	if err != nil || len(routeRows) > 1 {
-		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.not_found", map[string]any{"shape_id": *trip.ShapeId}))
+		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.not_found", *trip.ShapeId))
 		return
 	}
 
@@ -91,7 +91,7 @@ func ShapeIdValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types
 
 	// Check Foreign Key
 	if !lib.GtfsIdMapKeyExists(gtfs, "shapes", *trip.ShapeId) {
-		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.not_found", map[string]any{"shape_id": *trip.ShapeId}))
+		ctx.AddError(ctx.GetTranslatedMessage("shape_id_validation.not_found", *trip.ShapeId))
 		return
 	}
 
