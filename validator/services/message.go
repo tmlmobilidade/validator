@@ -1,12 +1,13 @@
 package services
 
 import (
+	"cmp"
 	"encoding/json"
 	"fmt"
 	"main/lib"
 	"main/types"
 	"os"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -95,24 +96,22 @@ func (ms *MessageService) GetSummary() types.Summary {
 }
 
 func sortedMessages(messages []types.Message) []types.Message {
-	sorted := append([]types.Message(nil), messages...)
+	sorted := slices.Clone(messages)
 
-	sort.SliceStable(sorted, func(i, j int) bool {
-		left := sorted[i]
-		right := sorted[j]
-
-		switch {
-		case left.FileName != right.FileName:
-			return left.FileName < right.FileName
-		case left.RuleID != right.RuleID:
-			return left.RuleID < right.RuleID
-		case left.Severity != right.Severity:
-			return left.Severity < right.Severity
-		case left.Message != right.Message:
-			return left.Message < right.Message
-		default:
-			return firstRow(left.Rows) < firstRow(right.Rows)
+	slices.SortStableFunc(sorted, func(a, b types.Message) int {
+		if c := cmp.Compare(a.FileName, b.FileName); c != 0 {
+			return c
 		}
+		if c := cmp.Compare(a.RuleID, b.RuleID); c != 0 {
+			return c
+		}
+		if c := cmp.Compare(a.Severity, b.Severity); c != 0 {
+			return c
+		}
+		if c := cmp.Compare(a.Message, b.Message); c != 0 {
+			return c
+		}
+		return cmp.Compare(firstRow(a.Rows), firstRow(b.Rows))
 	})
 
 	return sorted
