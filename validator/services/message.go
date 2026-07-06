@@ -6,6 +6,7 @@ import (
 	"main/lib"
 	"main/types"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -84,19 +85,57 @@ func (ms *MessageService) AddMessage(message types.Message) {
 }
 
 func (ms *MessageService) GetSummary() types.Summary {
+	messages := sortedMessages(ms.messages)
+
 	return types.Summary{
-		Messages:      ms.messages,
+		Messages:      messages,
 		TotalErrors:   ms.errorCount,
 		TotalWarnings: ms.warningCount,
 	}
 }
 
+func sortedMessages(messages []types.Message) []types.Message {
+	sorted := append([]types.Message(nil), messages...)
+
+	sort.SliceStable(sorted, func(i, j int) bool {
+		left := sorted[i]
+		right := sorted[j]
+
+		switch {
+		case left.RuleID != right.RuleID:
+			return left.RuleID < right.RuleID
+		case left.FileName != right.FileName:
+			return left.FileName < right.FileName
+		case left.Field != right.Field:
+			return left.Field < right.Field
+		case left.Severity != right.Severity:
+			return left.Severity < right.Severity
+		case left.Message != right.Message:
+			return left.Message < right.Message
+		default:
+			return firstRow(left.Rows) < firstRow(right.Rows)
+		}
+	})
+
+	return sorted
+}
+
+func firstRow(rows []int) int {
+	if len(rows) == 0 {
+		return 0
+	}
+
+	return rows[0]
+}
+
 func (ms *MessageService) PrintTable() {
+	summary := ms.GetSummary()
+
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Validation ID", "Message", "Severity", "Field", "File Name", "Row"})
 	table.SetRowSeparator("-")
 	table.SetFooter([]string{"", "", "Errors: " + strconv.Itoa(ms.errorCount), "Warnings: " + strconv.Itoa(ms.warningCount), "Total: " + strconv.Itoa(ms.errorCount+ms.warningCount), ""})
-	for _, message := range ms.messages {
+	for _, message := range summary.Messages {
 		rows := make([]string, len(message.Rows))
 		for i, row := range message.Rows {
 			rows[i] = strconv.Itoa(row)
