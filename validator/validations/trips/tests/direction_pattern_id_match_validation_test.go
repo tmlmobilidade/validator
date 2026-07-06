@@ -16,11 +16,12 @@ func TestAllDirectionPatternIdMatchValidationTestCases(t *testing.T) {
 		// For valid option test cases, only test with matching pattern_id
 		// For other test cases, test with all pattern_ids
 		var patternIdsToTest []string
-		if tc.Name == "Valid_Option_0" {
+		switch tc.Name {
+		case "Valid_Option_0":
 			patternIdsToTest = []string{"1001_0_1"}
-		} else if tc.Name == "Valid_Option_1" {
+		case "Valid_Option_1":
 			patternIdsToTest = []string{"1001_1_2"}
-		} else {
+		default:
 			patternIdsToTest = patternIdValidOptions
 		}
 
