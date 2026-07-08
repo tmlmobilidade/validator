@@ -24,7 +24,7 @@ func getShapePointsCoordinatesConsistentToleranceMeters(rules *types.ShapesRules
 	}
 
 	value, err := strconv.ParseFloat((*rules.ShapePointsCoordinatesConsistent.Options)[0], 64)
-	if err != nil || value < 0 {
+	if err != nil || value <= 0 {
 		return shapes_coordinates.MAX_SHAPE_POINT_DISTANCE_METERS
 	}
 

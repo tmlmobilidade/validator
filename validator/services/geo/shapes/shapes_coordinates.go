@@ -98,7 +98,7 @@ func ShapePointIsCloseToBeforeShapePoint(beforeShapePoint *types.Shape, shapePoi
 		return false
 	}
 
-	if maxShapePointDistanceMeters < 0 {
+	if maxShapePointDistanceMeters <= 0 {
 		maxShapePointDistanceMeters = MAX_SHAPE_POINT_DISTANCE_METERS
 	}
 
