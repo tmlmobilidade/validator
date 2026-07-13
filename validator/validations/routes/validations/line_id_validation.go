@@ -36,7 +36,7 @@ func LineIdValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *type
 	}
 
 	// Check if line_id is the same as route_short_name
-	if route.RouteShortName != nil && *route.LineId == *route.RouteShortName {
-		ctx.AddError(ctx.GetTranslatedMessage("line_id_required.same_as_route_short_name", *route.LineId, *route.RouteShortName))
+	if route.RouteShortName != nil && *route.LineId != *route.RouteShortName {
+		ctx.AddError(ctx.GetTranslatedMessage("line_id_required.not_equal_to_route_short_name", *route.LineId, *route.RouteShortName))
 	}
 }

@@ -224,7 +224,7 @@
     "line_id_required": {
         "required": "O campo \"line_id\" é obrigatório",
         "recommended": "O campo \"line_id\" é recomendado",
-        "same_as_route_short_name": "O campo \"line_id\" \"%s\" não deve ser igual ao campo \"route_short_name\" \"%s\""
+        "not_equal_to_route_short_name": "O campo \"line_id\" \"%s\" deve ser diferente do campo \"route_short_name\" \"%s\""
     },
     "line_short_name_validation": {
         "required": "O campo \"line_short_name\" é obrigatório",

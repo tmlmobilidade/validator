@@ -223,7 +223,7 @@
     "line_id_required": {
         "required": "Field \"line_id\" is required",
         "recommended": "Field \"line_id\" is recommended",
-        "same_as_route_short_name": "Field \"line_id\" \"%s\" should not be the same as \"route_short_name\" \"%s\""
+        "not_equal_to_route_short_name": "Field \"line_id\" \"%s\" should not be the different from \"route_short_name\" \"%s\""
     },
     "line_short_name_validation": {
         "required": "Field \"line_short_name\" is required",
