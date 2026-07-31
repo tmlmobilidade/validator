@@ -4,1044 +4,1531 @@ const ALL_OPTIONS = "all_options";
 
 type RuleConfig = {
     severity: Severity;
-}
+};
 
 type WithOptions<T> = T & {
     options: string[];
-}
+};
 
 type WithCompare<T> = T & {
-    compare: {key: string; value: string}[];
-}
+    compare: { key: string; value: string }[];
+};
 
 type GtfsRules = {
     agency: {
         _file: Severity;
-        agency_id: WithOptions<RuleConfig>;
-        agency_name: WithOptions<RuleConfig>;
-        agency_name_id_match: WithCompare<RuleConfig>;
-        agency_url: RuleConfig;
-        agency_timezone: RuleConfig;
-        agency_lang: RuleConfig;
-        agency_phone: RuleConfig;
-        agency_fare_url: RuleConfig;
-        agency_email: RuleConfig;
-    }
+        agency_email_valid_address: RuleConfig;
+        agency_fare_url_valid_url: RuleConfig;
+        agency_id_unique: WithOptions<RuleConfig>;
+        agency_lang_valid_language_tag: RuleConfig;
+        agency_name_present: WithOptions<RuleConfig>;
+        agency_id_matched_with_agency_name: WithCompare<RuleConfig>;
+        agency_phone_valid_phone_number: RuleConfig;
+        agency_timezone_valid_id: RuleConfig;
+        agency_url_valid_url: RuleConfig;
+    };
+    file_validation: {
+        _file: Severity;
+        gtfs_feed_file_presence_and_integrity_rule: RuleConfig;
+    };
+    rider_categories: {
+        _file: Severity;
+        rider_category_id_unique: RuleConfig;
+        rider_category_name_non_empty: RuleConfig;
+        at_most_one_default_fare_category: RuleConfig;
+        eligibility_url_valid_http_url: RuleConfig;
+    };
     stops: {
         _file: Severity;
-        stop_id: RuleConfig;
-        stop_code: RuleConfig;
-        stop_name: RuleConfig;
-        stop_short_name: RuleConfig;
-        tts_stop_name: RuleConfig;
-        stop_desc: RuleConfig;
-        stop_lat: RuleConfig;
-        stop_lon: RuleConfig;
-        zone_id: RuleConfig;
-        stop_url: RuleConfig;
-        location_type: RuleConfig;
-        parent_station: RuleConfig;
-        stop_timezone: RuleConfig;
-        wheelchair_boarding: WithOptions<RuleConfig>;
-        level_id: RuleConfig;
-        platform_code: RuleConfig;
-        public_visible: WithOptions<RuleConfig>;
-        has_stop_sign: WithOptions<RuleConfig>;
-        has_shelter: WithOptions<RuleConfig>;
-        shelter_code: RuleConfig;
-        shelter_maintainer: RuleConfig;
-        has_bench: WithOptions<RuleConfig>;
-        has_network_map: WithOptions<RuleConfig>;
-        has_schedules: WithOptions<RuleConfig>;
-        has_pip_real_time: WithOptions<RuleConfig>;
-        has_tariffs_information: WithOptions<RuleConfig>;
-        region_id: WithOptions<RuleConfig>;
-        municipality_id: WithOptions<RuleConfig>;
-        parish_id: RuleConfig;
-    }
-    routes:{
+        stop_id_unique: RuleConfig;
+        stop_code_valid: RuleConfig;
+        stop_name_required_by_location_type: RuleConfig;
+        stop_short_name_valid: RuleConfig;
+        tts_stop_name_valid: RuleConfig;
+        stop_desc_valid: RuleConfig;
+        stop_lat_valid_latitude_range: RuleConfig;
+        stop_lon_valid_longitude_range: RuleConfig;
+        zone_id_valid: RuleConfig;
+        stop_url_valid_url: RuleConfig;
+        location_type_valid_enum: RuleConfig;
+        parent_station_id_valid_for_stop_hierarchy: RuleConfig;
+        stop_timezone_valid: RuleConfig;
+        wheelchair_boarding_valid_enum: WithOptions<RuleConfig>;
+        level_id_valid_id: RuleConfig;
+        platform_code_valid: RuleConfig;
+        public_visible_valid_enum: RuleConfig;
+        has_stop_sign_valid_enum: WithOptions<RuleConfig>;
+        has_shelter_valid_enum: WithOptions<RuleConfig>;
+        shelter_code_valid: RuleConfig;
+        shelter_maintainer_valid: RuleConfig;
+        has_bench_valid_enum: WithOptions<RuleConfig>;
+        has_network_map_valid_enum: WithOptions<RuleConfig>;
+        has_schedules_valid_enum: WithOptions<RuleConfig>;
+        has_pip_real_time_valid_enum: WithOptions<RuleConfig>;
+        has_tariffs_information_valid_enum: RuleConfig;
+        region_id_valid: WithOptions<RuleConfig>;
+        municipality_id_valid: WithOptions<RuleConfig>;
+        parish_id_valid: RuleConfig;
+    };
+    routes: {
         _file: Severity;
-        line_id:RuleConfig;
-        line_short_name:RuleConfig;
-        line_long_name:RuleConfig;
-        route_id:RuleConfig;
-        agency_id:RuleConfig;
-        route_short_name:RuleConfig;
-        route_long_name:RuleConfig;
-        route_desc:RuleConfig;
-        route_remarks:RuleConfig;
-        route_type:WithOptions<RuleConfig>;
-        path_type:WithOptions<RuleConfig>;
-        circular:WithOptions<RuleConfig>;
-        school:WithOptions<RuleConfig>;
-        route_url:RuleConfig;
-        route_color:RuleConfig;
-        route_text_color:RuleConfig;
-        continuous_pickup:WithOptions<RuleConfig>;
-        continuous_drop_off:WithOptions<RuleConfig>;
-    }
+        line_id_required: RuleConfig;
+        line_short_name_present_when_line_id_present: RuleConfig;
+        line_long_name_present_when_line_id_present: RuleConfig;
+        route_id_unique: RuleConfig;
+        route_agency_id_references_agency_table: RuleConfig;
+        route_short_name_or_long_name_present: RuleConfig;
+        route_long_name_or_short_name_present: RuleConfig;
+        route_desc_per_severity_and_content_rules: RuleConfig;
+        route_sort_order_non_negative_integer: RuleConfig;
+        route_remarks: RuleConfig;
+        network_id_references_networks_table: RuleConfig;
+        route_type_valid_gtfs_enum: WithOptions<RuleConfig>;
+        path_type_valid_enum: WithOptions<RuleConfig>;
+        circular: WithOptions<RuleConfig>;
+        school: WithOptions<RuleConfig>;
+        route_url_valid_http_url: RuleConfig;
+        route_color_valid_hex_string: RuleConfig;
+        route_text_color_valid_hex_contrast: RuleConfig;
+        continuous_pickup_valid_gtfs_enum: WithOptions<RuleConfig>;
+        continuous_drop_off_valid_gtfs_enum: WithOptions<RuleConfig>;
+    };
     trips: {
         _file: Severity;
-        route_id: RuleConfig;
-        pattern_id: RuleConfig;
-        service_id: RuleConfig;
-        trip_id: RuleConfig;
-        trip_headsign: RuleConfig;
-        trip_short_name: RuleConfig;
-        direction_id: RuleConfig;
-        block_id: RuleConfig;
-        shape_id: RuleConfig;
-        wheelchair_accessible: RuleConfig;
-        bikes_allowed: RuleConfig;
-        stop_sequence: RuleConfig;
-        direction_pattern_id_match: RuleConfig;
-        trip_id_limit_characters: RuleConfig;
-        pattern_id_format: RuleConfig;
-    }
+        route_id_references_routes_table: RuleConfig;
+        pattern_id_present_and_references_consistent: RuleConfig;
+        service_id_references_calendar_service: RuleConfig;
+        trip_id_unique: RuleConfig;
+        trip_headsign_present_when_short_name_absent: RuleConfig;
+        trip_short_name_exclusivity: RuleConfig;
+        direction_id_valid_enum: RuleConfig;
+        block_id_in_allowed_set: RuleConfig;
+        shape_id_references_shapes_table_when_present: RuleConfig;
+        wheelchair_accessible_valid_gtfs_enum: RuleConfig;
+        bikes_allowed_valid_gtfs_enum: RuleConfig;
+        stop_sequence_increasing_by_one_along_trip: RuleConfig;
+        direction_id_matches_feed_pattern_direction: RuleConfig;
+        trip_id_limit_max_length: RuleConfig;
+        pattern_id_matches_feed_pattern_id_syntax: WithOptions<RuleConfig>;
+        trip_path_stop_coordinates_referenced_from_stops: RuleConfig;
+        pattern_id_trip_has_required_fields_for_grouping: RuleConfig;
+        pattern_id_single_trip_signature_per_pattern: RuleConfig;
+        route_id_consistent_for_all_patterns_in_trips: RuleConfig;
+        direction_id_consistent_for_all_patterns_in_trips: RuleConfig;
+        one_shape_id_per_pattern_id_group: RuleConfig;
+        one_pattern_id_per_shape_id_group: RuleConfig;
+        trip_headsign_consistent_for_all_patterns_in_trips: RuleConfig;
+        shape_id_needs_to_be_the_same_as_pattern_id: RuleConfig;
+    };
     stop_times: {
         _file: Severity;
-        trip_id: RuleConfig;
-        arrival_time: RuleConfig;
-        departure_time: RuleConfig;
-        stop_id: RuleConfig;
-        stop_sequence: RuleConfig;
-        stop_headsign: RuleConfig;
-        pickup_type: RuleConfig;
-        drop_off_type: RuleConfig;
-        continuous_pickup: RuleConfig;
-        continuous_drop_off: RuleConfig;
-        shape_dist_traveled: RuleConfig;
-        start_pickup_drop_off_window: RuleConfig;
-        end_pickup_drop_off_window: RuleConfig;
-        pickup_booking_rule_id: RuleConfig;
-        drop_off_booking_rule_id: RuleConfig;
-        timepoint: RuleConfig;
-        zone_1: RuleConfig;
-        zone_2: RuleConfig;
-        zone_3: RuleConfig;
-    }
+        stop_times_trip_id_references_trips_table: RuleConfig;
+        arrival_time_ordering_with_departure_and_frequencies: RuleConfig;
+        departure_time_ordering_with_arrival_and_timepoint: RuleConfig;
+        arrival_departure_time_non_decreasing_by_stop_sequence: RuleConfig;
+        stop_times_stop_id_references_stops_table: RuleConfig;
+        stop_headsign_present: RuleConfig;
+        pickup_type_valid_gtfs_enum: RuleConfig;
+        drop_off_type_valid_gtfs_enum: RuleConfig;
+        stop_times_continuous_pickup_valid_gtfs_enum: RuleConfig;
+        stop_times_continuous_drop_off_valid_gtfs_enum: RuleConfig;
+        stop_times_shape_dist_traveled_non_decreasing_on_trip: RuleConfig;
+        start_pickup_drop_off_window_valid: RuleConfig;
+        end_pickup_drop_off_window_valid: RuleConfig;
+        timepoint_valid_gtfs_enum: RuleConfig;
+        pickup_booking_rule_id_references_booking_rules: RuleConfig;
+        drop_off_booking_rule_id_references_booking_rules_or_empty: RuleConfig;
+        location_group_id_consistent_with_trip_id_and_stops: RuleConfig;
+    };
     calendar: {
         _file: Severity;
-        service_id: RuleConfig;
+        calendar_end_date_valid_yyyymmdd: RuleConfig;
+        friday: RuleConfig;
         monday: RuleConfig;
+        saturday: RuleConfig;
+        calendar_service_id_unique_non_empty: RuleConfig;
+        calendar_start_date_valid_yyyymmdd: RuleConfig;
+        sunday: RuleConfig;
+        thursday: RuleConfig;
         tuesday: RuleConfig;
         wednesday: RuleConfig;
-        thursday: RuleConfig;
-        friday: RuleConfig;
-        saturday: RuleConfig;
-        sunday: RuleConfig;
-        start_date: RuleConfig;
-        end_date: RuleConfig;
-    }
+    };
     calendar_dates: {
         _file: Severity;
-        service_id: RuleConfig;
-        date: RuleConfig;
-        exception_type: RuleConfig;
-    }
+        exception_date_valid_yyyymmdd: RuleConfig;
+        day_type: WithOptions<RuleConfig>;
+        exception_type_add_or_remove_service: RuleConfig;
+        holiday: WithOptions<RuleConfig>;
+        period: WithOptions<RuleConfig>;
+        calendar_dates_service_id_references_calendar: RuleConfig;
+    };
     vehicles: {
         _file: Severity;
-        vehicle_id: RuleConfig;
-        agency_id: RuleConfig;
-        license_plate: RuleConfig;
-        make: RuleConfig;
-        model: RuleConfig;
-        owner: RuleConfig;
-        registration_date: RuleConfig;
-        available_seats: RuleConfig;
-        available_standing: RuleConfig;
-        typology: WithOptions<RuleConfig>;
-        propulsion: WithOptions<RuleConfig>;
-        emission: WithOptions<RuleConfig>;
-        climatization: WithOptions<RuleConfig>;
-        wheelchair: WithOptions<RuleConfig>;
-        lowered_floor: WithOptions<RuleConfig>;
-        ramp: WithOptions<RuleConfig>;
-        kneeling: WithOptions<RuleConfig>;
-        static_information: WithOptions<RuleConfig>;
-        onboard_monitor: WithOptions<RuleConfig>;
-        front_display: WithOptions<RuleConfig>;
-        rear_display: WithOptions<RuleConfig>;
-        side_display: WithOptions<RuleConfig>;
-        internal_sound: WithOptions<RuleConfig>;
-        external_sound: WithOptions<RuleConfig>;
-        consumption_meter: WithOptions<RuleConfig>;
-        bicycles: WithOptions<RuleConfig>;
-        passenger_counting: WithOptions<RuleConfig>;
-        video_surveillance: WithOptions<RuleConfig>;
-    }
+        vehicle_id_unique: RuleConfig;
+        vehicle_agency_id_references_agency_table: RuleConfig;
+        license_plate_format_per_market_rules: RuleConfig;
+        vehicle_make_required: RuleConfig;
+        vehicle_model_required: RuleConfig;
+        vehicle_owner_required: RuleConfig;
+        registration_date_valid_day_granularity: RuleConfig;
+        available_seats_non_negative: RuleConfig;
+        available_standing_non_negative: RuleConfig;
+        typology_in_allowed_vehicle_types: WithOptions<RuleConfig>;
+        propulsion_type_valid_enum: WithOptions<RuleConfig>;
+        emission_code_valid_for_propulsion_type: WithOptions<RuleConfig>;
+        climatization_valid_enum: WithOptions<RuleConfig>;
+        wheelchair_spots_valid_enum: WithOptions<RuleConfig>;
+        lowered_floor_valid_enum: WithOptions<RuleConfig>;
+        ramp_valid_enum: WithOptions<RuleConfig>;
+        kneeling_valid_enum: WithOptions<RuleConfig>;
+        static_information_valid_enum: WithOptions<RuleConfig>;
+        onboard_monitor_valid_enum: WithOptions<RuleConfig>;
+        front_display_valid_enum: WithOptions<RuleConfig>;
+        rear_display_valid_enum: WithOptions<RuleConfig>;
+        side_display_valid_enum: WithOptions<RuleConfig>;
+        internal_sound_level_valid_enum: WithOptions<RuleConfig>;
+        external_sound_valid_enum: WithOptions<RuleConfig>;
+        consumption_meter_valid_format: WithOptions<RuleConfig>;
+        bicycles_rack_count_non_negative: WithOptions<RuleConfig>;
+        passenger_counting_valid_enum: WithOptions<RuleConfig>;
+        video_surveillance_valid_enum: WithOptions<RuleConfig>;
+    };
     fare_attributes: {
         _file: Severity;
-        fare_id: RuleConfig;
-        price: RuleConfig;
-        currency_type: RuleConfig;
-        payment_method: WithOptions<RuleConfig>;
-        transfers: WithOptions<RuleConfig>;
-        agency_id: RuleConfig;
-        transfer_duration: RuleConfig;
-    }
+        fare_attributes_agency_id_references_agency_table: RuleConfig;
+        currency_type_valid: WithOptions<RuleConfig>;
+        fare_id_unique: RuleConfig;
+        payment_method_valid_gtfs_enum: WithOptions<RuleConfig>;
+        fare_price_valid_non_negative_decimal: RuleConfig;
+        transfer_duration_valid_seconds_range: RuleConfig;
+        transfers_valid_gtfs_enum: WithOptions<RuleConfig>;
+    };
     fare_rules: {
         _file: Severity;
-        fare_id: RuleConfig;
-        route_id: RuleConfig;
-        origin_id: RuleConfig;
-        destination_id: RuleConfig;
-        contains_id: RuleConfig;
-    }
+        fare_rule_contains_id_references_zones_stops: RuleConfig;
+        fare_rule_destination_id_references_zones_stops: RuleConfig;
+        fare_rule_fare_id_references_fare_attributes: RuleConfig;
+        fare_rule_origin_id_references_zones_stops: RuleConfig;
+        fare_rule_route_id_references_routes: RuleConfig;
+    };
     fare_media: {
         _file: Severity;
-        fare_id: RuleConfig;
-        fare_media_name: RuleConfig;
-        fare_media_type:WithOptions<RuleConfig>;
-    }
+        fare_media_id_unique: RuleConfig;
+        fare_media_name_non_empty: RuleConfig;
+        fare_media_type_valid: WithOptions<RuleConfig>;
+    };
     shapes: {
         _file: Severity;
-        shape_id: RuleConfig;
-        shape_pt_lat: RuleConfig;
-        shape_pt_lon: RuleConfig;
-        shape_pt_sequence: RuleConfig;
-        shape_dist_traveled: RuleConfig;
-    }
+        shape_id_required: RuleConfig;
+        shape_pt_lat_valid_latitude: RuleConfig;
+        shape_pt_lon_valid_longitude: RuleConfig;
+        shape_pt_sequence_not_repeated_within_shape: RuleConfig;
+        shape_dist_traveled_non_negative_monotonic: RuleConfig;
+        shape_id_and_point_sequence_required: RuleConfig;
+        shape_pt_sequence_strictly_increasing: RuleConfig;
+        shape_dist_traveled_non_decreasing_with_sequence: RuleConfig;
+        shape_sequence_position_mismatches_cumulative_traveled_distance: WithOptions<RuleConfig>;
+        shape_dist_traveled_delta_mismatches_haversine_segment: WithOptions<RuleConfig>;
+        shape_block_distance_rows_aggregated: WithOptions<RuleConfig>;
+        shape_dist_traveled_delta_mismatches_haversine_block: WithOptions<RuleConfig>;
+    };
     frequencies: {
         _file: Severity;
-        trip_id: RuleConfig;
-        start_time: RuleConfig;
-        end_time: RuleConfig;
-        headway_secs: RuleConfig;
-        exact_times: RuleConfig;
-    }
+        frequency_end_time_valid: RuleConfig;
+        exact_times_zero_when_timed_trip_uses_frequencies: RuleConfig;
+        headway_secs_positive_and_aligns_trip: RuleConfig;
+        frequency_start_time_valid: RuleConfig;
+        frequencies_trip_id_references_trips_table: RuleConfig;
+    };
     transfers: {
         _file: Severity;
-        from_stop_id: RuleConfig;
-        to_stop_id: RuleConfig;
-        transfer_type: WithOptions<RuleConfig>;
-        min_transfer_time: RuleConfig;
-    }
+        transfer_from_stop_id_references_stops_table: RuleConfig;
+        min_transfer_time_non_negative_seconds: RuleConfig;
+        transfer_to_stop_id_references_stops_table: RuleConfig;
+        transfer_type_valid_gtfs_enum: WithOptions<RuleConfig>;
+    };
     pathways: {
         _file: Severity;
-        pathway_id: RuleConfig;
         from_stop_id: RuleConfig;
-        to_stop_id: RuleConfig;
-        pathway_mode: RuleConfig;
         is_bidirectional: RuleConfig;
         length: RuleConfig;
-        traversal_time: RuleConfig;
-        stair_count: RuleConfig;
         max_slope: RuleConfig;
         min_width: RuleConfig;
-        signposted_as: RuleConfig;
+        pathway_id: RuleConfig;
+        pathway_mode: RuleConfig;
         reversed_signposted_as: RuleConfig;
-    }
+        signposted_as: RuleConfig;
+        stair_count: RuleConfig;
+        to_stop_id: RuleConfig;
+        traversal_time: RuleConfig;
+    };
     levels: {
         _file: Severity;
         level_id: RuleConfig;
         level_index: RuleConfig;
         level_name: RuleConfig;
-    }
+    };
     feed_info: {
         _file: Severity;
-        feed_type: WithOptions<RuleConfig>;
-        feed_publisher_name: RuleConfig;
-        feed_publisher_url: RuleConfig;
-        feed_lang: WithOptions<RuleConfig>;
-        default_lang: RuleConfig;
-        feed_start_date: RuleConfig;
-        feed_end_date: RuleConfig;
-        feed_version: RuleConfig;
+        default_lang_matches_feed_lang_when_present: RuleConfig;
+        feed_contact_email_valid_address: RuleConfig;
+        feed_contact_url_valid_http_url: RuleConfig;
+        feed_end_date_valid_yyyymmdd_not_before_start: RuleConfig;
+        feed_lang_valid_tag: WithOptions<RuleConfig>;
+        feed_publisher_name_non_empty: RuleConfig;
+        feed_publisher_url_valid_http_url: RuleConfig;
         feed_remarks: RuleConfig;
-        feed_contact_email: RuleConfig;
-        feed_contact_url: RuleConfig;
-    }
+        feed_start_date_valid_yyyymmdd: RuleConfig;
+        feed_type: WithOptions<RuleConfig>;
+        feed_version_valid_identifier: RuleConfig;
+    };
     translations: {
         _file: Severity;
-        table_name: RuleConfig;
         field_name: RuleConfig;
+        field_value: RuleConfig;
         language: RuleConfig;
-        translation: RuleConfig;
         record_id: RuleConfig;
         record_sub_id: RuleConfig;
-        field_value: RuleConfig;
-    }
+        table_name: RuleConfig;
+        translation: RuleConfig;
+    };
     attributions: {
         _file: Severity;
-        attribution_id: RuleConfig;
         agency_id: RuleConfig;
+        attribution_email: RuleConfig;
+        attribution_id: RuleConfig;
+        attribution_phone: RuleConfig;
+        attribution_url: RuleConfig;
+        is_authority: RuleConfig;
+        is_operator: RuleConfig;
+        is_producer: RuleConfig;
+        organization_name: RuleConfig;
         route_id: RuleConfig;
         trip_id: RuleConfig;
-        organization_name: RuleConfig;
-        is_producer: RuleConfig;
-        is_operator: RuleConfig;
-        is_authority: RuleConfig;
-        attribution_url: RuleConfig;
-        attribution_email: RuleConfig;
-        attribution_phone: RuleConfig;
-    }
-    rider_categories: {
-        _file: Severity;
-        rider_category_id: RuleConfig;
-        rider_category_name: RuleConfig;
-        is_default_fare_category: RuleConfig;
-        eligibility_url: RuleConfig;
-    }
-}
+    };
+};
 
 const rules: GtfsRules = {
-    agency: {
-        _file: "error",
-        agency_id: {
-            severity: "error",
-            options: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "18", "21", "23", "24", "34", "41", "42", "43", "44", "49", "54"]
+    "agency": {
+        "_file": "error",
+        "agency_email_valid_address": {
+            "severity": "warning"
         },
-       "agency_name": {
-            "severity": "error",
-            "options": ["Área Metropolitana de Lisboa","Carris","Metropolitano Olissipo","Comboios de Portugal","Transtejo / Soflusa","Transportes Sul do Tejo","Rodoviária de Lisboa","Soflusa","Transportes Coletivos do Barreiro","Vimeca Transportes","Scotturb","ID/JJ/HLM","Isidoro Duarte","Barraqueiro Transportes","Joaquim Jerónimo","Fertagus","Metro Transportes do Sul","Henrique Leonardo da Mota","Cascais Próxima","Portal VIVA","Rodoviária do Tejo","Câmara Municipal de Lisboa","Viação Alvorada","Alsa Todi","Município de Oeiras","Municipio de Setúbal"]
+        "agency_fare_url_valid_url": {
+            "severity": "warning"
         },
-        "agency_name_id_match": {
-            "severity": "error",
+        "agency_id_unique": {
+            "options": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "18",
+                "21",
+                "23",
+                "24",
+                "34",
+                "41",
+                "42",
+                "43",
+                "44",
+                "49",
+                "54",
+                "crtm"
+            ],
+            "severity": "error"
+        },
+        "agency_lang_valid_language_tag": {
+            "severity": "ignore"
+        },
+        "agency_name_present": {
+            "options": [
+                "Área Metropolitana de Lisboa",
+                "Carris",
+                "Metropolitano de Lisboa",
+                "Comboios de Portugal",
+                "TTSL - Transtejo Soflusa",
+                "Transportes Sul do Tejo",
+                "Rodoviária de Lisboa",
+                "Soflusa",
+                "Transportes Coletivos do Barreiro",
+                "Vimeca Transportes",
+                "Scotturb",
+                "ID/JJ/HLM",
+                "Isidoro Duarte",
+                "Barraqueiro Transportes",
+                "Joaquim Jerónimo",
+                "Fertagus",
+                "Metro Transportes do Sul",
+                "Henrique Leonardo da Mota",
+                "Cascais Próxima",
+                "Portal VIVA",
+                "Rodoviária do Tejo",
+                "Câmara Municipal de Lisboa",
+                "Viação Alvorada",
+                "Alsa Todi",
+                "Município de Oeiras",
+                "Municipio de Setúbal",
+                "Consorcio Regional de Transportes de Madrid"
+            ],
+            "severity": "warning"
+        },
+        "agency_id_matched_with_agency_name": {
             "compare": [
-                {"key": "0","value": "Área Metropolitana de Lisboa"},
-                {"key": "1","value": "Carris"},
-                {"key": "2","value": "Metropolitano Olissipo"},
-                {"key": "3","value": "Comboios de Portugal"},
-                {"key": "4","value": "Transtejo / Soflusa"},
-                {"key": "5","value": "Transportes Sul do Tejo"},
-                {"key": "6","value": "Rodoviária de Lisboa"},
-                {"key": "7","value": "Soflusa"},
-                {"key": "8","value": "Transportes Coletivos do Barreiro"},
-                {"key": "9","value": "Vimeca Transportes"},
-                {"key": "10","value": "Scotturb"},
-                {"key": "11","value": "ID/JJ/HLM"},
-                {"key": "12","value": "Isidoro Duarte"},
-                {"key": "13","value": "Barraqueiro Transportes"},
-                {"key": "14","value": "Joaquim Jerónimo"},
-                {"key": "15","value": "Fertagus"},
-                {"key": "16","value": "Metro Transportes do Sul"},
-                {"key": "18","value": "Henrique Leonardo da Mota"},
-                {"key": "21","value": "Cascais Próxima"},
-                {"key": "23","value": "Portal VIVA"},
-                {"key": "24","value": "Rodoviária do Tejo"},
-                {"key": "34","value": "Câmara Municipal de Lisboa"},
-                {"key": "41","value": "Viação Alvorada"},
-                {"key": "42","value": "Rodoviária de Lisboa"},
-                {"key": "43","value": "Transportes Sul do Tejo"},
-                {"key": "44","value": "Alsa Todi"},
-                {"key": "49","value": "Município de Oeiras"},
-                {"key": "54","value": "Municipio de Setúbal"}
+                {
+                    "key": "0",
+                    "value": "Área Metropolitana de Lisboa"
+                },
+                {
+                    "key": "1",
+                    "value": "Carris"
+                },
+                {
+                    "key": "2",
+                    "value": "Metropolitano de Lisboa"
+                },
+                {
+                    "key": "3",
+                    "value": "Comboios de Portugal"
+                },
+                {
+                    "key": "4",
+                    "value": "TTSL - Transtejo Soflusa"
+                },
+                {
+                    "key": "5",
+                    "value": "Transportes Sul do Tejo"
+                },
+                {
+                    "key": "6",
+                    "value": "Rodoviária de Lisboa"
+                },
+                {
+                    "key": "7",
+                    "value": "Soflusa"
+                },
+                {
+                    "key": "8",
+                    "value": "Transportes Colectivos do Barreiro"
+                },
+                {
+                    "key": "9",
+                    "value": "Vimeca Transportes"
+                },
+                {
+                    "key": "10",
+                    "value": "Scotturb"
+                },
+                {
+                    "key": "11",
+                    "value": "ID/JJ/HLM"
+                },
+                {
+                    "key": "12",
+                    "value": "Isidoro Duarte"
+                },
+                {
+                    "key": "13",
+                    "value": "Barraqueiro Transportes"
+                },
+                {
+                    "key": "14",
+                    "value": "Joaquim Jerónimo"
+                },
+                {
+                    "key": "15",
+                    "value": "Fertagus"
+                },
+                {
+                    "key": "16",
+                    "value": "Metro Transportes do Sul"
+                },
+                {
+                    "key": "18",
+                    "value": "Henrique Leonardo da Mota"
+                },
+                {
+                    "key": "21",
+                    "value": "Cascais Próxima"
+                },
+                {
+                    "key": "23",
+                    "value": "Portal VIVA"
+                },
+                {
+                    "key": "24",
+                    "value": "Rodoviária do Tejo"
+                },
+                {
+                    "key": "34",
+                    "value": "Câmara Municipal de Lisboa"
+                },
+                {
+                    "key": "41",
+                    "value": "Viação Alvorada"
+                },
+                {
+                    "key": "42",
+                    "value": "Rodoviária de Lisboa"
+                },
+                {
+                    "key": "43",
+                    "value": "Transportes Sul do Tejo"
+                },
+                {
+                    "key": "44",
+                    "value": "Alsa Todi"
+                },
+                {
+                    "key": "49",
+                    "value": "Município de Oeiras"
+                },
+                {
+                    "key": "54",
+                    "value": "Municipio de Setúbal"
+                },
+                {
+                    "key": "crtm",
+                    "value": "Consorcio Regional de Transportes de Madrid"
+                }
+            ],
+            "severity": "error"
+        },
+        "agency_phone_valid_phone_number": {
+            "severity": "error"
+        },
+        "agency_timezone_valid_id": {
+            "severity": "error"
+        },
+        "agency_url_valid_url": {
+            "severity": "error"
+        }
+    },
+    "file_validation": {
+        "_file": "ignore",
+        "gtfs_feed_file_presence_and_integrity_rule": {
+            "severity": "ignore"
+        }
+    },
+    "rider_categories": {
+        "_file": "ignore",
+        "rider_category_id_unique": {
+            "severity": "ignore"
+        },
+        "rider_category_name_non_empty": {
+            "severity": "ignore"
+        },
+        "at_most_one_default_fare_category": {
+            "severity": "ignore"
+        },
+        "eligibility_url_valid_http_url": {
+            "severity": "ignore"
+        }
+    },
+    "stops": {
+        "_file": "error",
+        "stop_id_unique": {
+            "severity": "error"
+        },
+        "stop_code_valid": {
+            "severity": "error"
+        },
+        "stop_name_required_by_location_type": {
+            "severity": "error"
+        },
+        "stop_short_name_valid": {
+            "severity": "ignore"
+        },
+        "tts_stop_name_valid": {
+            "severity": "ignore"
+        },
+        "stop_desc_valid": {
+            "severity": "ignore"
+        },
+        "stop_lat_valid_latitude_range": {
+            "severity": "error"
+        },
+        "stop_lon_valid_longitude_range": {
+            "severity": "error"
+        },
+        "zone_id_valid": {
+            "severity": "ignore"
+        },
+        "stop_url_valid_url": {
+            "severity": "ignore"
+        },
+        "location_type_valid_enum": {
+            "severity": "ignore"
+        },
+        "parent_station_id_valid_for_stop_hierarchy": {
+            "severity": "ignore"
+        },
+        "stop_timezone_valid": {
+            "severity": "ignore"
+        },
+        "wheelchair_boarding_valid_enum": {
+            "options": [
+                "0",
+                "1",
+                "2"
+            ],
+            "severity": "warning"
+        },
+        "level_id_valid_id": {
+            "severity": "ignore"
+        },
+        "platform_code_valid": {
+            "severity": "ignore"
+        },
+        "public_visible_valid_enum": {
+            "severity": "ignore"
+        },
+        "has_stop_sign_valid_enum": {
+            "options": [
+                "0",
+                "1",
+                "2",
+                "3"
+            ],
+            "severity": "ignore"
+        },
+        "has_shelter_valid_enum": {
+            "options": [
+                "0",
+                "1",
+                "2",
+                "3"
+            ],
+            "severity": "ignore"
+        },
+        "shelter_code_valid": {
+            "severity": "ignore"
+        },
+        "shelter_maintainer_valid": {
+            "severity": "ignore"
+        },
+        "has_bench_valid_enum": {
+            "options": [
+                "0",
+                "1",
+                "2",
+                "3"
+            ],
+            "severity": "ignore"
+        },
+        "has_network_map_valid_enum": {
+            "options": [
+                "0",
+                "1",
+                "2",
+                "3"
+            ],
+            "severity": "ignore"
+        },
+        "has_schedules_valid_enum": {
+            "options": [
+                "0",
+                "1",
+                "2",
+                "3"
+            ],
+            "severity": "ignore"
+        },
+        "has_pip_real_time_valid_enum": {
+            "options": [
+                "0",
+                "1",
+                "2"
+            ],
+            "severity": "ignore"
+        },
+        "has_tariffs_information_valid_enum": {
+            "severity": "ignore"
+        },
+        "region_id_valid": {
+            "options": [
+                "PT170",
+                "P185",
+                "PT16B",
+                "PT111",
+                "PT112",
+                "PT119",
+                "PT11A",
+                "PT11B",
+                "PT11C",
+                "PT11D",
+                "PT11E",
+                "PT150",
+                "PT1191",
+                "PT1192",
+                "PT1193",
+                "PT1194",
+                "PT1195",
+                "PT1196",
+                "PT1A0",
+                "PT1B0",
+                "PT1C1",
+                "PT1C2",
+                "PT1C3",
+                "PT1C4",
+                "PT1D1",
+                "PT1D2",
+                "PT1D3"
+            ],
+            "severity": "warning"
+        },
+        "municipality_id_valid": {
+            "options": [
+                "1502",
+                "1503",
+                "1504",
+                "1115",
+                "1105",
+                "1106",
+                "1107",
+                "1109",
+                "1506",
+                "1507",
+                "1116",
+                "1110",
+                "1508",
+                "1510",
+                "1111",
+                "1511",
+                "1512",
+                "1114",
+                "0712",
+                "1102",
+                "1112"
+            ],
+            "severity": "warning"
+        },
+        "parish_id_valid": {
+            "severity": "warning"
+        }
+    },
+    "routes": {
+        "_file": "error",
+        "line_id_required": {
+            "severity": "error"
+        },
+        "line_short_name_present_when_line_id_present": {
+            "severity": "error"
+        },
+        "line_long_name_present_when_line_id_present": {
+            "severity": "error"
+        },
+        "route_id_unique": {
+            "severity": "error"
+        },
+        "route_agency_id_references_agency_table": {
+            "severity": "error"
+        },
+        "route_short_name_or_long_name_present": {
+            "severity": "error"
+        },
+        "route_long_name_or_short_name_present": {
+            "severity": "error"
+        },
+        "route_desc_per_severity_and_content_rules": {
+            "severity": "ignore"
+        },
+        "route_sort_order_non_negative_integer": {
+            "severity": "ignore"
+        },
+        "route_remarks": {
+            "severity": "ignore"
+        },
+        "network_id_references_networks_table": {
+            "severity": "ignore"
+        },
+        "route_type_valid_gtfs_enum": {
+            "options": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "11",
+                "12"
+            ],
+            "severity": "error"
+        },
+        "path_type_valid_enum": {
+            "options": [
+                "1",
+                "2",
+                "3"
+            ],
+            "severity": "error"
+        },
+        "circular": {
+            "options": [
+                "0",
+                "1"
+            ],
+            "severity": "error"
+        },
+        "school": {
+            "options": [
+                "0",
+                "1"
+            ],
+            "severity": "warning"
+        },
+        "route_url_valid_http_url": {
+            "severity": "ignore"
+        },
+        "route_color_valid_hex_string": {
+            "severity": "error"
+        },
+        "route_text_color_valid_hex_contrast": {
+            "severity": "error"
+        },
+        "continuous_pickup_valid_gtfs_enum": {
+            "options": [
+                "0",
+                "1"
+            ],
+            "severity": "warning"
+        },
+        "continuous_drop_off_valid_gtfs_enum": {
+            "options": [
+                "0",
+                "1"
+            ],
+            "severity": "warning"
+        }
+    },
+    "trips": {
+        "_file": "error",
+        "route_id_references_routes_table": {
+            "severity": "error"
+        },
+        "pattern_id_present_and_references_consistent": {
+            "severity": "error"
+        },
+        "service_id_references_calendar_service": {
+            "severity": "error"
+        },
+        "trip_id_unique": {
+            "severity": "error"
+        },
+        "trip_headsign_present_when_short_name_absent": {
+            "severity": "error"
+        },
+        "trip_short_name_exclusivity": {
+            "severity": "ignore"
+        },
+        "direction_id_valid_enum": {
+            "severity": "error"
+        },
+        "block_id_in_allowed_set": {
+            "severity": "ignore"
+        },
+        "shape_id_references_shapes_table_when_present": {
+            "severity": "error"
+        },
+        "wheelchair_accessible_valid_gtfs_enum": {
+            "severity": "warning"
+        },
+        "bikes_allowed_valid_gtfs_enum": {
+            "severity": "warning"
+        },
+        "stop_sequence_increasing_by_one_along_trip": {
+            "severity": "error"
+        },
+        "direction_id_matches_feed_pattern_direction": {
+            "severity": "ignore"
+        },
+        "trip_id_limit_max_length": {
+            "severity": "error"
+        },
+        "pattern_id_matches_feed_pattern_id_syntax": {
+            "severity": "error",
+            "options": [
+                "^[^_]{1,4}_[^_]_[^_]$",
+                "^[^_]{1,4}_[^_]_ASC$",
+                "^[^_]{1,4}_[^_]_DESC$",
+                "^[^_]{1,4}_[^_]_CIRC$"
             ]
         },
-        agency_url: {
-            severity: "error",
+        "trip_path_stop_coordinates_referenced_from_stops": {
+            "severity": "error"
         },
-        agency_timezone: {
-            severity: "error",
+        "pattern_id_trip_has_required_fields_for_grouping": {
+            "severity": "error"
         },
-        agency_lang: {
-            severity: "ignore",
+        "pattern_id_single_trip_signature_per_pattern": {
+            "severity": "error"
         },
-        agency_phone: {
-            severity: "error",
+        "route_id_consistent_for_all_patterns_in_trips": {
+            "severity": "error"
         },
-        agency_fare_url: {
-            severity: "error",
+        "direction_id_consistent_for_all_patterns_in_trips": {
+            "severity": "error"
         },
-        agency_email: {
-            severity: "error",
+        "one_shape_id_per_pattern_id_group": {
+            "severity": "error"
+        },
+        "one_pattern_id_per_shape_id_group": {
+            "severity": "error"
+        },
+        "trip_headsign_consistent_for_all_patterns_in_trips": {
+            "severity": "error"
+        },
+        "shape_id_needs_to_be_the_same_as_pattern_id": {
+            "severity": "warning"
         }
     },
-    stops: {
-        _file: "error",
-        stop_id: {
-            severity: "error",
+    "stop_times": {
+        "_file": "error",
+        "stop_times_trip_id_references_trips_table": {
+            "severity": "error"
         },
-        stop_code: {
-            severity: "error",
+        "arrival_time_ordering_with_departure_and_frequencies": {
+            "severity": "error"
         },
-        stop_name: {
-            severity: "error",
+        "departure_time_ordering_with_arrival_and_timepoint": {
+            "severity": "error"
         },
-        stop_short_name: {
-            severity: "ignore",
+        "arrival_departure_time_non_decreasing_by_stop_sequence": {
+            "severity": "error"
         },
-        tts_stop_name: {
-            severity: "ignore",
+        "stop_times_stop_id_references_stops_table": {
+            "severity": "error"
         },
-        stop_desc: {
-            severity: "ignore",
+        "stop_headsign_present": {
+            "severity": "forbidden"
         },
-        stop_lat: {
-            severity: "error",
+        "pickup_type_valid_gtfs_enum": {
+            "severity": "error"
         },
-        stop_lon: {
-            severity: "error",
+        "drop_off_type_valid_gtfs_enum": {
+            "severity": "error"
         },
-        zone_id: {
-            severity: "error",
+        "stop_times_continuous_pickup_valid_gtfs_enum": {
+            "severity": "warning"
         },
-        stop_url: {
-            severity: "ignore",
+        "stop_times_continuous_drop_off_valid_gtfs_enum": {
+            "severity": "warning"
         },
-        location_type: {
-            severity: "error",
+        "stop_times_shape_dist_traveled_non_decreasing_on_trip": {
+            "severity": "error"
         },
-        parent_station: {
-            severity: "error",
+        "start_pickup_drop_off_window_valid": {
+            "severity": "ignore"
         },
-        stop_timezone: {
-            severity: "ignore",
+        "end_pickup_drop_off_window_valid": {
+            "severity": "ignore"
         },
-        wheelchair_boarding: {
-            severity: "error",
-            options: ["0", "1", "2"]
+        "timepoint_valid_gtfs_enum": {
+            "severity": "warning"
         },
-        level_id: {
-            severity: "ignore",
+        "pickup_booking_rule_id_references_booking_rules": {
+            "severity": "ignore"
         },
-        platform_code: {
-            severity: "error",
+        "drop_off_booking_rule_id_references_booking_rules_or_empty": {
+            "severity": "ignore"
         },
-        public_visible: {
-            severity: "ignore",
-            options: ["0", "1"]
-        },
-        has_stop_sign: {
-            severity: "ignore",
-            options: ["0", "1", "2", "3"]
-        },
-        has_shelter: {
-            severity: "ignore",
-            options: ["0", "1", "2", "3"]
-        },
-        shelter_code: {
-            severity: "ignore",
-        },
-        shelter_maintainer: {
-            severity: "ignore",
-        },
-        has_bench: {
-            severity: "ignore",
-            options: ["0", "1", "2", "3"]
-        },
-        has_network_map: {
-            severity: "ignore",
-            options: ["0", "1", "2", "3"]
-        },
-        has_schedules: {
-            severity: "ignore",
-            options: ["0", "1", "2", "3"]
-        },
-        has_pip_real_time: {
-            severity: "ignore",
-            options: ["0", "1", "2"]
-        },
-        has_tariffs_information: {
-            severity: "ignore",
-            options: ["0", "1", "3", "4"]
-        },
-        region_id: {
-            severity: "error",
-            options: ["PT170", "P185", "PT16B"]
-        },
-        municipality_id: {
-            severity: "error",
-            options: ["1502","1503","1504","1115","1105","1106","1107","1109","1506","1507","1116","1110","1508","1510","1111","1511","1512","1114","0712","1102","1112"]
-        },
-        parish_id: {
-            severity: "error",
+        "location_group_id_consistent_with_trip_id_and_stops": {
+            "severity": "error"
         }
     },
-    routes: {
-        _file: "error",
-        line_id: {
-            severity: "error",
+    "calendar": {
+        "_file": "ignore",
+        "calendar_end_date_valid_yyyymmdd": {
+            "severity": "error"
         },
-        line_short_name: {
-            severity: "error",
+        "friday": {
+            "severity": "error"
         },
-        line_long_name: {
-            severity: "error",
+        "monday": {
+            "severity": "error"
         },
-        route_id: {
-            severity: "error",
+        "saturday": {
+            "severity": "error"
         },
-        agency_id: {
-            severity: "error",
+        "calendar_service_id_unique_non_empty": {
+            "severity": "error"
         },
-        route_short_name: {
-            severity: "error",
+        "calendar_start_date_valid_yyyymmdd": {
+            "severity": "error"
         },
-        route_long_name: {
-            severity: "error",
+        "sunday": {
+            "severity": "error"
         },
-        route_desc: {
-            severity: "ignore",
+        "thursday": {
+            "severity": "error"
         },
-        route_remarks: {
-            severity: "ignore",
+        "tuesday": {
+            "severity": "error"
         },
-        route_type: {
-            severity: "error",
-            options: ["0", "1", "2", "3", "4", "5", "6", "7", "11", "12"]
-        },
-        path_type: {
-            severity: "error",
-            options: ["1", "2", "3"]
-        },
-        circular: {
-            severity: "error",
-            options: ["0", "1"]
-        },
-        school: {
-            severity: "error",
-            options: ["0", "1"]
-        },
-        route_url: {
-            severity: "ignore",
-        },
-        route_color: {
-            severity: "error",
-        },
-        route_text_color: {
-            severity: "error",
-        },
-        continuous_pickup: {
-            severity: "error",
-            options: ["0", "1"]
-        },
-        continuous_drop_off: {
-            severity: "error",
-            options: ["0", "1"]
+        "wednesday": {
+            "severity": "error"
         }
     },
-    trips: {
-        _file: "error",
-        route_id: {
-            severity: "error",
+    "calendar_dates": {
+        "_file": "ignore",
+        "exception_date_valid_yyyymmdd": {
+            "severity": "error"
         },
-        pattern_id: {
-            severity: "error",
+        "day_type": {
+            "options": [
+                "1",
+                "2",
+                "3"
+            ],
+            "severity": "error"
         },
-        service_id: {
-            severity: "error",
+        "exception_type_add_or_remove_service": {
+            "severity": "error"
         },
-        trip_id: {
-            severity: "error",
+        "holiday": {
+            "options": [
+                "0",
+                "1"
+            ],
+            "severity": "error"
         },
-        trip_headsign: {
-            severity: "error",
+        "period": {
+            "options": [
+                "1",
+                "2",
+                "3"
+            ],
+            "severity": "error"
         },
-        trip_short_name: {
-            severity: "ignore",
-        },
-        direction_id: {
-            severity: "error",
-        },
-        block_id: {
-            severity: "ignore",
-        },
-        shape_id: {
-            severity: "error",
-        },
-        wheelchair_accessible: {
-            severity: "error",
-        },
-        bikes_allowed: {
-            severity: "error",
-        },
-        stop_sequence: {
-            severity: "error",
-        },
-        direction_pattern_id_match: {
-            severity: "error",
-        },
-        trip_id_limit_characters: {
-            severity: "error",
-        },
-        pattern_id_format: {
-            severity: "error",
+        "calendar_dates_service_id_references_calendar": {
+            "severity": "error"
         }
     },
-    stop_times: {
-        _file: "error",
-        trip_id: {
-            severity: "error",
+    "vehicles": {
+        "_file": "warning",
+        "vehicle_id_unique": {
+            "severity": "error"
         },
-        arrival_time: {
-            severity: "error",
+        "vehicle_agency_id_references_agency_table": {
+            "severity": "warning"
         },
-        departure_time: {
-            severity: "error",
+        "license_plate_format_per_market_rules": {
+            "severity": "ignore"
         },
-        stop_id: {
-            severity: "error",
+        "vehicle_make_required": {
+            "severity": "error"
         },
-        stop_sequence: {
-            severity: "error",
+        "vehicle_model_required": {
+            "severity": "error"
         },
-        stop_headsign: {
-            severity: "forbidden",
+        "vehicle_owner_required": {
+            "severity": "error"
         },
-        pickup_type: {
-            severity: "error",
+        "registration_date_valid_day_granularity": {
+            "severity": "error"
         },
-        drop_off_type: {
-            severity: "error",
+        "available_seats_non_negative": {
+            "severity": "error"
         },
-        continuous_pickup: {
-            severity: "error",
+        "available_standing_non_negative": {
+            "severity": "error"
         },
-        continuous_drop_off: {
-            severity: "error",
+        "typology_in_allowed_vehicle_types": {
+            "severity": "warning",
+            "options": [
+                "0.1",
+                "0.2",
+                "0.3",
+                "1.1",
+                "1.2",
+                "1.3",
+                "2.1",
+                "2.2",
+                "2.3",
+                "3.1",
+                "3.2",
+                "3.3",
+                "3.4",
+                "3.5",
+                "3.6",
+                "3.7",
+                "4.1",
+                "4.2",
+                "4.3",
+                "7.1",
+                "7.2",
+                "7.3"
+            ]
         },
-        shape_dist_traveled: {
-            severity: "error",
+        "propulsion_type_valid_enum": {
+            "options": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9"
+            ],
+            "severity": "error"
         },
-        start_pickup_drop_off_window: {
-            severity: "ignore",
+        "emission_code_valid_for_propulsion_type": {
+            "options": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "0"
+            ],
+            "severity": "error"
         },
-        end_pickup_drop_off_window: {
-            severity: "ignore",
+        "climatization_valid_enum": {
+            "options": [
+                "0",
+                "1"
+            ],
+            "severity": "error"
         },
-        pickup_booking_rule_id: {
-            severity: "ignore",
+        "wheelchair_spots_valid_enum": {
+            "options": [
+                "0",
+                "1"
+            ],
+            "severity": "error"
         },
-        drop_off_booking_rule_id: {
-            severity: "ignore",
+        "lowered_floor_valid_enum": {
+            "options": [
+                "0",
+                "1",
+                "2"
+            ],
+            "severity": "error"
         },
-        timepoint: {
-            severity: "error",
+        "ramp_valid_enum": {
+            "options": [
+                "0",
+                "1",
+                "2",
+                "3"
+            ],
+            "severity": "error"
         },
-        zone_1: {
-            severity: "ignore",
+        "kneeling_valid_enum": {
+            "options": [
+                "0",
+                "1",
+                "2"
+            ],
+            "severity": "error"
         },
-        zone_2: {
-            severity: "ignore",
+        "static_information_valid_enum": {
+            "options": [
+                "0",
+                "1"
+            ],
+            "severity": "error"
         },
-        zone_3: {
-            severity: "ignore",
+        "onboard_monitor_valid_enum": {
+            "options": [
+                "0",
+                "1"
+            ],
+            "severity": "error"
+        },
+        "front_display_valid_enum": {
+            "options": [
+                "0",
+                "1"
+            ],
+            "severity": "error"
+        },
+        "rear_display_valid_enum": {
+            "options": [
+                "0",
+                "1",
+                "2"
+            ],
+            "severity": "error"
+        },
+        "side_display_valid_enum": {
+            "options": [
+                "0",
+                "1",
+                "2"
+            ],
+            "severity": "error"
+        },
+        "internal_sound_level_valid_enum": {
+            "options": [
+                "0",
+                "1"
+            ],
+            "severity": "error"
+        },
+        "external_sound_valid_enum": {
+            "options": [
+                "0",
+                "1"
+            ],
+            "severity": "error"
+        },
+        "consumption_meter_valid_format": {
+            "options": [
+                "0",
+                "1"
+            ],
+            "severity": "error"
+        },
+        "bicycles_rack_count_non_negative": {
+            "options": [
+                "0",
+                "1"
+            ],
+            "severity": "error"
+        },
+        "passenger_counting_valid_enum": {
+            "options": [
+                "0",
+                "1"
+            ],
+            "severity": "error"
+        },
+        "video_surveillance_valid_enum": {
+            "options": [
+                "0",
+                "1"
+            ],
+            "severity": "warning"
         }
     },
-    calendar: {
-        _file: "error",
-        service_id: {
-            severity: "error",
+    "fare_attributes": {
+        "_file": "warning",
+        "fare_attributes_agency_id_references_agency_table": {
+            "severity": "error"
         },
-        monday: {
-            severity: "error",
+        "currency_type_valid": {
+            "options": [
+                "EUR"
+            ],
+            "severity": "error"
         },
-        tuesday: {
-            severity: "error",
+        "fare_id_unique": {
+            "severity": "error"
         },
-        wednesday: {
-            severity: "error",
+        "payment_method_valid_gtfs_enum": {
+            "options": [
+                "0"
+            ],
+            "severity": "error"
         },
-        thursday: {
-            severity: "error",
+        "fare_price_valid_non_negative_decimal": {
+            "severity": "error"
         },
-        friday: {
-            severity: "error",
+        "transfer_duration_valid_seconds_range": {
+            "severity": "ignore"
         },
-        saturday: {
-            severity: "error",
-        },
-        sunday: {
-            severity: "error",
-        },
-        start_date: {
-            severity: "error",
-        },
-        end_date: {
-            severity: "error",
+        "transfers_valid_gtfs_enum": {
+            "options": [
+                "0"
+            ],
+            "severity": "warning"
         }
     },
-    calendar_dates: {
-        _file: "error",
-        service_id: {
-            severity: "error",
+    "fare_rules": {
+        "_file": "warning",
+        "fare_rule_contains_id_references_zones_stops": {
+            "severity": "forbidden"
         },
-        date: {
-            severity: "error",
+        "fare_rule_destination_id_references_zones_stops": {
+            "severity": "forbidden"
         },
-        exception_type: {
-            severity: "error",
+        "fare_rule_fare_id_references_fare_attributes": {
+            "severity": "error"
+        },
+        "fare_rule_origin_id_references_zones_stops": {
+            "severity": "forbidden"
+        },
+        "fare_rule_route_id_references_routes": {
+            "severity": "error"
         }
     },
-    vehicles: {
-        _file: "error",
-        vehicle_id: {
-            severity: "error",
+    "fare_media": {
+        "_file": "ignore",
+        "fare_media_id_unique": {
+            "severity": "error"
         },
-        agency_id: {
-            severity: "error",
+        "fare_media_name_non_empty": {
+            "severity": "warning"
         },
-        license_plate: {
-            severity: "error",
-        },
-        make: {
-            severity: "error",
-        },
-        model: {
-            severity: "error",
-        },
-        owner: {
-            severity: "error",
-        },
-        registration_date: {
-            severity: "error",
-        },
-        available_seats: {
-            severity: "error",
-        },
-        available_standing: {
-            severity: "error",
-        },
-        typology: {
-            severity: "error",
-            options: ["0.1", "0.2", "0.3", "1.1", "1.2", "1.3", "2.1", "2.2", "2.3", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "4.1", "4.2", "4.3", "7.1", "7.2", "7.3"]
-        },
-        propulsion: {
-            severity: "error",
-            options: ["1", "2", "3", "4", "5", "6", "7", "8"]
-        },
-        emission: {
-            severity: "error",
-            options: ["1", "2", "3", "4", "5", "6"]
-        },
-        climatization: {
-            severity: "error",
-            options: ["0", "1"]
-        },
-        wheelchair: {
-            severity: "error",
-            options: ["0", "1"]
-        },
-        lowered_floor: {
-            severity: "error",
-            options: ["0", "1", "2"]
-        },
-        ramp: {
-            severity: "error",
-            options: ["0", "1", "2", "3"]
-        },
-        kneeling: {
-            severity: "error",
-            options: ["0", "1", "2"]
-        },
-        static_information: {
-            severity: "error",
-            options: ["0", "1"]
-        },
-        onboard_monitor: {
-            severity: "error",
-            options: ["0", "1"],
-        },
-        front_display: {
-            severity: "error",
-            options: ["0", "1"]
-        },
-        rear_display: {
-            severity: "error",
-            options: ["0", "1", "2"]
-        },
-        side_display: {
-            severity: "error",
-            options: ["0", "1", "2"]
-        },
-        internal_sound: {
-            severity: "error",
-            options: ["0", "1"]
-        },
-        external_sound: {
-            severity: "error",
-            options: ["0", "1"]
-        },
-        consumption_meter: {
-            severity: "error",
-            options: ["0", "1"]
-        },
-        bicycles: {
-            severity: "error",
-            options: ["0", "1"]
-        },
-        passenger_counting: {
-            severity: "error",
-            options: ["0", "1"]
-        },
-        video_surveillance: {
-            severity: "error",
-            options: ["0", "1"]
+        "fare_media_type_valid": {
+            "severity": "error",
+            "options": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4"
+            ]
         }
     },
-    fare_attributes: {
-        _file: "error",
-        fare_id: {
-            severity: "error",
+    "shapes": {
+        "_file": "error",
+        "shape_id_required": {
+            "severity": "error"
         },
-        price: {
-            severity: "error",
+        "shape_pt_lat_valid_latitude": {
+            "severity": "error"
         },
-        currency_type: {
-            severity: "error",
+        "shape_pt_lon_valid_longitude": {
+            "severity": "error"
         },
-        payment_method: {
-            severity: "error",
-            options: ["0"]
+        "shape_pt_sequence_not_repeated_within_shape": {
+            "severity": "error"
         },
-        transfers: {
-            severity: "error",
-            options: ["0"]
+        "shape_dist_traveled_non_negative_monotonic": {
+            "severity": "error"
         },
-        agency_id: {
-            severity: "error",
+        "shape_id_and_point_sequence_required": {
+            "severity": "error"
         },
-        transfer_duration: {
-            severity: "error",
+        "shape_pt_sequence_strictly_increasing": {
+            "severity": "error"
+        },
+        "shape_dist_traveled_non_decreasing_with_sequence": {
+            "severity": "error"
+        },
+        "shape_sequence_position_mismatches_cumulative_traveled_distance": {
+            "options": [
+                "1000.0"
+            ],
+            "severity": "error"
+        },
+        "shape_dist_traveled_delta_mismatches_haversine_segment": {
+            "options": [
+                "100.0"
+            ],
+            "severity": "error"
+        },
+        "shape_block_distance_rows_aggregated": {
+            "options": [
+                "100.0"
+            ],
+            "severity": "error"
+        },
+        "shape_dist_traveled_delta_mismatches_haversine_block": {
+            "options": [
+                "200.0"
+            ],
+            "severity": "error"
         }
     },
-    fare_rules: {
-        _file: "error",
-        fare_id: {
-            severity: "error",
+    "frequencies": {
+        "_file": "forbidden",
+        "frequency_end_time_valid": {
+            "severity": "error"
         },
-        route_id: {
-            severity: "error",
+        "exact_times_zero_when_timed_trip_uses_frequencies": {
+            "severity": "error"
         },
-        origin_id: {
-            severity: "forbidden",
+        "headway_secs_positive_and_aligns_trip": {
+            "severity": "error"
         },
-        destination_id: {
-            severity: "forbidden",
+        "frequency_start_time_valid": {
+            "severity": "error"
         },
-        contains_id: {
-            severity: "forbidden",
+        "frequencies_trip_id_references_trips_table": {
+            "severity": "error"
         }
     },
-    fare_media: {
-        _file: "ignore",
-        fare_id: {
-            severity: "error",
+    "transfers": {
+        "_file": "ignore",
+        "transfer_from_stop_id_references_stops_table": {
+            "severity": "ignore"
         },
-        fare_media_name:{
-            severity: "warning",
+        "min_transfer_time_non_negative_seconds": {
+            "severity": "ignore"
         },
-        fare_media_type: {
-            severity: "error",
-            options: ["0", "1", "2", "3", "4"]
+        "transfer_to_stop_id_references_stops_table": {
+            "severity": "ignore"
+        },
+        "transfer_type_valid_gtfs_enum": {
+            "options": ["0", "1", "2", "3", "4", "5"],
+            "severity": "error"
         }
     },
-    shapes: {
-        _file: "error",
-        shape_id: {
-            severity: "error",
+    "pathways": {
+        "_file": "ignore",
+        "from_stop_id": {
+            "severity": "ignore"
         },
-        shape_pt_lat: {
-            severity: "error",
+        "is_bidirectional": {
+            "severity": "ignore"
         },
-        shape_pt_lon: {
-            severity: "error",
+        "length": {
+            "severity": "ignore"
         },
-        shape_pt_sequence: {
-            severity: "error",
+        "max_slope": {
+            "severity": "ignore"
         },
-        shape_dist_traveled: {
-            severity: "error",
+        "min_width": {
+            "severity": "ignore"
+        },
+        "pathway_id": {
+            "severity": "ignore"
+        },
+        "pathway_mode": {
+            "severity": "ignore"
+        },
+        "reversed_signposted_as": {
+            "severity": "ignore"
+        },
+        "signposted_as": {
+            "severity": "ignore"
+        },
+        "stair_count": {
+            "severity": "ignore"
+        },
+        "to_stop_id": {
+            "severity": "ignore"
+        },
+        "traversal_time": {
+            "severity": "ignore"
         }
     },
-    frequencies: {
-        _file: "forbidden",
-        trip_id: {
-            severity: "error",
+    "levels": {
+        "_file": "ignore",
+        "level_id": {
+            "severity": "ignore"
         },
-        start_time: {
-            severity: "error",
+        "level_index": {
+            "severity": "ignore"
         },
-        end_time: {
-            severity: "error",
-        },
-        headway_secs: {
-            severity: "error",
-        },
-        exact_times: {
-            severity: "error",
+        "level_name": {
+            "severity": "ignore"
         }
     },
-    transfers: {
-        _file: "ignore",
-        from_stop_id: {
-            severity: "ignore",
+    "feed_info": {
+        "_file": "error",
+        "default_lang_matches_feed_lang_when_present": {
+            "severity": "error"
         },
-        to_stop_id: {
-            severity: "ignore",
+        "feed_contact_email_valid_address": {
+            "severity": "error"
         },
-        transfer_type: {
-            severity: "error",
-            options: ["0", "1", "2", "3", "4", "5"]
+        "feed_contact_url_valid_http_url": {
+            "severity": "error"
         },
-        min_transfer_time: {
-            severity: "ignore",
+        "feed_end_date_valid_yyyymmdd_not_before_start": {
+            "severity": "error"
+        },
+        "feed_lang_valid_tag": {
+            "options": [
+                "pt"
+            ],
+            "severity": "error"
+        },
+        "feed_publisher_name_non_empty": {
+            "severity": "error"
+        },
+        "feed_publisher_url_valid_http_url": {
+            "severity": "error"
+        },
+        "feed_remarks": {
+            "severity": "ignore"
+        },
+        "feed_start_date_valid_yyyymmdd": {
+            "severity": "error"
+        },
+        "feed_type": {
+            "options": [
+                "0",
+                "1",
+                "2"
+            ],
+            "severity": "error"
+        },
+        "feed_version_valid_identifier": {
+            "severity": "error"
         }
     },
-    pathways: {
-        _file: "ignore",
-        pathway_id: {
-            severity: "ignore",
+    "translations": {
+        "_file": "ignore",
+        "field_name": {
+            "severity": "ignore"
         },
-        from_stop_id: {
-            severity: "ignore",
+        "field_value": {
+            "severity": "ignore"
         },
-        to_stop_id: {
-            severity: "ignore",
+        "language": {
+            "severity": "ignore"
         },
-        pathway_mode: {
-            severity: "ignore",
+        "record_id": {
+            "severity": "ignore"
         },
-        is_bidirectional: {
-            severity: "ignore",
+        "record_sub_id": {
+            "severity": "ignore"
         },
-        length: {
-            severity: "ignore",
+        "table_name": {
+            "severity": "ignore"
         },
-        traversal_time: {
-            severity: "ignore",
-        },
-        stair_count: {
-            severity: "ignore",
-        },
-        max_slope: {
-            severity: "ignore",
-        },
-        min_width: {
-            severity: "ignore",
-        },
-        signposted_as: {
-            severity: "ignore",
-        },
-        reversed_signposted_as: {
-            severity: "ignore",
+        "translation": {
+            "severity": "ignore"
         }
     },
-    levels: {
-        _file: "ignore",
-        level_id: {
-            severity: "ignore",
+    "attributions": {
+        "_file": "ignore",
+        "agency_id": {
+            "severity": "ignore"
         },
-        level_index: {
-            severity: "ignore",
+        "attribution_email": {
+            "severity": "ignore"
         },
-        level_name: {
-            severity: "ignore",
-        }
-    },
-    feed_info: {
-        _file: "error",
-        feed_type: {
-            severity: "error",
-            options: ["0"]
+        "attribution_id": {
+            "severity": "ignore"
         },
-        feed_publisher_name: {
-            severity: "error",
+        "attribution_phone": {
+            "severity": "ignore"
         },
-        feed_publisher_url: {
-            severity: "error",
+        "attribution_url": {
+            "severity": "ignore"
         },
-        feed_lang: {
-            severity: "error",
-            options: ["pt"]
+        "is_authority": {
+            "severity": "ignore"
         },
-        default_lang: {
-            severity: "error",
+        "is_operator": {
+            "severity": "ignore"
         },
-        feed_start_date: {
-            severity: "error",
+        "is_producer": {
+            "severity": "ignore"
         },
-        feed_end_date: {
-            severity: "error",
+        "organization_name": {
+            "severity": "ignore"
         },
-        feed_version: {
-            severity: "error",
+        "route_id": {
+            "severity": "ignore"
         },
-        feed_remarks: {
-            severity: "ignore",
-        },
-        feed_contact_email: {
-            severity: "error",
-        },
-        feed_contact_url: {
-            severity: "error",
-        }
-    },
-    translations: {
-        _file: "ignore",
-        table_name: {
-            severity: "ignore",
-        },
-        field_name: {
-            severity: "ignore",
-        },
-        language: {
-            severity: "ignore",
-        },
-        translation: {
-            severity: "ignore",
-        },
-        record_id: {
-            severity: "ignore",
-        },
-        record_sub_id: {
-            severity: "ignore",
-        },
-        field_value: {
-            severity: "ignore",
-        }
-    },
-    attributions: {
-        _file: "ignore",
-        attribution_id: {
-            severity: "ignore",
-        },
-        agency_id: {
-            severity: "ignore",
-        },
-        route_id: {
-            severity: "ignore",
-        },
-        trip_id: {
-            severity: "ignore",
-        },
-        organization_name: {
-            severity: "ignore",
-        },
-        is_producer: {
-            severity: "ignore",
-        },
-        is_operator: {
-            severity: "ignore",
-        },
-        is_authority: {
-            severity: "ignore",
-        },
-        attribution_url: {
-            severity: "ignore",
-        },
-        attribution_email: {
-            severity: "ignore",
-        },
-        attribution_phone: {
-            severity: "ignore",
-        }
-    },
-    rider_categories: {
-        _file: "ignore",
-        rider_category_id: {
-            severity: "error",
-        },
-        rider_category_name: {
-            severity: "error",
-        },
-        is_default_fare_category: {
-            severity: "error",
-        },
-        eligibility_url: {
-            severity: "error",
+        "trip_id": {
+            "severity": "ignore"
         }
     }
-}
+};

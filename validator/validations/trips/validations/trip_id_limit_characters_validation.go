@@ -15,13 +15,13 @@ import (
 
 # Description
 
-Ensures the trip_id is less than or equal to 32 characters.
+Ensures the trip_id is less than or equal to 36 characters.
 
 [trips.txt]: https://gtfs.org/schedule/reference/#trips
 */
 
 func TripIdLimitCharactersValidation(trip *types.Trip, row int, gtfs *types.Gtfs, rules *types.TripsRules) {
-	ctx := lib.NewValidationContext("trip_id_limit_characters", "trips.txt", "trip_id_limit_characters_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("trip_id_limit_characters", "trips.txt", "trip_id_limit_max_length", row, services.AppMessageService)
 	if rules != nil && rules.TripIdLimitCharacters.Severity != "" {
 		ctx.WithSeverity(rules.TripIdLimitCharacters.Severity)
 	}
@@ -30,8 +30,8 @@ func TripIdLimitCharactersValidation(trip *types.Trip, row int, gtfs *types.Gtfs
 		return
 	}
 
-	if len(*trip.TripId) > 32 {
-		ctx.AddError(ctx.GetTranslatedMessage("trip_id_limit_characters_validation.too_long"))
+	if len(*trip.TripId) > 36 {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("trip_id_limit_characters_validation.too_long"))
 		return
 	}
 

@@ -29,10 +29,11 @@ Valid options are:
   - 6 - Electricity
   - 7 - Hybrid
   - 8 - Natural Gas
+  - 9 - Hydrogen
 */
 
 func PropulsionValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("propulsion", "vehicles.txt", "propulsion_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("propulsion", "vehicles.txt", "propulsion_type_valid_enum", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Propulsion.Severity != "" {
 		ctx.WithSeverity(rules.Propulsion.Severity)
@@ -43,21 +44,20 @@ func PropulsionValidation(vehicle *types.Vehicle, row int, rules *types.Vehicles
 		return
 	}
 
-	validOptions := []int{1, 2, 3, 4, 5, 6, 7, 8}
+	validOptions := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
 	if !slices.Contains(validOptions, *vehicle.Propulsion) {
-		ctx.AddError(ctx.GetTranslatedMessage("propulsion_validation.invalid", strconv.Itoa(*vehicle.Propulsion)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("propulsion_validation.invalid", strconv.Itoa(*vehicle.Propulsion)))
 		return
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Propulsion.Options != nil {
 		if slices.Contains(*rules.Propulsion.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.Propulsion.Options, strconv.Itoa(*vehicle.Propulsion)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("propulsion_validation.not_allowed", *vehicle.Propulsion))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("propulsion_validation.not_allowed", strconv.Itoa(*vehicle.Propulsion)))
 			return
 		}
 	}

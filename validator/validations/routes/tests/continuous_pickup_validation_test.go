@@ -11,7 +11,7 @@ import (
 )
 
 func TestAllContinuousPickupValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetContinuousPickupDropOffValidOptions()
+	validOptions := test_helpers.GetFourStateValidOptions()
 	validOptionsStrings := make([]string, len(validOptions))
 	for i, opt := range validOptions {
 		validOptionsStrings[i] = fmt.Sprintf("%d", opt)

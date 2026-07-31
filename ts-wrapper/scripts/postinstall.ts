@@ -1,8 +1,10 @@
-import { chmodSync, copyFileSync, createWriteStream, existsSync, mkdirSync } from 'fs';
-import path, { dirname, join } from 'path';
-import { Readable } from 'stream';
-import { finished } from 'stream/promises';
-import { fileURLToPath } from 'url';
+/* eslint-disable @typescript-eslint/naming-convention */
+
+import { chmodSync, copyFileSync, createWriteStream, existsSync, mkdirSync } from 'node:fs';
+import path, { dirname, join } from 'node:path';
+import { Readable } from 'node:stream';
+import { finished } from 'node:stream/promises';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -20,8 +22,22 @@ const BINARY_DISTRIBUTIONS_FILES: Record<string, string> = {
 } as const;
 
 const DEV_BIN_PATH = join(__dirname, '..', '..', 'bin');
-const REMOTE_BIN_PATH = 'https://github.com/tmlmobilidade/validator/raw/refs/heads/production/bin/';
 const LOCAL_BIN_PATH = join(__dirname, '..', 'bin');
+
+/**
+ * Resolves the URL to download the binary from.
+ *
+ * Pins to the exact package version when available (via npm_package_version
+ * set by npm during lifecycle scripts), otherwise falls back to the latest
+ * GitHub release.
+ */
+function getRemoteBinPath(): string {
+	const version = process.env.npm_package_version;
+	if (version) {
+		return `https://github.com/tmlmobilidade/validator/releases/download/${version}/`;
+	}
+	return 'https://github.com/tmlmobilidade/validator/releases/latest/download/';
+}
 
 /**
  * Gets the current platform identifier.
@@ -81,19 +97,18 @@ async function downloadRemoteBinaries(): Promise<void> {
 		throw new Error(`No binary distribution file found for platform: ${platform}`);
 	}
 
-	const remoteUrl = REMOTE_BIN_PATH + binaryDistributionFile;
+	const remoteUrl = getRemoteBinPath() + binaryDistributionFile;
 	let res: Response;
 
 	try {
 		res = await fetch(remoteUrl);
-	}
-	catch (err) {
+	} catch (err) {
 		const errorMessage = err instanceof Error ? err.message : String(err);
 		throw new Error(`Failed to fetch remote binary from ${remoteUrl}: ${errorMessage}`);
 	}
 
 	if (!res.ok) {
-		throw new Error(`Error downloading remote binary: ${res.status} ${res.statusText}`);
+		throw new Error(`Error downloading remote binary from ${remoteUrl}: ${res.status} ${res.statusText}`);
 	}
 
 	// Create the local bin path if it doesn't exist
@@ -138,22 +153,19 @@ async function main(): Promise<void> {
 		try {
 			buildDevEnvironment();
 			console.log(`✓ Binary copied from dev environment: ${binaryDistributionFile}`);
-		}
-		catch (error) {
+		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : String(error);
 			console.error(`✗ Error building dev environment: ${errorMessage}`);
 			process.exitCode = 1;
 		}
-	}
-	else {
+	} else {
 		console.info(`Local file not found: ${binaryDistributionFilePath}`);
-		console.info(`Downloading binary from remote server...`);
+		console.info(`Downloading binary from ${getRemoteBinPath()}...`);
 
 		try {
 			await downloadRemoteBinaries();
 			console.log(`✓ Binary downloaded successfully: ${binaryDistributionFile}`);
-		}
-		catch (error) {
+		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : String(error);
 			console.error(`✗ Error downloading remote binary: ${errorMessage}`);
 			process.exitCode = 1;

@@ -5,8 +5,8 @@ import (
 	"main/config"
 	"main/lib"
 	"main/types"
-	validations "main/validations/stops/validations"
 	registry "main/validations"
+	validations "main/validations/stops/validations"
 )
 
 func init() {

@@ -26,7 +26,7 @@ Conditionally Required:
 */
 
 func FromStopIdValidation(transfer *types.Transfers, row int, gtfs types.Gtfs, rules *types.TransfersRules) {
-	ctx := lib.NewValidationContext("from_stop_id", "transfers.txt", "from_stop_id_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("from_stop_id", "transfers.txt", "transfer_from_stop_id_references_stops_table", row, services.AppMessageService)
 	if rules != nil && rules.FromStopId.Severity != "" {
 		ctx.WithSeverity(rules.FromStopId.Severity)
 	}

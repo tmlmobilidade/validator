@@ -348,10 +348,10 @@ func VerifyTestCasesIntegrity(t *testing.T) {
 		if len(GetRouteTypeValidOptions()) == 0 {
 			t.Error("RouteTypeValidOptions should not be empty")
 		}
-		if len(GetContinuousPickupDropOffValidOptions()) == 0 {
+		if len(GetFourStateValidOptions()) == 0 {
 			t.Error("ContinuousPickupDropOffValidOptions should not be empty")
 		}
-		if len(GetPickupTypeValidOptions()) == 0 {
+		if len(GetFourStateValidOptions()) == 0 {
 			t.Error("PickupTypeValidOptions should not be empty")
 		}
 		if len(GetLocationTypeValidOptions()) == 0 {

@@ -29,7 +29,7 @@ Indicates the type of connection for the specified (from_stop_id, to_stop_id) pa
 [transfers.txt]: https://gtfs.org/schedule/reference/#transfertstxt
 */
 func TransferTypeValidation(transfer *types.Transfers, row int, rules *types.TransfersRules) {
-	ctx := lib.NewValidationContext("transfer_type", "transfers.txt", "transfer_type_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("transfer_type", "transfers.txt", "transfer_type_valid_gtfs_enum", row, services.AppMessageService)
 	if rules != nil && rules.TransferType.Severity != "" {
 		ctx.WithSeverity(rules.TransferType.Severity)
 	}

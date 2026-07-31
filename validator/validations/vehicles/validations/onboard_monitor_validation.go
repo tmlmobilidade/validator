@@ -27,14 +27,14 @@ Valid options are:
 */
 
 func OnboardMonitorValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("onboard_monitor", "vehicles.txt", "onboard_monitor_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("onboard_monitor", "vehicles.txt", "onboard_monitor_valid_enum", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.OnboardMonitor.Severity != "" {
 		ctx.WithSeverity(rules.OnboardMonitor.Severity)
 	}
 
 	if vehicle.OnboardMonitor == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("onboard_monitor_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("onboard_monitor_validation.required"))
 		return
 	}
 
@@ -45,14 +45,13 @@ func OnboardMonitorValidation(vehicle *types.Vehicle, row int, rules *types.Vehi
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.OnboardMonitor.Options != nil {
 		if slices.Contains(*rules.OnboardMonitor.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.OnboardMonitor.Options, strconv.Itoa(*vehicle.OnboardMonitor)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("onboard_monitor_validation.not_allowed", *vehicle.OnboardMonitor))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("onboard_monitor_validation.not_allowed", strconv.Itoa(*vehicle.OnboardMonitor)))
 			return
 		}
 	}

@@ -36,7 +36,7 @@ func ParseTransfers(rawTransfers *types.TransfersRaw, row int, gtfs types.Gtfs, 
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "transfers_parse",
+			RuleID:   "transfers_values_parse",
 		})
 	}
 

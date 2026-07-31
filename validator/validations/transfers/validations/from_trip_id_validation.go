@@ -28,7 +28,7 @@ Conditionally Required:
 [transfers.txt]: https://gtfs.org/schedule/reference/#transfertstxt
 */
 func FromTripIdValidation(transfer *types.Transfers, row int, gtfs types.Gtfs, rules *types.TransfersRules) {
-	ctx := lib.NewValidationContext("from_trip_id", "transfers.txt", "from_trip_id_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("from_trip_id", "transfers.txt", "transfer_from_trip_id_references_trips_table", row, services.AppMessageService)
 	if rules != nil && rules.FromTripId.Severity != "" {
 		ctx.WithSeverity(rules.FromTripId.Severity)
 	}

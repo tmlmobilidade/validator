@@ -99,23 +99,23 @@ func ImportGTFSZipToSQLite(zipPath, sqlitePath string) (*GtfsSQLite, error) {
 			if err := processGTFSFile(gtfsDB.db, file, &dbMutex); err != nil {
 				lib.AppLogger.Error(fmt.Sprintf("Error processing %s: %v", file.Name, err))
 				AppMessageService.AddMessage(types.Message{
-					FileName:     file.Name,
-					Message:      fmt.Sprintf("Error processing file: %s - %v", file.Name, err),
-					ValidationID: "file_validation",
-					Severity:     types.SEVERITY_ERROR,
-					Field:        "N/A",
-					Rows:         []int{},
+					FileName: file.Name,
+					Message:  fmt.Sprintf("Error processing file: %s - %v", file.Name, err),
+					RuleID:   "file_validation",
+					Severity: types.SEVERITY_ERROR,
+					Field:    "N/A",
+					Rows:     []int{},
 				})
 			}
 		} else {
 			lib.AppLogger.Debug("Skipping invalid GTFS file: " + file.Name)
 			AppMessageService.AddMessage(types.Message{
-				FileName:     file.Name,
-				Message:      i18n.AppTranslator.Get("file_validations.not_supported", file.Name),
-				ValidationID: "file_validation",
-				Severity:     types.SEVERITY_IGNORE,
-				Field:        "N/A",
-				Rows:         []int{},
+				FileName: file.Name,
+				Message:  i18n.AppTranslator.Get("file_validations.not_supported", file.Name),
+				RuleID:   "file_validation",
+				Severity: types.SEVERITY_IGNORE,
+				Field:    "N/A",
+				Rows:     []int{},
 			})
 		}
 	}
@@ -412,8 +412,8 @@ func GetTableRow(db *sql.DB, table string, rowIndex int) (map[string]string, err
 		return nil, fmt.Errorf("failed to get columns: %w", err)
 	}
 
-	// Query specific row using LIMIT and OFFSET
-	rows, err = db.Query(fmt.Sprintf("SELECT * FROM %s ORDER BY rowid LIMIT 1 OFFSET ?", sanitizeTableName(table)), rowIndex)
+	// Query by rowid for O(1) lookup (SQLite rowid is 1-based, rowIndex is 0-based)
+	rows, err = db.Query(fmt.Sprintf("SELECT * FROM %s WHERE rowid = ?", sanitizeTableName(table)), rowIndex+1)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query row: %w", err)
 	}

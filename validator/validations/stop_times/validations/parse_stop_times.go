@@ -52,7 +52,7 @@ func ParseStopTimes(rawStopTimes types.StopTimeRaw, row int) types.StopTime {
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "stop_times_parse",
+			RuleID:       "stop_times_values_parse",
 		})
 	}
 
