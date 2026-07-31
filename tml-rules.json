@@ -512,13 +512,13 @@
   "routes": {
     "_file": "error",
     "line_id_required": {
-      "severity": "error"
+      "severity": "warning"
     },
     "line_short_name_present_when_line_id_present": {
-      "severity": "error"
+      "severity": "warning"
     },
     "line_long_name_present_when_line_id_present": {
-      "severity": "error"
+      "severity": "warning"
     },
     "route_id_unique": {
       "severity": "error"
