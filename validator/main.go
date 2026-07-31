@@ -52,6 +52,10 @@ import (
 	_ "main/validations/vehicles"
 )
 
+func init() {
+	services.SetDisplayVersion(version)
+}
+
 func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *types.GtfsRules) {
 	// Create a wait group to wait for all validations to complete
 	var wg sync.WaitGroup
@@ -70,12 +74,12 @@ func runValidations(gtfs types.Gtfs, tracker *lib.PerformanceTracker, rules *typ
 		validationFn, ok := validations.Get(fileName)
 		if !ok {
 			services.AppMessageService.AddMessage(types.Message{
-				Rows:         []int{},
-				Field:        "N/A",
-				FileName:     fileName,
-				Message:      fmt.Sprintf(i18n.AppTranslator.Get("file_validations.not_supported"), fileName),
-				ValidationID: "file_not_found_in_rules",
-				Severity:     types.SEVERITY_WARNING,
+				Rows:     []int{},
+				Field:    "N/A",
+				FileName: fileName,
+				Message:  fmt.Sprintf(i18n.AppTranslator.Get("file_validations.not_supported"), fileName),
+				RuleID:   "file_not_found_in_rules",
+				Severity: types.SEVERITY_WARNING,
 			})
 			continue
 		}
@@ -104,7 +108,6 @@ func main() {
 		i18n.AppTranslator.SetLanguage(services.AppCLI.Options.RulesLang)
 	}
 
-	//
 	// 0.3 Parse Rules
 	rules, err := services.NewRulesParser(services.AppCLI.Options.RulesPath).ParseRules()
 	if err != nil {
@@ -113,7 +116,7 @@ func main() {
 
 	//
 	// lib.AppLogger.Clear()
-	lib.AppLogger.Divider("GTFS Validator")
+	lib.AppLogger.Divider("GTFS Validator v" + version)
 
 	//
 	// 0.4 Start Performance Tracker
@@ -127,7 +130,7 @@ func main() {
 	}
 
 	// If there are errors in the GTFS, print the errors and exit
-	if services.AppMessageService.GetSummary().TotalErrors > 0 {
+	if services.AppMessageService.TotalErrors() > 0 {
 		services.AppMessageService.PrintJSON()
 		return
 	}

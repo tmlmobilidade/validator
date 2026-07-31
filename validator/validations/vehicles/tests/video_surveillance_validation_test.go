@@ -28,7 +28,10 @@ func TestAllVideoSurveillanceValidationTestCases(t *testing.T) {
 				videoSurveillanceValue = nil
 			}
 
-			validations.VideoSurveillanceValidation(&types.Vehicle{VideoSurveillance: videoSurveillanceValue}, tc.Row, nil)
+			tripRules := &types.VehiclesRules{
+				VideoSurveillance: types.RuleConfig{Severity: types.SEVERITY_ERROR},
+			}
+			validations.VideoSurveillanceValidation(&types.Vehicle{VideoSurveillance: videoSurveillanceValue}, tc.Row, tripRules)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}

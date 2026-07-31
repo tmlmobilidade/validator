@@ -74,7 +74,7 @@
         "not_allowed": "Field \"agency_url\" \"%s\" is not allowed"
     },
     "parser": {
-        "forbidden": "ed to parse \"%s forbidden",
+        "forbidden": "Failed to parse \"%s\" forbidden",
         "int8": "Failed to parse \"%s\" to int8",
         "int16": "Failed to parse \"%s\" to int16",
         "int32": "Failed to parse \"%s\" to int32",
@@ -98,7 +98,8 @@
         "forbidden": "Field \"service_id\" is forbidden",
         "required": "Field \"service_id\" is required",
         "duplicate": "Duplicate field \"service_id\" \"%s\" found. Field \"service_id\" must be unique",
-        "invalid": "Field \"service_id\" \"%s\" is not a valid service_id from calendar.txt or calendar_dates.txt"
+        "invalid": "Field \"service_id\" \"%s\" is not a valid service_id from calendar.txt or calendar_dates.txt",
+        "not_found": "Field \"service_id\" \"%s\" does not exist in calendar.txt or calendar_dates.txt"
     },
     "exception_type_validation": {
         "required": "Field \"exception_type\" is required",
@@ -220,6 +221,19 @@
         "duplicate": "Duplicate field \"route_id\" \"%s\" found. Field \"route_id\" must be unique",
         "invalid": "Field \"route_id\" \"%s\" is not a valid route_id from routes.txt"
     },
+    "line_id_required": {
+        "required": "Field \"line_id\" is required",
+        "recommended": "Field \"line_id\" is recommended",
+        "not_equal_to_route_short_name": "Field \"line_id\" \"%s\" should be the same as \"route_short_name\" \"%s\""
+    },
+    "line_short_name_validation": {
+        "required": "Field \"line_short_name\" is required",
+        "recommended": "Field \"line_short_name\" is recommended",
+        "not_equal_to_route_short_name": "Field \"line_short_name\" \"%s\" should not be the same as \"route_short_name\" \"%s\""
+    },
+    "line_long_name_validation": {
+        "required": "Field \"line_long_name\" is required"
+    },
     "route_long_name_validation": {
         "forbidden": "Field \"route_long_name\" is forbidden",
         "required": "Field \"route_long_name\" is required",
@@ -232,7 +246,8 @@
         "required": "Field \"route_short_name\" is required",
         "recommended": "Field \"route_short_name\" is recommended",
         "not_allowed": "Field \"route_short_name\" \"%s\" is not allowed",
-        "duplicate": "Field \"route_short_name\" \"%s\" should not duplicate route_long_name"
+        "duplicate": "Field \"route_short_name\" \"%s\" should not duplicate route_long_name",
+        "too_long": "Field \"route_short_name\" \"%s\" is too long, must be less than 12 characters"
     },
     "route_sort_order_validation": {
         "forbidden": "Field \"route_sort_order\" is forbidden",
@@ -254,6 +269,8 @@
         "not_allowed": "Field \"route_type\" \"%s\" is not allowed"
     },
     "path_type_validation": {
+        "required": "Field \"path_type\" is required",
+        "recommended": "Field \"path_type\" is recommended",
         "forbidden": "Field \"path_type\" is forbidden",
         "invalid": "Field \"path_type\" must be one of the valid values (1, 2, or 3). Got \"%s\"",
         "not_allowed": "Field \"path_type\" \"%s\" is not allowed"
@@ -288,7 +305,8 @@
         "route_read_failed": "Failed to read route data for route_id \"%s\" while validating \"shape_id\": %s",
         "not_found": "Field \"shape_id\" \"%s\" does not exist in shapes.txt",
         "invalid": "Field \"shape_id\" \"%s\" is not a valid shape_id from shapes.txt",
-        "internal_error": "Internal error while validating \"shape_id\": %v"
+        "internal_error": "Internal error while validating \"shape_id\": %v",
+        "different_from_pattern_id": "Field \"shape_id\" \"%s\" is different from field \"pattern_id\" \"%s\""
     },
     "shape_pt_lat_validation": {
         "forbidden": "Field \"shape_pt_lat\" is forbidden",
@@ -326,6 +344,9 @@
         "invalid": "Field \"departure_time\" must be a valid time, expected format: HH:MM:SS, got: %s",
         "required_timepoint": "Field \"departure_time\" is required for timepoint=1",
         "forbidden_pickup_dropoff": "Field \"departure_time\" is forbidden when start_pickup_drop_off_window or end_pickup_drop_off_window are defined"
+    },
+    "arrival_departure_time_sequence_validation": {
+        "decreasing": "Fields \"arrival_time\" and \"departure_time\" must not decrease by \"stop_sequence\" for trip_id \"%s\"; previous stop_sequence \"%d\" ends at \"%s\" and current stop_sequence \"%d\" starts at \"%s\""
     },
     "drop_off_booking_rule_id_validation": {
         "forbidden": "Field \"drop_off_booking_rule_id\" is forbidden",
@@ -387,12 +408,27 @@
         "forbidden": "Field \"stop_id\" is forbidden",
         "required": "Field \"stop_id\" is required",
         "recommended": "Field \"stop_id\" is recommended",
-        "not_found": "Field \"stop_id\" \"%s\" does not exist in stops.txt",
+        "does_not_exist": "Field \"stop_id\" \"%s\" does not exist, verify if id is correct",
         "duplicate": "Duplicate field \"stop_id\" \"%s\" found. Field \"stop_id\" must be unique",
         "not_allowed": "Field \"stop_id\" \"%s\" is not allowed",
         "forbidden_location_group_id_location_id": "Field \"stop_id\" is forbidden if \"location_group_id\" or \"location_id\" are defined",
         "required_location_group_id_location_id": "Field \"stop_id\" is required if \"location_group_id\" and \"location_id\" are not defined",
-        "invalid_location_type": "Field \"stop_id\" must reference a stop with location_type 0 or empty (platform/stop)"
+        "invalid_location_type": "Field \"stop_id\" must reference a stop with location_type 0 or empty (platform/stop)",
+        "not_allowed_by_reference_api": "Field \"stop_id\" \"%s\" is not present in the external reference API"
+    },
+    "stop_desc_validation": {
+        "forbidden": "Field \"stop_desc\" is forbidden",
+        "required": "Field \"stop_desc\" is required",
+        "recommended": "Field \"stop_desc\" is recommended",
+        "not_allowed": "Field \"stop_desc\" \"%s\" is not allowed",
+        "duplicate": "Field \"stop_desc\" \"%s\" must be different from field \"stop_name\" \"%s\""
+    },
+    "stop_name_validation": {
+        "forbidden": "Field \"stop_name\" is forbidden",
+        "required": "Field \"stop_name\" is required",
+        "recommended": "Field \"stop_name\" is recommended",
+        "not_allowed": "Field \"stop_name\" \"%s\" is not allowed",
+        "does_not_match_stops_data": "Field \"stop_name\" \"%s\" does not match stops_data.json"
     },
     "timepoint_validation": {
         "forbidden": "Field \"timepoint\" is forbidden",
@@ -477,12 +513,19 @@
         "not_found": "Field \"municipality_id\" \"%s\" does not exist in municipalities.txt",
         "not_allowed": "Field \"municipality_id\" \"%s\" is not allowed"
     },
-    "parent_station_validation": {
-        "forbidden": "Field \"parent_station\" is forbidden",
-        "required": "Field \"parent_station\" is required",
-        "recommended": "Field \"parent_station\" is recommended",
-        "not_found": "Field \"parent_station\" \"%s\" does not exist in stops.txt",
-        "not_allowed": "Field \"parent_station\" \"%s\" is not allowed"
+    "stop_coordinates_validation": {
+        "invalid_distance_to_shape": "Coordinates (%.6f, %.6f) of stop \"%s\" are too far from the shapes, the closest shape \"%s\" in sequence %d at (%.6f, %.6f) (%.2f m)"
+    },
+    "shape_points_coordinates_consistent_validation": {
+        "invalid_consistent_distance": "Shape %s has coordinates (%.6f, %.6f) sequence (%d) too far apart relative to previous with coordinates (%.6f, %.6f) sequence (%d)",
+        "ManyErrors": "Many errors found in shapes.txt file, exist several shapes with a large distance relatively to the previous so it has to be verified"
+    },
+    "shape_points_coordinates_distances_validation": {
+        "invalid_distances": "The distances between points (%s, %s) and (%s, %s) do not correspond to the shape_dist_traveled increment. The distance in shape_dist_traveled is %.2f meters but the actual geometric distance is %.2f meters",
+        "ManyErrors": "Many errors found in shapes.txt file, exist several shapes with an estimated value (shape_dist_traveled) further or closer relatively to the real value so it has to be verified"
+    },
+    "shape_distances_validation": {
+        "invalid_distances": "The total expected distance (shape_dist_traveled) for shape \"%s\" is %.2f meters, the actual geometric distance is %.2f meters (diff: %.2f meters)"
     },
     "parish_id_validation": {
         "forbidden": "Field \"parish_id\" is forbidden",
@@ -509,7 +552,7 @@
         "required": "Field \"region_id\" is required",
         "recommended": "Field \"region_id\" is recommended",
         "not_found": "Field \"region_id\" \"%s\" does not exist in regions.txt",
-        "not_allowed": "Field \"region_id\" \"%s\" is not allowed"
+        "not_allowed": "Field \"region_id\" \"%s\" is not valid"
     },
     "shelter_code_validation": {
         "forbidden": "Field \"shelter_code\" is forbidden",
@@ -533,13 +576,15 @@
         "forbidden": "Field \"stop_lat\" is forbidden",
         "required": "Field \"stop_lat\" is required",
         "recommended": "Field \"stop_lat\" is recommended",
-        "invalid": "Field \"stop_lat\" must be a valid latitude, expected range: -90 to 90, got: %f"
+        "invalid": "Field \"stop_lat\" must be a valid latitude, expected range: -90 to 90, got: %f",
+        "does_not_match_stops_data": "Field \"stop_lat\" %f does not match stops_data.json"
     },
     "stop_lon_validation": {
         "forbidden": "Field \"stop_lon\" is forbidden",
         "required": "Field \"stop_lon\" is required",
         "recommended": "Field \"stop_lon\" is recommended",
-        "invalid": "Field \"stop_lon\" must be a valid longitude, expected range: -180 to 180, got: %f"
+        "invalid": "Field \"stop_lon\" must be a valid longitude, expected range: -180 to 180, got: %f",
+        "does_not_match_stops_data": "Field \"stop_lon\" %f does not match stops_data.json"
     },
     "stop_short_name_validation": {
         "forbidden": "Field \"stop_short_name\" is forbidden",
@@ -609,6 +654,13 @@
     "direction_id_group_validation": {
         "different_direction_ids_in_pattern": "pattern_id %s has trips with different direction_ids: %s. All trips with the same pattern_id must have the same direction_id"
     },
+    "trip_headsign_group_validation": {
+        "different_headsigns_in_pattern": "pattern_id %s has trips with different trip_headsigns: %s. All trips with the same pattern_id must have the same trip_headsign"
+    },
+    "shape_id_group_validation": {
+        "different_shape_id": "Different shape_id's found for the same pattern_id: %s",
+        "multiple_shape_id_in_unique_pattern_id": "Field \"shape_id\" \"%s\" is used in multiple pattern_ids"
+    },
     "pattern_id_validation": {
         "forbidden": "Field \"pattern_id\" is forbidden",
         "required": "Field \"pattern_id\" is required",
@@ -621,7 +673,6 @@
         "invalid_pattern_id": "Field \"pattern_id\" must be in the format \"XXXX_X_X\", received: %s",
         "different_direction_id": "Different direction_id's found for the same pattern_id: %s",
         "different_route_id": "Different route_id's found for the same pattern_id: %s",
-        "different_shape_id": "Different shape_id's found for the same pattern_id: %s",
         "different_pattern_id_same_shape": "Field \"shape_id\" \"%s\" is used in different pattern_ids: \"%s\" and \"%s\"",
         "multiple_stop_sequence_variations": "For pattern_id %s, there are trips with multiple stop sequence variations"
     },
@@ -634,6 +685,9 @@
         "non_increasing_sequence": "The values of \"stop_sequence\" must increase along the trip ('%s')",
         "non_increasing_shape_dist": "The values of \"shape_dist_traveled\" must increase along the trip ('%s')",
         "consecutive_stop_ids": "The same stop_id \"%s\" cannot appear consecutively (one directly after another) in trip \"%s\""
+    },
+    "shape_id_same_pattern_id":{
+        "not_matching": "Field \"shape_id\" \"%s\" is different from the field \"pattern_id\" \"%s\", they need to be the same"
     },
     "trip_headsign_validation": {
         "forbidden": "Field \"trip_headsign\" is forbidden",
@@ -697,7 +751,7 @@
         "duplicate": "Duplicate field \"rider_category_id\" \"%s\" found. Field \"rider_category_id\" must be unique"
     },
     "pattern_id_format_validation": {
-        "invalid": "Field \"pattern_id\" must be a valid ID in the format \"XXXX_X_X\", received: \"%s\""
+        "invalid": "Field \"pattern_id\" must be a valid ID in the format \"%s\", received: \"%s\""
     },
     "fare_media_id_validation": {
         "required": "Field \"fare_media_id\" is required",
@@ -865,7 +919,7 @@
         "not_allowed": "Field \"exact_times\" \"%s\" is not allowed"
     },
     "trip_id_limit_characters_validation": {
-        "too_long": "Field \"trip_id\" must be less than or equal to 32 characters",
+        "too_long": "Field \"trip_id\" must be less than or equal to 36 characters",
         "not_allowed": "Field \"trip_id\" \"%s\" is not allowed"
     }
 }

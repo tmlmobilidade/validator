@@ -14,9 +14,11 @@ func ValidatePatternGroups(
 	tripsGroupedByPattern types.TripGroupedByPattern,
 	tripsGroupedByShapeId types.TripGroupedByShapeId,
 	gtfs *types.Gtfs,
+	rules *types.TripsRules,
 ) {
-	PatternIdGroupValidation(tripsGroupedByPattern, gtfs)
-	RouteIdGroupValidation(tripsGroupedByPattern, gtfs)
-	DirectionIdGroupValidation(tripsGroupedByPattern, gtfs)
-	ShapeIdGroupValidation(tripsGroupedByPattern, tripsGroupedByShapeId, gtfs)
+	PatternIdGroupValidation(tripsGroupedByPattern, gtfs, rules)
+	RouteIdGroupValidation(tripsGroupedByPattern, gtfs, rules)
+	DirectionIdGroupValidation(tripsGroupedByPattern, gtfs, rules)
+	ShapeIdGroupValidation(tripsGroupedByPattern, tripsGroupedByShapeId, gtfs, rules)
+	TripHeadsignGroupValidation(tripsGroupedByPattern, gtfs, rules)
 }

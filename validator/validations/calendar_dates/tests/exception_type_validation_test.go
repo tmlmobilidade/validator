@@ -10,7 +10,8 @@ import (
 )
 
 func TestAllExceptionTypeValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetBinaryValidOptions()
+	// exception_type is GTFS enum 1 (add) or 2 (remove), not a 0/1 binary field
+	validOptions := []int{1, 2}
 	dateValid := test_helpers.GetDateValidOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("exception_type", validOptions) {
 		if tc.Name == "Recommended_Missing" {

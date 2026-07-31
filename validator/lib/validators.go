@@ -147,13 +147,25 @@ func ValidateTime(t string) bool {
 	return true
 }
 
-var plateRegex = regexp.MustCompile(`^(?:[A-Z]{2}\d{2}[A-Z]{2}|\d{2}[A-Z]{2}\d{2})$`)
+var plateRegex = regexp.MustCompile(`^(?:[A-Z]{2}\d{2}[A-Z]{2}|\d{2}[A-Z]{2}\d{2}|\d{4}[A-Z]{2}|[A-Z]{2}\d{4})$`)
+
+func normalizeLicensePlate(licensePlate string) string {
+	s := strings.ToUpper(strings.TrimSpace(licensePlate))
+	var b strings.Builder
+	b.Grow(len(s))
+	for _, r := range s {
+		switch r {
+		case '-', ' ', '.', '_', '\u00A0', '\u202F':
+			// ignore common separators (hyphen, space, dot, underscore, NBSP, narrow NBSP)
+		default:
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
+}
 
 func ValidateLicensePlate(licensePlate string) bool {
-	licensePlate = strings.ToUpper(licensePlate)
-
-	// Remove dashes if present
-	licensePlate = strings.ReplaceAll(licensePlate, "-", "")
+	licensePlate = normalizeLicensePlate(licensePlate)
 
 	if len(licensePlate) != 6 {
 		return false

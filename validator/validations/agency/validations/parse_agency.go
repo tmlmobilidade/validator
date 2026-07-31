@@ -8,22 +8,21 @@ import (
 
 func ParseAgency(rawAgency types.AgencyRaw, row int) types.Agency {
 	var (
-		agency                                           types.Agency = types.Agency{}
-		agencyName, agencyUrl, agencyTimezone, agencyId, agencyLang, agencyPhone, agencyFareUrl, agencyEmail                     string
-		messages                                       []types.Message
+		agency                                                                                               types.Agency = types.Agency{}
+		agencyName, agencyUrl, agencyTimezone, agencyId, agencyLang, agencyPhone, agencyFareUrl, agencyEmail string
+		messages                                                                                             []types.Message
 	)
 
 	stringFields := map[string]*string{
-		"agency_name":         &agencyName,
-		"agency_url":        &agencyUrl,
-		"agency_timezone":      &agencyTimezone,
-		"agency_id":   &agencyId,
-		"agency_lang":   &agencyLang,
-		"agency_phone": &agencyPhone,
+		"agency_name":     &agencyName,
+		"agency_url":      &agencyUrl,
+		"agency_timezone": &agencyTimezone,
+		"agency_id":       &agencyId,
+		"agency_lang":     &agencyLang,
+		"agency_phone":    &agencyPhone,
 		"agency_fare_url": &agencyFareUrl,
-		"agency_email": &agencyEmail,
+		"agency_email":    &agencyEmail,
 	}
-
 
 	// Helper to collect error messages
 	addMessage := func(field, msg string) {
@@ -33,7 +32,7 @@ func ParseAgency(rawAgency types.AgencyRaw, row int) types.Agency {
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "agency_parse",
+			RuleID:       "agency_values_parse",
 		})
 	}
 

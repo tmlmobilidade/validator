@@ -529,7 +529,7 @@ func TestTestCaseSummary(t *testing.T) {
 	}
 
 	expectedTotal := summary.RequiredFieldCases + summary.UrlCases + summary.ColorCases +
-		summary.EnumCases + summary.IdCases + summary.SeverityCases
+		summary.EnumCases + summary.IdCases + summary.FkCases + summary.SeverityCases
 
 	if summary.TotalCases != expectedTotal {
 		t.Errorf("TotalCases (%d) should equal sum of all categories (%d)", summary.TotalCases, expectedTotal)
@@ -541,6 +541,7 @@ func TestTestCaseSummary(t *testing.T) {
 		"  Color: %d\n"+
 		"  Enum: %d\n"+
 		"  ID: %d\n"+
+		"  FK: %d\n"+
 		"  Severity: %d\n"+
 		"  Total: %d\n",
 		summary.RequiredFieldCases,
@@ -548,6 +549,7 @@ func TestTestCaseSummary(t *testing.T) {
 		summary.ColorCases,
 		summary.EnumCases,
 		summary.IdCases,
+		summary.FkCases,
 		summary.SeverityCases,
 		summary.TotalCases,
 	)
