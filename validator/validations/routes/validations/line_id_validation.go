@@ -30,8 +30,11 @@ func LineIdValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *type
 		ctx.WithSeverity(rules.LineId.Severity)
 	}
 
-	// If line_id is not present, there is nothing to validate.
+	// If line_id is present.
 	if route.LineId == nil || *route.LineId == "" {
+		if !ctx.ShouldSkip() {
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("line_id_required.required"))
+		}
 		return
 	}
 

@@ -224,12 +224,12 @@
     "line_id_required": {
         "required": "O campo \"line_id\" é obrigatório",
         "recommended": "O campo \"line_id\" é recomendado",
-        "not_equal_to_route_short_name": "O campo \"line_id\" \"%s\" deve ser diferente do campo \"route_short_name\" \"%s\""
+        "not_equal_to_route_short_name": "O campo \"line_id\" \"%s\" deve ser igual do campo \"route_short_name\" \"%s\""
     },
     "line_short_name_validation": {
         "required": "O campo \"line_short_name\" é obrigatório",
         "recommended": "O campo \"line_short_name\" é recomendado",
-        "same_as_line_long_name": "O campo \"line_short_name\" deve ser igual ao campo \"line_long_name\""
+        "not_equal_to_route_short_name": "O campo \"line_short_name\" \"%s\" não deve ser igual ao campo \"route_short_name\" \"%s\""
     },
     "line_long_name_validation": {
         "required": "O campo \"line_long_name\" é obrigatório"
