@@ -1,56 +1,13 @@
+import type { GoBinaryResult, RunGoBinaryOptions } from './interfaces/index.js';
+
 import { ChildProcess, spawn } from 'child_process';
 import { access, constants } from 'fs/promises';
 import path from 'path';
 
-export interface RunGoBinaryOptions {
-	/** Arguments to pass to the binary */
-	args?: string[]
-	/** Working directory for the process */
-	cwd?: string
-	/** Environment variables to pass to the process */
-	env?: Record<string, string>
-	/** Forward stdout/stderr to parent process while capturing (default: true) */
-	forwardOutput?: boolean
-	/** Maximum stderr buffer size in bytes (default: 1MB) */
-	maxStderrSize?: number
-	/** Maximum stdout buffer size in bytes (default: 10MB) */
-	maxStdoutSize?: number
-	/** Timeout in milliseconds (default: 5 minutes) */
-	timeout?: number
-}
+import { GoBinaryError } from './errors/index.js';
 
-export interface GoBinaryResult<T = unknown> {
-	/** Parsed JSON output */
-	data: T
-	/** Execution time in milliseconds */
-	executionTime: number
-	/** Exit code */
-	exitCode: number
-	/** Raw stderr content */
-	stderr: string
-	/** Raw stdout content */
-	stdout: string
-}
-
-/**
- * Error thrown when a Go binary execution fails.
- */
-export class GoBinaryError extends Error {
-	constructor(
-		message: string,
-		public readonly code: string,
-		public readonly exitCode?: number,
-		public readonly stdout?: string,
-		public readonly stderr?: string,
-	) {
-		super(message);
-		this.name = 'GoBinaryError';
-		// Maintains proper stack trace for where our error was thrown (only available on V8)
-		if (typeof Error.captureStackTrace === 'function') {
-			Error.captureStackTrace(this, GoBinaryError);
-		}
-	}
-}
+export { GoBinaryError } from './errors/index.js';
+export type { GoBinaryResult, RunGoBinaryOptions } from './interfaces/index.js';
 
 /**
  * Runs a Go binary and returns its JSON stdout as an object.
@@ -76,10 +33,12 @@ const DEFAULT_MAX_STDOUT_SIZE = 10 * 1024 * 1024; // 10MB
 const DEFAULT_TIMEOUT_MS = 1000 * 60 * 60 * 24; // 24 hours
 const FORCE_KILL_DELAY_MS = 1000 * 60; // 1 minute
 
-export async function runGoBinary<T = unknown>(
-	binaryPath: string,
-	options: RunGoBinaryOptions = {},
-): Promise<GoBinaryResult<T>> {
+export async function runGoBinary<T = unknown>(binaryPath: string, options: RunGoBinaryOptions = {}): Promise<GoBinaryResult<T>> {
+	//
+
+	//
+	// Validate options
+
 	const {
 		args = [],
 		cwd = process.cwd(),
@@ -90,7 +49,9 @@ export async function runGoBinary<T = unknown>(
 		timeout = DEFAULT_TIMEOUT_MS,
 	} = options;
 
+	//
 	// Validate binary exists and is executable
+
 	const fullPath = path.resolve(binaryPath);
 	try {
 		await access(fullPath, constants.F_OK | constants.X_OK);
@@ -104,6 +65,9 @@ export async function runGoBinary<T = unknown>(
 			error.message,
 		);
 	}
+
+	//
+	// Run the binary
 
 	return new Promise<GoBinaryResult<T>>((resolve, reject) => {
 		const startTime = Date.now();
@@ -138,6 +102,9 @@ export async function runGoBinary<T = unknown>(
 			}
 		};
 
+		//
+		// Set up timeout
+
 		const timer = setTimeout(() => {
 			timedOut = true;
 			cleanup();
@@ -146,6 +113,9 @@ export async function runGoBinary<T = unknown>(
 				'TIMEOUT',
 			));
 		}, timeout);
+
+		//
+		// Spawn the process
 
 		try {
 			proc = spawn(fullPath, args, {
@@ -162,6 +132,9 @@ export async function runGoBinary<T = unknown>(
 			));
 			return;
 		}
+
+		//
+		// Handle stdout
 
 		proc.stdout?.on('data', (chunk: Buffer) => {
 			stdoutSize += chunk.length;
@@ -180,6 +153,9 @@ export async function runGoBinary<T = unknown>(
 			}
 		});
 
+		//
+		// Handle stderr
+
 		proc.stderr?.on('data', (chunk: Buffer) => {
 			stderrSize += chunk.length;
 			if (stderrSize > maxStderrSize) {
@@ -197,6 +173,9 @@ export async function runGoBinary<T = unknown>(
 			}
 		});
 
+		//
+		// Handle process error
+
 		proc.on('error', (err: Error) => {
 			cleanup();
 			reject(new GoBinaryError(
@@ -205,11 +184,17 @@ export async function runGoBinary<T = unknown>(
 			));
 		});
 
+		//
+		// Handle process close
+
 		proc.on('close', (code: null | number, signal: NodeJS.Signals | null) => {
 			const executionTime = Date.now() - startTime;
 			const stdout = Buffer.concat(stdoutChunks).toString('utf-8').trim();
 			const stderr = Buffer.concat(stderrChunks).toString('utf-8').trim();
 			const exitCode = code ?? -1;
+
+			//
+			// Cleanup
 
 			try {
 				cleanup();
