@@ -125,6 +125,7 @@ type GtfsRules = {
         stop_times_trip_id_references_trips_table: RuleConfig;
         arrival_time_ordering_with_departure_and_frequencies: RuleConfig;
         departure_time_ordering_with_arrival_and_timepoint: RuleConfig;
+        arrival_departure_time_non_decreasing_by_stop_sequence: RuleConfig;
         stop_times_stop_id_references_stops_table: RuleConfig;
         stop_headsign_present: RuleConfig;
         pickup_type_valid_gtfs_enum: RuleConfig;
@@ -226,7 +227,7 @@ type GtfsRules = {
         shape_id_and_point_sequence_required: RuleConfig;
         shape_pt_sequence_strictly_increasing: RuleConfig;
         shape_dist_traveled_non_decreasing_with_sequence: RuleConfig;
-        shape_sequence_position_mismatches_cumulative_traveled_distance: RuleConfig;
+        shape_sequence_position_mismatches_cumulative_traveled_distance: WithOptions<RuleConfig>;
         shape_dist_traveled_delta_mismatches_haversine_segment: WithOptions<RuleConfig>;
         shape_block_distance_rows_aggregated: WithOptions<RuleConfig>;
         shape_dist_traveled_delta_mismatches_haversine_block: WithOptions<RuleConfig>;
@@ -907,6 +908,9 @@ const rules: GtfsRules = {
         "departure_time_ordering_with_arrival_and_timepoint": {
             "severity": "error"
         },
+        "arrival_departure_time_non_decreasing_by_stop_sequence": {
+            "severity": "error"
+        },
         "stop_times_stop_id_references_stops_table": {
             "severity": "error"
         },
@@ -1314,6 +1318,9 @@ const rules: GtfsRules = {
             "severity": "error"
         },
         "shape_sequence_position_mismatches_cumulative_traveled_distance": {
+            "options": [
+                "1000.0"
+            ],
             "severity": "error"
         },
         "shape_dist_traveled_delta_mismatches_haversine_segment": {

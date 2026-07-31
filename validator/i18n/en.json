@@ -340,6 +340,9 @@
         "required_timepoint": "Field \"departure_time\" is required for timepoint=1",
         "forbidden_pickup_dropoff": "Field \"departure_time\" is forbidden when start_pickup_drop_off_window or end_pickup_drop_off_window are defined"
     },
+    "arrival_departure_time_sequence_validation": {
+        "decreasing": "Fields \"arrival_time\" and \"departure_time\" must not decrease by \"stop_sequence\" for trip_id \"%s\"; previous stop_sequence \"%d\" ends at \"%s\" and current stop_sequence \"%d\" starts at \"%s\""
+    },
     "drop_off_booking_rule_id_validation": {
         "forbidden": "Field \"drop_off_booking_rule_id\" is forbidden",
         "required": "Field \"drop_off_booking_rule_id\" is required",
