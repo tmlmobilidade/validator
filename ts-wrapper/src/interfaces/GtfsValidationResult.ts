@@ -1,5 +1,6 @@
 import type { GtfsValidationSummary } from '@tmlmobilidade/types';
 
+/* * */
 export interface GtfsValidationResult {
 	/** Arguments passed to the validator */
 	args: string[]

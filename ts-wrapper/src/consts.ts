@@ -1,6 +1,8 @@
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
+/* * */
+
 export const BINARY_DISTRIBUTIONS = {
 	'darwin-arm64': 'validator-darwin-arm64',
 	'darwin-x64': 'validator-darwin-amd64',

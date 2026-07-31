@@ -1,5 +1,6 @@
 import type { SupportedLanguage } from '../types/index.js';
 
+/* * */
 export interface GtfsValidatorOptions {
 	/** Working directory for the validation process */
 	cwd?: string
