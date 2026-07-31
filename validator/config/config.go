@@ -13,7 +13,7 @@ const (
 // Validation configuration constants
 const (
 	// TotalIssuesLimit is the maximum number of errors + warnings before validation stops
-	TotalIssuesLimit = 1000
+	TotalIssuesLimit = 500
 )
 
 // Progress tracking configuration constants
