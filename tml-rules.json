@@ -894,17 +894,25 @@
   },
   "transfers": {
     "_file": "ignore",
-    "from_stop_id": {
-      "severity": "ignore"
+    "transfer_from_stop_id_references_stops_table": {
+      "severity": "error"
     },
-    "min_transfer_time": {
-      "severity": "ignore"
+    "min_transfer_time_non_negative_seconds": {
+      "severity": "error"
     },
-    "to_stop_id": {
-      "severity": "ignore"
+    "transfer_to_stop_id_references_stops_table": {
+      "severity": "error"
     },
-    "transfer_type": {
-      "severity": "ignore"
+    "transfer_type_valid_gtfs_enum": {
+      "options": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "severity": "error"
     }
   },
   "translations": {

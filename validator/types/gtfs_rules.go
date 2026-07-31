@@ -242,10 +242,14 @@ type FrequenciesRules struct {
 
 type TransfersRules struct {
 	File            Severity   `json:"_file"`
-	FromStopId      RuleConfig `json:"from_stop_id"`
-	ToStopId        RuleConfig `json:"to_stop_id"`
-	TransferType    RuleConfig `json:"transfer_type"`
-	MinTransferTime RuleConfig `json:"min_transfer_time"`
+	FromStopId      RuleConfig `json:"transfer_from_stop_id_references_stops_table"`
+	FromRouteId     RuleConfig `json:"transfer_from_route_id_references_routes_table"`
+	FromTripId      RuleConfig `json:"transfer_from_trip_id_references_trips_table"`
+	ToRouteId       RuleConfig `json:"transfer_to_route_id_references_routes_table"`
+	ToStopId        RuleConfig `json:"transfer_to_stop_id_references_stops_table"`
+	ToTripId        RuleConfig `json:"transfer_to_trip_id_references_trips_table"`
+	TransferType    RuleConfig `json:"transfer_type_valid_gtfs_enum"`
+	MinTransferTime RuleConfig `json:"min_transfer_time_non_negative_seconds"`
 }
 
 type PathwaysRules struct {

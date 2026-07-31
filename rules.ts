@@ -242,10 +242,10 @@ type GtfsRules = {
     };
     transfers: {
         _file: Severity;
-        from_stop_id: RuleConfig;
-        min_transfer_time: RuleConfig;
-        to_stop_id: RuleConfig;
-        transfer_type: RuleConfig;
+        transfer_from_stop_id_references_stops_table: RuleConfig;
+        min_transfer_time_non_negative_seconds: RuleConfig;
+        transfer_to_stop_id_references_stops_table: RuleConfig;
+        transfer_type_valid_gtfs_enum: WithOptions<RuleConfig>;
     };
     pathways: {
         _file: Severity;
@@ -1362,17 +1362,18 @@ const rules: GtfsRules = {
     },
     "transfers": {
         "_file": "ignore",
-        "from_stop_id": {
+        "transfer_from_stop_id_references_stops_table": {
             "severity": "ignore"
         },
-        "min_transfer_time": {
+        "min_transfer_time_non_negative_seconds": {
             "severity": "ignore"
         },
-        "to_stop_id": {
+        "transfer_to_stop_id_references_stops_table": {
             "severity": "ignore"
         },
-        "transfer_type": {
-            "severity": "ignore"
+        "transfer_type_valid_gtfs_enum": {
+            "options": ["0", "1", "2", "3", "4", "5"],
+            "severity": "error"
         }
     },
     "pathways": {
