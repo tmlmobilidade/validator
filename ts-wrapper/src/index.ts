@@ -1,247 +1,24 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
+import type { GtfsValidationResult, GtfsValidatorOptions } from './interfaces/index.js';
+import type { SupportedPlatform } from './types/index.js';
+import type { GtfsValidationSummary } from '@tmlmobilidade/types';
+
 import { GoBinaryError, runGoBinary, type RunGoBinaryOptions } from '@/utils.js';
-import { GtfsValidationSummary } from '@tmlmobilidade/types';
 import { access, constants, readFile } from 'fs/promises';
-import { dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { resolve } from 'path';
 
-const BINARY_DISTRIBUTIONS = {
-	'darwin-arm64': 'validator-darwin-arm64',
-	'darwin-x64': 'validator-darwin-amd64',
-	'linux-arm64': 'validator-linux-arm64',
-	'linux-x64': 'validator-linux-amd64',
-	'win32-x64': 'validator.exe',
-} as const;
+import { buildValidatorArgs } from './buildValidatorArgs.js';
+import { BINARY_DISTRIBUTIONS, DEFAULT_TIMEOUT_MS, LOCAL_BIN_PATH } from './consts.js';
+import { GtfsValidationError } from './errors/index.js';
+import { getCurrentPlatform } from './getCurrentPlatform.js';
+import { getValidatorBinaryPath } from './getValidatorBinaryPath.js';
+import { validateInput } from './validateInput.js';
+import { validateOptions } from './validateOptions.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-/** Matches postinstall output: `<package>/bin` (i.e. `dist/bin` when published). */
-const LOCAL_BIN_PATH = resolve(__dirname, '..', 'bin');
-
-type SupportedPlatform = keyof typeof BINARY_DISTRIBUTIONS;
-
-/**
- * Supported language codes for validation messages.
- */
-export type SupportedLanguage = 'en' | 'pt';
-
-/**
- * Default timeout for validation operations (30 minutes).
- */
-const DEFAULT_TIMEOUT_MS = 30 * 60 * 1000;
-
-export interface GtfsValidatorOptions {
-	/** Working directory for the validation process */
-	cwd?: string
-	/** Additional environment variables */
-	env?: Record<string, string>
-	/** Language for validation messages (e.g., 'en', 'pt') */
-	lang?: SupportedLanguage
-	/** Log level for validation messages */
-	log_level?: 'debug' | 'error' | 'info'
-	/** Output file path for detailed validation results */
-	out_file?: string
-	/** Path to custom validation rules file */
-	rules_path?: string
-	/** Timeout in milliseconds (default: 30 minutes) */
-	timeout?: number
-}
-
-export interface GtfsValidationResult {
-	/** Arguments passed to the validator */
-	args: string[]
-	/** Execution time in milliseconds */
-	executionTime: number
-	/** Raw stderr from the validator */
-	stderr: string
-	/** Raw stdout from the validator */
-	stdout: string
-	/** Parsed validation summary */
-	summary: GtfsValidationSummary
-}
-
-export class GtfsValidationError extends Error {
-	constructor(
-		message: string,
-		public readonly code: string,
-		public readonly originalError?: Error,
-		public readonly stdout?: string,
-		public readonly stderr?: string,
-	) {
-		super(message);
-		this.name = 'GtfsValidationError';
-	}
-}
-
-/**
- * Gets the current platform identifier in the format expected by the binary distributions.
- *
- * @returns The platform key matching the current system
- * @throws {GtfsValidationError} If the platform is not supported
- *
- * @internal
- */
-function getCurrentPlatform(): SupportedPlatform {
-	const platform = process.platform;
-	const arch = process.arch;
-	const platformKey = `${platform}-${arch}` as SupportedPlatform;
-
-	if (!(platformKey in BINARY_DISTRIBUTIONS)) {
-		const supportedPlatforms = Object.keys(BINARY_DISTRIBUTIONS).join(', ');
-		throw new GtfsValidationError(
-			`Unsupported platform: ${platformKey}. Supported platforms: ${supportedPlatforms}`,
-			'UNSUPPORTED_PLATFORM',
-		);
-	}
-
-	return platformKey;
-}
-
-/**
- * Gets the path to the validator binary for the current platform.
- *
- * @returns The absolute path to the validator binary
- * @throws {GtfsValidationError} If the binary is not found or not executable
- *
- * @internal
- */
-async function getValidatorBinaryPath(): Promise<string> {
-	const platform = getCurrentPlatform();
-	const binaryName = BINARY_DISTRIBUTIONS[platform];
-	const binaryPath = resolve(LOCAL_BIN_PATH, binaryName);
-
-	try {
-		await access(binaryPath, constants.F_OK | constants.X_OK);
-		return binaryPath;
-	} catch (err) {
-		const error = err instanceof Error ? err : new Error(String(err));
-		throw new GtfsValidationError(
-			`GTFS validator binary not found or not executable: ${binaryPath}. Please ensure the binary is installed for platform ${platform}`,
-			'BINARY_NOT_FOUND',
-			error,
-		);
-	}
-}
-
-/**
- * Validates input parameters before running the validator.
- *
- * @param input - The input path to validate
- * @throws {GtfsValidationError} If the input is invalid or not accessible
- *
- * @internal
- */
-async function validateInput(input: string): Promise<void> {
-	if (typeof input !== 'string' || input.trim().length === 0) {
-		throw new GtfsValidationError(
-			'Input path is required and must be a non-empty string',
-			'INVALID_INPUT',
-		);
-	}
-
-	try {
-		const inputPath = resolve(input);
-		await access(inputPath, constants.F_OK | constants.R_OK);
-	} catch (err) {
-		const error = err instanceof Error ? err : new Error(String(err));
-		throw new GtfsValidationError(
-			`Input path does not exist or is not readable: ${input}`,
-			'INPUT_NOT_ACCESSIBLE',
-			error,
-		);
-	}
-}
-
-/**
- * Validates options object and normalizes values.
- *
- * @param options - The options to validate
- * @returns Normalized options
- * @throws {GtfsValidationError} If options are invalid
- *
- * @internal
- */
-function validateOptions(options: GtfsValidatorOptions = {}): GtfsValidatorOptions {
-	const { cwd, env, lang, out_file, rules_path, timeout } = options;
-
-	if (timeout !== undefined && (typeof timeout !== 'number' || timeout <= 0 || !Number.isFinite(timeout))) {
-		throw new GtfsValidationError(
-			'Timeout must be a positive finite number',
-			'INVALID_OPTIONS',
-		);
-	}
-
-	if (lang !== undefined && typeof lang !== 'string') {
-		throw new GtfsValidationError(
-			'Language must be a string',
-			'INVALID_OPTIONS',
-		);
-	}
-
-	if (out_file !== undefined && (typeof out_file !== 'string' || out_file.trim().length === 0)) {
-		throw new GtfsValidationError(
-			'Output file path must be a non-empty string',
-			'INVALID_OPTIONS',
-		);
-	}
-
-	if (rules_path !== undefined && (typeof rules_path !== 'string' || rules_path.trim().length === 0)) {
-		throw new GtfsValidationError(
-			'Rules path must be a non-empty string',
-			'INVALID_OPTIONS',
-		);
-	}
-
-	if (cwd !== undefined && typeof cwd !== 'string') {
-		throw new GtfsValidationError(
-			'Working directory must be a string',
-			'INVALID_OPTIONS',
-		);
-	}
-
-	if (env !== undefined && (typeof env !== 'object' || env === null || Array.isArray(env))) {
-		throw new GtfsValidationError(
-			'Environment variables must be an object',
-			'INVALID_OPTIONS',
-		);
-	}
-
-	return options;
-}
-
-/**
- * Builds command line arguments for the GTFS validator.
- *
- * @param input - The input path
- * @param options - Validation options
- * @returns Array of command line arguments
- *
- * @internal
- */
-function buildValidatorArgs(input: string, options: GtfsValidatorOptions = {}): string[] {
-	const { lang, log_level, out_file, rules_path } = options;
-	const args: string[] = ['-input', input];
-
-	if (out_file) {
-		args.push('-out', out_file);
-	}
-
-	if (rules_path) {
-		args.push('-rules', rules_path);
-	}
-
-	if (lang) {
-		args.push('-lang', lang);
-	}
-
-	if (log_level) {
-		args.push('-log', log_level);
-	}
-
-	return args;
-}
+export { GtfsValidationError } from './errors/index.js';
+export type { GtfsValidationResult, GtfsValidatorOptions } from './interfaces/index.js';
+export type { SupportedLanguage, SupportedPlatform } from './types/index.js';
 
 /**
  * Runs the GTFS validator on the specified input.
@@ -296,10 +73,8 @@ function buildValidatorArgs(input: string, options: GtfsValidatorOptions = {}): 
  * }
  * ```
  */
-export async function GtfsValidator(
-	input: string,
-	options: GtfsValidatorOptions = {},
-): Promise<GtfsValidationResult> {
+export async function GtfsValidator(input: string, options: GtfsValidatorOptions = {}): Promise<GtfsValidationResult> {
+	//
 	// Validate and normalize options
 	const validatedOptions = validateOptions(options);
 	const {
@@ -456,12 +231,7 @@ export async function GtfsValidator(
  * }
  * ```
  */
-export async function getValidatorInfo(): Promise<{
-	binaryName: string
-	binaryPath: string
-	isAvailable: boolean
-	platform: SupportedPlatform
-}> {
+export async function getValidatorInfo(): Promise<{ binaryName: string, binaryPath: string, isAvailable: boolean, platform: SupportedPlatform }> {
 	const platform = getCurrentPlatform();
 	const binaryName = BINARY_DISTRIBUTIONS[platform];
 	const binaryPath = resolve(LOCAL_BIN_PATH, binaryName);

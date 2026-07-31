@@ -2,6 +2,7 @@ package shapes
 
 import (
 	"sort"
+	"strconv"
 
 	"main/lib"
 	"main/services"
@@ -15,6 +16,19 @@ type shapePointsCoordinatesConsistentPoint struct {
 	sequence int
 	lat      float64
 	lon      float64
+}
+
+func getShapePointsCoordinatesConsistentToleranceMeters(rules *types.ShapesRules) float64 {
+	if rules == nil || rules.ShapePointsCoordinatesConsistent.Options == nil || len(*rules.ShapePointsCoordinatesConsistent.Options) == 0 {
+		return shapes_coordinates.MAX_SHAPE_POINT_DISTANCE_METERS
+	}
+
+	value, err := strconv.ParseFloat((*rules.ShapePointsCoordinatesConsistent.Options)[0], 64)
+	if err != nil || value <= 0 {
+		return shapes_coordinates.MAX_SHAPE_POINT_DISTANCE_METERS
+	}
+
+	return value
 }
 
 func buildShapeFromPointsCoordinatesConsistentPoint(point shapePointsCoordinatesConsistentPoint) *types.Shape {
@@ -56,6 +70,7 @@ func ShapePointsCoordinatesConsistentValidation(shapes []types.Shape, rules *typ
 	}
 
 	shapeGroups := map[string][]shapePointsCoordinatesConsistentPoint{}
+	toleranceMeters := getShapePointsCoordinatesConsistentToleranceMeters(rules)
 	violations := []pointsCoordinatesConsistentViolation{}
 
 	for i, shape := range shapes {
@@ -89,7 +104,7 @@ func ShapePointsCoordinatesConsistentValidation(shapes []types.Shape, rules *typ
 			prevShapePoint := buildShapeFromPointsCoordinatesConsistentPoint(prev)
 			currentShapePoint := buildShapeFromPointsCoordinatesConsistentPoint(current)
 
-			closeEnough := shapes_coordinates.ShapePointIsCloseToBeforeShapePoint(prevShapePoint, currentShapePoint)
+			closeEnough := shapes_coordinates.ShapePointIsCloseToBeforeShapePoint(prevShapePoint, currentShapePoint, toleranceMeters)
 			if closeEnough {
 				continue
 			}
