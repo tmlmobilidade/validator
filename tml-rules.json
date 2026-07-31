@@ -895,13 +895,13 @@
   "transfers": {
     "_file": "ignore",
     "transfer_from_stop_id_references_stops_table": {
-      "severity": "ignore"
+      "severity": "error"
     },
     "min_transfer_time_non_negative_seconds": {
-      "severity": "ignore"
+      "severity": "error"
     },
     "transfer_to_stop_id_references_stops_table": {
-      "severity": "ignore"
+      "severity": "error"
     },
     "transfer_type_valid_gtfs_enum": {
       "options": [
