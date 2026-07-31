@@ -1,11 +1,13 @@
 package services
 
 import (
+	"cmp"
 	"encoding/json"
 	"fmt"
 	"main/lib"
 	"main/types"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -20,6 +22,8 @@ type MessageServiceInterface interface {
 	AddMessage(message types.Message)
 	AddMessages(messages []types.Message)
 	GetSummary() types.Summary
+	TotalErrors() int
+	TotalWarnings() int
 	Clear()
 }
 
@@ -84,19 +88,61 @@ func (ms *MessageService) AddMessage(message types.Message) {
 }
 
 func (ms *MessageService) GetSummary() types.Summary {
+	messages := sortedMessages(ms.messages)
+
 	return types.Summary{
-		Messages:      ms.messages,
+		Messages:      messages,
 		TotalErrors:   ms.errorCount,
 		TotalWarnings: ms.warningCount,
 	}
 }
 
+func (ms *MessageService) TotalErrors() int {
+	return ms.errorCount
+}
+
+func (ms *MessageService) TotalWarnings() int {
+	return ms.warningCount
+}
+
+func sortedMessages(messages []types.Message) []types.Message {
+	sorted := slices.Clone(messages)
+
+	slices.SortStableFunc(sorted, func(a, b types.Message) int {
+		if c := cmp.Compare(a.FileName, b.FileName); c != 0 {
+			return c
+		}
+		if c := cmp.Compare(a.RuleID, b.RuleID); c != 0 {
+			return c
+		}
+		if c := cmp.Compare(a.Severity, b.Severity); c != 0 {
+			return c
+		}
+		if c := cmp.Compare(a.Message, b.Message); c != 0 {
+			return c
+		}
+		return cmp.Compare(firstRow(a.Rows), firstRow(b.Rows))
+	})
+
+	return sorted
+}
+
+func firstRow(rows []int) int {
+	if len(rows) == 0 {
+		return 0
+	}
+
+	return rows[0]
+}
+
 func (ms *MessageService) PrintTable() {
+	summary := ms.GetSummary()
+
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Validation ID", "Message", "Severity", "Field", "File Name", "Row"})
 	table.SetRowSeparator("-")
 	table.SetFooter([]string{"", "", "Errors: " + strconv.Itoa(ms.errorCount), "Warnings: " + strconv.Itoa(ms.warningCount), "Total: " + strconv.Itoa(ms.errorCount+ms.warningCount), ""})
-	for _, message := range ms.messages {
+	for _, message := range summary.Messages {
 		rows := make([]string, len(message.Rows))
 		for i, row := range message.Rows {
 			rows[i] = strconv.Itoa(row)
