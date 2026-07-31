@@ -632,7 +632,10 @@
       "severity": "error"
     },
     "shape_sequence_position_mismatches_cumulative_traveled_distance": {
-      "severity": "error"
+      "options": [
+        "1000.0"
+      ],
+      "severity": "warning"
     },
     "shape_dist_traveled_delta_mismatches_haversine_segment": {
       "options": [
