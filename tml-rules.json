@@ -635,7 +635,7 @@
       "options": [
         "1000.0"
       ],
-      "severity": "error"
+      "severity": "warning"
     },
     "shape_dist_traveled_delta_mismatches_haversine_segment": {
       "options": [
