@@ -667,6 +667,9 @@
     "departure_time_ordering_with_arrival_and_timepoint": {
       "severity": "error"
     },
+    "arrival_departure_time_non_decreasing_by_stop_sequence": {
+      "severity": "error"
+    },
     "stop_times_stop_id_references_stops_table": {
       "severity": "error"
     },
