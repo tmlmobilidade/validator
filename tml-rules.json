@@ -511,14 +511,14 @@
   },
   "routes": {
     "_file": "error",
-    "line_id": {
-      "severity": "error"
+    "line_id_required": {
+      "severity": "warning"
     },
-    "line_short_name": {
-      "severity": "error"
+    "line_short_name_present_when_line_id_present": {
+      "severity": "warning"
     },
-    "line_long_name": {
-      "severity": "error"
+    "line_long_name_present_when_line_id_present": {
+      "severity": "warning"
     },
     "route_id_unique": {
       "severity": "error"
