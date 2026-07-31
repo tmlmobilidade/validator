@@ -5,6 +5,7 @@ import (
 	"main/lib/test_helpers"
 	"main/services"
 	"main/types"
+	stopTimesTypes "main/types/stop_times"
 	validations "main/validations/stop_times/validations"
 	"testing"
 )
@@ -13,7 +14,7 @@ func TestArrivalDepartureTimeSequenceValidation(t *testing.T) {
 	t.Run("Valid_Non_Decreasing", func(t *testing.T) {
 		services.AppMessageService.Clear()
 
-		validations.ArrivalDepartureTimeSequenceValidation(map[string][]validations.TimeSequenceStop{
+		validations.ArrivalDepartureTimeSequenceValidation(map[string][]stopTimesTypes.TimeSequenceStop{
 			"trip1": {
 				{Row: 3, StopSequence: 2, ArrivalTime: lib.Ptr("10:05:00"), DepartureTime: lib.Ptr("10:05:30")},
 				{Row: 2, StopSequence: 1, ArrivalTime: lib.Ptr("10:00:00"), DepartureTime: lib.Ptr("10:01:00")},
@@ -27,7 +28,7 @@ func TestArrivalDepartureTimeSequenceValidation(t *testing.T) {
 	t.Run("Invalid_Current_Arrival_Before_Previous_Departure", func(t *testing.T) {
 		services.AppMessageService.Clear()
 
-		validations.ArrivalDepartureTimeSequenceValidation(map[string][]validations.TimeSequenceStop{
+		validations.ArrivalDepartureTimeSequenceValidation(map[string][]stopTimesTypes.TimeSequenceStop{
 			"trip1": {
 				{Row: 2, StopSequence: 1, ArrivalTime: lib.Ptr("10:00:00"), DepartureTime: lib.Ptr("10:10:00")},
 				{Row: 3, StopSequence: 2, ArrivalTime: lib.Ptr("10:09:59"), DepartureTime: lib.Ptr("10:12:00")},
@@ -40,7 +41,7 @@ func TestArrivalDepartureTimeSequenceValidation(t *testing.T) {
 	t.Run("Invalid_Current_Departure_Before_Previous_Departure", func(t *testing.T) {
 		services.AppMessageService.Clear()
 
-		validations.ArrivalDepartureTimeSequenceValidation(map[string][]validations.TimeSequenceStop{
+		validations.ArrivalDepartureTimeSequenceValidation(map[string][]stopTimesTypes.TimeSequenceStop{
 			"trip1": {
 				{Row: 2, StopSequence: 1, ArrivalTime: lib.Ptr("25:00:00"), DepartureTime: lib.Ptr("25:10:00")},
 				{Row: 3, StopSequence: 2, DepartureTime: lib.Ptr("25:09:59")},
@@ -53,7 +54,7 @@ func TestArrivalDepartureTimeSequenceValidation(t *testing.T) {
 	t.Run("Ignore_Severity", func(t *testing.T) {
 		services.AppMessageService.Clear()
 
-		validations.ArrivalDepartureTimeSequenceValidation(map[string][]validations.TimeSequenceStop{
+		validations.ArrivalDepartureTimeSequenceValidation(map[string][]stopTimesTypes.TimeSequenceStop{
 			"trip1": {
 				{Row: 2, StopSequence: 1, ArrivalTime: lib.Ptr("10:00:00"), DepartureTime: lib.Ptr("10:10:00")},
 				{Row: 3, StopSequence: 2, ArrivalTime: lib.Ptr("10:09:59"), DepartureTime: lib.Ptr("10:12:00")},

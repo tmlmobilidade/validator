@@ -5,6 +5,7 @@ import (
 	"main/config"
 	"main/lib"
 	"main/types"
+	stopTimesTypes "main/types/stop_times"
 	registry "main/validations"
 	validations "main/validations/stop_times/validations"
 	"strconv"
@@ -38,7 +39,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	// Pre-compute min/max stop sequences per trip_id for performance
 	// This avoids N+1 queries in arrival_time validation
 	tripStopSequences := make(map[string]types.TripStopSequence)
-	tripStopTimes := make(map[string][]validations.TimeSequenceStop)
+	tripStopTimes := make(map[string][]stopTimesTypes.TimeSequenceStop)
 
 	var stopTimesRules *types.StopTimesRules
 	if rules != nil {
@@ -76,7 +77,7 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		}
 
 		if stopTime.TripId != nil && *stopTime.TripId != "" && stopTime.StopSequence != nil {
-			tripStopTimes[*stopTime.TripId] = append(tripStopTimes[*stopTime.TripId], validations.TimeSequenceStop{
+			tripStopTimes[*stopTime.TripId] = append(tripStopTimes[*stopTime.TripId], stopTimesTypes.TimeSequenceStop{
 				Row:           i,
 				StopSequence:  *stopTime.StopSequence,
 				ArrivalTime:   stopTime.ArrivalTime,
@@ -138,7 +139,9 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 	if err != nil {
 		lib.AppLogger.Error(fmt.Sprintf("Error iterating stop times: %v", err))
 	} else {
+		// Need be run ArrivalDepartureTimeSequenceValidation here because it needs to be run after all rows are processed
 		validations.ArrivalDepartureTimeSequenceValidation(tripStopTimes, stopTimesRules)
+
 		lib.AppLogger.Info(fmt.Sprintf("Completed stop_times.txt validation: %d rows processed", tracker.GetProcessedCount()))
 	}
 }

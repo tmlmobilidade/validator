@@ -2,19 +2,12 @@ package stop_times
 
 import (
 	"main/lib"
+	stopTimesLib "main/lib/stop_times"
 	"main/services"
 	"main/types"
+	stopTimesTypes "main/types/stop_times"
 	"sort"
-	"strconv"
-	"strings"
 )
-
-type TimeSequenceStop struct {
-	Row           int
-	StopSequence  int
-	ArrivalTime   *string
-	DepartureTime *string
-}
 
 /*
 # Attributes
@@ -31,7 +24,7 @@ stops of the same trip when ordered by stop_sequence.
 
 [stop_times.txt]: https://gtfs.org/schedule/reference/#stoptimetxt
 */
-func ArrivalDepartureTimeSequenceValidation(stopTimesByTrip map[string][]TimeSequenceStop, rules *types.StopTimesRules) {
+func ArrivalDepartureTimeSequenceValidation(stopTimesByTrip map[string][]stopTimesTypes.TimeSequenceStop, rules *types.StopTimesRules) {
 	for tripId, stopTimes := range stopTimesByTrip {
 		sort.Slice(stopTimes, func(i, j int) bool {
 			if stopTimes[i].StopSequence == stopTimes[j].StopSequence {
@@ -46,7 +39,7 @@ func ArrivalDepartureTimeSequenceValidation(stopTimesByTrip map[string][]TimeSeq
 	}
 }
 
-func validateStopTimePair(tripId string, previous TimeSequenceStop, current TimeSequenceStop, rules *types.StopTimesRules) {
+func validateStopTimePair(tripId string, previous stopTimesTypes.TimeSequenceStop, current stopTimesTypes.TimeSequenceStop, rules *types.StopTimesRules) {
 	ctx := lib.NewValidationContext("arrival_time", "stop_times.txt", "arrival_departure_time_non_decreasing_by_stop_sequence", current.Row, services.AppMessageService)
 	if rules != nil && rules.ArrivalDepartureSequence.Severity != "" {
 		ctx.WithSeverity(rules.ArrivalDepartureSequence.Severity)
@@ -56,12 +49,12 @@ func validateStopTimePair(tripId string, previous TimeSequenceStop, current Time
 		return
 	}
 
-	previousTime, previousTimeLabel, ok := lastStopTime(previous)
+	previousTime, previousTimeLabel, ok := stopTimesLib.LastStopTime(previous)
 	if !ok {
 		return
 	}
 
-	currentTime, currentTimeLabel, ok := firstStopTime(current)
+	currentTime, currentTimeLabel, ok := stopTimesLib.FirstStopTime(current)
 	if !ok {
 		return
 	}
@@ -76,66 +69,4 @@ func validateStopTimePair(tripId string, previous TimeSequenceStop, current Time
 			currentTimeLabel,
 		))
 	}
-}
-
-func firstStopTime(stopTime TimeSequenceStop) (int, string, bool) {
-	if stopTime.ArrivalTime != nil {
-		seconds, ok := parseStopTimeSeconds(*stopTime.ArrivalTime)
-		if ok {
-			return seconds, *stopTime.ArrivalTime, true
-		}
-	}
-
-	if stopTime.DepartureTime != nil {
-		seconds, ok := parseStopTimeSeconds(*stopTime.DepartureTime)
-		if ok {
-			return seconds, *stopTime.DepartureTime, true
-		}
-	}
-
-	return 0, "", false
-}
-
-func lastStopTime(stopTime TimeSequenceStop) (int, string, bool) {
-	if stopTime.DepartureTime != nil {
-		seconds, ok := parseStopTimeSeconds(*stopTime.DepartureTime)
-		if ok {
-			return seconds, *stopTime.DepartureTime, true
-		}
-	}
-
-	if stopTime.ArrivalTime != nil {
-		seconds, ok := parseStopTimeSeconds(*stopTime.ArrivalTime)
-		if ok {
-			return seconds, *stopTime.ArrivalTime, true
-		}
-	}
-
-	return 0, "", false
-}
-
-func parseStopTimeSeconds(value string) (int, bool) {
-	if !lib.ValidateTime(value) {
-		return 0, false
-	}
-
-	parts := strings.Split(value, ":")
-	if len(parts) != 3 {
-		return 0, false
-	}
-
-	hours, err := strconv.Atoi(parts[0])
-	if err != nil {
-		return 0, false
-	}
-	minutes, err := strconv.Atoi(parts[1])
-	if err != nil {
-		return 0, false
-	}
-	seconds, err := strconv.Atoi(parts[2])
-	if err != nil {
-		return 0, false
-	}
-
-	return hours*3600 + minutes*60 + seconds, true
 }
