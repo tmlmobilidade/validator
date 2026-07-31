@@ -32,31 +32,31 @@ func TestLineShortNameValidation(t *testing.T) {
 		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Missing_LineShortName_When_LineId_Present_Errors", types.SEVERITY_ERROR)
 	})
 
-	t.Run("Same_As_LineLongName_Errors", func(t *testing.T) {
+	t.Run("Same_As_RouteShortName_Errors", func(t *testing.T) {
 		services.AppMessageService.Clear()
 
 		validations.LineShortNameValidation(&types.Route{
-			LineId:        lib.Ptr("100"),
-			LineShortName: lib.Ptr("Lisboa"),
-			LineLongName:  lib.Ptr("Lisboa"),
+			LineId:         lib.Ptr("100"),
+			LineShortName:  lib.Ptr("Lisboa"),
+			RouteShortName: lib.Ptr("Lisboa"),
 		}, 1, nil, &types.RoutesRules{
 			LineShortName: types.RuleConfig{Severity: types.SEVERITY_ERROR},
 		})
 
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Same_As_LineLongName_Errors", types.SEVERITY_ERROR)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 1, "Same_As_RouteShortName_Errors", types.SEVERITY_ERROR)
 	})
 
-	t.Run("Different_From_LineLongName_Passes", func(t *testing.T) {
+	t.Run("Different_From_RouteShortName_Passes", func(t *testing.T) {
 		services.AppMessageService.Clear()
 
 		validations.LineShortNameValidation(&types.Route{
-			LineId:        lib.Ptr("100"),
-			LineShortName: lib.Ptr("100"),
-			LineLongName:  lib.Ptr("Lisboa - Cascais"),
+			LineId:         lib.Ptr("100"),
+			LineShortName:  lib.Ptr("100"),
+			RouteShortName: lib.Ptr("101"),
 		}, 1, nil, &types.RoutesRules{
 			LineShortName: types.RuleConfig{Severity: types.SEVERITY_ERROR},
 		})
 
-		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Different_From_LineLongName_Passes", types.SEVERITY_ERROR)
+		test_helpers.AssertMessageCount(t, services.AppMessageService, 0, "Different_From_RouteShortName_Passes", types.SEVERITY_ERROR)
 	})
 }
