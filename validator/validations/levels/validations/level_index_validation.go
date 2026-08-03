@@ -22,6 +22,7 @@ Numeric index of the level that indicates relative position of this level in rel
 */
 func LevelIndexValidation(level *types.Levels, row int, rules *types.LevelsRules) {
 	ctx := lib.NewValidationContext("level_index", "levels.txt", "level_index_required", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.LevelIndex.Severity != "" {
 		ctx.WithSeverity(rules.LevelIndex.Severity)
 	}
