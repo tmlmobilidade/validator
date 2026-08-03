@@ -74,12 +74,7 @@ func FromStopIdValidation(pathways *types.Pathways, row int, gtfs *types.Gtfs, r
 	}
 
 	// Allowed: 0, 2, 3, 4
-	allowedLocationTypes := map[int]struct{}{
-		0: {},
-		2: {},
-		3: {},
-		4: {},
-	}
+	allowedLocationTypes := map[int]struct{}{0: {}, 2: {}, 3: {}, 4: {}}
 
 	if _, ok := allowedLocationTypes[locationType]; !ok {
 		ctx.AddError(
