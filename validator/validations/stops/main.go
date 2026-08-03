@@ -119,6 +119,9 @@ func RunValidations(gtfs types.Gtfs, rules *types.GtfsRules) {
 		// Validate has_tariffs_information
 		validations.HasTariffsInformationValidation(&stop, row, stopRules)
 
+		// Validate stop_access
+		validations.StopAccessValidation(&stop, row, &gtfs, stopRules)
+
 		return nil
 	})
 

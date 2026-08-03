@@ -57,6 +57,7 @@ type StopsRules struct {
 	RegionId              RuleConfig `json:"region_id_valid"`
 	MunicipalityId        RuleConfig `json:"municipality_id_valid"`
 	ParishId              RuleConfig `json:"parish_id_valid"`
+	StopAccess            RuleConfig `json:"stop_access"`
 }
 
 type RoutesRules struct {
@@ -254,18 +255,18 @@ type TransfersRules struct {
 
 type PathwaysRules struct {
 	File                 Severity   `json:"_file"`
-	PathwayId            RuleConfig `json:"pathway_id"`
-	FromStopId           RuleConfig `json:"from_stop_id"`
-	ToStopId             RuleConfig `json:"to_stop_id"`
-	PathwayMode          RuleConfig `json:"pathway_mode"`
-	IsBidirectional      RuleConfig `json:"is_bidirectional"`
-	Length               RuleConfig `json:"length"`
-	TraversalTime        RuleConfig `json:"traversal_time"`
-	StairCount           RuleConfig `json:"stair_count"`
-	MaxSlope             RuleConfig `json:"max_slope"`
-	MinWidth             RuleConfig `json:"min_width"`
-	SignpostedAs         RuleConfig `json:"signposted_as"`
-	ReversedSignpostedAs RuleConfig `json:"reversed_signposted_as"`
+	PathwayId            RuleConfig `json:"pathway_id_unique"`
+	FromStopId           RuleConfig `json:"pathway_from_stop_id_references_stops_table"`
+	ToStopId             RuleConfig `json:"pathway_to_stop_id_references_stops_table"`
+	PathwayMode          RuleConfig `json:"pathway_mode_valid_gtfs_enum"`
+	IsBidirectional      RuleConfig `json:"pathway_is_bidirectional_valid_gtfs_enum"`
+	Length               RuleConfig `json:"pathway_length_non_negative"`
+	TraversalTime        RuleConfig `json:"pathway_traversal_time_non_negative_seconds"`
+	StairCount           RuleConfig `json:"pathway_stair_count"`
+	MaxSlope             RuleConfig `json:"pathway_max_slope_allowed_for_pathway_mode"`
+	MinWidth             RuleConfig `json:"pathway_min_width_positive"`
+	SignpostedAs         RuleConfig `json:"pathway_signposted_as"`
+	ReversedSignpostedAs RuleConfig `json:"pathway_reversed_signposted_as"`
 }
 
 type LevelsRules struct {

@@ -249,18 +249,18 @@ type GtfsRules = {
     };
     pathways: {
         _file: Severity;
-        from_stop_id: RuleConfig;
-        is_bidirectional: RuleConfig;
-        length: RuleConfig;
-        max_slope: RuleConfig;
-        min_width: RuleConfig;
-        pathway_id: RuleConfig;
-        pathway_mode: RuleConfig;
-        reversed_signposted_as: RuleConfig;
-        signposted_as: RuleConfig;
-        stair_count: RuleConfig;
-        to_stop_id: RuleConfig;
-        traversal_time: RuleConfig;
+        pathway_from_stop_id_references_stops_table: RuleConfig;
+        pathway_is_bidirectional_valid_gtfs_enum: WithOptions<RuleConfig>;
+        pathway_length_non_negative: RuleConfig;
+        pathway_max_slope_allowed_for_pathway_mode: RuleConfig;
+        pathway_min_width_positive: RuleConfig;
+        pathway_id_unique: RuleConfig;
+        pathway_mode_valid_gtfs_enum: WithOptions<RuleConfig>;
+        pathway_reversed_signposted_as: RuleConfig;
+        pathway_signposted_as: RuleConfig;
+        pathway_stair_count: RuleConfig;
+        pathway_to_stop_id_references_stops_table: RuleConfig;
+        pathway_traversal_time_non_negative_seconds: RuleConfig;
     };
     levels: {
         _file: Severity;
@@ -1378,40 +1378,53 @@ const rules: GtfsRules = {
     },
     "pathways": {
         "_file": "ignore",
-        "from_stop_id": {
+        "pathway_from_stop_id_references_stops_table": {
             "severity": "ignore"
         },
-        "is_bidirectional": {
+        "pathway_is_bidirectional_valid_gtfs_enum": {
+            "options": [
+                "0",
+                "1"
+            ],
             "severity": "ignore"
         },
-        "length": {
+        "pathway_length_non_negative": {
             "severity": "ignore"
         },
-        "max_slope": {
+        "pathway_max_slope_allowed_for_pathway_mode": {
             "severity": "ignore"
         },
-        "min_width": {
+        "pathway_min_width_positive": {
             "severity": "ignore"
         },
-        "pathway_id": {
+        "pathway_id_unique": {
             "severity": "ignore"
         },
-        "pathway_mode": {
+        "pathway_mode_valid_gtfs_enum": {
+            "options": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7"
+            ],
             "severity": "ignore"
         },
-        "reversed_signposted_as": {
+        "pathway_reversed_signposted_as": {
             "severity": "ignore"
         },
-        "signposted_as": {
+        "pathway_signposted_as": {
             "severity": "ignore"
         },
-        "stair_count": {
+        "pathway_stair_count": {
             "severity": "ignore"
         },
-        "to_stop_id": {
+        "pathway_to_stop_id_references_stops_table": {
             "severity": "ignore"
         },
-        "traversal_time": {
+        "pathway_traversal_time_non_negative_seconds": {
             "severity": "ignore"
         }
     },

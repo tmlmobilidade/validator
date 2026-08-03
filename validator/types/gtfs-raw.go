@@ -51,6 +51,7 @@ type StopRaw struct {
 	TtsStopName           string `gtfs:"tts_stop_name"`
 	WheelchairBoarding    string `gtfs:"wheelchair_boarding"`
 	ZoneId                string `gtfs:"zone_id"`
+	StopAccess            string `gtfs:"stop_access"`
 }
 
 /* ROUTE */
