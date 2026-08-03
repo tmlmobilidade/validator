@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllFrontDisplayValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetFrontDisplayValidOptions()
+	validOptions := test_helpers.GetThreeStateValidOptions()
 	invalidOptions := test_helpers.GetInvalidIntOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("front_display", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {

@@ -22,7 +22,7 @@ Description of the location that provides useful, quality information. Should no
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func StopDescValidation(stop *types.Stop, row int, rules *types.StopsRules) {
-	ctx := lib.NewValidationContext("stop_desc", "stops.txt", "stop_desc_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("stop_desc", "stops.txt", "stop_desc_valid", row, services.AppMessageService)
 	if rules != nil && rules.StopDesc.Severity != "" {
 		ctx.WithSeverity(rules.StopDesc.Severity)
 	}
@@ -43,7 +43,7 @@ func StopDescValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	}
 
 	if stop.StopName != nil && *stop.StopName == *stop.StopDesc {
-		ctx.AddWarning(ctx.GetTranslatedMessage("stop_desc_validation.duplicate"))
+		ctx.AddWarning(ctx.GetTranslatedMessage("stop_desc_validation.duplicate", *stop.StopDesc, *stop.StopName))
 		return
 	}
 

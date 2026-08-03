@@ -46,7 +46,7 @@ Valid options are:
 */
 
 func TypologyValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("typology", "vehicles.txt", "typology_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("typology", "vehicles.txt", "typology_in_allowed_vehicle_types", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Typology.Severity != "" {
 		ctx.WithSeverity(rules.Typology.Severity)
@@ -64,14 +64,12 @@ func TypologyValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 	// }
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Typology.Options != nil {
 		if slices.Contains(*rules.Typology.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.Typology.Options, *vehicle.Typology) {
-
 			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("typology_validation.not_allowed", *vehicle.Typology))
 			return
 		}

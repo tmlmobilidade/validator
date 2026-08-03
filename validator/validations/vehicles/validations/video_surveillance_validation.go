@@ -25,8 +25,8 @@ Valid options are:
   - 1 - Yes
 */
 func VideoSurveillanceValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("video_surveillance", "vehicles.txt", "video_surveillance_validation", row, services.AppMessageService)
-	ctx.Severity = types.SEVERITY_ERROR
+	ctx := lib.NewValidationContext("video_surveillance", "vehicles.txt", "video_surveillance_valid_enum", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_IGNORE
 	if rules != nil && rules.VideoSurveillance.Severity != "" {
 		ctx.WithSeverity(rules.VideoSurveillance.Severity)
 	}
@@ -38,19 +38,18 @@ func VideoSurveillanceValidation(vehicle *types.Vehicle, row int, rules *types.V
 
 	validOptions := []int{0, 1}
 	if !slices.Contains(validOptions, *vehicle.VideoSurveillance) {
-		ctx.AddError(ctx.GetTranslatedMessage("video_surveillance_validation.invalid", *vehicle.VideoSurveillance))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("video_surveillance_validation.invalid", strconv.Itoa(*vehicle.VideoSurveillance)))
 		return
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.VideoSurveillance.Options != nil {
 		if slices.Contains(*rules.VideoSurveillance.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.VideoSurveillance.Options, strconv.Itoa(*vehicle.VideoSurveillance)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("video_surveillance_validation.not_allowed", *vehicle.VideoSurveillance))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("video_surveillance_validation.not_allowed", strconv.Itoa(*vehicle.VideoSurveillance)))
 			return
 		}
 	}

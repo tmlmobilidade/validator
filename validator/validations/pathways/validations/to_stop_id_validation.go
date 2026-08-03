@@ -75,7 +75,7 @@ func ToStopIdValidation(pathways *types.Pathways, row int, gtfs *types.Gtfs, rul
 	}
 
 	if locationType != 0 && locationType != 2 && locationType != 3 && locationType != 4 {
-		ctx.AddError(ctx.GetTranslatedMessage("to_stop_id_validation.invalid_location_type", *pathways.ToStopId, locationType))
+		ctx.AddError(ctx.GetTranslatedMessage("to_stop_id_validation.invalid_location_type_pathway", *pathways.ToStopId, locationType))
 		return
 	}
 

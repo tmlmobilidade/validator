@@ -83,7 +83,7 @@ func FromStopIdValidation(pathways *types.Pathways, row int, gtfs *types.Gtfs, r
 
 	if _, ok := allowedLocationTypes[locationType]; !ok {
 		ctx.AddError(
-			ctx.GetTranslatedMessage("from_stop_id_validation.invalid_location_type", stopID, locationType),
+			ctx.GetTranslatedMessage("from_stop_id_validation.invalid_location_type_pathway", stopID, locationType),
 		)
 		return
 	}

@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllClimatizationValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetClimatizationValidOptions()
+	validOptions := test_helpers.GetBinaryValidOptions()
 	invalidOptions := test_helpers.GetInvalidIntOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("climatization", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {

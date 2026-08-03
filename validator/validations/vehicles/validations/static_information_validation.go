@@ -26,7 +26,7 @@ Valid options are:
 */
 
 func StaticInformationValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("static_information", "vehicles.txt", "static_information_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("static_information", "vehicles.txt", "static_information_valid_enum", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.StaticInformation.Severity != "" {
 		ctx.WithSeverity(rules.StaticInformation.Severity)
@@ -39,19 +39,18 @@ func StaticInformationValidation(vehicle *types.Vehicle, row int, rules *types.V
 
 	validOptions := []int{0, 1}
 	if !slices.Contains(validOptions, *vehicle.StaticInformation) {
-		ctx.AddError(ctx.GetTranslatedMessage("static_information_validation.invalid", strconv.Itoa(*vehicle.StaticInformation)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("static_information_validation.invalid", strconv.Itoa(*vehicle.StaticInformation)))
 		return
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.StaticInformation.Options != nil {
 		if slices.Contains(*rules.StaticInformation.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.StaticInformation.Options, strconv.Itoa(*vehicle.StaticInformation)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("static_information_validation.not_allowed", *vehicle.StaticInformation))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("static_information_validation.not_allowed", strconv.Itoa(*vehicle.StaticInformation)))
 			return
 		}
 	}

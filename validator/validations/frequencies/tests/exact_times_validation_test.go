@@ -10,7 +10,7 @@ import (
 )
 
 func TestAllExactTimesValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetExactTimesValidOptions()
+	validOptions := test_helpers.GetBinaryValidOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("exact_times", validOptions) {
 		if tc.Name == "Missing_Value_Required" {
 			continue

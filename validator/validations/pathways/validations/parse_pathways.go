@@ -47,7 +47,7 @@ func ParsePathways(rawPathways types.PathwaysRaw, row int) types.Pathways {
 			Rows:         []int{row},
 			Message:      msg,
 			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "pathways_parse",
+			RuleID:       "pathways_values_parse",
 		})
 	}
 

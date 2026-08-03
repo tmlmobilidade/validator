@@ -92,11 +92,14 @@ type Route struct {
 	// Required fields
 	RouteId   *string `json:"route_id"`
 	RouteType *int    `json:"route_type"`
+	LineId    *string `json:"line_id"`
 
 	// Optional fields
 	AgencyId          *string `json:"agency_id"`
 	ContinuousDropOff *string `json:"continuous_drop_off"`
 	ContinuousPickup  *string `json:"continuous_pickup"`
+	LineShortName     *string `json:"line_short_name"`
+	LineLongName      *string `json:"line_long_name"`
 	RouteColor        *string `json:"route_color"`
 	RouteDesc         *string `json:"route_desc"`
 	RouteLongName     *string `json:"route_long_name"`
@@ -132,6 +135,16 @@ type TripGroupedByPattern map[string]struct {
 }
 
 type TripGroupedByShapeId map[string]struct {
+	Trips []Trip
+	Hash  []string
+}
+
+type TripGroupedByRouteId map[string]struct {
+	Trips []Trip
+	Hash  []string
+}
+
+type TripGroupedByDirectionId map[string]struct {
 	Trips []Trip
 	Hash  []string
 }
@@ -220,13 +233,13 @@ type Frequencies struct {
 /* TRANSFERS */
 type Transfers struct {
 	FromRouteId     *string `json:"from_route_id"`
-	FromStopId      string  `json:"from_stop_id"`
+	FromStopId      *string `json:"from_stop_id"`
 	FromTripId      *string `json:"from_trip_id"`
-	MinTransferTime float32 `json:"min_transfer_time"`
+	MinTransferTime *int    `json:"min_transfer_time"`
 	ToRouteId       *string `json:"to_route_id"`
-	ToStopId        string  `json:"to_stop_id"`
+	ToStopId        *string `json:"to_stop_id"`
 	ToTripId        *string `json:"to_trip_id"`
-	TransferType    int     `json:"transfer_type"`
+	TransferType    *int    `json:"transfer_type"`
 }
 
 /* PATHWAYS */

@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllConsumptionMeterValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetConsumptionMeterValidOptions()
+	validOptions := test_helpers.GetBinaryValidOptions()
 	invalidOptions := test_helpers.GetInvalidIntOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("consumption_meter", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {

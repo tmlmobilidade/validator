@@ -26,8 +26,7 @@ Valid options are:
 */
 
 func WheelchairValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("wheelchair", "vehicles.txt", "wheelchair_validation", row, services.AppMessageService)
-	ctx.Severity = types.SEVERITY_ERROR
+	ctx := lib.NewValidationContext("wheelchair", "vehicles.txt", "wheelchair_spots_valid_enum", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Wheelchair.Severity != "" {
 		ctx.WithSeverity(rules.Wheelchair.Severity)
@@ -40,19 +39,18 @@ func WheelchairValidation(vehicle *types.Vehicle, row int, rules *types.Vehicles
 
 	validOptions := []int{0, 1}
 	if !slices.Contains(validOptions, *vehicle.Wheelchair) {
-		ctx.AddError(ctx.GetTranslatedMessage("wheelchair_validation.invalid", *vehicle.Wheelchair))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("wheelchair_validation.invalid", strconv.Itoa(*vehicle.Wheelchair)))
 		return
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Wheelchair.Options != nil {
 		if slices.Contains(*rules.Wheelchair.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.Wheelchair.Options, strconv.Itoa(*vehicle.Wheelchair)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("wheelchair_validation.not_allowed", *vehicle.Wheelchair))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("wheelchair_validation.not_allowed", strconv.Itoa(*vehicle.Wheelchair)))
 			return
 		}
 	}

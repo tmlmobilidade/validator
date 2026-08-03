@@ -24,7 +24,7 @@ Route color designation that matches public facing material. Defaults to white (
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
 func RouteColorValidation(route *types.Route, row int, rules *types.RoutesRules) {
-	ctx := lib.NewValidationContext("route_color", "routes.txt", "route_color_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("route_color", "routes.txt", "route_color_valid_hex_string", row, services.AppMessageService)
 	if rules != nil && rules.RouteColor.Severity != "" {
 		ctx.WithSeverity(rules.RouteColor.Severity)
 	}
@@ -47,7 +47,7 @@ func RouteColorValidation(route *types.Route, row int, rules *types.RoutesRules)
 	color := strings.ToUpper(*route.RouteColor)
 	matched, _ := regexp.MatchString(`^[0-9A-F]{6}$`, color)
 	if !matched {
-		ctx.AddError(ctx.GetTranslatedMessage("route_color_validation.invalid"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("route_color_validation.invalid"))
 		return
 	}
 

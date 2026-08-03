@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllHasPipRealTimeValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetHasPipRealTimeValidOptions()
+	validOptions := test_helpers.GetThreeStateValidOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("has_pip_real_time", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()

@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllRampValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetRampValidOptions()
+	validOptions := test_helpers.GetFourStateValidOptions()
 	invalidOptions := test_helpers.GetInvalidIntOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("ramp", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {

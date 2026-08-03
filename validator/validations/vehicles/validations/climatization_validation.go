@@ -26,7 +26,7 @@ Valid options are:
 */
 
 func ClimatizationValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("climatization", "vehicles.txt", "climatization_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("climatization", "vehicles.txt", "climatization_valid_enum", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Climatization.Severity != "" {
 		ctx.WithSeverity(rules.Climatization.Severity)
@@ -39,19 +39,18 @@ func ClimatizationValidation(vehicle *types.Vehicle, row int, rules *types.Vehic
 
 	validOptions := []int{0, 1}
 	if !slices.Contains(validOptions, *vehicle.Climatization) {
-		ctx.AddError(ctx.GetTranslatedMessage("climatization_validation.invalid", *vehicle.Climatization))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("climatization_validation.invalid", strconv.Itoa(*vehicle.Climatization)))
 		return
 	}
 
 	// Validate rules
-	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Climatization.Options != nil {
 		if slices.Contains(*rules.Climatization.Options, types.ALL_OPTIONS) {
 			return
 		}
 
 		if !slices.Contains(*rules.Climatization.Options, strconv.Itoa(*vehicle.Climatization)) {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("climatization_validation.not_allowed", *vehicle.Climatization))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("climatization_validation.not_allowed", strconv.Itoa(*vehicle.Climatization)))
 			return
 		}
 	}

@@ -19,6 +19,7 @@ var GTFSFileToTable = map[string]string{
 	"shapes.txt":          "shapes",
 	"frequencies.txt":     "frequencies",
 	"pathways.txt":        "pathways",
+	"transfers.txt":       "transfers",
 }
 
 // GTFSFiles is the set of valid GTFS filenames that will be processed
@@ -41,6 +42,7 @@ var GTFSFiles = map[string]struct{}{
 	"vehicles.txt":        {},
 	"frequencies.txt":     {},
 	"pathways.txt":        {},
+	"transfers.txt":       {},
 }
 
 // GTFSTables is the list of all possible GTFS table names (without .txt extension)

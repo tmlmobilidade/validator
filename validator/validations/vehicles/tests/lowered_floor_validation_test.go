@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllLoweredFloorValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetLoweredFloorValidOptions()
+	validOptions := test_helpers.GetThreeStateValidOptions()
 	invalidOptions := test_helpers.GetInvalidIntOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("lowered_floor", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {

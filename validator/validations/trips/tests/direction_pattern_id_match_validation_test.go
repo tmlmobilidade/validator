@@ -10,7 +10,7 @@ import (
 )
 
 func TestAllDirectionPatternIdMatchValidationTestCases(t *testing.T) {
-	directionIdValidOptions := test_helpers.GetDirectionIdValidOptions()
+	directionIdValidOptions := test_helpers.GetBinaryValidOptions()
 	patternIdValidOptions := []string{"1001_0_1", "1001_1_2"}
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("direction_id", directionIdValidOptions) {
 		// For valid option test cases, only test with matching pattern_id

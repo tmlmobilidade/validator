@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllTransfersValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetTransfersValidOptions()
+	validOptions := test_helpers.GetThreeStateValidOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("transfers", validOptions) {
 		if tc.Name == "Required" {
 			continue

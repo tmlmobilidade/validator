@@ -59,11 +59,14 @@ type RouteRaw struct {
 	// Required fields
 	RouteId   string `gtfs:"route_id"`
 	RouteType string `gtfs:"route_type"`
+	LineId    string `gtfs:"line_id"`
 
 	// Optional fields
 	AgencyId          string `gtfs:"agency_id"`
 	ContinuousDropOff string `gtfs:"continuous_drop_off"`
 	ContinuousPickup  string `gtfs:"continuous_pickup"`
+	LineShortName     string `gtfs:"line_short_name"`
+	LineLongName      string `gtfs:"line_long_name"`
 	RouteColor        string `gtfs:"route_color"`
 	RouteDesc         string `gtfs:"route_desc"`
 	RouteLongName     string `gtfs:"route_long_name"`
@@ -572,6 +575,19 @@ func (g *Gtfs) GetRowsById(table, id string) ([]int, error) {
 	return result, rows.Err()
 }
 
+// getCachedRowsById returns rows from cache if present, otherwise fetches via GetRowsById and stores in cache.
+func (g *Gtfs) GetCachedRowsById(cache map[string][]int, table, id string) ([]int, error) {
+	if rows, ok := cache[id]; ok {
+		return rows, nil
+	}
+	rows, err := g.GetRowsById(table, id)
+	if err != nil {
+		return nil, err
+	}
+	cache[id] = rows
+	return rows, nil
+}
+
 // GetRowsByField returns the row indices for a given table and column value from the actual table data.
 // Unlike GetRowsById which queries the id_map table, this queries the real table directly.
 // This is useful for checking uniqueness of non-primary-key fields (e.g., license_plate).
@@ -643,8 +659,8 @@ func (g *Gtfs) queryTableRowByIndex(table string, rowIndex int) (map[string]stri
 		return nil, fmt.Errorf("failed to get columns: %w", err)
 	}
 
-	// Query specific row using LIMIT and OFFSET
-	rows, err = g.db.Query(fmt.Sprintf("SELECT * FROM %s ORDER BY rowid LIMIT 1 OFFSET ?", tableName), rowIndex)
+	// Query by rowid for O(1) lookup (SQLite rowid is 1-based, rowIndex is 0-based)
+	rows, err = g.db.Query(fmt.Sprintf("SELECT * FROM %s WHERE rowid = ?", tableName), rowIndex+1)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query row: %w", err)
 	}
@@ -781,6 +797,48 @@ func (g *Gtfs) GetShape(rowIndex int) (ShapeRaw, error) {
 		return ShapeRaw{}, err
 	}
 	return convertRowToStruct[ShapeRaw](row), nil
+}
+
+// GetShapesByShapeId retrieves all shape points for a shape_id in one query.
+// More efficient than GetRowsById + GetShape per row when loading full shapes.
+func (g *Gtfs) GetShapesByShapeId(shapeId string) ([]ShapeRaw, error) {
+	if g.db == nil {
+		return nil, fmt.Errorf("database connection is nil")
+	}
+	tableName := sanitizeTableNameForQuery("shapes")
+	rows, err := g.db.Query(fmt.Sprintf("SELECT * FROM %s WHERE shape_id = ? ORDER BY shape_pt_sequence", tableName), shapeId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query shapes: %w", err)
+	}
+	defer rows.Close()
+
+	columns, err := rows.Columns()
+	if err != nil {
+		return nil, err
+	}
+
+	var result []ShapeRaw
+	for rows.Next() {
+		values := make([]interface{}, len(columns))
+		valuePtrs := make([]interface{}, len(columns))
+		for i := range values {
+			valuePtrs[i] = &values[i]
+		}
+		if err := rows.Scan(valuePtrs...); err != nil {
+			return nil, err
+		}
+		rowMap := make(map[string]string)
+		for i, col := range columns {
+			colName := strings.Trim(col, `"`)
+			if values[i] != nil {
+				rowMap[colName] = fmt.Sprintf("%v", values[i])
+			} else {
+				rowMap[colName] = ""
+			}
+		}
+		result = append(result, convertRowToStruct[ShapeRaw](rowMap))
+	}
+	return result, rows.Err()
 }
 
 // IteratePathways iterates over all pathways, calling fn for each pathway
@@ -965,6 +1023,14 @@ func (g *Gtfs) IterateVehicles(fn func(int, VehicleRaw) error) error {
 	return g.iterateTable("vehicles", func(rowIndex int, row map[string]string) error {
 		vehicleRaw := convertRowToStruct[VehicleRaw](row)
 		return fn(rowIndex, vehicleRaw)
+	})
+}
+
+// IterateTransfers iterates over all transfers, calling fn for each
+func (g *Gtfs) IterateTransfers(fn func(int, TransfersRaw) error) error {
+	return g.iterateTable("transfers", func(rowIndex int, row map[string]string) error {
+		transfersRaw := convertRowToStruct[TransfersRaw](row)
+		return fn(rowIndex, transfersRaw)
 	})
 }
 
