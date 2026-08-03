@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllBikesAllowedValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetBikesAllowedValidOptions()
+	validOptions := test_helpers.GetThreeStateValidOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("bikes_allowed", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()

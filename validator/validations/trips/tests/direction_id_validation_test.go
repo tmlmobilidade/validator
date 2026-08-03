@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllDirectionIdValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetDirectionIdValidOptions()
+	validOptions := test_helpers.GetBinaryValidOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("direction_id", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()

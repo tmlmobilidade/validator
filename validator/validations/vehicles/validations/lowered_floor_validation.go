@@ -27,19 +27,20 @@ Valid options are:
 */
 
 func LoweredFloorValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("lowered_floor", "vehicles.txt", "lowered_floor_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("lowered_floor", "vehicles.txt", "lowered_floor_valid_enum", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.LoweredFloor.Severity != "" {
 		ctx.WithSeverity(rules.LoweredFloor.Severity)
 	}
 
 	if vehicle.LoweredFloor == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("lowered_floor_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("lowered_floor_validation.required"))
 		return
 	}
 
 	validOptions := []int{0, 1, 2}
 	if !slices.Contains(validOptions, *vehicle.LoweredFloor) {
-		ctx.AddError(ctx.GetTranslatedMessage("lowered_floor_validation.invalid", strconv.Itoa(*vehicle.LoweredFloor)))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("lowered_floor_validation.invalid", strconv.Itoa(*vehicle.LoweredFloor)))
 		return
 	}
 
@@ -50,7 +51,7 @@ func LoweredFloorValidation(vehicle *types.Vehicle, row int, rules *types.Vehicl
 		}
 
 		if !slices.Contains(*rules.LoweredFloor.Options, strconv.Itoa(*vehicle.LoweredFloor)) {
-			ctx.AddError(ctx.GetTranslatedMessage("lowered_floor_validation.not_allowed", *vehicle.LoweredFloor))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("lowered_floor_validation.not_allowed", strconv.Itoa(*vehicle.LoweredFloor)))
 			return
 		}
 	}

@@ -25,19 +25,20 @@ Valid options are:
   - 1 - Yes
 */
 func BicyclesValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("bicycles", "vehicles.txt", "bicycles_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("bicycles", "vehicles.txt", "bicycles_rack_count_non_negative", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Bicycles.Severity != "" {
 		ctx.WithSeverity(rules.Bicycles.Severity)
 	}
 
 	if vehicle.Bicycles == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("bicycles_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("bicycles_validation.required"))
 		return
 	}
 
 	validOptions := []int{0, 1}
 	if !slices.Contains(validOptions, *vehicle.Bicycles) {
-		ctx.AddError(ctx.GetTranslatedMessage("bicycles_validation.invalid", *vehicle.Bicycles))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("bicycles_validation.invalid", strconv.Itoa(*vehicle.Bicycles)))
 		return
 	}
 
@@ -48,7 +49,7 @@ func BicyclesValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 		}
 
 		if !slices.Contains(*rules.Bicycles.Options, strconv.Itoa(*vehicle.Bicycles)) {
-			ctx.AddError(ctx.GetTranslatedMessage("bicycles_validation.not_allowed", *vehicle.Bicycles))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("bicycles_validation.not_allowed", strconv.Itoa(*vehicle.Bicycles)))
 			return
 		}
 	}

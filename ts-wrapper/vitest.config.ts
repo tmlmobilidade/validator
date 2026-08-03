@@ -1,6 +1,15 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
+const packageRoot = path.dirname(fileURLToPath(import.meta.url));
+
 export default defineConfig({
+	resolve: {
+		alias: {
+			'@': path.join(packageRoot, 'src'),
+		},
+	},
 	test: {
 		coverage: {
 			exclude: [
@@ -16,7 +25,7 @@ export default defineConfig({
 		environment: 'node',
 		exclude: ['node_modules', 'dist', '.idea', '.git', '.cache'],
 		globals: true,
-		include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-		testTimeout: 60000, // 60 seconds for integration tests
+		include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+		testTimeout: 60000,
 	},
 });

@@ -28,19 +28,20 @@ Valid options are:
 */
 
 func KneelingValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("kneeling", "vehicles.txt", "kneeling_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("kneeling", "vehicles.txt", "kneeling_valid_enum", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Kneeling.Severity != "" {
 		ctx.WithSeverity(rules.Kneeling.Severity)
 	}
 
 	if vehicle.Kneeling == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("kneeling_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("kneeling_validation.required"))
 		return
 	}
 
 	validOptions := []int{0, 1, 2}
 	if !slices.Contains(validOptions, *vehicle.Kneeling) {
-		ctx.AddError(ctx.GetTranslatedMessage("kneeling_validation.invalid", *vehicle.Kneeling))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("kneeling_validation.invalid", strconv.Itoa(*vehicle.Kneeling)))
 		return
 	}
 
@@ -51,7 +52,7 @@ func KneelingValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 		}
 
 		if !slices.Contains(*rules.Kneeling.Options, strconv.Itoa(*vehicle.Kneeling)) {
-			ctx.AddError(ctx.GetTranslatedMessage("kneeling_validation.not_allowed", *vehicle.Kneeling))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("kneeling_validation.not_allowed", strconv.Itoa(*vehicle.Kneeling)))
 			return
 		}
 	}

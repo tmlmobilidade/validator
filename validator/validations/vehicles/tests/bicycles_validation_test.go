@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllBicyclesValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetBicyclesValidOptions()
+	validOptions := test_helpers.GetBinaryValidOptions()
 	invalidOptions := test_helpers.GetInvalidIntOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("bicycles", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {

@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllWheelchairAccessibleValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetWheelchairBoardingValidOptions()
+	validOptions := test_helpers.GetThreeStateValidOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("wheelchair_accessible", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()

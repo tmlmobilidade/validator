@@ -25,19 +25,20 @@ Valid options are:
   - 1 - Yes
 */
 func ConsumptionMeterValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("consumption_meter", "vehicles.txt", "consumption_meter_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("consumption_meter", "vehicles.txt", "consumption_meter_valid_format", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.ConsumptionMeter.Severity != "" {
 		ctx.WithSeverity(rules.ConsumptionMeter.Severity)
 	}
 
 	if vehicle.ConsumptionMeter == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("consumption_meter_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("consumption_meter_validation.required"))
 		return
 	}
 
 	validOptions := []int{0, 1}
 	if !slices.Contains(validOptions, *vehicle.ConsumptionMeter) {
-		ctx.AddError(ctx.GetTranslatedMessage("consumption_meter_validation.invalid", *vehicle.ConsumptionMeter))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("consumption_meter_validation.invalid", strconv.Itoa(*vehicle.ConsumptionMeter)))
 		return
 	}
 
@@ -48,7 +49,7 @@ func ConsumptionMeterValidation(vehicle *types.Vehicle, row int, rules *types.Ve
 		}
 
 		if !slices.Contains(*rules.ConsumptionMeter.Options, strconv.Itoa(*vehicle.ConsumptionMeter)) {
-			ctx.AddError(ctx.GetTranslatedMessage("consumption_meter_validation.not_allowed", *vehicle.ConsumptionMeter))
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("consumption_meter_validation.not_allowed", strconv.Itoa(*vehicle.ConsumptionMeter)))
 			return
 		}
 	}

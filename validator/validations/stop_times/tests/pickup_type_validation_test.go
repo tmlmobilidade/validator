@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllPickupTypeValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetPickupTypeValidOptions()
+	validOptions := test_helpers.GetFourStateValidOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("pickup_type", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {
 			services.AppMessageService.Clear()

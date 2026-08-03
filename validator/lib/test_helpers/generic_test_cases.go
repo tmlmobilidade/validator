@@ -485,98 +485,29 @@ func GetGenericSeverityTestCases(fieldName string) []GenericSeverityTestCase {
 // ARRAYS VALUE GENERATORS
 // ===============================================
 
+// GetBinaryValidOptions returns valid binary values
+func GetBinaryValidOptions() []int {
+	return []int{0, 1}
+}
+
+// GetThreeStateValidOptions returns valid three-state values
+func GetThreeStateValidOptions() []int {
+	return []int{0, 1, 2}
+}
+
+// GetFourStateValidOptions returns valid four-state values
+func GetFourStateValidOptions() []int {
+	return []int{0, 1, 2, 3}
+}
+
 // GetRouteTypeValidOptions returns valid GTFS route_type values
 func GetRouteTypeValidOptions() []int {
 	return []int{0, 1, 2, 3, 4, 5, 6, 7, 11, 12}
 }
 
-// GetContinuousPickupDropOffValidOptions returns valid continuous_pickup/drop_off values
-func GetContinuousPickupDropOffValidOptions() []int {
-	return []int{0, 1, 2, 3}
-}
-
-// GetPickupTypeValidOptions returns valid pickup_type values for stop_times
-func GetPickupTypeValidOptions() []int {
-	return []int{0, 1, 2, 3}
-}
-
-// GetDropOffTypeValidOptions returns valid drop_off_type values for stop_times
-func GetDropOffTypeValidOptions() []int {
-	return []int{0, 1, 2, 3}
-}
-
-// GetTimepointValidOptions returns valid timepoint values for stop_times
-func GetTimepointValidOptions() []int {
-	return []int{0, 1}
-}
-
 // GetLocationTypeValidOptions returns valid location_type values for stops
 func GetLocationTypeValidOptions() []int {
 	return []int{0, 1, 2, 3, 4}
-}
-
-// GetWheelchairBoardingValidOptions returns valid wheelchair_boarding values
-func GetWheelchairBoardingValidOptions() []int {
-	return []int{0, 1, 2}
-}
-
-// GetBikesAllowedValidOptions returns valid bikes_allowed values
-func GetBikesAllowedValidOptions() []int {
-	return []int{0, 1, 2}
-}
-
-// GetDirectionIdValidOptions returns valid direction_id values
-func GetDirectionIdValidOptions() []int {
-	return []int{0, 1}
-}
-
-// GetExceptionTypeValidOptions returns valid exception_type values for calendar_dates
-func GetExceptionTypeValidOptions() []int {
-	return []int{1, 2}
-}
-
-// GetTransfersValidOptions returns valid transfers values
-func GetTransfersValidOptions() []int {
-	return []int{0, 1, 2}
-}
-
-// GetHasBenchValidOptions returns valid has_bench values
-func GetHasBenchValidOptions() []int {
-	return []int{0, 1, 2, 3}
-}
-
-// GetHasNetworkMapValidOptions returns valid has_network_map values
-func GetHasNetworkMapValidOptions() []int {
-	return []int{0, 1, 2, 3}
-}
-
-// GetHasPipRealTimeValidOptions returns valid has_pip_real_time values
-func GetHasPipRealTimeValidOptions() []int {
-	return []int{0, 1, 2}
-}
-
-// GetHasSchedulesValidOptions returns valid has_schedules values
-func GetHasSchedulesValidOptions() []int {
-	return []int{0, 1}
-}
-
-// GetHasShelterValidOptions returns valid has_shelter values
-func GetHasShelterValidOptions() []int {
-	return []int{0, 1}
-}
-
-// GetHasStopSignValidOptions returns valid has_stop_sign values
-func GetHasStopSignValidOptions() []int {
-	return []int{0, 1, 2, 3}
-}
-
-// GetHasTariffsInformationValidOptions returns valid has_tariffs_information values
-func GetHasTariffsInformationValidOptions() []int {
-	return []int{0, 1}
-}
-
-func GetExactTimesValidOptions() []int {
-	return []int{0, 1}
 }
 
 // GetValidShapeOptions returns valid shape_pt_sequence values
@@ -612,86 +543,6 @@ func GetPropulsionValidOptions() []int {
 // GetEmissionValidOptions returns valid emission values
 func GetEmissionValidOptions() []int {
 	return []int{1, 2, 3, 4, 5, 6}
-}
-
-// GetClimatizationValidOptions returns valid climatization values
-func GetClimatizationValidOptions() []int {
-	return []int{0, 1}
-}
-
-// GetWheelchairValidOptions returns valid wheelchair values
-func GetWheelchairValidOptions() []int {
-	return []int{0, 1}
-}
-
-// GetLoweredFloorValidOptions returns valid lowered_floor values
-func GetLoweredFloorValidOptions() []int {
-	return []int{0, 1, 2}
-}
-
-// GetRampValidOptions returns valid ramp values
-func GetRampValidOptions() []int {
-	return []int{0, 1, 2, 3}
-}
-
-// GetKneelingValidOptions returns valid kneeling values
-func GetKneelingValidOptions() []int {
-	return []int{0, 1, 2}
-}
-
-// GetStaticInformationValidOptions returns valid static_information values
-func GetStaticInformationValidOptions() []int {
-	return []int{0, 1}
-}
-
-// GetOnboardMonitorValidOptions returns valid onboard_monitor values
-func GetOnboardMonitorValidOptions() []int {
-	return []int{0, 1}
-}
-
-// GetFrontDisplayValidOptions returns valid front_display values
-func GetFrontDisplayValidOptions() []int {
-	return []int{0, 1, 2}
-}
-
-// GetRearDisplayValidOptions returns valid rear_display values
-func GetRearDisplayValidOptions() []int {
-	return []int{0, 1, 2}
-}
-
-// GetSideDisplayValidOptions returns valid side_display values
-func GetSideDisplayValidOptions() []int {
-	return []int{0, 1, 2}
-}
-
-// GetInternalSoundValidOptions returns valid internal_sound values
-func GetInternalSoundValidOptions() []int {
-	return []int{0, 1}
-}
-
-// GetExternalSoundValidOptions returns valid external_sound values
-func GetExternalSoundValidOptions() []int {
-	return []int{0, 1}
-}
-
-// GetConsumptionMeterValidOptions returns valid consumption_meter values
-func GetConsumptionMeterValidOptions() []int {
-	return []int{0, 1}
-}
-
-// GetBicyclesValidOptions returns valid bicycles values
-func GetBicyclesValidOptions() []int {
-	return []int{0, 1}
-}
-
-// GetPassengerCountingValidOptions returns valid passenger_counting values
-func GetPassengerCountingValidOptions() []int {
-	return []int{0, 1}
-}
-
-// GetVideoSurveillanceValidOptions returns valid video_surveillance values
-func GetVideoSurveillanceValidOptions() []int {
-	return []int{0, 1}
 }
 
 // ===============================================

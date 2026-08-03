@@ -9,7 +9,7 @@ import (
 )
 
 func TestAllVideoSurveillanceValidationTestCases(t *testing.T) {
-	validOptions := test_helpers.GetVideoSurveillanceValidOptions()
+	validOptions := test_helpers.GetBinaryValidOptions()
 	invalidOptions := test_helpers.GetInvalidIntOptions()
 	for _, tc := range test_helpers.GetGenericEnumIntTestCases("video_surveillance", validOptions) {
 		t.Run(tc.Name, func(t *testing.T) {
@@ -28,7 +28,10 @@ func TestAllVideoSurveillanceValidationTestCases(t *testing.T) {
 				videoSurveillanceValue = nil
 			}
 
-			validations.VideoSurveillanceValidation(&types.Vehicle{VideoSurveillance: videoSurveillanceValue}, tc.Row, nil)
+			tripRules := &types.VehiclesRules{
+				VideoSurveillance: types.RuleConfig{Severity: types.SEVERITY_ERROR},
+			}
+			validations.VideoSurveillanceValidation(&types.Vehicle{VideoSurveillance: videoSurveillanceValue}, tc.Row, tripRules)
 			test_helpers.AssertMessageCount(t, services.AppMessageService, tc.ExpectedErrors, tc.Name, types.SEVERITY_ERROR)
 		})
 	}

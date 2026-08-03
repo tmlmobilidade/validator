@@ -84,6 +84,7 @@ type Stop struct {
 	TtsStopName           *string  `json:"tts_stop_name,omitempty"`
 	WheelchairBoarding    *int     `json:"wheelchair_boarding,omitempty"`
 	ZoneId                *string  `json:"zone_id,omitempty"`
+	StopAccess            *int     `json:"stop_access,omitempty"`
 }
 
 /* ROUTE */
@@ -91,11 +92,14 @@ type Route struct {
 	// Required fields
 	RouteId   *string `json:"route_id"`
 	RouteType *int    `json:"route_type"`
+	LineId    *string `json:"line_id"`
 
 	// Optional fields
 	AgencyId          *string `json:"agency_id"`
 	ContinuousDropOff *string `json:"continuous_drop_off"`
 	ContinuousPickup  *string `json:"continuous_pickup"`
+	LineShortName     *string `json:"line_short_name"`
+	LineLongName      *string `json:"line_long_name"`
 	RouteColor        *string `json:"route_color"`
 	RouteDesc         *string `json:"route_desc"`
 	RouteLongName     *string `json:"route_long_name"`
@@ -126,6 +130,21 @@ type Trip struct {
 }
 
 type TripGroupedByPattern map[string]struct {
+	Trips []Trip
+	Hash  []string
+}
+
+type TripGroupedByShapeId map[string]struct {
+	Trips []Trip
+	Hash  []string
+}
+
+type TripGroupedByRouteId map[string]struct {
+	Trips []Trip
+	Hash  []string
+}
+
+type TripGroupedByDirectionId map[string]struct {
 	Trips []Trip
 	Hash  []string
 }
@@ -214,29 +233,29 @@ type Frequencies struct {
 /* TRANSFERS */
 type Transfers struct {
 	FromRouteId     *string `json:"from_route_id"`
-	FromStopId      string  `json:"from_stop_id"`
+	FromStopId      *string `json:"from_stop_id"`
 	FromTripId      *string `json:"from_trip_id"`
-	MinTransferTime float32 `json:"min_transfer_time"`
+	MinTransferTime *int    `json:"min_transfer_time"`
 	ToRouteId       *string `json:"to_route_id"`
-	ToStopId        string  `json:"to_stop_id"`
+	ToStopId        *string `json:"to_stop_id"`
 	ToTripId        *string `json:"to_trip_id"`
-	TransferType    int     `json:"transfer_type"`
+	TransferType    *int    `json:"transfer_type"`
 }
 
 /* PATHWAYS */
 type Pathways struct {
 	FromStopId           *string  `json:"from_stop_id"`
-	IsBidirectional      bool     `json:"is_bidirectional"`
+	IsBidirectional      *int     `json:"is_bidirectional"`
 	Length               *float32 `json:"length"`
 	MaxSlope             *string  `json:"max_slope"`
 	MinWidth             *string  `json:"min_width"`
-	PathwayId            string   `json:"pathway_id"`
-	PathwayMode          int      `json:"pathway_mode"`
+	PathwayId            *string  `json:"pathway_id"`
+	PathwayMode          *int     `json:"pathway_mode"`
 	ReversedSignpostedAs *string  `json:"reversed_signposted_as"`
 	SignpostedAs         *string  `json:"signposted_as"`
 	StairCount           *uint16  `json:"stair_count"`
 	ToStopId             *string  `json:"to_stop_id"`
-	TraversalTime        *float32 `json:"traversal_time"`
+	TraversalTime        *int     `json:"traversal_time"`
 }
 
 /* LEVELS */
@@ -445,34 +464,34 @@ type Afetacao struct {
 
 /* VEHICLE */
 type Vehicle struct {
-	VehicleId         *string  `json:"vehicle_id"`
-	AgencyId          *string  `json:"agency_id"`
-	LicensePlate      *string  `json:"license_plate"`
-	Make              *string  `json:"make"`
-	Model             *string  `json:"model"`
-	Owner             *string  `json:"owner"`
-	RegistrationDate  *string  `json:"registration_date"`
-	AvailableSeats    *int     `json:"available_seats"`
-	AvailableStanding *int     `json:"available_standing"`
-	Typology          *float64 `json:"typology"`
-	Propulsion        *int     `json:"propulsion"`
-	Emission          *int     `json:"emission"`
-	Climatization     *int     `json:"climatization"`
-	Wheelchair        *int     `json:"wheelchair"`
-	LoweredFloor      *int     `json:"lowered_floor"`
-	Ramp              *int     `json:"ramp"`
-	Kneeling          *int     `json:"kneeling"`
-	StaticInformation *int     `json:"static_information"`
-	OnboardMonitor    *int     `json:"onboard_monitor"`
-	FrontDisplay      *int     `json:"front_display"`
-	RearDisplay       *int     `json:"rear_display"`
-	SideDisplay       *int     `json:"side_display"`
-	InternalSound     *int     `json:"internal_sound"`
-	ExternalSound     *int     `json:"external_sound"`
-	ConsumptionMeter  *int     `json:"consumption_meter"`
-	Bicycles          *int     `json:"bicycles"`
-	PassengerCounting *int     `json:"passenger_counting"`
-	VideoSurveillance *int     `json:"video_surveillance"`
+	VehicleId         *string `json:"vehicle_id"`
+	AgencyId          *string `json:"agency_id"`
+	LicensePlate      *string `json:"license_plate"`
+	Make              *string `json:"make"`
+	Model             *string `json:"model"`
+	Owner             *string `json:"owner"`
+	RegistrationDate  *string `json:"registration_date"`
+	AvailableSeats    *int    `json:"available_seats"`
+	AvailableStanding *int    `json:"available_standing"`
+	Typology          *string `json:"typology"`
+	Propulsion        *int    `json:"propulsion"`
+	Emission          *int    `json:"emission"`
+	Climatization     *int    `json:"climatization"`
+	Wheelchair        *int    `json:"wheelchair"`
+	LoweredFloor      *int    `json:"lowered_floor"`
+	Ramp              *int    `json:"ramp"`
+	Kneeling          *int    `json:"kneeling"`
+	StaticInformation *int    `json:"static_information"`
+	OnboardMonitor    *int    `json:"onboard_monitor"`
+	FrontDisplay      *int    `json:"front_display"`
+	RearDisplay       *int    `json:"rear_display"`
+	SideDisplay       *int    `json:"side_display"`
+	InternalSound     *int    `json:"internal_sound"`
+	ExternalSound     *int    `json:"external_sound"`
+	ConsumptionMeter  *int    `json:"consumption_meter"`
+	Bicycles          *int    `json:"bicycles"`
+	PassengerCounting *int    `json:"passenger_counting"`
+	VideoSurveillance *int    `json:"video_surveillance"`
 }
 
 /* PERIOD */

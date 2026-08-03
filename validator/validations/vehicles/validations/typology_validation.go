@@ -5,7 +5,6 @@ import (
 	"main/services"
 	"main/types"
 	"slices"
-	"strconv"
 )
 
 /*
@@ -47,22 +46,22 @@ Valid options are:
 */
 
 func TypologyValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRules) {
-	ctx := lib.NewValidationContext("typology", "vehicles.txt", "typology_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("typology", "vehicles.txt", "typology_in_allowed_vehicle_types", row, services.AppMessageService)
+	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.Typology.Severity != "" {
 		ctx.WithSeverity(rules.Typology.Severity)
 	}
 
 	if vehicle.Typology == nil {
-		ctx.AddError(ctx.GetTranslatedMessage("typology_validation.required"))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("typology_validation.required"))
 		return
 	}
 
-	validOptions := []float64{0.1, 0.2, 0.3, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 4.1, 4.2, 4.3, 7.1, 7.2, 7.3}
-
-	if !slices.Contains(validOptions, *vehicle.Typology) {
-		ctx.AddError(ctx.GetTranslatedMessage("typology_validation.invalid", *vehicle.Typology))
-		return
-	}
+	// validOptions := []string{"0.1", "0.2", "0.3", "1.1", "1.2", "1.3", "2.1", "2.2", "2.3", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "4.1", "4.2", "4.3", "7.1", "7.2", "7.3"}
+	// if !slices.Contains(validOptions, *vehicle.Typology) {
+	// 	ctx.AddError(ctx.GetTranslatedMessage("typology_validation.invalid", &vehicle.Typology))
+	// 	return
+	// }
 
 	// Validate rules
 	if rules != nil && rules.Typology.Options != nil {
@@ -70,8 +69,8 @@ func TypologyValidation(vehicle *types.Vehicle, row int, rules *types.VehiclesRu
 			return
 		}
 
-		if !slices.Contains(*rules.Typology.Options, strconv.FormatFloat(*vehicle.Typology, 'f', -1, 64)) {
-			ctx.AddError(ctx.GetTranslatedMessage("typology_validation.not_allowed", *vehicle.Typology))
+		if !slices.Contains(*rules.Typology.Options, *vehicle.Typology) {
+			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("typology_validation.not_allowed", *vehicle.Typology))
 			return
 		}
 	}
