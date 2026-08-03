@@ -28,7 +28,7 @@ func TestAllStopAccessValidationTestCases(t *testing.T) {
 				}
 			}
 			stop := &types.Stop{StopAccess: stopAccess, LocationType: lib.Ptr(0), ParentStation: lib.Ptr("1")}
-			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{"stop_id": []int{1}, "location_type": []int{0}, "parent_station": []int{1}}}}.ToGtfsWithDB()
+			gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{"stop_id": {1}, "location_type": {0}, "parent_station": {1}}}}.ToGtfsWithDB()
 			if err != nil {
 				t.Fatalf("failed to create mock gtfs: %v", err)
 			}
@@ -41,7 +41,7 @@ func TestAllStopAccessValidationTestCases(t *testing.T) {
 	t.Run("TestSeverity_Forbidden_parent_station_empty", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		stop := &types.Stop{StopAccess: lib.Ptr(0), LocationType: lib.Ptr(1), ParentStation: nil}
-		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{"stop_id": []int{1}, "location_type": []int{1}}}}.ToGtfsWithDB()
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{"stop_id": {1}, "location_type": {1}}}}.ToGtfsWithDB()
 		if err != nil {
 			t.Fatalf("failed to create mock gtfs: %v", err)
 		}
@@ -53,7 +53,7 @@ func TestAllStopAccessValidationTestCases(t *testing.T) {
 	t.Run("TestSeverity_Forbidden_location_type_not_platform", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		stop := &types.Stop{StopAccess: lib.Ptr(0), LocationType: lib.Ptr(1), ParentStation: lib.Ptr("1")}
-		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{"stop_id": []int{1}, "location_type": []int{1}, "parent_station": []int{1}}}}.ToGtfsWithDB()
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{"stop_id": {1}, "location_type": {1}, "parent_station": {1}}}}.ToGtfsWithDB()
 		if err != nil {
 			t.Fatalf("failed to create mock gtfs: %v", err)
 		}
@@ -65,7 +65,7 @@ func TestAllStopAccessValidationTestCases(t *testing.T) {
 	t.Run("TestSeverity_Ignore", func(t *testing.T) {
 		services.AppMessageService.Clear()
 		stop := &types.Stop{StopAccess: lib.Ptr(0), LocationType: lib.Ptr(0), ParentStation: lib.Ptr("1")}
-		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{"stop_id": []int{1}, "location_type": []int{0}, "parent_station": []int{1}}}}.ToGtfsWithDB()
+		gtfs, cleanup, err := test_helpers.MockGtfs{IdMapData: types.GtfsIdMap{"stops": map[string][]int{"stop_id": {1}, "location_type": {0}, "parent_station": {1}}}}.ToGtfsWithDB()
 		if err != nil {
 			t.Fatalf("failed to create mock gtfs: %v", err)
 		}
