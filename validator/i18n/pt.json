@@ -501,6 +501,12 @@
         "invalid": "O campo \"level_index\" deve ser um número inteiro não negativo",
         "not_allowed": "O campo \"level_index\" \"%s\" não é permitido"
     },
+    "level_name_validation": {
+        "forbidden": "O campo \"level_name\" é proibido",
+        "required": "O campo \"level_name\" é obrigatório",
+        "recommended": "O campo \"level_name\" é recomendado",
+        "not_allowed": "O campo \"level_name\" \"%s\" não é permitido"
+    },
     "location_type_validation": {
         "forbidden": "O campo \"location_type\" é proibido",
         "required": "O campo \"location_type\" é obrigatório",

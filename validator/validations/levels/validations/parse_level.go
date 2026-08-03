@@ -25,12 +25,12 @@ func ParseLevel(rawLevel types.LevelsRaw, row int) types.Levels {
 
 	addMessage := func(field, msg string) {
 		messages = append(messages, types.Message{
-			Field:        field,
-			FileName:     "levels.txt",
-			Rows:         []int{row},
-			Message:      msg,
-			Severity:     types.SEVERITY_ERROR,
-			ValidationID: "levels_parse",
+			Field:    field,
+			FileName: "levels.txt",
+			Rows:     []int{row},
+			Message:  msg,
+			Severity: types.SEVERITY_ERROR,
+			RuleID:   "levels_parse",
 		})
 	}
 
