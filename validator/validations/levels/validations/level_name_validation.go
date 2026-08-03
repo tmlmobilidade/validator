@@ -22,7 +22,7 @@ Example: Take the elevator to "Mezzanine" or "Platform" or "-1".
 [levels.txt]: https://gtfs.org/schedule/reference/#levelstxt
 */
 func LevelNameValidation(level *types.Levels, row int, rules *types.LevelsRules) {
-	ctx := lib.NewValidationContext("level_name", "levels.txt", "level_name_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("level_name", "levels.txt", "level_name", row, services.AppMessageService)
 	if rules != nil && rules.LevelName.Severity != "" {
 		ctx.WithSeverity(rules.LevelName.Severity)
 	}

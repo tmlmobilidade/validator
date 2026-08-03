@@ -445,10 +445,10 @@
     },
     "levels": {
         "_file": "ignore",
-        "level_id": {
+        "level_id_unique": {
             "severity": "ignore"
         },
-        "level_index": {
+        "level_index_required": {
             "severity": "ignore"
         },
         "level_name": {

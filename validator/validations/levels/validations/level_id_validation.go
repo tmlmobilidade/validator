@@ -21,7 +21,7 @@ Id of the level that can be referenced from stops.txt.
 [levels.txt]: https://gtfs.org/schedule/reference/#levelstxt
 */
 func LevelIdValidation(level *types.Levels, row int, gtfs types.Gtfs, rules *types.LevelsRules) {
-	ctx := lib.NewValidationContext("level_id", "levels.txt", "level_id_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("level_id", "levels.txt", "level_id_unique", row, services.AppMessageService)
 	if rules != nil && rules.LevelId.Severity != "" {
 		ctx.WithSeverity(rules.LevelId.Severity)
 	}

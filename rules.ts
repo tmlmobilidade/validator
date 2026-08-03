@@ -264,8 +264,8 @@ type GtfsRules = {
     };
     levels: {
         _file: Severity;
-        level_id: RuleConfig;
-        level_index: RuleConfig;
+        level_id_unique: RuleConfig;
+        level_index_required: RuleConfig;
         level_name: RuleConfig;
     };
     feed_info: {
@@ -1430,10 +1430,10 @@ const rules: GtfsRules = {
     },
     "levels": {
         "_file": "ignore",
-        "level_id": {
+        "level_id_unique": {
             "severity": "ignore"
         },
-        "level_index": {
+        "level_index_required": {
             "severity": "ignore"
         },
         "level_name": {
