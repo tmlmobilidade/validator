@@ -271,8 +271,8 @@ type PathwaysRules struct {
 
 type LevelsRules struct {
 	File       Severity   `json:"_file"`
-	LevelId    RuleConfig `json:"level_id"`
-	LevelIndex RuleConfig `json:"level_index"`
+	LevelId    RuleConfig `json:"level_id_unique"`
+	LevelIndex RuleConfig `json:"level_index_required"`
 	LevelName  RuleConfig `json:"level_name"`
 }
 

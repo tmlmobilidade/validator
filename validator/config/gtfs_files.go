@@ -18,6 +18,7 @@ var GTFSFileToTable = map[string]string{
 	"periods.txt":         "periods",
 	"shapes.txt":          "shapes",
 	"frequencies.txt":     "frequencies",
+	"levels.txt":          "levels",
 	"pathways.txt":        "pathways",
 	"transfers.txt":       "transfers",
 }
@@ -41,6 +42,7 @@ var GTFSFiles = map[string]struct{}{
 	"shapes.txt":          {},
 	"vehicles.txt":        {},
 	"frequencies.txt":     {},
+	"levels.txt":          {},
 	"pathways.txt":        {},
 	"transfers.txt":       {},
 }
