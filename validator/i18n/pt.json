@@ -229,7 +229,7 @@
     "line_short_name_validation": {
         "required": "O campo \"line_short_name\" é obrigatório",
         "recommended": "O campo \"line_short_name\" é recomendado",
-        "not_equal_to_route_short_name": "O campo \"line_short_name\" \"%s\" não deve ser igual ao campo \"route_short_name\" \"%s\""
+        "not_equal_to_route_short_name": "O campo \"line_short_name\" \"%s\" deve ser igual ao campo \"route_short_name\" \"%s\""
     },
     "line_long_name_validation": {
         "required": "O campo \"line_long_name\" é obrigatório"

@@ -44,7 +44,7 @@ func LineShortNameValidation(route *types.Route, row int, gtfs *types.Gtfs, rule
 	}
 
 	// Validate line_short_name is different from route_short_name
-	if route.RouteShortName != nil && *route.RouteShortName == *route.LineShortName {
+	if route.RouteShortName != nil && *route.RouteShortName != *route.LineShortName {
 		ctx.AddError(ctx.GetTranslatedMessage("line_short_name_validation.not_equal_to_route_short_name"))
 	}
 }
