@@ -1431,13 +1431,13 @@ const rules: GtfsRules = {
     "levels": {
         "_file": "ignore",
         "level_id_unique": {
-            "severity": "ignore"
+            "severity": "warning"
         },
         "level_index_required": {
-            "severity": "ignore"
+            "severity": "warning"
         },
         "level_name": {
-            "severity": "ignore"
+            "severity": "warning"
         }
     },
     "feed_info": {
