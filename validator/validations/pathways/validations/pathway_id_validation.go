@@ -24,7 +24,7 @@ Example: When two escalators are side-by-side in opposite directions, or when a 
 [pathways.txt]: https://gtfs.org/schedule/reference/#pathwaystxt
 */
 func PathwayIdValidation(pathways *types.Pathways, row int, gtfs *types.Gtfs, rules *types.PathwaysRules) {
-	ctx := lib.NewValidationContext("pathway_id", "pathways.txt", "pathway_id_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("pathway_id", "pathways.txt", "pathway_id_unique", row, services.AppMessageService)
 	ctx.Severity = types.SEVERITY_ERROR
 	if rules != nil && rules.PathwayId.Severity != "" {
 		ctx.WithSeverity(rules.PathwayId.Severity)

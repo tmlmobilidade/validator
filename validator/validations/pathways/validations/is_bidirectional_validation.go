@@ -31,7 +31,7 @@ Exit gates (pathway_mode=7) must not be bidirectional.
 */
 
 func IsBidirectionalValidation(pathways *types.Pathways, row int, rules *types.PathwaysRules) {
-	ctx := lib.NewValidationContext("is_bidirectional", "pathways.txt", "is_bidirectional_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("is_bidirectional", "pathways.txt", "pathway_is_bidirectional_valid_gtfs_enum", row, services.AppMessageService)
 	if rules != nil && rules.IsBidirectional.Severity != "" {
 		ctx.WithSeverity(rules.IsBidirectional.Severity)
 	}

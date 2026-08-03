@@ -20,7 +20,7 @@ Same as signposted_as, but when the pathway is used from the to_stop_id to the f
 [pathways.txt]: https://gtfs.org/schedule/reference/#pathwaystxt
 */
 func ReversedSignpostedAsValidation(pathways *types.Pathways, row int, rules *types.PathwaysRules) {
-	ctx := lib.NewValidationContext("reversed_signposted_as", "pathways.txt", "reversed_signposted_as_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("reversed_signposted_as", "pathways.txt", "pathway_reversed_signposted_as", row, services.AppMessageService)
 	if rules != nil && rules.ReversedSignpostedAs.Severity != "" {
 		ctx.WithSeverity(rules.ReversedSignpostedAs.Severity)
 	}

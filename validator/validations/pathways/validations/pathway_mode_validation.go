@@ -34,7 +34,7 @@ Valid options are:
 */
 
 func PathwayModeValidation(pathways *types.Pathways, row int, rules *types.PathwaysRules) {
-	ctx := lib.NewValidationContext("pathway_mode", "pathways.txt", "pathway_mode_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("pathway_mode", "pathways.txt", "pathway_mode_valid_gtfs_enum", row, services.AppMessageService)
 	if rules != nil && rules.PathwayMode.Severity != "" {
 		ctx.WithSeverity(rules.PathwayMode.Severity)
 	}

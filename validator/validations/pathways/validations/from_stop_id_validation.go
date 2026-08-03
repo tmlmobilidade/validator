@@ -25,7 +25,7 @@ Values for stop_id that identify stations (location_type=1), or stops (location_
 [stops.stop_id]: https://gtfs.org/schedule/reference/#stopstxt
 */
 func FromStopIdValidation(pathways *types.Pathways, row int, gtfs *types.Gtfs, rules *types.PathwaysRules) {
-	ctx := lib.NewValidationContext("from_stop_id", "pathways.txt", "from_stop_id_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("from_stop_id", "pathways.txt", "pathway_from_stop_id_references_stops_table", row, services.AppMessageService)
 
 	if rules != nil && rules.FromStopId.Severity != "" {
 		ctx.WithSeverity(rules.FromStopId.Severity)

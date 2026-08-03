@@ -457,41 +457,54 @@
     },
     "pathways": {
         "_file": "ignore",
-        "from_stop_id": {
-            "severity": "ignore"
+        "pathway_id_unique": {
+            "severity": "warning"
         },
-        "is_bidirectional": {
-            "severity": "ignore"
+        "pathway_from_stop_id_references_stops_table": {
+            "severity": "warning"
         },
-        "length": {
-            "severity": "ignore"
+        "pathway_to_stop_id_references_stops_table": {
+            "severity": "warning"
         },
-        "max_slope": {
-            "severity": "ignore"
+        "pathway_mode_valid_gtfs_enum": {
+            "options": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7"
+            ],
+            "severity": "warning"
         },
-        "min_width": {
-            "severity": "ignore"
+        "pathway_is_bidirectional_valid_gtfs_enum": {
+            "options": [
+                "0",
+                "1"
+            ],
+            "severity": "warning"
         },
-        "pathway_id": {
-            "severity": "ignore"
+        "pathway_length_non_negative": {
+            "severity": "warning"
         },
-        "pathway_mode": {
-            "severity": "ignore"
+        "pathway_traversal_time_non_negative_seconds": {
+            "severity": "warning"
         },
-        "reversed_signposted_as": {
-            "severity": "ignore"
+        "pathway_stair_count": {
+            "severity": "warning"
         },
-        "signposted_as": {
-            "severity": "ignore"
+        "pathway_max_slope_allowed_for_pathway_mode": {
+            "severity": "warning"
         },
-        "stair_count": {
-            "severity": "ignore"
+        "pathway_min_width_positive": {
+            "severity": "warning"
         },
-        "to_stop_id": {
-            "severity": "ignore"
+        "pathway_signposted_as": {
+            "severity": "warning"
         },
-        "traversal_time": {
-            "severity": "ignore"
+        "pathway_reversed_signposted_as": {
+            "severity": "warning"
         }
     },
     "rider_categories": {

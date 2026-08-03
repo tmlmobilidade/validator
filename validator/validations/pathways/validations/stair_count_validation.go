@@ -21,7 +21,7 @@ Number of stairs in the pathway.
 */
 
 func StairCountValidation(pathways *types.Pathways, row int, rules *types.PathwaysRules) {
-	ctx := lib.NewValidationContext("stair_count", "pathways.txt", "stair_count_validation", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("stair_count", "pathways.txt", "pathway_stair_count", row, services.AppMessageService)
 	if rules != nil && rules.StairCount.Severity != "" {
 		ctx.WithSeverity(rules.StairCount.Severity)
 	}
