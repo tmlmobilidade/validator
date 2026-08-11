@@ -132,9 +132,9 @@ func (rp *RulesParser) validateRules(rules *types.GtfsRules) error {
 
 	// Validate routes rules
 	if rules.Routes.File != types.SEVERITY_FORBIDDEN {
-		validateRuleConfig(rules.Routes.LineId, "routes.line_id")
-		validateRuleConfig(rules.Routes.LineShortName, "routes.line_short_name")
-		validateRuleConfig(rules.Routes.LineLongName, "routes.line_long_name")
+		validateRuleConfig(rules.Routes.LineId, "routes.line_id_required")
+		validateRuleConfig(rules.Routes.LineShortName, "routes.line_short_name_present_when_line_id_present")
+		validateRuleConfig(rules.Routes.LineLongName, "routes.line_long_name_present_when_line_id_present")
 		validateRuleConfig(rules.Routes.RouteId, "routes.route_id_unique")
 		validateRuleConfig(rules.Routes.AgencyId, "routes.route_agency_id_references_agency_table")
 		validateRuleConfig(rules.Routes.RouteShortName, "routes.route_short_name_or_long_name_present")
