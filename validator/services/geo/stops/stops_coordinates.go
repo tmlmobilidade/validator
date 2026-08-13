@@ -8,6 +8,8 @@ import (
 	"strconv"
 )
 
+const MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS = 100.0
+
 // Generates a mapping from stop ID to its closest shape point info for all provided stops.
 //
 // It does so by first processing all shape coordinate slices into densified (chunked) shape representations for fast distance calculations,
@@ -119,20 +121,20 @@ func buildStopClosestShapePointsDistanceMapFromCache(
 					closestCoord = coordinate
 					foundDistance = true
 					// Early exit if below allowed threshold
-					if distance < shapes_coordinates.MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS {
+					if distance < MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS {
 						break
 					}
 				}
 			}
 			// Early exit to avoid unnecessary extra checks
-			if foundDistance && minDistance < shapes_coordinates.MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS {
+			if foundDistance && minDistance < MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS {
 				break
 			}
 		}
 
 		// Only record if nearest found distance is at least the minimum required threshold
 		if foundDistance {
-			if minDistance < shapes_coordinates.MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS {
+			if minDistance < MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS {
 				continue
 			}
 			// Match to closest original shape point for reporting
@@ -231,14 +233,14 @@ func BuildStopClosestShapePointsDistanceMapPerStopShape(
 					closestCoord = coordinate
 					foundDistance = true
 					// Early exit if found below threshold
-					if distance < shapes_coordinates.MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS {
+					if distance < MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS {
 						break
 					}
 				}
 			}
 
 			// Report if minimum distance is a violation (strictly > allowed threshold)
-			if foundDistance && minDistance > shapes_coordinates.MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS {
+			if foundDistance && minDistance > MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS {
 				// Find closest original shape point for reporting
 				closestSeq := 0
 				closestLat := closestCoord.Lat

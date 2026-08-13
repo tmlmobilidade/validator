@@ -51,6 +51,7 @@ type StopRaw struct {
 	TtsStopName           string `gtfs:"tts_stop_name"`
 	WheelchairBoarding    string `gtfs:"wheelchair_boarding"`
 	ZoneId                string `gtfs:"zone_id"`
+	StopAccess            string `gtfs:"stop_access"`
 }
 
 /* ROUTE */
@@ -58,11 +59,14 @@ type RouteRaw struct {
 	// Required fields
 	RouteId   string `gtfs:"route_id"`
 	RouteType string `gtfs:"route_type"`
+	LineId    string `gtfs:"line_id"`
 
 	// Optional fields
 	AgencyId          string `gtfs:"agency_id"`
 	ContinuousDropOff string `gtfs:"continuous_drop_off"`
 	ContinuousPickup  string `gtfs:"continuous_pickup"`
+	LineShortName     string `gtfs:"line_short_name"`
+	LineLongName      string `gtfs:"line_long_name"`
 	RouteColor        string `gtfs:"route_color"`
 	RouteDesc         string `gtfs:"route_desc"`
 	RouteLongName     string `gtfs:"route_long_name"`
@@ -203,7 +207,7 @@ type PathwaysRaw struct {
 /* LEVELS */
 type LevelsRaw struct {
 	LevelId    string `gtfs:"level_id"`
-	LevelIndex uint16 `gtfs:"level_index"`
+	LevelIndex string `gtfs:"level_index"`
 	LevelName  string `gtfs:"level_name"`
 }
 
@@ -1019,6 +1023,22 @@ func (g *Gtfs) IterateVehicles(fn func(int, VehicleRaw) error) error {
 	return g.iterateTable("vehicles", func(rowIndex int, row map[string]string) error {
 		vehicleRaw := convertRowToStruct[VehicleRaw](row)
 		return fn(rowIndex, vehicleRaw)
+	})
+}
+
+// IterateLevels iterates over all levels, calling fn for each
+func (g *Gtfs) IterateLevels(fn func(int, LevelsRaw) error) error {
+	return g.iterateTable("levels", func(rowIndex int, row map[string]string) error {
+		levelRaw := convertRowToStruct[LevelsRaw](row)
+		return fn(rowIndex, levelRaw)
+	})
+}
+
+// IterateTransfers iterates over all transfers, calling fn for each
+func (g *Gtfs) IterateTransfers(fn func(int, TransfersRaw) error) error {
+	return g.iterateTable("transfers", func(rowIndex int, row map[string]string) error {
+		transfersRaw := convertRowToStruct[TransfersRaw](row)
+		return fn(rowIndex, transfersRaw)
 	})
 }
 

@@ -2,6 +2,7 @@ package shapes
 
 import (
 	"sort"
+	"strconv"
 
 	"main/lib"
 	"main/services"
@@ -17,6 +18,19 @@ type shapePointsCoordinatesConsistentPoint struct {
 	lon      float64
 }
 
+func getShapePointsCoordinatesConsistentToleranceMeters(rules *types.ShapesRules) float64 {
+	if rules == nil || rules.ShapePointsCoordinatesConsistent.Options == nil || len(*rules.ShapePointsCoordinatesConsistent.Options) == 0 {
+		return shapes_coordinates.MAX_SHAPE_POINT_DISTANCE_METERS
+	}
+
+	value, err := strconv.ParseFloat((*rules.ShapePointsCoordinatesConsistent.Options)[0], 64)
+	if err != nil || value <= 0 {
+		return shapes_coordinates.MAX_SHAPE_POINT_DISTANCE_METERS
+	}
+
+	return value
+}
+
 func buildShapeFromPointsCoordinatesConsistentPoint(point shapePointsCoordinatesConsistentPoint) *types.Shape {
 	return &types.Shape{
 		ShapePtLat: lib.Ptr(float64(point.lat)),
@@ -25,7 +39,7 @@ func buildShapeFromPointsCoordinatesConsistentPoint(point shapePointsCoordinates
 }
 
 type pointsCoordinatesConsistentViolation struct {
-	id          string
+	shapeId     string
 	row         int
 	currentLat  float64
 	currentLon  float64
@@ -56,6 +70,7 @@ func ShapePointsCoordinatesConsistentValidation(shapes []types.Shape, rules *typ
 	}
 
 	shapeGroups := map[string][]shapePointsCoordinatesConsistentPoint{}
+	toleranceMeters := getShapePointsCoordinatesConsistentToleranceMeters(rules)
 	violations := []pointsCoordinatesConsistentViolation{}
 
 	for i, shape := range shapes {
@@ -89,12 +104,13 @@ func ShapePointsCoordinatesConsistentValidation(shapes []types.Shape, rules *typ
 			prevShapePoint := buildShapeFromPointsCoordinatesConsistentPoint(prev)
 			currentShapePoint := buildShapeFromPointsCoordinatesConsistentPoint(current)
 
-			closeEnough := shapes_coordinates.ShapePointIsCloseToBeforeShapePoint(prevShapePoint, currentShapePoint)
+			closeEnough := shapes_coordinates.ShapePointIsCloseToBeforeShapePoint(prevShapePoint, currentShapePoint, toleranceMeters)
 			if closeEnough {
 				continue
 			}
 
 			violations = append(violations, pointsCoordinatesConsistentViolation{
+				shapeId:     current.id,
 				row:         current.row,
 				currentLat:  current.lat,
 				currentLon:  current.lon,
@@ -125,7 +141,7 @@ func ShapePointsCoordinatesConsistentValidation(shapes []types.Shape, rules *typ
 		ctx.WithSeverity(severity)
 		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage(
 			"shape_points_coordinates_consistent_validation.invalid_consistent_distance",
-			violation.id,
+			violation.shapeId,
 			violation.currentLat,
 			violation.currentLon,
 			violation.currentSeq,

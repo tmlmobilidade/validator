@@ -132,9 +132,9 @@ func (rp *RulesParser) validateRules(rules *types.GtfsRules) error {
 
 	// Validate routes rules
 	if rules.Routes.File != types.SEVERITY_FORBIDDEN {
-		validateRuleConfig(rules.Routes.LineId, "routes.line_id")
-		validateRuleConfig(rules.Routes.LineShortName, "routes.line_short_name")
-		validateRuleConfig(rules.Routes.LineLongName, "routes.line_long_name")
+		validateRuleConfig(rules.Routes.LineId, "routes.line_id_required")
+		validateRuleConfig(rules.Routes.LineShortName, "routes.line_short_name_present_when_line_id_present")
+		validateRuleConfig(rules.Routes.LineLongName, "routes.line_long_name_present_when_line_id_present")
 		validateRuleConfig(rules.Routes.RouteId, "routes.route_id_unique")
 		validateRuleConfig(rules.Routes.AgencyId, "routes.route_agency_id_references_agency_table")
 		validateRuleConfig(rules.Routes.RouteShortName, "routes.route_short_name_or_long_name_present")
@@ -186,6 +186,7 @@ func (rp *RulesParser) validateRules(rules *types.GtfsRules) error {
 		validateRuleConfig(rules.StopTimes.TripId, "stop_times.stop_times_trip_id_references_trips_table")
 		validateRuleConfig(rules.StopTimes.ArrivalTime, "stop_times.arrival_time_ordering_with_departure_and_frequencies")
 		validateRuleConfig(rules.StopTimes.DepartureTime, "stop_times.departure_time_ordering_with_arrival_and_timepoint")
+		validateRuleConfig(rules.StopTimes.ArrivalDepartureSequence, "stop_times.arrival_departure_time_non_decreasing_by_stop_sequence")
 		validateRuleConfig(rules.StopTimes.StopId, "stop_times.stop_times_stop_id_references_stops_table")
 		validateRuleConfig(rules.StopTimes.StopHeadsign, "stop_times.stop_headsign_present")
 		validateRuleConfig(rules.StopTimes.PickupType, "stop_times.pickup_type_valid_gtfs_enum")

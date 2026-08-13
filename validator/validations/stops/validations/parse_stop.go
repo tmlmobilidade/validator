@@ -47,6 +47,7 @@ func ParseStop(rawStop types.StopRaw, row int) types.Stop {
 		"has_stop_sign":           &hasStopSign,
 		"has_tariffs_information": &hasTariffsInformation,
 		"public_visible":          &publicVisible,
+		"stop_access":             &stopAccess,
 	}
 
 	float64Fields := map[string]*float64{
@@ -119,6 +120,6 @@ func ParseStop(rawStop types.StopRaw, row int) types.Stop {
 	stop.TtsStopName = lib.IfThenElse(rawStop.TtsStopName != "", &ttsStopName, nil)
 	stop.WheelchairBoarding = lib.IfThenElse(rawStop.WheelchairBoarding != "", &wheelchairBoarding, nil)
 	stop.ZoneId = lib.IfThenElse(rawStop.ZoneId != "", &zoneId, nil)
-
+	stop.StopAccess = lib.IfThenElse(rawStop.StopAccess != "", &stopAccess, nil)
 	return stop
 }

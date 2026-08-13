@@ -1,8 +1,10 @@
-import { chmodSync, copyFileSync, createWriteStream, existsSync, mkdirSync } from 'fs';
-import path, { dirname, join } from 'path';
-import { Readable } from 'stream';
-import { finished } from 'stream/promises';
-import { fileURLToPath } from 'url';
+/* eslint-disable @typescript-eslint/naming-convention */
+
+import { chmodSync, copyFileSync, createWriteStream, existsSync, mkdirSync } from 'node:fs';
+import path, { dirname, join } from 'node:path';
+import { Readable } from 'node:stream';
+import { finished } from 'node:stream/promises';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -106,7 +108,7 @@ async function downloadRemoteBinaries(): Promise<void> {
 	}
 
 	if (!res.ok) {
-		throw new Error(`Error downloading remote binary: ${res.status} ${res.statusText}`);
+		throw new Error(`Error downloading remote binary from ${remoteUrl}: ${res.status} ${res.statusText}`);
 	}
 
 	// Create the local bin path if it doesn't exist
@@ -158,7 +160,7 @@ async function main(): Promise<void> {
 		}
 	} else {
 		console.info(`Local file not found: ${binaryDistributionFilePath}`);
-		console.info(`Downloading binary from remote server...`);
+		console.info(`Downloading binary from ${getRemoteBinPath()}...`);
 
 		try {
 			await downloadRemoteBinaries();

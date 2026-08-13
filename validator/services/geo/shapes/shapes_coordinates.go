@@ -10,7 +10,6 @@ import (
 )
 
 const SEGMENT_LENGTH = 50.0 // 50m segments reduce Haversine calls 5x vs 10m while still validating 100m stop distance
-const MAX_STOP_DISTANCE_TO_CLOSEST_SHAPE_POINT_METERS = 100.0
 const MAX_SHAPE_POINT_DISTANCE_METERS = 1000.0
 const SHAPE_DIST_TRAVELED_KILOMETERS_THRESHOLD = 800.0
 
@@ -64,13 +63,13 @@ func (d *ShapeChunkedData) FindClosestOriginalPoint(stopPoint types.Coordinates)
 // Returns:
 //
 //	bool: True if the distance between the consecutive coordinates is inconsistent (too large), false otherwise.
-func hasConsecutiveShapeDistanceInconsistency(orderedCoordinates []types.Coordinates) bool {
+func hasConsecutiveShapeDistanceInconsistency(orderedCoordinates []types.Coordinates, maxShapePointDistanceMeters float64) bool {
 	if len(orderedCoordinates) != 2 {
 		return false
 	}
 
 	distanceMeters := lib.HaversineDistance(orderedCoordinates[0], orderedCoordinates[1])
-	if distanceMeters > MAX_SHAPE_POINT_DISTANCE_METERS {
+	if distanceMeters > maxShapePointDistanceMeters {
 		return true
 	}
 
@@ -78,7 +77,7 @@ func hasConsecutiveShapeDistanceInconsistency(orderedCoordinates []types.Coordin
 }
 
 // ShapePointIsCloseToBeforeShapePoint checks if two consecutive GTFS shape points are "close" to each other,
-// as defined by the MAX_SHAPE_POINT_DISTANCE_METERS constant.
+// as defined by maxShapePointDistanceMeters.
 // It returns true if the points are not too far apart, false otherwise.
 //
 // Args:
@@ -88,15 +87,19 @@ func hasConsecutiveShapeDistanceInconsistency(orderedCoordinates []types.Coordin
 //
 // Returns:
 //
-//	bool: True if the distance between the points is less than or equal to MAX_SHAPE_POINT_DISTANCE_METERS and
+//	bool: True if the distance between the points is less than or equal to maxShapePointDistanceMeters and
 //	      the points are not considered to have an inconsistent gap according to hasConsecutiveShapeDistanceInconsistency,
 //	      false otherwise.
-func ShapePointIsCloseToBeforeShapePoint(beforeShapePoint *types.Shape, shapePoint *types.Shape) bool {
+func ShapePointIsCloseToBeforeShapePoint(beforeShapePoint *types.Shape, shapePoint *types.Shape, maxShapePointDistanceMeters float64) bool {
 	// Defensive check for nil pointers and fields
 	if shapePoint == nil || beforeShapePoint == nil ||
 		shapePoint.ShapePtLat == nil || shapePoint.ShapePtLon == nil ||
 		beforeShapePoint.ShapePtLat == nil || beforeShapePoint.ShapePtLon == nil {
 		return false
+	}
+
+	if maxShapePointDistanceMeters <= 0 {
+		maxShapePointDistanceMeters = MAX_SHAPE_POINT_DISTANCE_METERS
 	}
 
 	// Convert GTFS shape points to types.Coordinates
@@ -114,13 +117,13 @@ func ShapePointIsCloseToBeforeShapePoint(beforeShapePoint *types.Shape, shapePoi
 		shapePointCoordinate,
 		beforeShapePointCoordinate,
 	}
-	if hasConsecutiveShapeDistanceInconsistency(coordinatesToValidate) {
+	if hasConsecutiveShapeDistanceInconsistency(coordinatesToValidate, maxShapePointDistanceMeters) {
 		return false
 	}
 
 	// Check if distance between points is within allowed threshold
 	distanceMeters := lib.HaversineDistance(shapePointCoordinate, beforeShapePointCoordinate)
-	return distanceMeters <= MAX_SHAPE_POINT_DISTANCE_METERS
+	return distanceMeters <= maxShapePointDistanceMeters
 }
 
 func ShapeDistTraveledToMeters(value float64, maxInShape float64) float64 {

@@ -61,13 +61,14 @@ type StopsRules struct {
 	RegionId              RuleConfig `json:"region_id_valid"`
 	MunicipalityId        RuleConfig `json:"municipality_id_valid"`
 	ParishId              RuleConfig `json:"parish_id_valid"`
+	StopAccess            RuleConfig `json:"stop_access"`
 }
 
 type RoutesRules struct {
 	File              Severity   `json:"_file"`
-	LineId            RuleConfig `json:"line_id"`
-	LineShortName     RuleConfig `json:"line_short_name"`
-	LineLongName      RuleConfig `json:"line_long_name"`
+	LineId            RuleConfig `json:"line_id_required"`
+	LineShortName     RuleConfig `json:"line_short_name_present_when_line_id_present"`
+	LineLongName      RuleConfig `json:"line_long_name_present_when_line_id_present"`
 	RouteId           RuleConfig `json:"route_id_unique"`
 	AgencyId          RuleConfig `json:"route_agency_id_references_agency_table"`
 	RouteShortName    RuleConfig `json:"route_short_name_or_long_name_present"`
@@ -120,6 +121,7 @@ type StopTimesRules struct {
 	TripId                   RuleConfig `json:"stop_times_trip_id_references_trips_table"`
 	ArrivalTime              RuleConfig `json:"arrival_time_ordering_with_departure_and_frequencies"`
 	DepartureTime            RuleConfig `json:"departure_time_ordering_with_arrival_and_timepoint"`
+	ArrivalDepartureSequence RuleConfig `json:"arrival_departure_time_non_decreasing_by_stop_sequence"`
 	StopId                   RuleConfig `json:"stop_times_stop_id_references_stops_table"`
 	StopHeadsign             RuleConfig `json:"stop_headsign_present"`
 	PickupType               RuleConfig `json:"pickup_type_valid_gtfs_enum"`
@@ -245,32 +247,36 @@ type FrequenciesRules struct {
 
 type TransfersRules struct {
 	File            Severity   `json:"_file"`
-	FromStopId      RuleConfig `json:"from_stop_id"`
-	ToStopId        RuleConfig `json:"to_stop_id"`
-	TransferType    RuleConfig `json:"transfer_type"`
-	MinTransferTime RuleConfig `json:"min_transfer_time"`
+	FromStopId      RuleConfig `json:"transfer_from_stop_id_references_stops_table"`
+	FromRouteId     RuleConfig `json:"transfer_from_route_id_references_routes_table"`
+	FromTripId      RuleConfig `json:"transfer_from_trip_id_references_trips_table"`
+	ToRouteId       RuleConfig `json:"transfer_to_route_id_references_routes_table"`
+	ToStopId        RuleConfig `json:"transfer_to_stop_id_references_stops_table"`
+	ToTripId        RuleConfig `json:"transfer_to_trip_id_references_trips_table"`
+	TransferType    RuleConfig `json:"transfer_type_valid_gtfs_enum"`
+	MinTransferTime RuleConfig `json:"min_transfer_time_non_negative_seconds"`
 }
 
 type PathwaysRules struct {
 	File                 Severity   `json:"_file"`
-	PathwayId            RuleConfig `json:"pathway_id"`
-	FromStopId           RuleConfig `json:"from_stop_id"`
-	ToStopId             RuleConfig `json:"to_stop_id"`
-	PathwayMode          RuleConfig `json:"pathway_mode"`
-	IsBidirectional      RuleConfig `json:"is_bidirectional"`
-	Length               RuleConfig `json:"length"`
-	TraversalTime        RuleConfig `json:"traversal_time"`
-	StairCount           RuleConfig `json:"stair_count"`
-	MaxSlope             RuleConfig `json:"max_slope"`
-	MinWidth             RuleConfig `json:"min_width"`
-	SignpostedAs         RuleConfig `json:"signposted_as"`
-	ReversedSignpostedAs RuleConfig `json:"reversed_signposted_as"`
+	PathwayId            RuleConfig `json:"pathway_id_unique"`
+	FromStopId           RuleConfig `json:"pathway_from_stop_id_references_stops_table"`
+	ToStopId             RuleConfig `json:"pathway_to_stop_id_references_stops_table"`
+	PathwayMode          RuleConfig `json:"pathway_mode_valid_gtfs_enum"`
+	IsBidirectional      RuleConfig `json:"pathway_is_bidirectional_valid_gtfs_enum"`
+	Length               RuleConfig `json:"pathway_length_non_negative"`
+	TraversalTime        RuleConfig `json:"pathway_traversal_time_non_negative_seconds"`
+	StairCount           RuleConfig `json:"pathway_stair_count"`
+	MaxSlope             RuleConfig `json:"pathway_max_slope_allowed_for_pathway_mode"`
+	MinWidth             RuleConfig `json:"pathway_min_width_positive"`
+	SignpostedAs         RuleConfig `json:"pathway_signposted_as"`
+	ReversedSignpostedAs RuleConfig `json:"pathway_reversed_signposted_as"`
 }
 
 type LevelsRules struct {
 	File       Severity   `json:"_file"`
-	LevelId    RuleConfig `json:"level_id"`
-	LevelIndex RuleConfig `json:"level_index"`
+	LevelId    RuleConfig `json:"level_id_unique"`
+	LevelIndex RuleConfig `json:"level_index_required"`
 	LevelName  RuleConfig `json:"level_name"`
 }
 

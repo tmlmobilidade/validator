@@ -130,7 +130,7 @@ func main() {
 	}
 
 	// If there are errors in the GTFS, print the errors and exit
-	if services.AppMessageService.GetSummary().TotalErrors > 0 {
+	if services.AppMessageService.TotalErrors() > 0 {
 		services.AppMessageService.PrintJSON()
 		return
 	}
