@@ -4,8 +4,6 @@ import (
 	"main/lib"
 	"main/services"
 	"main/types"
-	"math"
-	"strconv"
 )
 
 /*
@@ -28,7 +26,8 @@ Conditionally Required:
 
 [stops.txt]: https://gtfs.org/schedule/reference/#stopstxt
 */
-func StopLonValidation(stop *types.Stop, row int, rules *types.StopsRules, stopsData *types.StopsDataCache) {
+// func StopLonValidation(stop *types.Stop, row int, rules *types.StopsRules, stopsData *types.StopsDataCache) {
+func StopLonValidation(stop *types.Stop, row int, rules *types.StopsRules) {
 	ctx := lib.NewValidationContext("stop_lon", "stops.txt", "stop_lon_valid_longitude_range", row, services.AppMessageService)
 	if rules != nil && rules.StopLon.Severity != "" {
 		ctx.WithSeverity(rules.StopLon.Severity)
@@ -61,30 +60,30 @@ func StopLonValidation(stop *types.Stop, row int, rules *types.StopsRules, stops
 		return
 	}
 
-	// Check if stop_lon matches the pre-computed stops_data.json cache
-	ctx = lib.NewValidationContext("stop_lon", "stops.txt", "stop_lon_matches_stops_data", row, services.AppMessageService)
-	if rules != nil && rules.StopLonMatchesData.Severity != "" {
-		ctx.WithSeverity(rules.StopLonMatchesData.Severity)
-	}
-	if stop.StopId != nil && *stop.StopId != "" && stopsData != nil && len(stopsData.ByStopID) > 0 {
-		record, exists := stopsData.ByStopID[*stop.StopId]
-		if !exists {
-			return
-		}
+	// // Check if stop_lon matches the pre-computed stops_data.json cache
+	// ctx = lib.NewValidationContext("stop_lon", "stops.txt", "stop_lon_matches_stops_data", row, services.AppMessageService)
+	// if rules != nil && rules.StopLonMatchesData.Severity != "" {
+	// 	ctx.WithSeverity(rules.StopLonMatchesData.Severity)
+	// }
+	// if stop.StopId != nil && *stop.StopId != "" && stopsData != nil && len(stopsData.ByStopID) > 0 {
+	// 	record, exists := stopsData.ByStopID[*stop.StopId]
+	// 	if !exists {
+	// 		return
+	// 	}
 
-		if record.Longitude != *stop.StopLon {
-			if rules != nil && rules.StopLonMatchesData.Options != nil && len(*rules.StopLonMatchesData.Options) > 0 {
-				toleranceFloat, err := strconv.ParseFloat((*rules.StopLonMatchesData.Options)[0], 64)
-				if err == nil && math.Abs(record.Longitude-*stop.StopLon) <= toleranceFloat {
-					return
-				}
-			}
-			if ctx.ShouldSkip() {
-				return
-			}
+	// 	if record.Longitude != *stop.StopLon {
+	// 		if rules != nil && rules.StopLonMatchesData.Options != nil && len(*rules.StopLonMatchesData.Options) > 0 {
+	// 			toleranceFloat, err := strconv.ParseFloat((*rules.StopLonMatchesData.Options)[0], 64)
+	// 			if err == nil && math.Abs(record.Longitude-*stop.StopLon) <= toleranceFloat {
+	// 				return
+	// 			}
+	// 		}
+	// 		if ctx.ShouldSkip() {
+	// 			return
+	// 		}
 
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("stop_lon_validation.does_not_match_stops_data", *stop.StopLon))
-			return
-		}
-	}
+	// 		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("stop_lon_validation.does_not_match_stops_data", *stop.StopLon))
+	// 		return
+	// 	}
+	// }
 }
