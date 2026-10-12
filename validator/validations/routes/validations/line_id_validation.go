@@ -25,21 +25,31 @@ Optional:
 [routes.txt]: https://gtfs.org/schedule/reference/#routestxt
 */
 func LineIdValidation(route *types.Route, row int, gtfs *types.Gtfs, rules *types.RoutesRules) {
-	ctx := lib.NewValidationContext("line_id", "routes.txt", "line_id_required", row, services.AppMessageService)
+	ctx := lib.NewValidationContext("line_id", "routes.txt", "routes_line_id_required", row, services.AppMessageService)
 	if rules != nil && rules.LineId.Severity != "" {
 		ctx.WithSeverity(rules.LineId.Severity)
 	}
 
-	// If line_id is present.
-	if route.LineId == nil || *route.LineId == "" {
-		if !ctx.ShouldSkip() {
-			ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("line_id_required.required"))
+	// 1. Validate line_id is present
+	if route.LineId == nil {
+		if ctx.ShouldSkip() {
+			return
 		}
+
+		message := ctx.GetRequiredMessage("required", "recommended")
+		ctx.AddMessageWithSeverity(message)
 		return
 	}
 
-	// Check if line_id is the same as route_short_name
+	// 2. Validate line_id is forbidden
+	if ctx.IsForbidden() {
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("forbidden"))
+		return
+	}
+
+	// 3. Validate line_id is the same as route_short_name
 	if route.RouteShortName != nil && *route.LineId != *route.RouteShortName {
-		ctx.AddError(ctx.GetTranslatedMessage("line_id_required.not_equal_to_route_short_name", *route.LineId, *route.RouteShortName))
+		ctx.AddMessageWithSeverity(ctx.GetTranslatedMessage("not_equal_to_route_short_name", *route.LineId, *route.RouteShortName))
+		return
 	}
 }
